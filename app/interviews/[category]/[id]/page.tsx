@@ -24,10 +24,12 @@ interface SEOQuestion {
   category: string;
   related_concepts?: string[];
   related_question_ids?: number[];
+  related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
   tutorial_slug?: string;
+  hints?: string[];
 }
 
-// ─── Server-side data fetch (for SEO) ────────────────────
+// ─── Server-side data fetch ────────────────────────────────
 async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuestion | null> {
   try {
     const h = await headers();
@@ -46,7 +48,32 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
   }
 }
 
-// ─── generateMetadata (SEO title/description/OG) ─────────
+// ─── Related questions fetch (batch) ─────────────────────
+async function fetchRelatedTitles(
+  ids: number[],
+  apiUrl: string
+): Promise<Array<{ id: number; title: string; category: string; level: string }>> {
+  if (!ids?.length) return [];
+  try {
+    const out = await Promise.all(
+      ids.map(async (rid) => {
+        const res = await fetch(`${apiUrl}/api/v2/questions/${rid}`, {
+          next: { revalidate: 3600 },
+          signal: AbortSignal.timeout(3000),
+        });
+        if (!res.ok) return null;
+        const json = await res.json();
+        const q = json.data || json;
+        return { id: q.id, title: q.title, category: q.category, level: q.level };
+      })
+    );
+    return out.filter((x): x is { id: number; title: string; category: string; level: string } => x !== null);
+  } catch {
+    return [];
+  }
+}
+
+// ─── generateMetadata (SEO) ───────────────────────────────
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category, id } = await params;
   const q = await fetchQuestionSEO(category, id);
@@ -56,13 +83,18 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const title = `${q.title} — Python Sorusu #${q.id} | PythonMulakat`;
   const description = q.explanation
-    ? q.explanation.replace(/[*#]/g, "").slice(0, 160)
+    ? q.explanation.replace(/[*#`]/g, "").slice(0, 160)
     : `${q.title} sorusu, ${q.level} seviye Python mülakat sorusu. Türkçe açıklama, kod çalıştırma ve test case'leri ile pratik yapın.`;
 
   return {
     title,
     description,
-    keywords: [q.title, "python mülakat", `python ${q.category}`, ...(q.related_concepts || [])].join(", "),
+    keywords: [
+      q.title,
+      "python mülakat",
+      `python ${q.category}`,
+      ...(q.related_concepts || []),
+    ].join(", "),
     alternates: {
       canonical: `https://www.pythonmulakat.com/interviews/${q.category}/${q.id}`,
     },
@@ -84,18 +116,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-// ─── HowTo schema builder ───────────────────────────────
+// ─── HowTo schema builder ─────────────────────────────────
 function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
-  // Explanation'dan step'leri çıkar (markdown bold/numaralı listelerden)
   const steps: { name: string; text: string }[] = [];
 
   if (q.explanation) {
-    // 1., 2., 3. ile başlayan satırları step olarak al
-    const matches = q.explanation.matchAll(/(\d+)\.\s+\*\*(.+?)\*\*[—\-:]\s*(.+?)(?=\n|$)/g);
+    const matches = q.explanation.matchAll(/(\d+)\.\s+\*\*([^*]+?)\*\*[—\-:]\s*(.+?)(?=\n|$)/g);
     for (const m of matches) {
       steps.push({ name: m[2].trim(), text: m[3].trim() });
     }
-    // Eğer step yoksa explanation'ın ilk cümlesini kullan
     if (steps.length === 0) {
       const firstSentence = q.explanation.split(/[.!?]/)[0];
       steps.push({ name: q.title, text: firstSentence });
@@ -120,7 +149,7 @@ function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
   };
 }
 
-// ─── Breadcrumb schema ─────────────────────────────────
+// ─── Breadcrumb schema ────────────────────────────────────
 function buildBreadcrumbSchema(category: string, id: string, title: string, baseUrl: string) {
   return {
     "@context": "https://schema.org",
@@ -145,7 +174,14 @@ async function isMobileDevice(): Promise<boolean> {
   }
 }
 
-// ─── Page ───────────────────────────────────────────────
+async function getApiBase(): Promise<string> {
+  const h = await headers();
+  const host = h.get("host") || "localhost:3000";
+  const protocol = host.includes("localhost") ? "http" : "https";
+  return process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
+}
+
+// ─── Page ─────────────────────────────────────────────────
 export default async function Page({ params }: PageProps) {
   const [resolvedParams, mobile, seoQ] = await Promise.all([
     params,
@@ -153,8 +189,18 @@ export default async function Page({ params }: PageProps) {
     params.then((p) => fetchQuestionSEO(p.category, p.id)),
   ]);
 
-  const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
+  // Related soruları paralel çek (SEO + workspace için)
+  const apiBase = await getApiBase();
+  const relatedQuestions = seoQ?.related_question_ids?.length
+    ? await fetchRelatedTitles(seoQ.related_question_ids, apiBase)
+    : [];
 
+  // Question objesine related_questions ekle (Workspace'e prop olarak aktarılır)
+  const enrichedQuestion: SEOQuestion | null = seoQ
+    ? { ...seoQ, related_questions: relatedQuestions }
+    : null;
+
+  const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
   const baseUrl = "https://www.pythonmulakat.com";
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
@@ -178,7 +224,10 @@ export default async function Page({ params }: PageProps) {
         />
       )}
 
-      <Component initialParams={resolvedParams} />
+      <Component
+        initialParams={resolvedParams}
+        seoQuestion={enrichedQuestion || undefined}
+      />
     </>
   );
 }

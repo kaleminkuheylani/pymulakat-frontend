@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef, useCallback, type ReactNode } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -37,6 +38,14 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 interface Props {
   initialParams: { category: string; id: string };
+  seoQuestion?: {
+    explanation?: string;
+    complexity?: string;
+    related_concepts?: string[];
+    related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
+    tutorial_slug?: string;
+    hints?: string[];
+  };
 }
 
 interface TestCase {
@@ -56,7 +65,7 @@ interface AttemptPayload {
   hints_used: number;
 }
 
-export default function WorkspaceClient({ initialParams }: Props) {
+export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
   // ✅ Guard
   if (!initialParams || !initialParams.category || !initialParams.id) {
     return (
@@ -374,6 +383,30 @@ export default function WorkspaceClient({ initialParams }: Props) {
               {interview.description}
             </p>
 
+            {/* 🆕 SEO Meta: complexity + related_concepts + tags */}
+            {(seoQuestion?.complexity || seoQuestion?.related_concepts?.length || interview.tags?.length) && (
+              <div className="flex flex-wrap items-center gap-2">
+                {seoQuestion?.complexity && (
+                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono bg-indigo-500/10 border border-indigo-500/25 text-indigo-300">
+                    <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                    </svg>
+                    {seoQuestion.complexity}
+                  </span>
+                )}
+                {seoQuestion?.related_concepts?.map((c) => (
+                  <span key={c} className="inline-flex px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/5 border border-white/10 text-white/60">
+                    {c}
+                  </span>
+                ))}
+                {interview.tags?.map((t) => (
+                  <span key={t} className="inline-flex px-2.5 py-1 rounded-md text-[11px] font-medium bg-white/5 border border-white/10 text-white/60">
+                    #{t}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {testCases && (
               <div className="p-3 rounded-lg bg-white/5 border border-white/10">
                 <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1.5">
@@ -436,6 +469,70 @@ export default function WorkspaceClient({ initialParams }: Props) {
                     </motion.div>
                   ))}
                 </AnimatePresence>
+              </div>
+            )}
+
+            {/* 🆕 Explanation — yaklaşım rehberi (SEO content) */}
+            {seoQuestion?.explanation && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-white/80 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
+                  </svg>
+                  Yaklaşım & Açıklama
+                </h3>
+                <div className="p-4 rounded-lg bg-emerald-500/5 border border-emerald-500/20 text-sm text-white/75 leading-relaxed">
+                  <MarkdownLite content={seoQuestion.explanation} />
+                </div>
+              </div>
+            )}
+
+            {/* 🆕 Tutorial cross-link */}
+            {seoQuestion?.tutorial_slug && (
+              <Link
+                href={`/guides/${seoQuestion.tutorial_slug}`}
+                className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/25 hover:border-indigo-400/50 transition-all group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <span className="text-lg">📘</span>
+                  <div>
+                    <div className="text-sm font-semibold text-white/90 group-hover:text-white">Detaylı Rehber</div>
+                    <div className="text-[11px] text-white/50">Bu sorunun uzun form açıklaması</div>
+                  </div>
+                </div>
+                <svg className="w-4 h-4 text-indigo-300 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                </svg>
+              </Link>
+            )}
+
+            {/* 🆕 Related questions */}
+            {seoQuestion?.related_questions && seoQuestion.related_questions.length > 0 && (
+              <div className="space-y-3">
+                <h3 className="text-sm font-semibold text-white/80 flex items-center gap-2">
+                  <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                  </svg>
+                  Benzer Sorular
+                </h3>
+                <div className="space-y-2">
+                  {seoQuestion.related_questions.map((rq) => (
+                    <Link
+                      key={rq.id}
+                      href={`/interviews/${rq.category}/${rq.id}`}
+                      className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
+                    >
+                      <span className="text-xs font-mono text-white/40 group-hover:text-cyan-400">#{rq.id}</span>
+                      <span className="flex-1 text-sm text-white/75 group-hover:text-white truncate">{rq.title}</span>
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 uppercase tracking-wide">
+                        {rq.level}
+                      </span>
+                      <svg className="w-3.5 h-3.5 text-white/30 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                      </svg>
+                    </Link>
+                  ))}
+                </div>
               </div>
             )}
           </div>
@@ -765,4 +862,130 @@ async function submitAttempt(payload: AttemptPayload): Promise<void> {
   if (!res.ok) {
     throw new Error(`Attempt gönderilemedi: ${res.status}`);
   }
+}
+
+// ─── Basit Markdown Renderer (explanation için) ──────────
+// **bold**, `code`, # heading, listeler, ```codeblock```
+// XSS güvenli — sadece izinli HTML
+function MarkdownLite({ content }: { content: string }) {
+  const lines = content.split("\n");
+  const blocks: ReactNode[] = [];
+  let codeBlock: string[] | null = null;
+  let codeLang = "";
+
+  lines.forEach((line, idx) => {
+    // Code block start/end
+    if (line.trim().startsWith("```")) {
+      if (codeBlock === null) {
+        codeBlock = [];
+        codeLang = line.trim().slice(3);
+      } else {
+        blocks.push(
+          <pre key={`cb-${idx}`} className="my-3 p-3 rounded-lg bg-black/40 border border-white/10 overflow-x-auto">
+            <code className="text-xs font-mono text-emerald-300 leading-relaxed">
+              {codeBlock.join("\n")}
+            </code>
+          </pre>
+        );
+        codeBlock = null;
+        codeLang = "";
+      }
+      return;
+    }
+    if (codeBlock !== null) {
+      codeBlock.push(line);
+      return;
+    }
+
+    // Empty line
+    if (!line.trim()) {
+      blocks.push(<div key={`sp-${idx}`} className="h-2" />);
+      return;
+    }
+
+    // Heading
+    if (line.startsWith("### ")) {
+      blocks.push(<h4 key={idx} className="text-sm font-semibold text-white/90 mt-3 mb-1">{formatInline(line.slice(4))}</h4>);
+      return;
+    }
+    if (line.startsWith("## ")) {
+      blocks.push(<h3 key={idx} className="text-base font-semibold text-white mt-3 mb-1.5">{formatInline(line.slice(3))}</h3>);
+      return;
+    }
+    if (line.startsWith("# ")) {
+      blocks.push(<h2 key={idx} className="text-lg font-bold text-white mt-4 mb-2">{formatInline(line.slice(2))}</h2>);
+      return;
+    }
+
+    // Numbered list item
+    const numMatch = line.match(/^(\d+)\.\s+(.+)/);
+    if (numMatch) {
+      blocks.push(
+        <div key={idx} className="flex gap-2.5 my-1.5 leading-relaxed">
+          <span className="text-indigo-400 font-mono text-xs mt-1 flex-shrink-0">{numMatch[1]}.</span>
+          <span className="flex-1">{formatInline(numMatch[2])}</span>
+        </div>
+      );
+      return;
+    }
+
+    // Bullet list item
+    if (line.startsWith("- ") || line.startsWith("* ")) {
+      blocks.push(
+        <div key={idx} className="flex gap-2 my-1 leading-relaxed">
+          <span className="text-white/40 mt-1.5">•</span>
+          <span className="flex-1">{formatInline(line.slice(2))}</span>
+        </div>
+      );
+      return;
+    }
+
+    // Plain paragraph
+    blocks.push(<p key={idx} className="my-2 leading-relaxed">{formatInline(line)}</p>);
+  });
+
+  // Unclosed codeblock — flush
+  if (codeBlock !== null) {
+    blocks.push(
+      <pre key="cb-final" className="my-3 p-3 rounded-lg bg-black/40 border border-white/10 overflow-x-auto">
+        <code className="text-xs font-mono text-emerald-300">{(codeBlock as string[]).join("\n")}</code>
+      </pre>
+    );
+  }
+
+  return <div className="text-sm text-white/80">{blocks}</div>;
+}
+
+// Inline formatting: **bold**, `code`
+function formatInline(text: string): ReactNode[] {
+  const parts: ReactNode[] = [];
+  let remaining = text;
+  let key = 0;
+
+  while (remaining.length > 0) {
+    // Bold + code combined
+    const boldMatch = remaining.match(/\*\*([^*]+)\*\*/);
+    const codeMatch = remaining.match(/`([^`]+)`/);
+
+    const boldIdx = boldMatch?.index ?? Infinity;
+    const codeIdx = codeMatch?.index ?? Infinity;
+
+    if (boldIdx === Infinity && codeIdx === Infinity) {
+      parts.push(<span key={key++}>{remaining}</span>);
+      break;
+    }
+
+    // Take whichever comes first
+    if (boldIdx < codeIdx && boldMatch) {
+      if (boldIdx > 0) parts.push(<span key={key++}>{remaining.slice(0, boldIdx)}</span>);
+      parts.push(<strong key={key++} className="font-semibold text-white">{boldMatch[1]}</strong>);
+      remaining = remaining.slice(boldIdx + boldMatch[0].length);
+    } else if (codeMatch) {
+      if (codeIdx > 0) parts.push(<span key={key++}>{remaining.slice(0, codeIdx)}</span>);
+      parts.push(<code key={key++} className="px-1.5 py-0.5 rounded bg-black/40 text-emerald-300 text-[12px] font-mono">{codeMatch[1]}</code>);
+      remaining = remaining.slice(codeIdx + codeMatch[0].length);
+    }
+  }
+
+  return parts;
 }

@@ -19,6 +19,22 @@ export interface Question {
   starter_code?: string;
   function_name?: string;
   tags?: string[];
+  hints?: string[];
+  // 🆕 SEO & içerik
+  explanation?: string;
+  complexity?: string;
+  related_concepts?: string[];
+  related_question_ids?: number[];
+  tutorial_slug?: string;
+  meta_title?: string;
+  meta_description?: string;
+  // Related question objects (server-side prefetch ile doldurulur)
+  related_questions?: Array<{
+    id: number;
+    title: string;
+    category: string;
+    level: string;
+  }>;
   [key: string]: any;
 }
 

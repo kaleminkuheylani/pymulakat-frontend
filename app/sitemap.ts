@@ -1,46 +1,53 @@
 import type { MetadataRoute } from "next";
-import { categoriesAPI, questionsAPI } from "../api/v2/questions";
 
 const BASE = "https://www.pythonmulakat.com";
 
 interface Category { slug: string; question_count?: number; }
-interface Question { id: number; category: string; }
+interface Question { id: number; category: string; updated_at?: string; }
+interface Tutorial { slug: string; updated_at?: string; published_at?: string; }
 
-interface ListResponse<T> { items: T[]; total: number; }
+interface ListResponse<T> { items: T[]; data?: T[]; total: number; }
 interface CategoryEnvelope { data: Category[]; }
-interface QuestionsEnvelope { items?: Question[]; data?: Question[]; }
+
+async function fetchJsonSafe<T>(url: string): Promise<T | null> {
+  try {
+    const res = await fetch(url, { next: { revalidate: 3600 } });
+    if (!res.ok) return null;
+    return (await res.json()) as T;
+  } catch {
+    return null;
+  }
+}
+
+function getApiBase(): string {
+  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date().toISOString();
+  const apiBase = getApiBase();
 
   // 1. Statik sayfalar
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE}/interviews`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE}/guides`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
     { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
     { url: `${BASE}/profile`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
   ];
 
-  // 2. Kategoriler (DB'den dinamik çek, fallback olarak sabit liste)
+  // 2. Kategoriler (boş olmayanlar)
   let categorySlugs: string[] = [];
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    const res = await fetch(`${apiUrl}/api/v2/categories`, {
-      next: { revalidate: 3600 }, // 1 saat cache
-    });
-    if (res.ok) {
-      const data: CategoryEnvelope | Category[] = await res.json();
-      const list = Array.isArray(data) ? data : data.data || [];
-      // Sadece sorusu olan kategorileri al (boş olanları kaldır)
-      categorySlugs = list
-        .filter((c) => (c.question_count || 0) > 0)
-        .map((c) => c.slug)
-        .filter(Boolean);
-    }
-  } catch {
-    // Backend'e erişilemedi → fallback
+  const catData = await fetchJsonSafe<CategoryEnvelope>(`${apiBase}/api/v2/categories`);
+  if (catData?.data) {
+    categorySlugs = catData.data
+      .filter((c) => (c.question_count || 0) > 0)
+      .map((c) => c.slug)
+      .filter(Boolean);
+  } else {
+    // Fallback
     categorySlugs = ["python-basics", "strings", "list-dict", "pandas", "algorithms"];
   }
 
@@ -51,28 +58,45 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 3. Sorular (DB'den dinamik çek, max 500)
+  // 3. Sorular
   let questions: Question[] = [];
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
-    const res = await fetch(`${apiUrl}/api/v2/questions/all?limit=500`, {
-      next: { revalidate: 3600 },
-    });
-    if (res.ok) {
-      const data: ListResponse<Question> | QuestionsEnvelope = await res.json();
-      const items = "items" in data ? data.items : "data" in data ? (data.data as Question[]) : [];
-      questions = items || [];
-    }
-  } catch {
-    // Backend yoksa boş bırak
+  const qData = await fetchJsonSafe<ListResponse<Question>>(`${apiBase}/api/v2/questions/all?limit=500`);
+  if (qData) {
+    questions = qData.items || qData.data || [];
   }
 
   const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
     url: `${BASE}/interviews/${q.category}/${q.id}`,
-    lastModified: now,
+    lastModified: q.updated_at || now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  return [...staticPages, ...categoryPages, ...questionPages];
+  // 4. 🆕 Tutorials (DB'den) — yüksek SEO değeri
+  let tutorials: Tutorial[] = [];
+  // Backend'de tutorials endpoint yoksa fallback hard-coded liste
+  const tData = await fetchJsonSafe<{ data: Tutorial[] } | Tutorial[]>(`${apiBase}/api/v2/tutorials`);
+  if (tData) {
+    tutorials = Array.isArray(tData) ? tData : tData.data || [];
+  } else {
+    // Fallback: SEO_CONTENT.py'deki tutorial_slug'lardan üret
+    tutorials = [
+      { slug: "python-palindrome-cozum" },
+      { slug: "python-fizzbuzz-algoritma" },
+      { slug: "python-binary-search" },
+      { slug: "python-asal-sayi-algoritma" },
+      { slug: "python-obeb-oklid" },
+      { slug: "python-two-sum" },
+      { slug: "pandas-groupby-rehberi" },
+    ];
+  }
+
+  const tutorialPages: MetadataRoute.Sitemap = tutorials.map((t) => ({
+    url: `${BASE}/guides/${t.slug}`,
+    lastModified: t.updated_at || t.published_at || now,
+    changeFrequency: "monthly" as const,
+    priority: 0.85, // Yüksek öncelik — uzun form içerik
+  }));
+
+  return [...staticPages, ...categoryPages, ...questionPages, ...tutorialPages];
 }

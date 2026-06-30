@@ -18,6 +18,14 @@ type Tab = "question" | "workspace" | "tests";
 
 interface Props {
   initialParams?: { category: string; id: string };
+  seoQuestion?: {
+    explanation?: string;
+    complexity?: string;
+    related_concepts?: string[];
+    related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
+    tutorial_slug?: string;
+    hints?: string[];
+  };
 }
 
 // ─── Helpers ──────────────────────────────────────────────
@@ -99,7 +107,7 @@ const Row = memo(function Row({ label, value }: { label: string; value: any }) {
 });
 
 // ═══════════════════════════════════════════════════════════════
-export default function WorkspaceMobileClient({ initialParams }: Props) {
+export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Props) {
   // ✅ Guard 1
   if (!initialParams || !initialParams.category || !initialParams.id) {
     return (
@@ -376,6 +384,22 @@ export default function WorkspaceMobileClient({ initialParams }: Props) {
               {interview.description}
             </p>
 
+            {/* 🆕 SEO meta — complexity + related_concepts */}
+            {(seoQuestion?.complexity || seoQuestion?.related_concepts?.length) && (
+              <div className="flex flex-wrap gap-1.5">
+                {seoQuestion.complexity && (
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-mono bg-indigo-500/10 border border-indigo-500/25 text-indigo-300">
+                    {seoQuestion.complexity}
+                  </span>
+                )}
+                {seoQuestion.related_concepts?.map((c) => (
+                  <span key={c} className="inline-flex px-2 py-0.5 rounded text-[10px] bg-white/5 border border-white/10 text-white/60">
+                    {c}
+                  </span>
+                ))}
+              </div>
+            )}
+
             {testCases && (
               <div className="p-2 rounded-lg bg-white/5 border border-white/10 text-[11px]">
                 <span className="text-white/40">Fonksiyon: </span>
@@ -421,6 +445,44 @@ export default function WorkspaceMobileClient({ initialParams }: Props) {
                     <span className="text-amber-400 font-semibold mr-1">#{i + 1}</span>
                     {String(h).replace(/^💡\s*İpucu\s*\d+:\s*/i, "")}
                   </div>
+                ))}
+              </div>
+            )}
+
+            {/* 🆕 Explanation */}
+            {seoQuestion?.explanation && (
+              <div className="space-y-2 pt-2 border-t border-white/5">
+                <span className="text-xs text-emerald-400 font-semibold">📘 Yaklaşım</span>
+                <div className="p-2.5 rounded bg-emerald-500/5 border border-emerald-500/20 text-[11px] text-white/75 leading-relaxed whitespace-pre-wrap">
+                  {seoQuestion.explanation.slice(0, 500)}{seoQuestion.explanation.length > 500 ? "..." : ""}
+                </div>
+              </div>
+            )}
+
+            {/* 🆕 Tutorial link */}
+            {seoQuestion?.tutorial_slug && (
+              <a
+                href={`/guides/${seoQuestion.tutorial_slug}`}
+                className="flex items-center justify-between p-2.5 rounded bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/25"
+              >
+                <span className="text-xs text-white/85">📘 Detaylı Rehber</span>
+                <span className="text-indigo-300">→</span>
+              </a>
+            )}
+
+            {/* 🆕 Related questions */}
+            {seoQuestion?.related_questions && seoQuestion.related_questions.length > 0 && (
+              <div className="space-y-1.5 pt-2 border-t border-white/5">
+                <span className="text-xs text-cyan-400 font-semibold">🔗 Benzer Sorular</span>
+                {seoQuestion.related_questions.map((rq) => (
+                  <a
+                    key={rq.id}
+                    href={`/interviews/${rq.category}/${rq.id}`}
+                    className="flex items-center gap-2 p-2 rounded bg-white/[0.03] border border-white/10"
+                  >
+                    <span className="text-[10px] font-mono text-white/40">#{rq.id}</span>
+                    <span className="flex-1 text-[11px] text-white/75 truncate">{rq.title}</span>
+                  </a>
                 ))}
               </div>
             )}
