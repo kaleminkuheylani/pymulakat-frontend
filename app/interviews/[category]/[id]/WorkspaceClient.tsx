@@ -105,7 +105,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
     (async () => {
       try {
         setLoading(true);
-        const q = await questionsAPI.getById(questionId);
+        const q = await questionsAPI.getById(questionId, { includeStarter: true });
         if (cancelled) return;
 
         if (!q) {
