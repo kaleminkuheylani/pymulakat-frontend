@@ -179,6 +179,11 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
 
   // Run tests
   const handleRun = useCallback(async () => {
+    // ✅ Misafir kullanıcı login'e yönlendir
+    if (!user) {
+      router.push(`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`);
+      return;
+    }
     if (isRunning || pyStatus !== "ready" || !testCases) return;
     setIsRunning(true);
     setTestResults([]);
@@ -194,7 +199,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
     } finally {
       setIsRunning(false);
     }
-  }, [isRunning, pyStatus, testCases, code, runTests, submitAttempt]);
+  }, [user, isRunning, pyStatus, testCases, code, runTests, submitAttempt, router, category, id]);
 
   const revealNextHint = () => {
     if (revealedHints < hintsList.length) {

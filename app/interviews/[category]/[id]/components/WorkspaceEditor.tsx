@@ -50,7 +50,14 @@ export default function WorkspaceEditor({
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
       <div className="flex-1 relative">
-        <CodeEditor ref={editorRef} value={code} onChange={onCodeChange} height="100%" language="python" />
+        <CodeEditor
+          ref={editorRef}
+          value={code}
+          onChange={onCodeChange}
+          height="100%"
+          language="python"
+          readOnly={isGuest}
+        />
       </div>
 
       <div className="h-72 border-t border-white/5 bg-[#0a0e1a] flex flex-col flex-shrink-0">
