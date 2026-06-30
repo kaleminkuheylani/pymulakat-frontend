@@ -10,11 +10,10 @@ import { notifyAuthChange } from "../../hooks/useUser";
 import { getSupabaseBrowser } from "../../hooks/useSupabaseBrowser";
 
 // ═══════════════════════════════════════════════════════════════
-// ─── Inline authAPI — ayrı dosya gerekmez ───────────────────
+// ─── Inline authAPI — Supabase client ile login ──────────────
 // ═══════════════════════════════════════════════════════════════
 
 const API_BASE_URL =
-
   process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
 interface LoginResponse {
@@ -25,17 +24,76 @@ interface LoginResponse {
 }
 
 const inlineAuthAPI = {
+  /**
+   * Supabase client ile doğrudan login ol.
+   * Supabase Auth otomatik olarak 'sb-pymulakat-auth-token' key'ine session yazar.
+   */
   async login(payload: { email: string; password: string }): Promise<LoginResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}));
-      throw new Error(err.detail || err.error || "Giriş başarısız");
+    const supabase = getSupabaseBrowser();
+    if (!supabase) {
+      throw new Error("Supabase client bulunamadı");
     }
-    return res.json();
+
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: payload.email,
+      password: payload.password,
+    });
+
+    if (error) {
+      // Email doğrulanmamış hatası
+      if (error.message?.toLowerCase().includes("email not confirmed")) {
+        throw new Error("E-posta adresin doğrulanmamış");
+      }
+      throw new Error(error.message || "Giriş başarısız");
+    }
+
+    if (!data.session || !data.user) {
+      throw new Error("Oturum açılamadı");
+    }
+
+    // 🆕 Backend profile senkronizasyonu (user bilgisi için)
+    try {
+      await fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${data.session.access_token}`,
+        },
+      }).catch(() => {});
+    } catch {}
+
+    // Supabase session zaten sb-pymulakat-auth-token key'ine yazıldı
+    // Ek olarak plain key'ler de yazalım (geriye uyumlu)
+    if (typeof window !== "undefined") {
+      try {
+        const expiresAt = data.session.expires_at || Math.floor(Date.now() / 1000) + 3600;
+        const existingRaw = localStorage.getItem("sb-pymulakat-auth-token");
+        const existing = existingRaw ? JSON.parse(existingRaw) : {};
+        const supabaseSession = {
+          access_token: data.session.access_token,
+          refresh_token: data.session.refresh_token,
+          expires_at: expiresAt,
+          expires_in: 3600,
+          token_type: "bearer",
+          user: data.user,
+          ...existing,
+        };
+        localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(supabaseSession));
+        localStorage.setItem("token", data.session.access_token);
+        if (data.session.refresh_token) {
+          localStorage.setItem("refresh_token", data.session.refresh_token);
+        }
+      } catch {}
+    }
+
+    return {
+      access_token: data.session.access_token,
+      refresh_token: data.session.refresh_token,
+      expires_at: data.session.expires_at,
+      user: {
+        id: data.user.id,
+        email: data.user.email || "",
+        username: data.user.user_metadata?.username || data.user.email?.split("@")[0],
+      },
+    };
   },
 };
 
@@ -120,28 +178,8 @@ function LoginFormInner() {
       });
 
       if (loginData.access_token) {
-        localStorage.setItem("token", loginData.access_token);
-        if (loginData.refresh_token) {
-          localStorage.setItem("refresh_token", loginData.refresh_token);
-        }
-
-        // 🆕 Supabase storage format'ında da sakla — useUser bunu bekliyor
-        const expiresAt = loginData.expires_at
-          ? Math.floor(new Date(loginData.expires_at).getTime() / 1000)
-          : Math.floor(Date.now() / 1000) + 3600;
-        const supabaseSession = {
-          access_token: loginData.access_token,
-          refresh_token: loginData.refresh_token || "",
-          expires_at: expiresAt,
-          expires_in: 3600,
-          token_type: "bearer",
-          user: {
-            id: loginData.user?.id,
-            email: loginData.user?.email || formData.email,
-            user_metadata: { username: loginData.user?.username },
-          },
-        };
-        localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(supabaseSession));
+        // Supabase client kendi storage'ini zaten yönetti ("sb-pymulakat-auth-token")
+        // inlineAuthAPI.login() içinde plain key'ler de yazıldı (geriye uyumlu)
 
         notifyAuthChange();
         toast.success("Giriş başarılı! Hoş geldiniz 👋");
