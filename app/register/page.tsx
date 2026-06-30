@@ -1,14 +1,13 @@
 "use client";
 
 import { useState, FormEvent, Suspense } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
-import { Resend } from "resend";
 
 // ═══════════════════════════════════════════════════════════════
-// ─── Inline authAPI — Production-Ready ─────────────────────
+// ─── authAPI — backend ile konuşur ───────────────────────
 // ═══════════════════════════════════════════════════════════════
 
 const API_BASE_URL =
@@ -24,6 +23,11 @@ interface RegisterPayload {
 interface MessageResponse {
   ok: boolean;
   message?: string;
+}
+
+interface AuthResponse {
+  ok: boolean;
+  message?: string;
   verified?: boolean;
   access_token?: string;
   refresh_token?: string;
@@ -31,16 +35,14 @@ interface MessageResponse {
   user?: { id: string; email: string; username?: string; is_verified?: boolean };
 }
 
-/**
- * Backend error response'unu insan-okunabilir string'e çevir.
- * FastAPI detail hem string hem array olabilir.
- */
-function extractErrorMessage(data: any, fallback: string): string {
-  // 1. data.detail string ise direkt dön
-  if (typeof data.detail === "string") return data.detail;
+interface ResendPayload {
+  email: string;
+  password: string;
+}
 
-  // 2. data.detail array ise (FastAPI validation errors)
-  if (Array.isArray(data.detail)) {
+function extractErrorMessage(data: any, fallback: string): string {
+  if (typeof data?.detail === "string") return data.detail;
+  if (Array.isArray(data?.detail)) {
     return data.detail
       .map((err: any) => {
         const field = (err.loc || []).join(".");
@@ -48,11 +50,7 @@ function extractErrorMessage(data: any, fallback: string): string {
       })
       .join(" | ");
   }
-
-  // 3. data.message varsa
-  if (typeof data.message === "string") return data.message;
-
-  // 4. fallback
+  if (typeof data?.message === "string") return data.message;
   return fallback;
 }
 
@@ -70,39 +68,20 @@ const authAPI = {
     return data;
   },
 
-  async verifyEmail(payload: { email: string; code: number }): Promise<MessageResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/verify-email`, {
+  async resendConfirmation(payload: ResendPayload): Promise<MessageResponse> {
+    const res = await fetch(`${API_BASE_URL}/auth/resend-confirmation`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      throw new Error(extractErrorMessage(data, `Doğrulama başarısız: ${res.status}`));
+      throw new Error(extractErrorMessage(data, `Gönderilemedi: ${res.status}`));
     }
     return data;
   },
 
-  // ✅ FIXED: robust error parsing
-  async resendCode(email: string): Promise<MessageResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/resend-code`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-
-    const data = await res.json().catch(() => ({}));
-
-    if (!res.ok) {
-      // ✅ Object vs string error düzeltmesi
-      const message = extractErrorMessage(data, `Kod gönderilemedi: ${res.status}`);
-      throw new Error(message);
-    }
-
-    return data;
-  },
-
-  async login(payload: { email: string; password: string }): Promise<MessageResponse> {
+  async login(payload: { email: string; password: string }): Promise<AuthResponse> {
     const res = await fetch(`${API_BASE_URL}/auth/login`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -165,6 +144,7 @@ interface RegisterFormData {
   email: string;
   password: string;
 }
+
 interface LegalConsent {
   privacyPolicy: boolean;
 }
@@ -191,22 +171,21 @@ function ConsentRow({ checked, onChange, children }: { checked: boolean; onChang
   );
 }
 
-function extractCode(message?: string): string | null {
-  if (!message) return null;
-  const match = message.match(/\b\d{6}\b/);
-  return match ? match[0] : null;
-}
-
 function RegisterFormInner() {
-  const [formData, setFormData] = useState<RegisterFormData>({ username: "", email: "", password: "" });
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const [formData, setFormData] = useState<RegisterFormData>({
+    username: "",
+    email: searchParams.get("email") || "",
+    password: "",
+  });
   const [consent, setConsent] = useState<LegalConsent>({ privacyPolicy: false });
-  const [isVerifyMode, setIsVerifyMode] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [code, setCode] = useState<string>("");
-  const [displayedCode, setDisplayedCode] = useState<string>("");
 
-  const router = useRouter();
+  // Kayıt sonrası "email gönderildi" ekranı
+  const [emailSent, setEmailSent] = useState<{ email: string } | null>(null);
+  const [resendLoading, setResendLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -222,90 +201,36 @@ function RegisterFormInner() {
       privacy_policy_consent: true,
     });
 
-    if (response.access_token) {
-      localStorage.setItem("token", response.access_token);
-      localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(response));
-      if (response.refresh_token) {
-        localStorage.setItem("refresh_token", response.refresh_token);
-      }
-    }
-
-    const extractedCode = extractCode(response.message);
-    if (extractedCode) {
-      setDisplayedCode(extractedCode);
+    if (response.ok) {
+      setEmailSent({ email: formData.email });
       toast.success("Kayıt başarılı! 📧", {
-        description: `Doğrulama kodun: ${extractedCode}`,
-        duration: 30000,
+        description: "E-postana gelen doğrulama linkine tıkla.",
+        duration: 8000,
       });
-    } else {
-      toast.success("Kayıt başarılı! E-postanı kontrol et");
     }
-
-    setIsVerifyMode(true);
-    setCode("");
-  };
-
-  const handleVerify = async () => {
-    const codeNumber = parseInt(code, 10);
-    if (isNaN(codeNumber) || code.length !== 6) {
-      throw new Error("6 haneli geçerli bir kod girin.");
-    }
-
-    const response = await authAPI.verifyEmail({
-      email: formData.email,
-      code: codeNumber,
-    });
-    if(response.ok){
-      toast.success("E-posta doğrulandı! 🎉");
-      router.push("/login");
-    }
-
-
-    if (typeof window !== "undefined") {
-      window.dispatchEvent(new Event("auth-state-changed"));
-    }
-    return;
-    
   };
 
   const handleResend = async () => {
+    if (!emailSent) return;
+    setResendLoading(true);
     try {
-      setIsLoading(true);
-      const response = await authAPI.resendCode(formData.email);
-
-      console.log("Resend response:", response);
-
-      const newCode = extractCode(response.message);
-
-      if (newCode) {
-        setDisplayedCode(newCode);
-        setCode("");
-        toast.success("Yeni kod gönderildi 📧", {
-          description: `Kod basarıyla gonderildi`,
-          duration: 30000,
-        });
-      } else {
-        toast.info("Yeni kod gönderildi", {
-          description: "E-postanı kontrol et",
-        });
-      }
-    } catch (err: any) {
-      console.error("Resend error:", err);
-      // ✅ FIX: err.message String olabilir, ama err bazı durumlarda object olabilir
-      const errMsg = typeof err?.message === "string"
-        ? err.message
-        : JSON.stringify(err?.message || err || "Bilinmeyen hata");
-      toast.error("Kod gönderilemedi", {
-        description: errMsg,
+      await authAPI.resendConfirmation({
+        email: emailSent.email,
+        password: formData.password,
       });
+      toast.success("Doğrulama linki tekrar gönderildi", {
+        description: "E-postanı kontrol et (spam klasörünü de).",
+      });
+    } catch (err: any) {
+      toast.error("Gönderilemedi", { description: err?.message });
     } finally {
-      setIsLoading(false);
+      setResendLoading(false);
     }
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    if (!isVerifyMode && !allConsentsGiven) {
+    if (!allConsentsGiven) {
       setError("Devam etmek için tüm yasal onayları vermeniz gerekmektedir.");
       return;
     }
@@ -314,18 +239,13 @@ function RegisterFormInner() {
     setError(null);
 
     try {
-      if (isVerifyMode) {
-        await handleVerify();
-      } else {
-        await handleRegister();
-      }
+      await handleRegister();
     } catch (err: any) {
-      // ✅ FIX: Robust error message extraction
       const errMsg = typeof err?.message === "string"
         ? err.message
         : JSON.stringify(err?.message || err || "İşlem başarısız");
       setError(errMsg);
-      toast.error("İşlem başarısız", { description: errMsg });
+      toast.error("Kayıt başarısız", { description: errMsg });
     } finally {
       setIsLoading(false);
     }
@@ -333,101 +253,168 @@ function RegisterFormInner() {
 
   const inputClass = "w-full rounded-xl p-3.5 bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all";
 
+  // ─── Email gönderildi ekranı ──────────────────────────────
+  if (emailSent) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-12"
+      >
+        <div className="relative w-full max-w-md border border-white/10 bg-[#0a0e1a]/90 backdrop-blur-xl rounded-3xl p-8 md:p-10 shadow-2xl text-center">
+          <motion.div
+            initial={{ scale: 0 }}
+            animate={{ scale: 1 }}
+            transition={{ type: "spring", duration: 0.5 }}
+            className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-amber-400 mb-6"
+          >
+            <span className="text-4xl">📬</span>
+          </motion.div>
+
+          <h2 className="text-2xl font-bold text-white mb-3">
+            E-postanı Kontrol Et
+          </h2>
+          <p className="text-white/70 text-sm mb-6">
+            <strong className="text-amber-400">{emailSent.email}</strong>{" "}
+            adresine bir doğrulama linki gönderdik. Linke tıklayarak hesabını aktive et.
+          </p>
+
+          <div className="bg-white/5 border border-white/10 rounded-xl p-4 text-xs text-white/60 text-left space-y-2 mb-6">
+            <p>💡 <strong>İpucu:</strong> Link 1 saat geçerlidir.</p>
+            <p>📁 Spam klasörünü kontrol etmeyi unutma.</p>
+            <p>🔒 Sadece linke tıkla, başka bir şey yapma.</p>
+          </div>
+
+          <button
+            onClick={handleResend}
+            disabled={resendLoading}
+            className="w-full py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-colors disabled:opacity-50"
+          >
+            {resendLoading ? "Gönderiliyor..." : "🔄 Linki Tekrar Gönder"}
+          </button>
+
+          <Link
+            href="/login"
+            className="mt-4 inline-block text-amber-400 hover:text-amber-300 text-sm font-medium transition-colors"
+          >
+            Giriş sayfasına dön →
+          </Link>
+        </div>
+      </motion.div>
+    );
+  }
+
+  // ─── Register Form ────────────────────────────────────────
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }} className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-12">
-      <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 0.5 }} className="relative w-full max-w-md">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+      className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-12"
+    >
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="relative w-full max-w-md"
+      >
         <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-amber-500/20 to-indigo-500/20 rounded-3xl blur-xl opacity-75" />
 
         <div className="relative border border-white/10 bg-[#0a0e1a]/90 backdrop-blur-xl rounded-3xl p-8 md:p-10 shadow-2xl">
           <div className="text-center mb-8">
-            <motion.h1 initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }} className="text-3xl font-bold text-white mb-2">
-              {isVerifyMode ? "E-posta Doğrulama" : "Hesap Oluştur"}
+            <motion.h1
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.3 }}
+              className="text-3xl font-bold text-white mb-2"
+            >
+              Hesap Oluştur
             </motion.h1>
-            <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="text-white/50 text-sm">
-              {isVerifyMode
-                ? `${formData.email} adresine gönderilen 6 haneli kodu girin.`
-                : "Mülakat platformumuza hoş geldiniz. Bilgilerinizi girerek başlayın."}
+            <motion.p
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="text-white/50 text-sm"
+            >
+              Mülakat platformumuza hoş geldin. Kayıt ol, e-postana gelen linke tıkla, hemen başla.
             </motion.p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            {!isVerifyMode && (
-              <>
-                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.5 }}>
-                  <input type="text" name="username" placeholder="Kullanıcı Adı" value={formData.username} onChange={handleChange} className={inputClass} required />
-                </motion.div>
-                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.6 }}>
-                  <input type="email" name="email" placeholder="E-posta Adresi" value={formData.email} onChange={handleChange} className={inputClass} required />
-                </motion.div>
-                <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.7 }}>
-                  <input type="password" name="password" placeholder="Şifre" value={formData.password} onChange={handleChange} className={inputClass} required minLength={6} />
-                </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.5 }}
+            >
+              <input
+                type="text"
+                name="username"
+                placeholder="Kullanıcı Adı"
+                value={formData.username}
+                onChange={handleChange}
+                className={inputClass}
+                required
+                minLength={2}
+                maxLength={32}
+                autoComplete="username"
+              />
+            </motion.div>
 
-                <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8 }} className="w-full flex flex-col space-y-2.5 pt-2">
-                  <ConsentRow checked={consent.privacyPolicy} onChange={(v) => setConsent({ privacyPolicy: v })}>
-                    <Link href="/terms" target="_blank" className="text-amber-400 hover:text-amber-300 underline decoration-dotted transition-colors">
-                      Gizlilik Politikası & Kullanım Şartları
-                    </Link>{" "}
-                    &apos;nı okudum ve kabul ediyorum.
-                  </ConsentRow>
-                </motion.div>
-              </>
-            )}
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.6 }}
+            >
+              <input
+                type="email"
+                name="email"
+                placeholder="E-posta Adresi"
+                value={formData.email}
+                onChange={handleChange}
+                className={inputClass}
+                required
+                autoComplete="email"
+              />
+            </motion.div>
 
-            {isVerifyMode && (
-              <>
-                <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.5 }} className="w-full flex flex-col items-center text-center">
-                  <input
-                    type="text"
-                    placeholder="000000"
-                    maxLength={6}
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                    inputMode="numeric"
-                    pattern="[0-9]*"
-                    className={`${inputClass} text-center tracking-[0.5em] text-lg font-bold text-amber-400`}
-                    required
-                  />
-                </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.7 }}
+            >
+              <input
+                type="password"
+                name="password"
+                placeholder="Şifre (en az 6 karakter)"
+                value={formData.password}
+                onChange={handleChange}
+                className={inputClass}
+                required
+                minLength={6}
+                autoComplete="new-password"
+              />
+            </motion.div>
 
-                {displayedCode && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center"
-                  >
-                    <div className="text-[10px] uppercase tracking-wider text-amber-400/70 mb-1">
-                      Doğrulama Kodun
-                    </div>
-                    <div className="text-2xl font-mono font-bold text-amber-400 tracking-[0.3em]">
-                      {displayedCode}
-                    </div>
-                    <button
-                      onClick={() => {
-                        setCode(displayedCode);
-                        toast.success("Kod input'a kopyalandı");
-                      }}
-                      className="mt-2 text-xs text-amber-400/80 hover:text-amber-300 transition-colors"
-                      type="button"
-                    >
-                      📋 Input'a Kopyala
-                    </button>
-                  </motion.div>
-                )}
-
-                <button
-                  type="button"
-                  onClick={handleResend}
-                  disabled={isLoading}
-                  className="text-xs text-amber-400 hover:text-amber-300 transition-colors w-full text-center disabled:opacity-50"
-                >
-                  {isLoading ? "Gönderiliyor..." : "🔄 Kodu tekrar gönder"}
-                </button>
-              </>
-            )}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.8 }}
+              className="w-full flex flex-col space-y-2.5 pt-2"
+            >
+              <ConsentRow checked={consent.privacyPolicy} onChange={(v) => setConsent({ privacyPolicy: v })}>
+                <Link href="/terms" target="_blank" className="text-amber-400 hover:text-amber-300 underline decoration-dotted transition-colors">
+                  Gizlilik Politikası & Kullanım Şartları
+                </Link>{" "}
+                &apos;nı okudum ve kabul ediyorum.
+              </ConsentRow>
+            </motion.div>
 
             {error && (
-              <motion.span initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} className="text-xs text-red-400 font-medium text-center block max-w-full break-words">
+              <motion.span
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="text-xs text-red-400 font-medium text-center block max-w-full break-words"
+              >
                 {error}
               </motion.span>
             )}
@@ -435,13 +422,16 @@ function RegisterFormInner() {
             <motion.button
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: isVerifyMode ? 0.6 : 0.9 }}
+              transition={{ delay: 0.9 }}
+              whileHover={{ scale: isLoading ? 1 : 1.02 }}
+              whileTap={{ scale: isLoading ? 1 : 0.98 }}
               type="submit"
-              disabled={isLoading || (!isVerifyMode && !allConsentsGiven)}
-              className={`w-full rounded-xl p-4 font-bold text-lg transition-all relative overflow-hidden ${isLoading || (!isVerifyMode && !allConsentsGiven)
-                ? "bg-amber-800/50 cursor-not-allowed text-white/30"
-                : "bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] hover:shadow-lg hover:shadow-amber-400/40"
-                }`}
+              disabled={isLoading || !allConsentsGiven}
+              className={`w-full rounded-xl p-4 font-bold text-lg transition-all ${
+                isLoading || !allConsentsGiven
+                  ? "bg-amber-800/50 cursor-not-allowed text-white/30"
+                  : "bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] hover:shadow-lg hover:shadow-amber-400/40"
+              }`}
             >
               {isLoading ? (
                 <span className="flex items-center justify-center gap-2">
@@ -449,27 +439,24 @@ function RegisterFormInner() {
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
                     <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                   </svg>
-                  {isVerifyMode ? "Doğrulanıyor..." : "Kayıt Olunuyor..."}
+                  Kayıt Olunuyor...
                 </span>
               ) : (
-                <span>{isVerifyMode ? "Kodu Doğrula & Giriş Yap" : "Kayıt Ol"}</span>
+                <span>📧 Kayıt Ol & Doğrulama Linki Gönder</span>
               )}
             </motion.button>
           </form>
 
-          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: isVerifyMode ? 0.7 : 1.0 }} className="text-center mt-6 text-white/50 text-sm">
-            {isVerifyMode ? (
-              <span className="cursor-pointer hover:text-white/80 transition-colors underline decoration-dotted" onClick={() => { setIsVerifyMode(false); setError(null); setCode(""); setDisplayedCode(""); }}>
-                E-posta adresini değiştir
-              </span>
-            ) : (
-              <>
-                Zaten hesabın var mı?{" "}
-                <Link href="/login" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors">
-                  Giriş Yap
-                </Link>
-              </>
-            )}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 1.0 }}
+            className="text-center mt-6 text-white/50 text-sm"
+          >
+            Zaten hesabın var mı?{" "}
+            <Link href="/login" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors">
+              Giriş Yap
+            </Link>
           </motion.p>
         </div>
       </motion.div>
@@ -482,7 +469,15 @@ export default function RegisterPage() {
     <div className="relative bg-[#050816] min-h-screen w-full overflow-x-hidden">
       <GridBackground />
       <Navbar />
-      <RegisterFormInner />
+      <Suspense
+        fallback={
+          <div className="flex flex-col items-center justify-center min-h-[calc(100vh-80px)]">
+            <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin"></div>
+          </div>
+        }
+      >
+        <RegisterFormInner />
+      </Suspense>
     </div>
   );
 }

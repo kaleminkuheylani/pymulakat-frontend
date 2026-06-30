@@ -128,24 +128,22 @@ function LoginFormInner() {
         router.push(returnUrl);
       }
     } catch (error: any) {
-      const msg = (error?.message || "").toLowerCase();
       const fullMsg = error?.message || "Giriş başarısız.";
+      const code = error?.code || error?.status;
 
-      // 🔍 Supabase / backend'den gelen "Email not confirmed" hatasını yakala
+      // 🔍 Backend 403 = email doğrulanmamış → kullanıcıyı register sayfasına yönlendir
+      //    (resend-confirmation için oraya gitmesi yeterli)
       if (
-        msg.includes("email not confirmed") ||
-        msg.includes("email_not_confirmed") ||
-        msg.includes("not verified") ||
-        msg.includes("verify") ||
-        msg.includes("doğrulan")
+        fullMsg.toLowerCase().includes("doğrulanmamış") ||
+        fullMsg.toLowerCase().includes("not confirmed") ||
+        code === 403
       ) {
         toast.error("E-posta adresin doğrulanmamış", {
-          description: "Doğrulama kodunu yeniden gönderiyoruz...",
-          duration: 5000,
+          description: "E-postandaki doğrulama linkine tıkla. Yeni link istersen aşağıdaki sayfadan talep edebilirsin.",
+          duration: 6000,
         });
-        // Verify sayfasına yönlendir
-        const redirect = encodeURIComponent(returnUrl);
-        router.push(`/register?verify=${encodeURIComponent(formData.email)}&returnUrl=${redirect}`);
+        // Verify ekranına git, e-posta dolu gelsin
+        router.push(`/register?email=${encodeURIComponent(formData.email)}`);
         return;
       }
 
