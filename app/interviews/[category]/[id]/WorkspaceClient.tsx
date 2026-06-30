@@ -524,35 +524,59 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
               </Link>
             )}
 
-            {/* 🆕 Related questions */}
-            {seoQuestion?.related_questions && seoQuestion.related_questions.length > 0 && (
-              <div className="space-y-3">
-                <h3 className="text-sm font-semibold text-white/80 flex items-center gap-2">
-                  <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-                  </svg>
-                  Benzer Sorular
-                </h3>
-                <div className="space-y-2">
-                  {seoQuestion.related_questions.map((rq) => (
-                    <Link
-                      key={rq.id}
-                      href={`/interviews/${rq.category}/${rq.id}`}
-                      className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
-                    >
-                      <span className="text-xs font-mono text-white/40 group-hover:text-cyan-400">#{rq.id}</span>
-                      <span className="flex-1 text-sm text-white/75 group-hover:text-white truncate">{rq.title}</span>
-                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 uppercase tracking-wide">
-                        {rq.level}
-                      </span>
-                      <svg className="w-3.5 h-3.5 text-white/30 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                      </svg>
-                    </Link>
-                  ))}
+            {/* 🆕 Related questions — DB'den varsa, yoksa QuestionMeta fallback */}
+            {(() => {
+              // DB'den gelen related_questions (server-side prefetch)
+              const dbRelated = seoQuestion?.related_questions && seoQuestion.related_questions.length > 0
+                ? seoQuestion.related_questions
+                : null;
+
+              // QuestionMeta'dan fallback (lib/questionMeta.ts)
+              const metaRelated = questionMeta.related_questions && questionMeta.related_questions.length > 0
+                ? questionMeta.related_questions.map((rid) => {
+                    const m = getQuestionMeta(rid);
+                    return {
+                      id: rid,
+                      title: m.difficulty_note || m.topic || `Soru ${rid}`,
+                      category: m.topic || "python-basics",
+                      level: "beginner",
+                    };
+                  })
+                : [];
+
+              const relatedToShow = dbRelated || metaRelated;
+
+              if (relatedToShow.length === 0) return null;
+
+              return (
+                <div className="space-y-3">
+                  <h3 className="text-sm font-semibold text-white/80 flex items-center gap-2">
+                    <svg className="w-4 h-4 text-cyan-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+                    </svg>
+                    Benzer Sorular
+                  </h3>
+                  <div className="space-y-2">
+                    {relatedToShow.map((rq) => (
+                      <Link
+                        key={rq.id}
+                        href={`/interviews/${rq.category}/${rq.id}`}
+                        className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
+                      >
+                        <span className="text-xs font-mono text-white/40 group-hover:text-cyan-400">#{rq.id}</span>
+                        <span className="flex-1 text-sm text-white/75 group-hover:text-white truncate">{rq.title}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 uppercase tracking-wide">
+                          {rq.level}
+                        </span>
+                        <svg className="w-3.5 h-3.5 text-white/30 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </Link>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            )}
+              );
+            })()}
           </div>
         </aside>
 
