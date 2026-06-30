@@ -93,10 +93,14 @@ export interface AttemptResponse {
 }
 
 async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
+  // 🆕 Token'i global olarak ekle (varsa) — her API call'unda auth header olur
+  const token = typeof window !== "undefined" ? extractToken() : null;
+
   const res = await fetch(url, {
     ...options,
     headers: {
       "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
       ...(options?.headers || {}),
     },
   });
@@ -112,47 +116,27 @@ async function fetchJson<T>(url: string, options?: RequestInit): Promise<T> {
 function authHeaders(): Record<string, string> {
   if (typeof window === "undefined") return {};
 
-  // ✅ useUser.ts ile AYNI mantık — sabit key'i önce dene
-  let token: string | null = null;
+  const token = extractToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
 
+function extractToken(): string | null {
+  if (typeof window === "undefined") return null;
+
+  // 1) Supabase storage key
   try {
     const supabaseAuth = JSON.parse(
       localStorage.getItem("sb-pymulakat-auth-token") ||
         sessionStorage.getItem("sb-pymulakat-auth-token") ||
         "{}"
     );
-    token = supabaseAuth?.access_token;
-  } catch {}
-
-  if (!token) {
-    token = localStorage.getItem("token");
+    if (supabaseAuth?.access_token) return supabaseAuth.access_token;
+  } catch {
+    // ignore
   }
 
-  if (token) {
-    return {
-      Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
-    };
-  }
-
-  // Fallback: tüm -auth-token ile biten key'leri tara
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (key && key.endsWith("-auth-token")) {
-      try {
-        const raw = localStorage.getItem(key);
-        if (!raw) continue;
-        const parsed = JSON.parse(raw);
-        token = parsed?.access_token || parsed?.currentSession?.access_token;
-        if (token) {
-          return { Authorization: `Bearer ${token}`, "Content-Type": "application/json" };
-        }
-      } catch {}
-    }
-  }
-
-  console.warn("⚠️ [questionsAPI] Token bulunamadı");
-  return { "Content-Type": "application/json" };
+  // 2) Plain 'token' key (fallback)
+  return localStorage.getItem("token");
 }
 
 export const questionsAPI = {
