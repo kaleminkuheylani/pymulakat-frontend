@@ -6,7 +6,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Question, QuestionTests } from "../../../../../api/v2/questions";
 import { getQuestionMeta } from "../../../../../lib/questionMeta";
 import MarkdownLite from "./MarkdownLite";
-import SolvedBadge from "./SolvedBadge";
 
 interface SidebarProps {
   interview: Question;
@@ -77,11 +76,7 @@ export default function WorkspaceSidebar({
         <div className="p-6 space-y-5">
           {/* Title + Meta */}
           <div>
-            <div className="flex items-start justify-between gap-3 mb-2">
-              <h1 className="text-2xl font-bold text-white">{interview.title}</h1>
-              {/* 🆕 Solved Badge (client-side, token gerekli) */}
-              <SolvedBadge questionId={interview.id} />
-            </div>
+            <h1 className="text-2xl font-bold text-white mb-2">{interview.title}</h1>
             <div className="flex items-center gap-2 text-xs text-white/40 flex-wrap">
               {questionMeta.topic && questionMeta.topic !== "Genel" && (
                 <span className="px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/25 text-indigo-300">

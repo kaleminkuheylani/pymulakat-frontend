@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
 import { getQuestionMeta } from "../lib/questionMeta";
+import { useUser } from "../hooks/useUser";
 
 interface QuestionItem {
   id: number | string;
@@ -65,6 +66,40 @@ function getLevelStyle(level?: string) {
 export default function CategoryTable({ questions, currentCategory }: Props) {
   const [difficultyFilter, setDifficultyFilter] = useState<string>("all");
   const [searchQuery, setSearchQuery] = useState<string>("");
+  const { user, loading: userLoading } = useUser();
+  const [solvedIds, setSolvedIds] = useState<Set<number>>(new Set());
+  const [attemptedIds, setAttemptedIds] = useState<Set<number>>(new Set());
+
+  // Solved/attempted fetch (login user icin)
+  useEffect(() => {
+    if (userLoading || !user) {
+      setSolvedIds(new Set());
+      setAttemptedIds(new Set());
+      return;
+    }
+
+    let cancelled = false;
+    (async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v2/attempts/solved-batch`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (cancelled) return;
+        setSolvedIds(new Set(data.solved || []));
+        setAttemptedIds(new Set(data.attempted || []));
+      } catch {
+        // sessizce ignore
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [user, userLoading]);
 
   const filteredQuestions = useMemo(() => {
     if (!Array.isArray(questions)) return [];
@@ -222,13 +257,39 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
               {filteredQuestions.map((q) => {
                 const lvlStyle = getLevelStyle(q.level);
                 const lvlNorm = normalizeLevel(q.level);
+                const qidNum = typeof q.id === "number" ? q.id : parseInt(String(q.id), 10);
+                const isSolved = !isNaN(qidNum) && solvedIds.has(qidNum);
+                const isAttempted = !isNaN(qidNum) && attemptedIds.has(qidNum);
                 return (
                   <tr
                     key={q.id}
                     className="border-b border-white/[0.03] hover:bg-white/[0.03] transition-colors group"
                   >
                     <td className="px-4 py-3 align-top">
-                      <span className="text-xs font-mono text-white/30">{q.id}</span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-xs font-mono text-white/30">{q.id}</span>
+                        {/* 🆕 Solved/Attempted badge */}
+                        {isSolved ? (
+                          <span
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-green-500/20 border border-green-500/40"
+                            title="Çözüldü"
+                          >
+                            <svg className="w-3 h-3 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                              <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                            </svg>
+                          </span>
+                        ) : isAttempted ? (
+                          <span
+                            className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-amber-500/20 border border-amber-500/40"
+                            title="Denendi (yarım)"
+                          >
+                            <svg className="w-3 h-3 text-amber-400" fill="currentColor" viewBox="0 0 20 20">
+                              <circle cx="10" cy="10" r="6" fill="none" stroke="currentColor" strokeWidth="2" />
+                              <path stroke="currentColor" strokeWidth="2" strokeLinecap="round" d="M10 7v3" />
+                            </svg>
+                          </span>
+                        ) : null}
+                      </div>
                     </td>
 
                     <td className="px-4 py-3">
