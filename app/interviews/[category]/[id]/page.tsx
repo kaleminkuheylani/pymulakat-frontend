@@ -1,140 +1,184 @@
 // app/interviews/[category]/[id]/page.tsx
-// Mobile-aware workspace + error boundary
+// SEO-optimized: server-side metadata, HowTo schema, breadcrumb, related questions
 
-"use client";
+import { headers } from "next/headers";
+import type { Metadata } from "next";
+import Link from "next/link";
+import WorkspaceClient from "./WorkspaceClient";
+import WorkspaceMobileClient from "./WorkspaceMobileClient";
 
-import { useParams } from "next/navigation";
-import { useEffect, useState, Component, ReactNode } from "react";
+export const dynamic = "force-dynamic";
 
-// ─── Inline Error Boundary ─────────────────────────────────
-class WorkspaceErrorBoundary extends Component<
-  { children: ReactNode; name: string },
-  { hasError: boolean; error: Error | null }
-> {
-  constructor(props: { children: ReactNode; name: string }) {
-    super(props);
-    this.state = { hasError: false, error: null };
+interface PageProps {
+  params: Promise<{ category: string; id: string }>;
+  searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+interface SEOQuestion {
+  id: number;
+  title: string;
+  description: string;
+  explanation?: string;
+  complexity?: string;
+  level: string;
+  category: string;
+  related_concepts?: string[];
+  related_question_ids?: number[];
+  tutorial_slug?: string;
+}
+
+// ─── Server-side data fetch (for SEO) ────────────────────
+async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuestion | null> {
+  try {
+    const h = await headers();
+    const host = h.get("host") || "localhost:3000";
+    const protocol = host.includes("localhost") ? "http" : "https";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
+    const res = await fetch(`${apiUrl}/api/v2/questions/${id}`, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.data || data;
+  } catch {
+    return null;
+  }
+}
+
+// ─── generateMetadata (SEO title/description/OG) ─────────
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+  const { category, id } = await params;
+  const q = await fetchQuestionSEO(category, id);
+  if (!q) {
+    return { title: "Soru bulunamadı | PythonMulakat" };
   }
 
-  static getDerivedStateFromError(error: Error) {
-    return { hasError: true, error };
-  }
+  const title = `${q.title} — Python Sorusu #${q.id} | PythonMulakat`;
+  const description = q.explanation
+    ? q.explanation.replace(/[*#]/g, "").slice(0, 160)
+    : `${q.title} sorusu, ${q.level} seviye Python mülakat sorusu. Türkçe açıklama, kod çalıştırma ve test case'leri ile pratik yapın.`;
 
-  componentDidCatch(error: Error, info: any) {
-    console.error(`[${this.props.name}] caught error:`, error, info);
-  }
+  return {
+    title,
+    description,
+    keywords: [q.title, "python mülakat", `python ${q.category}`, ...(q.related_concepts || [])].join(", "),
+    alternates: {
+      canonical: `https://www.pythonmulakat.com/interviews/${q.category}/${q.id}`,
+    },
+    openGraph: {
+      title,
+      description,
+      url: `https://www.pythonmulakat.com/interviews/${q.category}/${q.id}`,
+      siteName: "PythonMulakat",
+      locale: "tr_TR",
+      type: "article",
+      images: [{ url: "https://www.pythonmulakat.com/og-default.png", width: 1200, height: 630 }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://www.pythonmulakat.com/og-default.png"],
+    },
+  };
+}
 
-  render() {
-    if (this.state.hasError) {
-      return (
-        <div className="min-h-screen bg-[#050816] flex items-center justify-center p-6">
-          <div className="max-w-xl w-full">
-            <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center text-2xl">💥</div>
-                <div>
-                  <h2 className="text-lg font-bold text-red-400">
-                    {this.props.name} patladı
-                  </h2>
-                  <p className="text-xs text-white/40">Render sırasında beklenmeyen hata</p>
-                </div>
-              </div>
-              <pre className="text-xs text-red-300 bg-black/30 p-3 rounded overflow-auto max-h-96 font-mono whitespace-pre-wrap">
-                {this.state.error?.message || "Bilinmeyen hata"}
-                {"\n\n"}
-                {this.state.error?.stack?.split("\n").slice(0, 8).join("\n")}
-              </pre>
-              <button
-                onClick={() => this.setState({ hasError: false, error: null })}
-                className="mt-4 w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-[#050816] font-bold text-sm transition-colors"
-              >
-                Tekrar Dene
-              </button>
-            </div>
-          </div>
-        </div>
-      );
+// ─── HowTo schema builder ───────────────────────────────
+function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
+  // Explanation'dan step'leri çıkar (markdown bold/numaralı listelerden)
+  const steps: { name: string; text: string }[] = [];
+
+  if (q.explanation) {
+    // 1., 2., 3. ile başlayan satırları step olarak al
+    const matches = q.explanation.matchAll(/(\d+)\.\s+\*\*(.+?)\*\*[—\-:]\s*(.+?)(?=\n|$)/g);
+    for (const m of matches) {
+      steps.push({ name: m[2].trim(), text: m[3].trim() });
     }
-    return this.props.children;
+    // Eğer step yoksa explanation'ın ilk cümlesini kullan
+    if (steps.length === 0) {
+      const firstSentence = q.explanation.split(/[.!?]/)[0];
+      steps.push({ name: q.title, text: firstSentence });
+    }
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    name: `Python ${q.title} Çözümü`,
+    description: q.explanation?.slice(0, 200) || q.description,
+    totalTime: `PT${q.complexity?.includes("log") ? "10M" : "5M"}`,
+    estimatedCost: { "@type": "MonetaryAmount", currency: "TRY", value: "0" },
+    tool: [{ "@type": "HowToTool", name: "Python 3" }],
+    step: steps.map((s, i) => ({
+      "@type": "HowToStep",
+      position: i + 1,
+      name: s.name,
+      text: s.text,
+    })),
+    author: { "@type": "Organization", name: "PythonMulakat", url: baseUrl },
+  };
+}
+
+// ─── Breadcrumb schema ─────────────────────────────────
+function buildBreadcrumbSchema(category: string, id: string, title: string, baseUrl: string) {
+  return {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: baseUrl },
+      { "@type": "ListItem", position: 2, name: "Sorular", item: `${baseUrl}/interviews` },
+      { "@type": "ListItem", position: 3, name: category, item: `${baseUrl}/interviews/${category}` },
+      { "@type": "ListItem", position: 4, name: title, item: `${baseUrl}/interviews/${category}/${id}` },
+    ],
+  };
+}
+
+async function isMobileDevice(): Promise<boolean> {
+  try {
+    const h = await headers();
+    const ua = h.get("user-agent") || "";
+    return /android|webos|iphone|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua.toLowerCase())
+      || /ipad|android(?!.*mobile)/i.test(ua.toLowerCase());
+  } catch {
+    return false;
   }
 }
 
-// ─── Lazy loader wrapper ───────────────────────────────────
-function ClientLoader({ name, loader, props }: { name: string; loader: () => Promise<any>; props?: any }) {
-  const [Component, setComponent] = useState<any>(null);
-  const [err, setErr] = useState<Error | null>(null);
+// ─── Page ───────────────────────────────────────────────
+export default async function Page({ params }: PageProps) {
+  const [resolvedParams, mobile, seoQ] = await Promise.all([
+    params,
+    isMobileDevice(),
+    params.then((p) => fetchQuestionSEO(p.category, p.id)),
+  ]);
 
-  useEffect(() => {
-    loader()
-      .then((m) => setComponent(() => m.default))
-      .catch((e) => {
-        console.error(`[${name}] load error:`, e);
-        setErr(e);
-      });
-  }, [name]);
+  const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
 
-  if (err) {
-    return (
-      <div className="min-h-screen bg-[#050816] flex items-center justify-center p-6 text-red-400">
-        <div className="max-w-xl">
-          <p className="font-bold mb-2">Client yüklenemedi: {name}</p>
-          <pre className="text-xs">{err.message}</pre>
-        </div>
-      </div>
-    );
-  }
-
-  if (!Component) {
-    return (
-      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-          <p className="text-white/40 text-xs">{name} yükleniyor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  return <Component {...(props || {})} />;
-}
-
-// ─── Page ──────────────────────────────────────────────────
-export default function Page() {
-  const params = useParams<{ category: string; id: string }>();
-  const [isMobile, setIsMobile] = useState<boolean | null>(null);
-
-  useEffect(() => {
-    const ua = navigator.userAgent.toLowerCase();
-    const mobile = /android|webos|iphone|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua)
-      || /ipad|android(?!.*mobile)/i.test(ua);
-    setIsMobile(mobile);
-  }, []);
-
-  if (isMobile === null) {
-    return (
-      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
-        <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-      </div>
-    );
-  }
-
-  const initialParams = { category: params.category, id: params.id };
+  const baseUrl = "https://www.pythonmulakat.com";
+  const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
+  const breadcrumbSchema = seoQ
+    ? buildBreadcrumbSchema(resolvedParams.category, resolvedParams.id, seoQ.title, baseUrl)
+    : null;
 
   return (
-    <WorkspaceErrorBoundary name={isMobile ? "Mobile Workspace" : "Desktop Workspace"}>
-      {isMobile ? (
-        <ClientLoader
-          name="WorkspaceMobileClient"
-          loader={() => import("./WorkspaceMobileClient")}
-          props={{ initialParams }}
-        />
-      ) : (
-        <ClientLoader
-          name="WorkspaceClient"
-          loader={() => import("./WorkspaceClient")}
-          props={{ initialParams }}
+    <>
+      {/* SEO: HowTo Schema */}
+      {howToSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(howToSchema) }}
         />
       )}
-    </WorkspaceErrorBoundary>
+      {/* SEO: Breadcrumb */}
+      {breadcrumbSchema && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+      )}
+
+      <Component initialParams={resolvedParams} />
+    </>
   );
 }
