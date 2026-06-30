@@ -29,9 +29,17 @@ const inlineAuthAPI = {
    * Supabase Auth otomatik olarak 'sb-pymulakat-auth-token' key'ine session yazar.
    */
   async login(payload: { email: string; password: string }): Promise<LoginResponse> {
-    const supabase = getSupabaseBrowser();
+    let supabase;
+    try {
+      supabase = getSupabaseBrowser();
+    } catch (e: any) {
+      console.error("[AUTH] Supabase client oluşturulamadı:", e?.message);
+      throw new Error(
+        "Supabase yapılandırması eksik. NEXT_PUBLIC_SUPABASE_URL ve NEXT_PUBLIC_SUPABASE_ANON_KEY tanımlı olmalı."
+      );
+    }
     if (!supabase) {
-      throw new Error("Supabase client bulunamadı");
+      throw new Error("Supabase client null");
     }
 
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -40,7 +48,7 @@ const inlineAuthAPI = {
     });
 
     if (error) {
-      // Email doğrulanmamış hatası
+      console.error("[AUTH] Supabase signIn error:", error);
       if (error.message?.toLowerCase().includes("email not confirmed")) {
         throw new Error("E-posta adresin doğrulanmamış");
       }
@@ -50,6 +58,8 @@ const inlineAuthAPI = {
     if (!data.session || !data.user) {
       throw new Error("Oturum açılamadı");
     }
+
+    console.log("[AUTH] Login basarili, session olusturuldu");
 
     // 🆕 Backend profile senkronizasyonu (user bilgisi için)
     try {
@@ -81,7 +91,10 @@ const inlineAuthAPI = {
         if (data.session.refresh_token) {
           localStorage.setItem("refresh_token", data.session.refresh_token);
         }
-      } catch {}
+        console.log("[AUTH] Token'lar localStorage'a yazildi");
+      } catch (e) {
+        console.error("[AUTH] Storage yazma hatasi:", e);
+      }
     }
 
     return {
