@@ -264,7 +264,6 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
           testCases={testCases}
           seoQuestion={seoQuestion}
           isGuest={isGuest}
-          userReady={!userLoading}
           hintsList={hintsList}
           revealedHints={revealedHints}
           onRevealHint={revealNextHint}
