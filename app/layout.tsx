@@ -4,6 +4,7 @@ import { Toaster } from "sonner";
 import "./global.css";
 import Script from "next/script";
 import { Analytics } from "@vercel/analytics/react";
+import GlobalNav from "../components/GlobalNav";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -360,6 +361,8 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased`}
       >
         <Analytics />
+
+        <GlobalNav />
 
         {/* GTM noscript fallback */}
         <noscript>
