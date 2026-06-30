@@ -500,16 +500,29 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
             {seoQuestion?.related_questions && seoQuestion.related_questions.length > 0 && (
               <div className="space-y-1.5 pt-2 border-t border-white/5">
                 <span className="text-xs text-cyan-400 font-semibold">🔗 Benzer Sorular</span>
-                {seoQuestion.related_questions.map((rq) => (
-                  <a
-                    key={rq.id}
-                    href={`/interviews/${rq.category}/${rq.id}`}
-                    className="flex items-center gap-2 p-2 rounded bg-white/[0.03] border border-white/10"
-                  >
-                    <span className="text-[10px] font-mono text-white/40">#{rq.id}</span>
-                    <span className="flex-1 text-[11px] text-white/75 truncate">{rq.title}</span>
-                  </a>
-                ))}
+                {seoQuestion.related_questions.map((rq) => {
+                  // Kategori adını slug'a çevir (SEO friendly)
+                  const slugifyCat = (cat: string): string => {
+                    const map: Record<string, string> = {
+                      "python-basics": "python-basics",
+                      "strings": "strings",
+                      "list-dict": "list-dict",
+                      "pandas": "pandas",
+                      "algorithms": "algorithms",
+                    };
+                    return map[cat] || cat.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                  };
+                  return (
+                    <a
+                      key={rq.id}
+                      href={`/interviews/${slugifyCat(rq.category || "python-basics")}/${rq.id}`}
+                      className="flex items-center gap-2 p-2 rounded bg-white/[0.03] border border-white/10 hover:border-cyan-500/30"
+                    >
+                      <span className="text-[10px] font-mono text-white/40">#{rq.id}</span>
+                      <span className="flex-1 text-[11px] text-white/75 line-clamp-1">{rq.title}</span>
+                    </a>
+                  );
+                })}
               </div>
             )}
           </div>

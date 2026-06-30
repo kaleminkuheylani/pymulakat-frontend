@@ -307,6 +307,32 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
   // ✅ Normal render
   const levelCfg = LEVEL_CONFIG[(interview.level || "").toLowerCase()] || LEVEL_CONFIG.beginner;
   const questionMeta = getQuestionMeta(questionId); // lib/questionMeta.ts — sabit metadata
+
+  // Slugify helper — bağlıkkara dost URL üret (Türkçe karakter → ASCII)
+  const slugifyText = (text: string): string => {
+    const trMap: Record<string, string> = {
+      "ç": "c", "ğ": "g", "ı": "i", "ö": "o", "ş": "s", "ü": "u",
+      "Ç": "c", "Ğ": "g", "İ": "i", "Ö": "o", "Ş": "s", "Ü": "u",
+    };
+    let s = text.toLowerCase().trim();
+    s = s.replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => trMap[c] || c);
+    s = s.replace(/[^a-z0-9\s-]/g, "");
+    s = s.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+    return s || "q";
+  };
+
+  // Kategori adını slug'a çevir (Türkçe karakterler ASCII'ye)
+  const slugifyCategory = (cat: string): string => {
+    const map: Record<string, string> = {
+      "python-basics": "python-basics",
+      "strings": "strings",
+      "list-dict": "list-dict",
+      "pandas": "pandas",
+      "algorithms": "algorithms",
+    };
+    return map[cat] || slugifyText(cat);
+  };
+
   const passedCount = testResults.filter((r) => r.passed).length;
   const totalCount = testResults.length;
   const allPassed = totalCount > 0 && passedCount === totalCount;
@@ -326,7 +352,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
-            <span className="text-sm">{CATEGORY_LABELS[category] || category}</span>
+            <span className="text-sm">Sorular</span>
           </button>
           <span className="text-white/20">/</span>
           <span className="text-white/40 text-sm font-mono">#{interview.id}</span>
@@ -375,9 +401,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
             <div>
               <h1 className="text-2xl font-bold text-white mb-2">{interview.title}</h1>
               <div className="flex items-center gap-2 text-xs text-white/40 flex-wrap">
-                <span>{CATEGORY_LABELS[category] || category}</span>
-                <span>•</span>
-                <span>{levelCfg.label} Seviye</span>
+                <span>{levelCfg.label}</span>
                 {questionMeta.topic && questionMeta.topic !== "Genel" && (
                   <>
                     <span>•</span>
@@ -537,7 +561,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
                     const m = getQuestionMeta(rid);
                     return {
                       id: rid,
-                      title: m.difficulty_note || m.topic || `Soru ${rid}`,
+                      title: m.title,
                       category: m.topic || "python-basics",
                       level: "beginner",
                     };
@@ -560,15 +584,15 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
                     {relatedToShow.map((rq) => (
                       <Link
                         key={rq.id}
-                        href={`/interviews/${rq.category}/${rq.id}`}
+                        href={`/interviews/${slugifyCategory(rq.category || "python-basics")}/${rq.id}`}
                         className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
                       >
-                        <span className="text-xs font-mono text-white/40 group-hover:text-cyan-400">#{rq.id}</span>
-                        <span className="flex-1 text-sm text-white/75 group-hover:text-white truncate">{rq.title}</span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 uppercase tracking-wide">
+                        <span className="text-xs font-mono text-white/40 group-hover:text-cyan-400 flex-shrink-0">#{rq.id}</span>
+                        <span className="flex-1 text-sm text-white/75 group-hover:text-white line-clamp-2">{rq.title}</span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 uppercase tracking-wide flex-shrink-0">
                           {rq.level}
                         </span>
-                        <svg className="w-3.5 h-3.5 text-white/30 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <svg className="w-3.5 h-3.5 text-white/30 group-hover:text-cyan-400 group-hover:translate-x-0.5 transition-all flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                         </svg>
                       </Link>
