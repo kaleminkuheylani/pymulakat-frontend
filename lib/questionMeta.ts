@@ -110,6 +110,41 @@ export function getQuestionMeta(id: number): QuestionMeta {
 }
 
 /**
+ * Slug'tan ID bul (ters yön).
+ * Örn: "palindrom-kontrol" → 1
+ *      "obeb-hesaplama" → 11
+ */
+export function getIdFromSlug(slug: string): number | null {
+  for (const idStr of Object.keys(QUESTION_META)) {
+    const id = parseInt(idStr, 10);
+    const m = QUESTION_META[id];
+    if (slugifyTitle(m.title) === slug) {
+      return id;
+    }
+  }
+  // Belki slug direkt ID mi?
+  const asNum = parseInt(slug, 10);
+  if (!isNaN(asNum) && QUESTION_META[asNum]) return asNum;
+  return null;
+}
+
+/**
+ * Title'dan URL slug üret (SEO friendly).
+ * Örn: "Palindrom Kontrol" → "palindrom-kontrol"
+ */
+export function slugifyTitle(title: string): string {
+  const trMap: Record<string, string> = {
+    "ç": "c", "ğ": "g", "ı": "i", "ö": "o", "ş": "s", "ü": "u",
+    "Ç": "c", "Ğ": "g", "İ": "i", "Ö": "o", "Ş": "s", "Ü": "u",
+  };
+  let s = title.toLowerCase().trim();
+  s = s.replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => trMap[c] || c);
+  s = s.replace(/[^a-z0-9\s-]/g, "");
+  s = s.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+  return s;
+}
+
+/**
  * Kategori ID'sinden tüm soruların meta'sını al (sıralı).
  */
 export function getMetaByCategory(): Record<string, QuestionMeta[]> {

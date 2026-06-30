@@ -516,10 +516,9 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
                     <a
                       key={rq.id}
                       href={`/interviews/${slugifyCat(rq.category || "python-basics")}/${rq.id}`}
-                      className="flex items-center gap-2 p-2 rounded bg-white/[0.03] border border-white/10 hover:border-cyan-500/30"
+                      className="block p-2 rounded bg-white/[0.03] border border-white/10 hover:border-cyan-500/30"
                     >
-                      <span className="text-[10px] font-mono text-white/40">#{rq.id}</span>
-                      <span className="flex-1 text-[11px] text-white/75 line-clamp-1">{rq.title}</span>
+                      <span className="text-[11px] text-white/80 line-clamp-1">{rq.title}</span>
                     </a>
                   );
                 })}

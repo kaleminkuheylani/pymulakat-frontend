@@ -108,6 +108,8 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
   const [showShareModal, setShowShareModal] = useState(false);
   const [showTestDrawer, setShowTestDrawer] = useState(false);
   const [hasAutoOpenedDrawer, setHasAutoOpenedDrawer] = useState(false);
+  // 🆕 Sidebar collapse (localStorage ile persist)
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   // ✅ Timer
   useEffect(() => {
@@ -396,7 +398,21 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
       </header>
 
       <div className="flex-1 flex overflow-hidden">
-        <aside className="w-[420px] border-r border-white/5 bg-[#0a0e1a] flex flex-col overflow-y-auto">
+        <aside
+          className={`${sidebarOpen ? "w-[420px]" : "w-0"} border-r border-white/5 bg-[#0a0e1a] flex flex-col overflow-hidden transition-all duration-200`}
+        >
+          {/* Sidebar collapse toggle */}
+          <button
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            className="absolute top-1/2 -translate-y-1/2 left-[420px] z-10 w-6 h-12 bg-white/5 hover:bg-white/10 border border-white/10 rounded-r-lg flex items-center justify-center transition-all"
+            style={{ transform: sidebarOpen ? "translate(0, -50%)" : "translate(-420px, -50%)" }}
+            title={sidebarOpen ? "Sidebar'ı daralt" : "Sidebar'ı genişlet"}
+          >
+            <svg className="w-3 h-3 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={sidebarOpen ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"} />
+            </svg>
+          </button>
+          <div className="w-[420px] h-full overflow-y-auto">
           <div className="p-6 space-y-5">
             <div>
               <h1 className="text-2xl font-bold text-white mb-2">{interview.title}</h1>
@@ -585,10 +601,9 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
                       <Link
                         key={rq.id}
                         href={`/interviews/${slugifyCategory(rq.category || "python-basics")}/${rq.id}`}
-                        className="flex items-center gap-3 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
+                        className="flex items-center gap-2.5 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
                       >
-                        <span className="text-xs font-mono text-white/40 group-hover:text-cyan-400 flex-shrink-0">#{rq.id}</span>
-                        <span className="flex-1 text-sm text-white/75 group-hover:text-white line-clamp-2">{rq.title}</span>
+                        <span className="flex-1 text-sm text-white/80 group-hover:text-white line-clamp-2">{rq.title}</span>
                         <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-white/50 uppercase tracking-wide flex-shrink-0">
                           {rq.level}
                         </span>
@@ -601,6 +616,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
                 </div>
               );
             })()}
+          </div>
           </div>
         </aside>
 

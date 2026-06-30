@@ -1,11 +1,15 @@
 // app/interviews/[category]/[id]/page.tsx
 // SEO-optimized: server-side metadata, HowTo schema, breadcrumb, related questions
+// Supports BOTH slug-based URLs (/interviews/python-basics/palindrom-kontrol)
+// AND legacy ID URLs (/interviews/python-basics/3) — slug gelirse ID'ye resolve eder
 
 import { headers } from "next/headers";
+import { redirect } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
+import { getIdFromSlug, getQuestionMeta, slugifyTitle } from "../../../../lib/questionMeta";
 
 export const dynamic = "force-dynamic";
 
@@ -183,10 +187,30 @@ async function getApiBase(): Promise<string> {
 
 // ─── Page ─────────────────────────────────────────────────
 export default async function Page({ params }: PageProps) {
-  const [resolvedParams, mobile, seoQ] = await Promise.all([
-    params,
+  const resolvedParams = await params;
+
+  // 🆕 Slug → ID resolution: eğer id parametresi sayı değilse slug'tır
+  const idAsNumber = parseInt(resolvedParams.id, 10);
+  let actualId = resolvedParams.id;
+
+  if (isNaN(idAsNumber)) {
+    // Slug geldi — ID'yi bul
+    const resolvedId = getIdFromSlug(resolvedParams.id);
+    if (resolvedId) {
+      // Redirect ile temiz URL'e yönlendir (canonical SEO)
+      const m = getQuestionMeta(resolvedId);
+      redirect(`/interviews/${resolvedParams.category}/${resolvedId}`);
+    } else {
+      // Slug bulunamadı, 404'e düşsün
+      actualId = "0"; // invalid ID, DB null döner
+    }
+  } else {
+    actualId = String(idAsNumber);
+  }
+
+  const [mobile, seoQ] = await Promise.all([
     isMobileDevice(),
-    params.then((p) => fetchQuestionSEO(p.category, p.id)),
+    fetchQuestionSEO(resolvedParams.category, actualId),
   ]);
 
   // Related soruları paralel çek (SEO + workspace için)
