@@ -129,20 +129,17 @@ function LoginFormInner() {
       }
     } catch (error: any) {
       const fullMsg = error?.message || "Giriş başarısız.";
-      const code = error?.code || error?.status;
 
-      // 🔍 Backend 403 = email doğrulanmamış → kullanıcıyı register sayfasına yönlendir
-      //    (resend-confirmation için oraya gitmesi yeterli)
+      // 🔍 Backend 403 = email doğrulanmamış → register verify ekranına yönlendir
       if (
         fullMsg.toLowerCase().includes("doğrulanmamış") ||
         fullMsg.toLowerCase().includes("not confirmed") ||
-        code === 403
+        fullMsg.toLowerCase().includes("not verified")
       ) {
         toast.error("E-posta adresin doğrulanmamış", {
-          description: "E-postandaki doğrulama linkine tıkla. Yeni link istersen aşağıdaki sayfadan talep edebilirsin.",
+          description: "E-postandaki 6 haneli kodu kullan. Yeni kod istersen aşağıdaki sayfadan talep edebilirsin.",
           duration: 6000,
         });
-        // Verify ekranına git, e-posta dolu gelsin
         router.push(`/register?email=${encodeURIComponent(formData.email)}`);
         return;
       }
