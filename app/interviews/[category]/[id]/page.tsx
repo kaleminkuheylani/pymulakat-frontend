@@ -1,77 +1,140 @@
 // app/interviews/[category]/[id]/page.tsx
-// Minimal test page — hangi client'in patladığını bulmak için
+// Mobile-aware workspace + error boundary
 
 "use client";
 
 import { useParams } from "next/navigation";
-import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useState, Component, ReactNode } from "react";
 
-export default function Page() {
-  const params = useParams<{ category: string; id: string }>();
-  const [clientStatus, setClientStatus] = useState<{
-    desktop: "ok" | "fail" | "loading";
-    mobile: "ok" | "fail" | "loading";
-  }>({ desktop: "loading", mobile: "loading" });
-  const [error, setError] = useState<string | null>(null);
+// ─── Inline Error Boundary ─────────────────────────────────
+class WorkspaceErrorBoundary extends Component<
+  { children: ReactNode; name: string },
+  { hasError: boolean; error: Error | null }
+> {
+  constructor(props: { children: ReactNode; name: string }) {
+    super(props);
+    this.state = { hasError: false, error: null };
+  }
+
+  static getDerivedStateFromError(error: Error) {
+    return { hasError: true, error };
+  }
+
+  componentDidCatch(error: Error, info: any) {
+    console.error(`[${this.props.name}] caught error:`, error, info);
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return (
+        <div className="min-h-screen bg-[#050816] flex items-center justify-center p-6">
+          <div className="max-w-xl w-full">
+            <div className="rounded-2xl border border-red-500/30 bg-red-500/5 p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-500/20 flex items-center justify-center text-2xl">💥</div>
+                <div>
+                  <h2 className="text-lg font-bold text-red-400">
+                    {this.props.name} patladı
+                  </h2>
+                  <p className="text-xs text-white/40">Render sırasında beklenmeyen hata</p>
+                </div>
+              </div>
+              <pre className="text-xs text-red-300 bg-black/30 p-3 rounded overflow-auto max-h-96 font-mono whitespace-pre-wrap">
+                {this.state.error?.message || "Bilinmeyen hata"}
+                {"\n\n"}
+                {this.state.error?.stack?.split("\n").slice(0, 8).join("\n")}
+              </pre>
+              <button
+                onClick={() => this.setState({ hasError: false, error: null })}
+                className="mt-4 w-full py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-[#050816] font-bold text-sm transition-colors"
+              >
+                Tekrar Dene
+              </button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+// ─── Lazy loader wrapper ───────────────────────────────────
+function ClientLoader({ name, loader, props }: { name: string; loader: () => Promise<any>; props?: any }) {
+  const [Component, setComponent] = useState<any>(null);
+  const [err, setErr] = useState<Error | null>(null);
 
   useEffect(() => {
-    // Client-side mobile detection
-    const ua = navigator.userAgent.toLowerCase();
-    const isMobile = /android|webos|iphone|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua)
-      || /ipad|android(?!.*mobile)/i.test(ua);
-
-    // Dinamik import ile client'ları yükle
-    Promise.all([
-      import("./WorkspaceClient").then((m) => m.default).catch((e) => {
-        console.error("WorkspaceClient import failed:", e);
-        setError(`Desktop client failed: ${e.message}`);
-        return null;
-      }),
-      import("./WorkspaceMobileClient").then((m) => m.default).catch((e) => {
-        console.error("WorkspaceMobileClient import failed:", e);
-        setError(`Mobile client failed: ${e.message}`);
-        return null;
-      }),
-    ]).then(([Desktop, Mobile]) => {
-      setClientStatus({
-        desktop: Desktop ? "ok" : "fail",
-        mobile: Mobile ? "ok" : "fail",
+    loader()
+      .then((m) => setComponent(() => m.default))
+      .catch((e) => {
+        console.error(`[${name}] load error:`, e);
+        setErr(e);
       });
-    });
+  }, [name]);
+
+  if (err) {
+    return (
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center p-6 text-red-400">
+        <div className="max-w-xl">
+          <p className="font-bold mb-2">Client yüklenemedi: {name}</p>
+          <pre className="text-xs">{err.message}</pre>
+        </div>
+      </div>
+    );
+  }
+
+  if (!Component) {
+    return (
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+          <p className="text-white/40 text-xs">{name} yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
+
+  return <Component {...(props || {})} />;
+}
+
+// ─── Page ──────────────────────────────────────────────────
+export default function Page() {
+  const params = useParams<{ category: string; id: string }>();
+  const [isMobile, setIsMobile] = useState<boolean | null>(null);
+
+  useEffect(() => {
+    const ua = navigator.userAgent.toLowerCase();
+    const mobile = /android|webos|iphone|ipod|blackberry|iemobile|opera mini|mobile/i.test(ua)
+      || /ipad|android(?!.*mobile)/i.test(ua);
+    setIsMobile(mobile);
   }, []);
 
-  return (
-    <div className="min-h-screen bg-[#050816] text-white p-6">
-      <div className="max-w-2xl mx-auto">
-        <h1 className="text-3xl font-bold text-amber-400 mb-4">🔧 Debug Page</h1>
-
-        <div className="rounded-xl bg-white/5 border border-white/10 p-4 mb-4">
-          <p className="text-sm text-white/60 mb-2">URL Params:</p>
-          <pre className="text-xs font-mono text-white/80">
-            {JSON.stringify(params, null, 2)}
-          </pre>
-        </div>
-
-        <div className="rounded-xl bg-white/5 border border-white/10 p-4 mb-4">
-          <p className="text-sm text-white/60 mb-2">Client Status:</p>
-          <ul className="space-y-1 text-xs font-mono">
-            <li>Desktop: <span className={clientStatus.desktop === "ok" ? "text-green-400" : clientStatus.desktop === "fail" ? "text-red-400" : "text-yellow-400"}>{clientStatus.desktop}</span></li>
-            <li>Mobile: <span className={clientStatus.mobile === "ok" ? "text-green-400" : clientStatus.mobile === "fail" ? "text-red-400" : "text-yellow-400"}>{clientStatus.mobile}</span></li>
-          </ul>
-        </div>
-
-        {error && (
-          <div className="rounded-xl bg-red-500/10 border border-red-500/30 p-4 mb-4">
-            <p className="text-sm text-red-400 font-bold mb-1">Error:</p>
-            <pre className="text-xs font-mono text-red-300 whitespace-pre-wrap">{error}</pre>
-          </div>
-        )}
-
-        <Link href={`/interviews/${params.category}`} className="text-amber-400 hover:text-amber-300 text-sm">
-          ← Geri dön
-        </Link>
+  if (isMobile === null) {
+    return (
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
+        <div className="w-10 h-10 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
       </div>
-    </div>
+    );
+  }
+
+  const initialParams = { category: params.category, id: params.id };
+
+  return (
+    <WorkspaceErrorBoundary name={isMobile ? "Mobile Workspace" : "Desktop Workspace"}>
+      {isMobile ? (
+        <ClientLoader
+          name="WorkspaceMobileClient"
+          loader={() => import("./WorkspaceMobileClient")}
+          props={{ initialParams }}
+        />
+      ) : (
+        <ClientLoader
+          name="WorkspaceClient"
+          loader={() => import("./WorkspaceClient")}
+          props={{ initialParams }}
+        />
+      )}
+    </WorkspaceErrorBoundary>
   );
 }
