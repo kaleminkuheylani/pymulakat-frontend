@@ -128,7 +128,28 @@ function LoginFormInner() {
         router.push(returnUrl);
       }
     } catch (error: any) {
-      toast.error(error?.message || "Giriş başarısız.");
+      const msg = (error?.message || "").toLowerCase();
+      const fullMsg = error?.message || "Giriş başarısız.";
+
+      // 🔍 Supabase / backend'den gelen "Email not confirmed" hatasını yakala
+      if (
+        msg.includes("email not confirmed") ||
+        msg.includes("email_not_confirmed") ||
+        msg.includes("not verified") ||
+        msg.includes("verify") ||
+        msg.includes("doğrulan")
+      ) {
+        toast.error("E-posta adresin doğrulanmamış", {
+          description: "Doğrulama kodunu yeniden gönderiyoruz...",
+          duration: 5000,
+        });
+        // Verify sayfasına yönlendir
+        const redirect = encodeURIComponent(returnUrl);
+        router.push(`/register?verify=${encodeURIComponent(formData.email)}&returnUrl=${redirect}`);
+        return;
+      }
+
+      toast.error(fullMsg);
     } finally {
       setIsLoading(false);
     }
@@ -145,6 +166,10 @@ function LoginFormInner() {
 
     setIsLoading(true);
 
+    // 15s timeout — Supabase bağlantısı yoksa kullanıcı askıda kalmasın
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 15000);
+
     try {
       const supabase = getSupabaseBrowser();
       if (!supabase) {
@@ -154,24 +179,41 @@ function LoginFormInner() {
       const { error } = await supabase.auth.signInWithOtp({
         email: formData.email,
         options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback?returnUrl=${encodeURIComponent(
-            returnUrl
-          )}`,
+          // ✅ Query'siz temiz URL — Supabase Dashboard allowlist'i ile birebir eşleşmeli
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
           shouldCreateUser: true,
         },
       });
+
+      clearTimeout(timeoutId);
 
       if (error) throw error;
 
       setMagicLinkSent(true);
       toast.success("🔑 Magic link gönderildi!", {
-        description: "E-postanı kontrol et, linke tıkla.",
-        duration: 8000,
+        description: "E-postanı kontrol et, linke tıkla. (Spam'i de kontrol et)",
+        duration: 10000,
       });
     } catch (error: any) {
-      toast.error("Magic link gönderilemedi", {
-        description: error?.message || "Bilinmeyen hata",
-      });
+      clearTimeout(timeoutId);
+      const msg = error?.message || "Bilinmeyen hata";
+
+      if (error?.name === "AbortError") {
+        toast.error("İstek zaman aşımına uğradı", {
+          description: "Supabase bağlantısı yavaş. Sayfayı yenileyip tekrar dene.",
+        });
+      } else if (
+        msg.toLowerCase().includes("redirect") ||
+        msg.toLowerCase().includes("not allowed")
+      ) {
+        toast.error("Supabase URL ayarı eksik", {
+          description: "Dashboard'da Site URL'i kontrol et (pythonmulakat.com).",
+        });
+      } else {
+        toast.error("Magic link gönderilemedi", {
+          description: msg,
+        });
+      }
     } finally {
       setIsLoading(false);
     }
