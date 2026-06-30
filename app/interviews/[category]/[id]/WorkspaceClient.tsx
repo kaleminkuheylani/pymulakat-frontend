@@ -162,9 +162,19 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
         setAttemptSubmitted(true);
         if (success) {
           setShowSuccessModal(true);
+          // 1.5s sonra share modal'i ac (kullanici basari hisseder)
+          setTimeout(() => {
+            setShowSuccessModal(false);
+            setShowShareModal(true);
+          }, 1500);
+        } else {
+          toast.error("❌ Bazı testler başarısız", {
+            description: "Kodunu gözden geçirip tekrar dene.",
+          });
         }
       } catch (e) {
         console.warn("Attempt submission failed", e);
+        toast.error("Attempt gönderilemedi");
       }
     },
     [attemptSubmitted, questionId, code, revealedHints]
@@ -337,8 +347,26 @@ function extractHints(description: string): string[] {
 }
 
 async function sendAttempt(payload: AttemptPayload): Promise<void> {
-  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-  if (!token) return;
+  // Token'i Supabase storage'dan al (sb-pymulakat-auth-token) veya fallback plain
+  const getToken = (): string | null => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = localStorage.getItem("sb-pymulakat-auth-token");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.access_token) return parsed.access_token;
+      }
+    } catch {
+      // ignore
+    }
+    return localStorage.getItem("token");
+  };
+
+  const token = getToken();
+  if (!token) {
+    console.warn("[Attempt] Token yok, attempt gönderilmedi");
+    return;
+  }
 
   const res = await fetch(
     `${process.env.NEXT_PUBLIC_API_URL}/api/v2/attempts`,
