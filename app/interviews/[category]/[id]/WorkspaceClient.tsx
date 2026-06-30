@@ -85,7 +85,6 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
   const [isRunning, setIsRunning] = useState(false);
   const [revealedHints, setRevealedHints] = useState(0);
   const [hintsList, setHintsList] = useState<string[]>([]);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -161,10 +160,8 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
         await sendAttempt(payload);
         setAttemptSubmitted(true);
         if (success) {
-          setShowSuccessModal(true);
           // 1.5s sonra share modal'i ac (kullanici basari hisseder)
           setTimeout(() => {
-            setShowSuccessModal(false);
             setShowShareModal(true);
           }, 1500);
         } else {

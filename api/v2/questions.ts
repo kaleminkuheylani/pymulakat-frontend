@@ -40,7 +40,6 @@ export interface Question {
 
 export interface QuestionTests {
   question_id: number;
-  title: string;
   function_name: string;
   test_cases: TestCase[];
 }
