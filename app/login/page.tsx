@@ -390,16 +390,7 @@ function LoginFormInner() {
                   transition={{ delay: 0.8 }}
                   className="flex justify-end -mt-2"
                 >
-                  <Link
-                    href={`/auth/forgot-password${
-                      formData.email
-                        ? `?email=${encodeURIComponent(formData.email)}`
-                        : ""
-                    }`}
-                    className="text-xs text-white/40 hover:text-amber-400 transition-colors"
-                  >
-                    Şifremi unuttum →
-                  </Link>
+                  {/* Şifremi unuttum kaldırıldı */}
                 </motion.div>
               </>
             )}
