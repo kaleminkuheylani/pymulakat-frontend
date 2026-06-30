@@ -9,6 +9,7 @@ import { useUser } from "../../../../hooks/useUser";
 import { usePyodide, TestRunResult } from "../../../../hooks/usePyodide";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../components/Monaco";
 import { GuestBanner } from "../../../../components/GuestBanner";
+import { getQuestionMeta } from "../../../../lib/questionMeta";
 
 import {
   questionsAPI,
@@ -305,6 +306,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
 
   // ✅ Normal render
   const levelCfg = LEVEL_CONFIG[(interview.level || "").toLowerCase()] || LEVEL_CONFIG.beginner;
+  const questionMeta = getQuestionMeta(questionId); // lib/questionMeta.ts — sabit metadata
   const passedCount = testResults.filter((r) => r.passed).length;
   const totalCount = testResults.length;
   const allPassed = totalCount > 0 && passedCount === totalCount;
@@ -372,10 +374,26 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
           <div className="p-6 space-y-5">
             <div>
               <h1 className="text-2xl font-bold text-white mb-2">{interview.title}</h1>
-              <div className="flex items-center gap-2 text-xs text-white/40">
+              <div className="flex items-center gap-2 text-xs text-white/40 flex-wrap">
                 <span>{CATEGORY_LABELS[category] || category}</span>
                 <span>•</span>
                 <span>{levelCfg.label} Seviye</span>
+                {questionMeta.topic && questionMeta.topic !== "Genel" && (
+                  <>
+                    <span>•</span>
+                    <span className="px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/25 text-indigo-300">
+                      {questionMeta.topic}
+                    </span>
+                  </>
+                )}
+                {questionMeta.function_name && questionMeta.function_name !== "solution" && (
+                  <>
+                    <span>•</span>
+                    <code className="font-mono text-amber-300/80 text-[11px]">
+                      def {questionMeta.function_name}(...)
+                    </code>
+                  </>
+                )}
               </div>
             </div>
 

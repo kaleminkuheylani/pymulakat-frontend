@@ -9,6 +9,7 @@ import {
   Question,
   QuestionTests,
 } from "../../../../api/v2/questions";
+import { getQuestionMeta } from "../../../../lib/questionMeta";
 import { CodeEditor, CodeEditorRef } from "../../../../components/Editor";
 import { usePyodide, TestRunResult } from "../../../../hooks/usePyodide";
 import { toast, Toaster } from "sonner";
@@ -380,6 +381,31 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
         {tab === "question" && (
           <div className="h-full overflow-auto p-4 space-y-3 pb-20">
             <h1 className="text-lg font-bold">{interview.title}</h1>
+            {/* 🆕 Topic + function_name badge (lib/questionMeta.ts'ten) */}
+            <div className="flex items-center gap-1.5 text-[10px] flex-wrap">
+              {(() => {
+                const m = getQuestionMeta(interview.id);
+                if (m.topic && m.topic !== "Genel") {
+                  return (
+                    <span className="px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/25 text-indigo-300">
+                      {m.topic}
+                    </span>
+                  );
+                }
+                return null;
+              })()}
+              {(() => {
+                const m = getQuestionMeta(interview.id);
+                if (m.function_name && m.function_name !== "solution") {
+                  return (
+                    <code className="font-mono text-amber-300/80 px-1.5 py-0.5 rounded bg-black/40">
+                      def {m.function_name}(...)
+                    </code>
+                  );
+                }
+                return null;
+              })()}
+            </div>
             <p className="text-sm text-white/70 leading-relaxed whitespace-pre-wrap">
               {interview.description}
             </p>

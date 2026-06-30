@@ -2,6 +2,7 @@
 
 import { useState, useMemo } from "react";
 import Link from "next/link";
+import { getQuestionMeta } from "../lib/questionMeta";
 
 interface QuestionItem {
   id: number | string;
@@ -73,7 +74,9 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
         const s = searchQuery.toLowerCase().trim();
         const inTitle = q.title?.toLowerCase().includes(s);
         const inDesc = q.description?.toLowerCase().includes(s);
-        const inTopic = q.topic?.toLowerCase().includes(s);
+        // Topic artık QuestionMeta'dan geliyor (DB'de yok)
+        const meta = getQuestionMeta(typeof q.id === "number" ? q.id : parseInt(String(q.id), 10));
+        const inTopic = meta.topic?.toLowerCase().includes(s);
         const inTags = q.tags?.some((t) => t.toLowerCase().includes(s));
         if (!inTitle && !inDesc && !inTopic && !inTags) return false;
       }
