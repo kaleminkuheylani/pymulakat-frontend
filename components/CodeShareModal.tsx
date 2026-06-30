@@ -20,12 +20,26 @@ interface CodeShareModalProps {
 }
 
 // ─── Helpers ──────────────────────────────────────────────
+function slugifyTitleLocal(title: string): string {
+  const trMap: Record<string, string> = {
+    "ç": "c", "ğ": "g", "ı": "i", "ö": "o", "ş": "s", "ü": "u",
+    "Ç": "c", "Ğ": "g", "İ": "i", "Ö": "o", "Ş": "s", "Ü": "u",
+  };
+  let s = title.toLowerCase().trim();
+  s = s.replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => trMap[c] || c);
+  s = s.replace(/[^a-z0-9\s-]/g, "");
+  s = s.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
+  return s;
+}
+
 function buildTweetText(opts: {
   title?: string;
   username?: string;
   passedCount?: number;
   totalCount?: number;
   durationLabel?: string;
+  code?: string;
+  shareUrl?: string;
 }): string {
   const lines: string[] = [];
 
@@ -35,6 +49,20 @@ function buildTweetText(opts: {
     lines.push(`✅ ${opts.passedCount}/${opts.totalCount} test geçti`);
   }
   if (opts.durationLabel) lines.push(`⏱️ Süre: ${opts.durationLabel}`);
+
+  // 🆕 Kod snippet (ilk 6 satır)
+  if (opts.code && opts.code.trim()) {
+    lines.push("");
+    lines.push("```python");
+    const codeLines = opts.code.split("\n").slice(0, 6);
+    lines.push(...codeLines);
+    if (opts.code.split("\n").length > 6) {
+      lines.push("# ... (devamı linkte)");
+    }
+    lines.push("```");
+  }
+
+  if (opts.shareUrl) lines.push(`\n🔗 ${opts.shareUrl}`);
   if (opts.username) lines.push(`👤 @${opts.username}`);
   lines.push("");
   lines.push("#python #mülakat #pythonmulakat.com");
@@ -62,6 +90,10 @@ export default function CodeShareModal({
     passedCount,
     totalCount,
     durationLabel,
+    code,
+    shareUrl: typeof window !== "undefined"
+      ? `${window.location.origin}/interviews/${category || "python-basics"}/${title ? slugifyTitleLocal(title) : ""}`
+      : undefined,
   });
 
   const handleCopy = async () => {
