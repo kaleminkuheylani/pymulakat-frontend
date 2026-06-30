@@ -20,7 +20,8 @@ const API_BASE_URL =
 interface LoginResponse {
   access_token: string;
   refresh_token?: string;
-  user: { id: string; email: string };
+  expires_at?: number | string;
+  user: { id: string; email: string; username?: string };
 }
 
 const inlineAuthAPI = {
@@ -123,6 +124,25 @@ function LoginFormInner() {
         if (loginData.refresh_token) {
           localStorage.setItem("refresh_token", loginData.refresh_token);
         }
+
+        // 🆕 Supabase storage format'ında da sakla — useUser bunu bekliyor
+        const expiresAt = loginData.expires_at
+          ? Math.floor(new Date(loginData.expires_at).getTime() / 1000)
+          : Math.floor(Date.now() / 1000) + 3600;
+        const supabaseSession = {
+          access_token: loginData.access_token,
+          refresh_token: loginData.refresh_token || "",
+          expires_at: expiresAt,
+          expires_in: 3600,
+          token_type: "bearer",
+          user: {
+            id: loginData.user?.id,
+            email: loginData.user?.email || formData.email,
+            user_metadata: { username: loginData.user?.username },
+          },
+        };
+        localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(supabaseSession));
+
         notifyAuthChange();
         toast.success("Giriş başarılı! Hoş geldiniz 👋");
         router.push(returnUrl);
