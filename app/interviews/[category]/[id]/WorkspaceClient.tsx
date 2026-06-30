@@ -257,19 +257,37 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        <WorkspaceSidebar
-          interview={interview}
-          category={category}
-          id={id}
-          testCases={testCases}
-          seoQuestion={seoQuestion}
-          isGuest={isGuest}
-          hintsList={hintsList}
-          revealedHints={revealedHints}
-          onRevealHint={revealNextHint}
-          sidebarOpen={sidebarOpen}
-          onToggleSidebar={() => setSidebarOpen(!sidebarOpen)}
-        />
+        {/* Sidebar — collapse animasyonu (margin-left ile) */}
+        <div
+          className={`flex-shrink-0 h-full transition-all duration-200 overflow-hidden ${
+            sidebarOpen ? "w-[420px]" : "w-0"
+          }`}
+        >
+          <WorkspaceSidebar
+            interview={interview}
+            category={category}
+            id={id}
+            testCases={testCases}
+            seoQuestion={seoQuestion}
+            isGuest={isGuest}
+            hintsList={hintsList}
+            revealedHints={revealedHints}
+            onRevealHint={revealNextHint}
+          />
+        </div>
+
+        {/* Sidebar toggle — aside dışında, her zaman görünür */}
+        <button
+          onClick={() => setSidebarOpen(!sidebarOpen)}
+          className={`absolute top-1/2 -translate-y-1/2 z-20 w-6 h-12 bg-white/5 hover:bg-white/15 border border-white/10 rounded-r-lg flex items-center justify-center transition-all ${
+            sidebarOpen ? "left-[420px]" : "left-0"
+          }`}
+          title={sidebarOpen ? "Sidebar'ı daralt" : "Sidebar'ı genişlet"}
+        >
+          <svg className="w-3 h-3 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d={sidebarOpen ? "M15 19l-7-7 7-7" : "M9 5l7 7-7 7"} />
+          </svg>
+        </button>
 
         <WorkspaceEditor
           editorRef={editorRef}
