@@ -102,19 +102,89 @@ function extractAccessToken(): string | null {
   return null;
 }
 
+/**
+ * Refresh token ile yeni access token al. Storage'i de günceller.
+ * Returns true if refresh succeeded.
+ */
+async function tryRefreshToken(): Promise<boolean> {
+  if (typeof window === "undefined") return false;
+
+  try {
+    // Try Supabase client first (preferred)
+    const supabase = getSupabaseBrowser();
+    if (supabase) {
+      const { data, error } = await supabase.auth.refreshSession();
+      if (!error && data?.session?.access_token) {
+        return true; // Supabase kendi storage'ini günceller
+      }
+    }
+
+    // Fallback: backend refresh endpoint (yoksa false)
+    const raw = localStorage.getItem("sb-pymulakat-auth-token");
+    if (!raw) return false;
+    const parsed = JSON.parse(raw);
+    const refreshToken = parsed?.refresh_token;
+    if (!refreshToken) return false;
+
+    const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ refresh_token: refreshToken }),
+    });
+
+    if (!res.ok) return false;
+    const json = await res.json();
+    const newAccess = json?.access_token;
+    const newRefresh = json?.refresh_token || refreshToken;
+    if (!newAccess) return false;
+
+    const expiresAt = json?.expires_at
+      ? Math.floor(new Date(json.expires_at).getTime() / 1000)
+      : Math.floor(Date.now() / 1000) + 3600;
+
+    const updated = {
+      ...parsed,
+      access_token: newAccess,
+      refresh_token: newRefresh,
+      expires_at: expiresAt,
+    };
+    localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(updated));
+    localStorage.setItem("token", newAccess);
+    if (newRefresh) localStorage.setItem("refresh_token", newRefresh);
+
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 async function fetchMe(): Promise<UserResponse | null> {
   if (typeof window === "undefined") return null;
 
-  const token = extractAccessToken();
+  let token = extractAccessToken();
   if (!token) return null;
 
   try {
-    const res = await fetch(`${API_BASE_URL}/auth/me`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    const doFetch = (accessToken: string) =>
+      fetch(`${API_BASE_URL}/auth/me`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+    let res = await doFetch(token);
+
+    // 🆕 401 gelirse refresh_token ile yeni access_token al
+    if (res.status === 401) {
+      const refreshed = await tryRefreshToken();
+      if (refreshed) {
+        token = extractAccessToken();
+        if (token) {
+          res = await doFetch(token);
+        }
+      }
+    }
 
     if (!res.ok) {
       if (res.status === 401 || res.status === 403) {
