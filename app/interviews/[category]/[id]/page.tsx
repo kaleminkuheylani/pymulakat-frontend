@@ -5,6 +5,9 @@ import { headers } from "next/headers";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
 
+// ✅ Build sırasında prerender deneme — her istekte fresh
+export const dynamic = "force-dynamic";
+
 interface PageProps {
   params: Promise<{ category: string; id: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;

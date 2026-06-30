@@ -5,6 +5,9 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import CategoryTable from "../../../components/CategoryTable";
 
+// ✅ Build sırasında prerender deneme — her istekte fresh fetch
+export const dynamic = "force-dynamic";
+
 // ─── Sadece QUESTIONS.py'de gerçekten olan kategoriler ─────
 const CATEGORY_LABELS: Record<string, string> = {
   "python-basics": "🐍 Python Temelleri",

@@ -1,9 +1,11 @@
 // app/interviews/page.tsx
 // TÜM KATEGORİLERİN LİSTESİ — Kategori kartları sayfası
-// GET /api/v2/categories
+// Client component: server-side fetch hatalarını önler, build sırasında API çağırmaz
+
+"use client";
 
 import Link from "next/link";
-import { headers } from "next/headers";
+import { useEffect, useState } from "react";
 
 interface Category {
   slug: string;
@@ -17,7 +19,7 @@ interface CategoriesResponse {
   data: Category[];
 }
 
-// Kategori renkleri (gradient)
+// Kategori renkleri (gradient) — backend ile aynı
 const CATEGORY_STYLES: Record<string, { from: string; to: string; accent: string }> = {
   "python-basics": { from: "#3b82f6", to: "#1e40af", accent: "#60a5fa" },
   strings: { from: "#a855f7", to: "#7e22ce", accent: "#c084fc" },
@@ -44,42 +46,49 @@ function getCategoryStyle(slug: string) {
   return CATEGORY_STYLES[slug] || { from: "#6366f1", to: "#4338ca", accent: "#818cf8" };
 }
 
-async function fetchCategories(): Promise<Category[]> {
-  try {
-    const h = await headers();
-    const host = h.get("host") || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
-    const cookie = h.get("cookie") || "";
+export default function InterviewsPage() {
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-    const res = await fetch(`${apiUrl}/api/v2/categories`, {
+  useEffect(() => {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+    fetch(`${apiUrl}/api/v2/categories`, {
       cache: "no-store",
-      headers: { cookie },
-      signal: AbortSignal.timeout(5000),
-    });
+      signal: controller.signal,
+    })
+      .then((res) => {
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        return res.json();
+      })
+      .then((data: CategoriesResponse | Category[]) => {
+        if (Array.isArray(data)) {
+          setCategories(data);
+        } else if (data && Array.isArray(data.data)) {
+          setCategories(data.data);
+        } else {
+          setCategories([]);
+        }
+      })
+      .catch((err) => {
+        if (err.name !== "AbortError") {
+          console.warn("[InterviewsPage] fetch error:", err);
+          setError(err.message || "Kategoriler yüklenemedi");
+        }
+      })
+      .finally(() => {
+        clearTimeout(timeoutId);
+        setLoading(false);
+      });
 
-    if (!res.ok) {
-      console.warn(`[InterviewsPage] /api/v2/categories ${res.status}`);
-      return [];
-    }
+    return () => controller.abort();
+  }, []);
 
-    const data: CategoriesResponse = await res.json();
-    if (Array.isArray(data?.data)) return data.data;
-    if (Array.isArray(data)) return data;
-    return [];
-  } catch (err) {
-    console.error("[InterviewsPage] fetch error:", err);
-    return [];
-  }
-}
-
-export default async function InterviewsPage() {
-  const categories = await fetchCategories();
-  const safeCategories: Category[] = Array.isArray(categories) ? categories : [];
-
-  // İstatistikler
-  const totalQuestions = safeCategories.reduce((sum, c) => sum + (c.question_count || 0), 0);
-  const totalCategories = safeCategories.length;
+  const totalQuestions = categories.reduce((sum, c) => sum + (c.question_count || 0), 0);
+  const totalCategories = categories.length;
 
   return (
     <div className="min-h-screen bg-[#050816] text-white">
@@ -115,17 +124,28 @@ export default async function InterviewsPage() {
 
       {/* ─── KATEGORİ KARTLARI ──────────────────────────── */}
       <main className="max-w-6xl mx-auto px-6 py-10">
-        {safeCategories.length === 0 ? (
+        {loading ? (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+            {[...Array(6)].map((_, i) => (
+              <div
+                key={i}
+                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 h-44 animate-pulse"
+              />
+            ))}
+          </div>
+        ) : categories.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
             <div className="text-5xl mb-4">📭</div>
-            <h2 className="text-xl font-semibold mb-2">Henüz kategori yok</h2>
+            <h2 className="text-xl font-semibold mb-2">
+              {error ? "Yükleme hatası" : "Henüz kategori yok"}
+            </h2>
             <p className="text-white/50 text-sm">
-              Backend'den kategori yüklenemedi. Biraz sonra tekrar dene.
+              {error || "Backend'den kategori yüklenemedi. Biraz sonra tekrar dene."}
             </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {safeCategories.map((cat) => {
+            {categories.map((cat) => {
               const style = getCategoryStyle(cat.slug);
               const count = cat.question_count || 0;
               return (
@@ -134,15 +154,12 @@ export default async function InterviewsPage() {
                   href={`/interviews/${cat.slug}`}
                   className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-white/20 transition-all overflow-hidden"
                 >
-                  {/* Gradient hover background */}
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity"
                     style={{
                       background: `linear-gradient(135deg, ${style.from}, ${style.to})`,
                     }}
                   />
-
-                  {/* Accent line */}
                   <div
                     className="absolute top-0 left-0 right-0 h-0.5 opacity-50 group-hover:opacity-100 transition-opacity"
                     style={{
@@ -151,7 +168,6 @@ export default async function InterviewsPage() {
                   />
 
                   <div className="relative">
-                    {/* Icon + Count */}
                     <div className="flex items-start justify-between mb-4">
                       <div
                         className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl"
@@ -163,32 +179,25 @@ export default async function InterviewsPage() {
                         {cat.icon || "📘"}
                       </div>
                       <div className="flex flex-col items-end">
-                        <span className="text-2xl font-bold text-white">
-                          {count}
-                        </span>
+                        <span className="text-2xl font-bold text-white">{count}</span>
                         <span className="text-[10px] uppercase tracking-wider text-white/40 font-semibold">
                           soru
                         </span>
                       </div>
                     </div>
 
-                    {/* Label */}
                     <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
                       {cat.label}
                     </h3>
 
-                    {/* Description */}
                     {cat.description && (
                       <p className="text-sm text-white/50 line-clamp-2 mb-4 min-h-[2.5rem]">
                         {cat.description}
                       </p>
                     )}
 
-                    {/* Footer */}
                     <div className="flex items-center justify-between text-xs pt-3 border-t border-white/5">
-                      <span className="text-white/40 font-mono">
-                        {cat.slug}
-                      </span>
+                      <span className="text-white/40 font-mono">{cat.slug}</span>
                       <span
                         className="flex items-center gap-1.5 transition-colors group-hover:text-amber-400"
                         style={{ color: style.accent }}
@@ -216,8 +225,7 @@ export default async function InterviewsPage() {
           </div>
         )}
 
-        {/* ─── BİTİŞ ──────────────────────────────────────── */}
-        {safeCategories.length > 0 && (
+        {!loading && categories.length > 0 && (
           <div className="mt-12 text-center text-xs text-white/40">
             Toplam <span className="text-white/70 font-semibold">{totalQuestions}</span>{" "}
             soru · <span className="text-white/70 font-semibold">{totalCategories}</span>{" "}
@@ -228,9 +236,3 @@ export default async function InterviewsPage() {
     </div>
   );
 }
-
-// ─── Metadata ───────────────────────────────────────────
-export const metadata = {
-  title: "Tüm Kategoriler | PythonMulakat",
-  description: "Python mülakat kategorileri. Seviyene uygun birini seç.",
-};
