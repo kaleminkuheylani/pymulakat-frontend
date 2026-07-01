@@ -508,34 +508,55 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
               </a>
             )}
 
-            {/* 🆕 Related questions */}
-            {seoQuestion?.related_questions && seoQuestion.related_questions.length > 0 && (
-              <div className="space-y-1.5 pt-2 border-t border-white/5">
-                <span className="text-xs text-cyan-400 font-semibold">🔗 Benzer Sorular</span>
-                {seoQuestion.related_questions.map((rq) => {
-                  // Kategori adını slug'a çevir (SEO friendly)
-                  const slugifyCat = (cat: string): string => {
-                    const map: Record<string, string> = {
-                      "python-basics": "python-basics",
-                      "strings": "strings",
-                      "list-dict": "list-dict",
-                      "pandas": "pandas",
-                      "algorithms": "algorithms",
+            {/* 🆕 Related questions — DB + QuestionMeta fallback */}
+            {(() => {
+              // DB'den related_questions varsa onu kullan, yoksa QuestionMeta fallback
+              let related = seoQuestion?.related_questions;
+              if (!related || related.length === 0) {
+                const meta = getQuestionMeta(interview.id);
+                if (meta?.related_questions?.length) {
+                  related = meta.related_questions.map((rid) => {
+                    const m = getQuestionMeta(rid);
+                    return {
+                      id: rid,
+                      title: m.title,
+                      category: m.topic || "python-basics",
+                      level: "beginner",
+                      slug: m.slug,
                     };
-                    return map[cat] || cat.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-                  };
-                  return (
-                    <a
-                      key={rq.id}
-                      href={`/interviews/${slugifyCat(rq.category || "python-basics")}/${rq.slug || getQuestionMeta(rq.id)?.slug || String(rq.id)}`}
-                      className="block p-2 rounded bg-white/[0.03] border border-white/10 hover:border-cyan-500/30"
-                    >
-                      <span className="text-[11px] text-white/80 line-clamp-1">{rq.title}</span>
-                    </a>
-                  );
-                })}
-              </div>
-            )}
+                  });
+                }
+              }
+              if (!related || related.length === 0) return null;
+
+              return (
+                <div className="space-y-1.5 pt-2 border-t border-white/5">
+                  <span className="text-xs text-cyan-400 font-semibold">🔗 Benzer Sorular</span>
+                  {related.map((rq) => {
+                    // Kategori adını slug'a çevir (SEO friendly)
+                    const slugifyCat = (cat: string): string => {
+                      const map: Record<string, string> = {
+                        "python-basics": "python-basics",
+                        "strings": "strings",
+                        "list-dict": "list-dict",
+                        "pandas": "pandas",
+                        "algorithms": "algorithms",
+                      };
+                      return map[cat] || cat.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+                    };
+                    return (
+                      <a
+                        key={rq.id}
+                        href={`/interviews/${slugifyCat(rq.category || "python-basics")}/${rq.slug || getQuestionMeta(rq.id)?.slug || String(rq.id)}`}
+                        className="block p-2 rounded bg-white/[0.03] border border-white/10 hover:border-cyan-500/30"
+                      >
+                        <span className="text-[11px] text-white/80 line-clamp-1">{rq.title}</span>
+                      </a>
+                    );
+                  })}
+                </div>
+              );
+            })()}
           </div>
         )}
 
