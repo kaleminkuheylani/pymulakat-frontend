@@ -267,7 +267,7 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto">
         {tab === "question" && (
-          <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} />
+          <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} testCases={testCases} />
         )}
 
         {tab === "workspace" && (

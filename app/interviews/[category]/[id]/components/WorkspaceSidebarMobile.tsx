@@ -15,6 +15,10 @@ interface WorkspaceSidebarMobileProps {
   interview: Interview;
   isGuest: boolean;
   onLogin: () => void;
+  testCases?: {
+    function_name: string;
+    test_cases: Array<{ input: any; expected: any; description?: string }>;
+  } | null;
 }
 
 // ── Helpers ──
@@ -49,7 +53,7 @@ const HintCard = memo(function HintCard({ hint, revealed, onReveal }: { hint: st
 });
 
 // ── Main ──
-export function WorkspaceSidebarMobile({ interview, isGuest, onLogin }: WorkspaceSidebarMobileProps) {
+export function WorkspaceSidebarMobile({ interview, isGuest, onLogin, testCases }: WorkspaceSidebarMobileProps) {
   const [revealedHints, setRevealedHints] = useState<Set<number>>(new Set());
   const meta = getQuestionMeta(interview.id);
   const hintsList = interview.hints && interview.hints.length > 0 ? interview.hints : [];
@@ -99,6 +103,54 @@ export function WorkspaceSidebarMobile({ interview, isGuest, onLogin }: Workspac
         <h3 className="text-[10px] uppercase tracking-wider text-white/40 font-bold mb-1">Soru</h3>
         <p className="text-[12px] text-white/80 whitespace-pre-line">{interview.description}</p>
       </div>
+
+      {/* Beklenen Fonksiyon */}
+      {testCases && (
+        <div className="p-2.5 rounded-lg bg-white/5 border border-white/10">
+          <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">
+            Beklenen Fonksiyon
+          </div>
+          <code className="text-amber-400 text-[13px] font-mono">
+            def {testCases.function_name}(...)
+          </code>
+        </div>
+      )}
+
+      {/* Örnek Test Caseler — misafir + giriş yapmıs herkes görebilir */}
+      {testCases && testCases.test_cases.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-xs font-semibold text-white/80">Test Örnekleri</h3>
+            <span className="text-[10px] text-white/40">({testCases.test_cases.length})</span>
+          </div>
+          {testCases.test_cases.slice(0, 3).map((tc, i) => (
+            <details
+              key={i}
+              className="rounded-lg border border-white/10 bg-white/[0.02] overflow-hidden"
+            >
+              <summary className="cursor-pointer px-3 py-2 text-[11px] font-semibold text-white/70 hover:bg-white/5 select-none flex items-center justify-between">
+                <span>Örnek #{i + 1}</span>
+                <span className="text-white/30 text-[10px]">▾ aç</span>
+              </summary>
+              <div className="px-3 py-2 space-y-1.5 border-t border-white/5">
+                <div>
+                  <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5 font-bold">İnput</div>
+                  <pre className="text-[10px] font-mono text-white/70 bg-black/30 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.input)}</pre>
+                </div>
+                <div>
+                  <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5 font-bold">Beklenen</div>
+                  <pre className="text-[10px] font-mono text-green-400/80 bg-black/30 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.expected)}</pre>
+                </div>
+              </div>
+            </details>
+          ))}
+          {testCases.test_cases.length > 3 && (
+            <p className="text-[10px] text-white/40 text-center">
+              +{testCases.test_cases.length - 3} örnek daha — çalıştırmak için giriş yapın
+            </p>
+          )}
+        </div>
+      )}
 
       {/* Complexity */}
       {interview.complexity && (
