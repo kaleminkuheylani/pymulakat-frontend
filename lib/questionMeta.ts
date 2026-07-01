@@ -102,18 +102,17 @@ export function getQuestionMeta(id: number): QuestionMeta {
 
 /**
  * Slug'tan ID'ye çevir (canonical URL routing).
- * Hem DB slug hem QuestionMeta slug kabul eder.
- * Örn: "palindrom-kontrol" → 1
- *      "fibonacci-dizisi" → 9
+ * Sadece QuestionMeta.slug ile çalışır (DB ile senkronize).
+ * Örn: "fibonacci-dizisi" → 9
  */
 export function getIdFromSlug(slug: string): number | null {
+  // 1. Slug direkt QuestionMeta'da var mi?
   for (const idStr of Object.keys(QUESTION_META)) {
     const id = parseInt(idStr, 10);
     const m = QUESTION_META[id];
-    if (slugifyTitle(m.title) === slug || m.slug === slug) {
-      return id;
-    }
+    if (m.slug === slug) return id;
   }
+  // 2. Belki slug zaten ID mi? (sayisal slug)
   const asNum = parseInt(slug, 10);
   if (!isNaN(asNum) && QUESTION_META[asNum]) return asNum;
   return null;

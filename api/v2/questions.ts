@@ -10,33 +10,37 @@ export interface TestCase {
   description?: string;
 }
 
+// Backend QuestionOut ile %100 uyumlu
 export interface Question {
   id: number;
   title: string;
-  category: string;
-  level: string;
   description: string;
-  starter_code?: string;
-  function_name?: string;
-  tags?: string[];
-  hints?: string[];
-  // 🆕 SEO & içerik
-  explanation?: string;
-  complexity?: string;
-  related_concepts?: string[];
-  related_question_ids?: number[];
-  slug?: string;
-  tutorial_slug?: string;
-  meta_title?: string;
-  meta_description?: string;
-  // Related question objects (server-side prefetch ile doldurulur)
-  related_questions?: Array<{
+  level: string | null;
+  topic: string | null;
+  category: string | null;
+  tags: string[];
+  starter_code: string | null;
+  test_count: number;
+  function_name: string | null;
+  hints: string[];
+  // SEO
+  explanation: string | null;
+  complexity: string | null;
+  related_concepts: string[];
+  related_question_ids: number[];
+  tutorial_slug: string | null;
+  slug: string | null;
+  meta_title: string | null;
+  meta_description: string | null;
+  meta_keywords: string[];
+  // Server-side prefetch
+  related_questions: Array<{
     id: number;
     title: string;
     category: string;
     level: string;
+    slug?: string;
   }>;
-  [key: string]: any;
 }
 
 export interface QuestionTests {

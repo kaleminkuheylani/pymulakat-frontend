@@ -4,12 +4,12 @@
 // AND legacy ID URLs (/interviews/python-basics/3) — slug gelirse ID'ye resolve eder
 
 import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import Link from "next/link";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
-import { getIdFromSlug, getQuestionMeta, slugifyTitle } from "../../../../lib/questionMeta";
+import { getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 
 export const dynamic = "force-dynamic";
 
@@ -201,35 +201,18 @@ async function getApiBase(): Promise<string> {
 export default async function Page({ params }: PageProps) {
   const resolvedParams = await params;
 
-  // ✅ Slug-based canonical routing (SEO duplication önleme):
-  //   - /interviews/{cat}/{slug}  → render (canonical, indexlenir)
-  //   - /interviews/{cat}/{id}    → redirect → slug URL (301)
-  const idAsNumber = parseInt(resolvedParams.id, 10);
-  let actualId = resolvedParams.id;
-
-  if (isNaN(idAsNumber)) {
-    // Slug geldi — ID'yi bul
-    const resolvedId = getIdFromSlug(resolvedParams.id);
-    if (resolvedId) {
-      // Slug zaten canonical, direkt render
-      actualId = String(resolvedId);
-    } else {
-      // Slug bulunamadı, 404'e düşsün
-      actualId = "0";
-    }
-  } else {
-    // ID geldi — slug'a redirect (canonical URL'e 301)
-    const qMeta = getQuestionMeta(idAsNumber);
-    const qSlug = qMeta?.slug || slugifyTitle(qMeta?.title || "");
-    if (qSlug) {
-      redirect(`/interviews/${resolvedParams.category}/${qSlug}`);
-    }
-    actualId = String(idAsNumber);
+  // ✅ Canonical routing middleware tarafindan yonetiliyor:
+  //   - /interviews/{cat}/{slug}  → burada render (canonical, indexlenir)
+  //   - /interviews/{cat}/{id}    → middleware slug URL'e yonlendirir (308)
+  // Burada sadece slug'in gecerli oldugunu dogrulayip fetch ediyoruz.
+  const resolvedId = getIdFromSlug(resolvedParams.id);
+  if (!resolvedId) {
+    notFound();
   }
 
   const [mobile, seoQ] = await Promise.all([
     isMobileDevice(),
-    fetchQuestionSEO(resolvedParams.category, actualId),
+    fetchQuestionSEO(resolvedParams.category, String(resolvedId)),
   ]);
 
   // Related soruları paralel çek (SEO + workspace için)
