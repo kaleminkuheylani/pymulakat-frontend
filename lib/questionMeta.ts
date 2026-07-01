@@ -119,7 +119,8 @@ export function getIdFromSlug(slug: string): number | null {
   for (const idStr of Object.keys(QUESTION_META)) {
     const id = parseInt(idStr, 10);
     const m = QUESTION_META[id];
-    if (slugifyTitle(m.title) === slug) {
+    // Hem DB title (İngilizce) hem QuestionMeta title (Türkçe) slug'ı kabul et
+    if (slugifyTitle(m.title) === slug || m.slug === slug) {
       return id;
     }
   }
