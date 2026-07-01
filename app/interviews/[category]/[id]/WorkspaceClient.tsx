@@ -30,6 +30,7 @@ const LEVEL_CONFIG: Record<string, { label: string; color: string; bg: string; b
 
 interface Props {
   initialParams: { category: string; id: string };
+  readonly?: boolean;
 }
 
 interface AttemptPayload {

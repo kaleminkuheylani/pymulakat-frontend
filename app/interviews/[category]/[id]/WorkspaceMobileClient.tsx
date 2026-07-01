@@ -25,8 +25,9 @@ export const dynamic_ = "force-dynamic";
 
 interface Props {
   initialParams?: { category: string; id: string };
+  readonly?: boolean;
 }
-export default function WorkspaceMobileClient({ initialParams }: Props) {
+export default function WorkspaceMobileClient({ initialParams, readonly = false }: Props) {
   const router = useRouter();
   const { user } = useUser();
   const { status: pyStatus, runTests } = usePyodide();
@@ -134,6 +135,7 @@ export default function WorkspaceMobileClient({ initialParams }: Props) {
   );
 
   const handleRun = useCallback(async () => {
+    if (readonly) return; // Salt okunur önizleme — çalıştırma yok
     if (!user) {
       const qSlug = (interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id);
       const redirect = encodeURIComponent(`/interviews/${category}/${qSlug}`);
@@ -159,7 +161,7 @@ export default function WorkspaceMobileClient({ initialParams }: Props) {
     } finally {
       setRunning(false);
     }
-  }, [user, testCases, running, pyStatus, runTests, code, submitAttempt, router, category, interview, id]);
+  }, [readonly, user, testCases, running, pyStatus, runTests, code, submitAttempt, router, category, interview, id]);
 
   const handleNextQuestion = useCallback(() => {
     if (!category || !interview) return;
@@ -225,13 +227,19 @@ export default function WorkspaceMobileClient({ initialParams }: Props) {
             🧪 {results.length > 0 && <span className="ml-0.5">{results.length}</span>}
           </button>
         </div>
-        <button
-          onClick={handleRun}
-          disabled={running || pyStatus !== "ready"}
-          className="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-900 text-[11px] font-bold disabled:opacity-50"
-        >
-          {running ? "..." : "▶ Çalıştır"}
-        </button>
+        {readonly ? (
+          <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/40 text-[10px] font-semibold uppercase tracking-wider" title="Salt okunur önizleme">
+            👁 Önizleme
+          </span>
+        ) : (
+          <button
+            onClick={handleRun}
+            disabled={running || pyStatus !== "ready"}
+            className="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-900 text-[11px] font-bold disabled:opacity-50"
+          >
+            {running ? "..." : "▶ Çalıştır"}
+          </button>
+        )}
       </div>
 
       {/* Tab content */}
@@ -242,7 +250,7 @@ export default function WorkspaceMobileClient({ initialParams }: Props) {
 
         {tab === "workspace" && (
           <div className="h-full pb-20">
-            <CodeEditor ref={editorRef} value={code} onChange={setCode} height="100%" language="python" />
+            <CodeEditor ref={editorRef} value={code} onChange={setCode} height="100%" language="python" readOnly={readonly || isGuest} />
           </div>
         )}
 

@@ -168,8 +168,11 @@ async function isMobileDevice(): Promise<boolean> {
 }
 
 // ─── Page ─────────────────────────────────────────────────
-export default async function Page({ params }: PageProps) {
-  const resolvedParams = await params;
+export default async function Page({ params, searchParams }: PageProps) {
+  const [resolvedParams, resolvedSearch] = await Promise.all([params, searchParams]);
+  // 📌 ?readonly=true → mobile client'ta editör kilitli + Run butonu yok
+  //    Demo/embed/paylaşım linkleri için.
+  const readonly = resolvedSearch?.readonly === "true";
 
   // ✅ Canonical routing middleware tarafindan yonetiliyor:
   //   - /interviews/{cat}/{slug}  → burada render (canonical, indexlenir)
@@ -210,7 +213,7 @@ export default async function Page({ params }: PageProps) {
         />
       )}
 
-      <Component initialParams={resolvedParams} />
+      <Component initialParams={resolvedParams} readonly={readonly} />
     </>
   );
 }
