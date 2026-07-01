@@ -9,7 +9,7 @@ import {
   Question,
   QuestionTests,
 } from "../../../../api/v2/questions";
-import { getQuestionMeta, slugifyTitle } from "../../../../lib/questionMeta";
+import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 import { CodeEditor, CodeEditorRef } from "../../../../components/Editor";
 import { usePyodide, TestRunResult } from "../../../../hooks/usePyodide";
 import { toast, Toaster } from "sonner";
@@ -122,15 +122,21 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
   }
 
   const { category, id } = initialParams;
-  const questionId = parseInt(id, 10);
 
-  // ✅ Guard 2
+  // ✅ Slug → ID donusumu (canonical URL routing)
+  let questionId = parseInt(id, 10);
   if (isNaN(questionId)) {
-    return (
-      <div className="h-screen bg-[#050816] flex items-center justify-center">
-        <p className="text-red-400 text-sm">Geçersiz soru ID</p>
-      </div>
-    );
+    // Slug geldi — QuestionMeta'dan ID'ye cevir
+    const resolvedId = getIdFromSlug(id);
+    if (resolvedId) {
+      questionId = resolvedId;
+    } else {
+      return (
+        <div className="h-screen bg-[#050816] flex items-center justify-center">
+          <p className="text-red-400 text-sm">Geçersiz soru ID</p>
+        </div>
+      );
+    }
   }
 
   // ✅ Hooks (tek sefer, sabit sıra)
