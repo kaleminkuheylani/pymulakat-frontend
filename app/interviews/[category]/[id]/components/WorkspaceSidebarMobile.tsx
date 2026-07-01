@@ -113,42 +113,9 @@ export function WorkspaceSidebarMobile({ interview, isGuest, onLogin, testCases 
           <code className="text-amber-400 text-[13px] font-mono">
             def {testCases.function_name}(...)
           </code>
-        </div>
-      )}
-
-      {/* Örnek Test Caseler — misafir + giriş yapmıs herkes görebilir */}
-      {testCases && testCases.test_cases.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-xs font-semibold text-white/80">Test Örnekleri</h3>
-            <span className="text-[10px] text-white/40">({testCases.test_cases.length})</span>
-          </div>
-          {testCases.test_cases.slice(0, 3).map((tc, i) => (
-            <details
-              key={i}
-              className="rounded-lg border border-white/10 bg-white/[0.02] overflow-hidden"
-            >
-              <summary className="cursor-pointer px-3 py-2 text-[11px] font-semibold text-white/70 hover:bg-white/5 select-none flex items-center justify-between">
-                <span>Örnek #{i + 1}</span>
-                <span className="text-white/30 text-[10px]">▾ aç</span>
-              </summary>
-              <div className="px-3 py-2 space-y-1.5 border-t border-white/5">
-                <div>
-                  <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5 font-bold">İnput</div>
-                  <pre className="text-[10px] font-mono text-white/70 bg-black/30 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.input)}</pre>
-                </div>
-                <div>
-                  <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5 font-bold">Beklenen</div>
-                  <pre className="text-[10px] font-mono text-green-400/80 bg-black/30 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.expected)}</pre>
-                </div>
-              </div>
-            </details>
-          ))}
-          {testCases.test_cases.length > 3 && (
-            <p className="text-[10px] text-white/40 text-center">
-              +{testCases.test_cases.length - 3} örnek daha — çalıştırmak için giriş yapın
-            </p>
-          )}
+          <p className="text-[10px] text-white/40 mt-1.5">
+            Test case'ler için <span className="text-amber-300/80">Testler</span> tab'ına bak.
+          </p>
         </div>
       )}
 
@@ -179,7 +146,7 @@ export function WorkspaceSidebarMobile({ interview, isGuest, onLogin, testCases 
             👁 Misafir Modu
           </div>
           <p className="text-[11px] text-indigo-200/80 leading-relaxed mb-2">
-            Test caseleri görünür, kodu <span className="font-semibold text-indigo-200">inceleyebilirsin</span>. Çalıştırmak için giriş yap.
+            Soru açıklamasını <span className="font-semibold text-indigo-200">inceleyebilirsin</span>. Test case'ler ve kod çalıştırma için giriş yap.
           </p>
           <a
             href={`/login?returnUrl=${encodeURIComponent(`/interviews/${slugifyCat(interview.category || "python-basics")}/${interview.slug || getQuestionMeta(interview.id)?.slug || String(interview.id)}`)}`}

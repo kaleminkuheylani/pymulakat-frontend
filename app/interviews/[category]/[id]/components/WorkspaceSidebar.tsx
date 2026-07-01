@@ -133,50 +133,14 @@ export default function WorkspaceSidebar({
             </div>
           )}
 
-          {/* Örnek Test Caseler — misafir + giriş yapmıs herkes görebilir */}
-          {testCases && testCases.test_cases.length > 0 && (
-            <div className="space-y-2">
-              <div className="flex items-center justify-between px-1">
-                <h3 className="text-sm font-semibold text-white/80">Test Örnekleri</h3>
-                <span className="text-[10px] text-white/40">({testCases.test_cases.length})</span>
-              </div>
-              {testCases.test_cases.slice(0, 3).map((tc, i) => (
-                <details
-                  key={i}
-                  className="rounded-lg border border-white/10 bg-white/[0.02] overflow-hidden"
-                >
-                  <summary className="cursor-pointer px-3 py-2 text-xs font-semibold text-white/70 hover:bg-white/5 select-none flex items-center justify-between">
-                    <span>Örnek #{i + 1}</span>
-                    <span className="text-white/30 text-[10px]">▾ aç</span>
-                  </summary>
-                  <div className="px-3 py-2 space-y-2 border-t border-white/5">
-                    <div>
-                      <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5 font-bold">İnput</div>
-                      <pre className="text-[11px] font-mono text-white/70 bg-black/30 p-2 rounded overflow-x-auto">{JSON.stringify(tc.input)}</pre>
-                    </div>
-                    <div>
-                      <div className="text-[9px] uppercase tracking-wider text-white/40 mb-0.5 font-bold">Beklenen</div>
-                      <pre className="text-[11px] font-mono text-green-400/80 bg-black/30 p-2 rounded overflow-x-auto">{JSON.stringify(tc.expected)}</pre>
-                    </div>
-                  </div>
-                </details>
-              ))}
-              {testCases.test_cases.length > 3 && (
-                <p className="text-[10px] text-white/40 text-center">
-                  +{testCases.test_cases.length - 3} örnek daha — çalıştırmak için giriş yapın
-                </p>
-              )}
-            </div>
-          )}
-
-          {/* Misafir CTA (login olmadan test caseler da görünür, sadece çalıştırma login gerektirir) */}
+          {/* Misafir CTA — test caseler editor'un kendi tab'ında, description'da değil */}
           {isGuest && (
             <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
               <div className="text-[10px] uppercase tracking-wider text-indigo-300 mb-1.5">
                 👁 Misafir Modu
               </div>
               <p className="text-xs text-indigo-200/80 leading-relaxed">
-                Test caseleri <span className="font-semibold text-indigo-200">inceleyebilir</span>, kodu <span className="font-semibold text-indigo-200">inceleyebilirsin</span>. Çalıştırmak için{" "}
+                Soru açıklamasını <span className="font-semibold text-indigo-200">inceleyebilirsin</span>. Test case'ler ve kod çalıştırma için{" "}
                 <a
                   href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
                   className="underline font-semibold text-indigo-300 hover:text-indigo-200"

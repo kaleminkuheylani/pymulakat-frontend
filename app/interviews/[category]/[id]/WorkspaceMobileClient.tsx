@@ -71,7 +71,8 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
   const [testCases, setTestCases] = useState<QuestionTests | null>(null);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
-  const [tab, setTab] = useState<"question" | "workspace" | "tests">("workspace");
+  // 📌 Default "tests" — test caseler ilk açılışta kendi tab'ında görünsün (desktop ile eşit)
+  const [tab, setTab] = useState<"question" | "workspace" | "tests">("tests");
   const [showShareModal, setShowShareModal] = useState(false);
 
   // ─── Guards ──
@@ -209,8 +210,9 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
     }
   }, [router, category]);
 
-  // ─── Render: Loading ──
-  if (!interview || !testCases) {
+  // ─── Render: Loading — sadece interview beklenir, test case yoksa
+  //              WorkspaceTestResults kendi loading state'ini gösterir (default tab = tests).
+  if (!interview) {
     return (
       <div className="h-screen bg-[#050816] flex items-center justify-center">
         <div className="flex flex-col items-center gap-3">
@@ -277,7 +279,7 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
         )}
 
         {tab === "tests" && (
-          <WorkspaceTestResults results={results} isRunning={running} />
+          <WorkspaceTestResults results={results} isRunning={running} testCases={testCases} />
         )}
       </div>
 
@@ -292,7 +294,11 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
                 tab === k ? "text-white border-t-2 border-amber-500" : "text-white/40"
               }`}
             >
-              {k === "question" ? "Soru" : k === "workspace" ? "Editör" : `Testler (${results.length})`}
+              {k === "question"
+                ? "Soru"
+                : k === "workspace"
+                ? "Editör"
+                : `Testler (${testCases?.test_cases.length ?? 0})`}
             </button>
           ))}
         </div>
