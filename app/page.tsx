@@ -1,10 +1,16 @@
 "use client"
 import { motion } from "framer-motion"
 import Link from "next/link"
+import Image from "next/image"
 import { useState } from "react"
 import { useUser } from "../hooks/useUser"
 
-// ─── Grid Background ─────────────────────────────────
+// ═══════════════════════════════════════════════════════════
+// Landing Page — pythonmulakat.com
+// Ana renkler: bg-[#050816], text-white, accent amber-500 + indigo-500
+// ═══════════════════════════════════════════════════════════
+
+// ─── Grid Background ─────────────────────────────────────
 function GridBackground() {
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -21,15 +27,34 @@ function GridBackground() {
   )
 }
 
-// ─── Floating Badge ───────────────────────────────────
+// ─── Logo (favicon) ──────────────────────────────────────
+function BrandLogo({ size = 56 }: { size?: number }) {
+  return (
+    <div
+      className="relative inline-flex items-center justify-center rounded-2xl overflow-hidden shadow-lg shadow-amber-500/30 ring-1 ring-white/10"
+      style={{ width: size, height: size, background: "linear-gradient(135deg, #f59e0b 0%, #6366f1 100%)" }}
+    >
+      <Image
+        src="/favicon-32x32.png"
+        alt="PythonMulakat logosu"
+        width={size}
+        height={size}
+        className="object-contain p-1.5"
+        unoptimized
+      />
+    </div>
+  )
+}
+
+// ─── Floating Badge ───────────────────────────────────────
 function FloatingBadge({ text, index }: { text: string; index: number }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.2, duration: 0.6 }}
+      transition={{ delay: index * 0.15, duration: 0.6 }}
       whileHover={{ scale: 1.05, y: -4 }}
-      className="group relative border border-white/10 bg-white/5 backdrop-blur-sm rounded-2xl px-6 py-4 hover:border-indigo-400/50 transition-colors"
+      className="group relative border border-white/10 bg-white/5 backdrop-blur-sm rounded-2xl px-5 py-3 hover:border-indigo-400/50 transition-colors"
     >
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/0 via-indigo-500/10 to-amber-500/0 opacity-0 group-hover:opacity-100 transition-opacity" />
       <p className="relative text-sm font-semibold tracking-wider text-white/80 uppercase">
@@ -39,17 +64,42 @@ function FloatingBadge({ text, index }: { text: string; index: number }) {
   )
 }
 
-// ─── User-Aware Hero ──────────────────────────────────
+// ─── Hero ─────────────────────────────────────────────────
 function Hero({ user }: { user: { username: string } | null }) {
   return (
     <section className="relative z-10 flex flex-col items-center justify-center px-6 pt-12 pb-16">
+      {/* Logo */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.8 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.6 }}
+        className="mb-6"
+      >
+        <BrandLogo size={72} />
+      </motion.div>
+
+      {/* Marka yazısı */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2, duration: 0.4 }}
+        className="text-center mb-6"
+      >
+        <div className="text-2xl font-extrabold tracking-tight text-white">
+          Python<span className="bg-gradient-to-r from-indigo-400 to-amber-400 bg-clip-text text-transparent">Mulakat</span>
+        </div>
+        <div className="text-[11px] uppercase tracking-[0.2em] text-white/40 mt-1">
+          Kişisel Python Mülakat Koçun
+        </div>
+      </motion.div>
+
       {/* Badges */}
-      <div className="flex flex-wrap justify-center gap-4 mb-10 max-w-3xl">
+      <div className="flex flex-wrap justify-center gap-3 mb-10 max-w-3xl">
         {[
-          "KODLAMA ORTAMI GEREKMEZ",
-          "VSCODE ORTAMI DESTEKLİ",
-          "MÜFREDATA UYGUN SORULAR",
-          "ALGORİTMA & KÜTÜPHANE",
+          "KURULUM YOK",
+          "TARAYICI İÇİ PYTHON",
+          "OTOMATİK PUANLAMA",
+          "TÜRKÇE İÇERİK",
         ].map((f, i) => (
           <FloatingBadge key={i} text={f} index={i} />
         ))}
@@ -72,18 +122,21 @@ function Hero({ user }: { user: { username: string } | null }) {
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.6, duration: 0.8 }}
-        className="text-center mb-6"
+        className="text-center mb-6 max-w-4xl"
       >
-        <span className="block text-5xl md:text-7xl font-extrabold text-white leading-tight">
+        <span className="block text-4xl md:text-6xl lg:text-7xl font-extrabold text-white leading-tight">
           Python{" "}
           <span className="bg-gradient-to-r from-indigo-400 via-purple-400 to-amber-400 bg-clip-text text-transparent">
-            Gurusu Ol
+            Mülakat Hazırlığını
           </span>
+          <br />
+          <span className="text-white/95">Ciddiye Al</span>
         </span>
-        <span className="block text-xl md:text-2xl text-white/40 mt-4 font-light max-w-2xl mx-auto">
-          Python öğrenmek isteyen herkes için tasarlanmıştır, her seviyeye hitap eden modüller içeren
+        <span className="block text-base md:text-xl text-white/50 mt-6 font-light max-w-2xl mx-auto leading-relaxed">
+          Tarayıcıda Python kodu yaz, otomatik puanla. Yapay zekâ koçun <strong className="text-amber-300">seni takip eder</strong>,
+          zayıf olduğun konuyu tespit eder, kişisel öneriler gönderir.
           <br className="hidden md:block" />
-          interaktif bir platformdur. (Aşağıdaki sorular kayıt olmadan da çözülebilir.)
+          Kurulum yok. Python kütüphanesi yok. Sadece 60 saniyede başla.
         </span>
       </motion.h1>
 
@@ -123,7 +176,7 @@ function Hero({ user }: { user: { username: string } | null }) {
                 whileTap={{ scale: 0.97 }}
                 className="relative group bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
               >
-                <span className="relative z-10">Kayıt Ol — Ücretsiz</span>
+                <span className="relative z-10">Ücretsiz Başla — 60 Saniyede</span>
               </motion.button>
             </Link>
             <Link href="/interviews/strings/51">
@@ -132,96 +185,119 @@ function Hero({ user }: { user: { username: string } | null }) {
                 whileTap={{ scale: 0.97 }}
                 className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
               >
-                💖 Emoji Duygu Analizi →
+                👀 Kayıt Olmadan Dene
               </motion.button>
             </Link>
           </>
         )}
       </motion.div>
+
+      {/* Trust signals */}
+      {!user && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 1.1, duration: 0.6 }}
+          className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-8 text-xs text-white/40"
+        >
+          <span>✓ Kredi kartı yok</span>
+          <span>✓ Spam yok</span>
+          <span>✓ Kurulum yok</span>
+          <span>✓ Süresiz ücretsiz</span>
+        </motion.div>
+      )}
     </section>
   )
 }
 
-// ─── Feature Card ──────────────────────────────────────
-function FeatureCard({ title, description, index }: { title: string; description: string; index: number }) {
+// ─── Stat Card ─────────────────────────────────────────────
+function StatCard({ value, label, color }: { value: string | number; label: string; color: string }) {
+  return (
+    <div className="text-center">
+      <div className={`text-3xl md:text-4xl font-bold mb-1 ${color}`}>{value}</div>
+      <div className="text-white/40 text-xs md:text-sm">{label}</div>
+    </div>
+  )
+}
+
+// ─── Feature Card ─────────────────────────────────────────
+function FeatureCard({
+  icon, title, description, highlight, index,
+}: {
+  icon: string
+  title: string
+  description: string
+  highlight?: string
+  index: number
+}) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 40 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      transition={{ delay: index * 0.15, duration: 0.6 }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
       whileHover={{ y: -6 }}
-      className="relative group border border-white/10 bg-white/[0.03] backdrop-blur-sm rounded-2xl p-8 hover:border-indigo-500/30 transition-all duration-300"
+      className="relative group border border-white/10 bg-white/[0.03] backdrop-blur-sm rounded-2xl p-6 hover:border-indigo-500/30 transition-all duration-300 overflow-hidden"
     >
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="relative">
-        <h3 className="text-white font-bold text-lg mb-3">{title}</h3>
-        <p className="text-white/50 text-sm leading-relaxed">{description}</p>
+        <div className="flex items-start justify-between mb-4">
+          <div className="text-3xl">{icon}</div>
+          {highlight && (
+            <span className="text-[10px] px-2 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 font-semibold uppercase tracking-wider">
+              {highlight}
+            </span>
+          )}
+        </div>
+        <h3 className="text-white font-bold text-lg mb-2">{title}</h3>
+        <p className="text-white/55 text-sm leading-relaxed">{description}</p>
       </div>
     </motion.div>
   )
 }
 
-// ─── Stat Card ─────────────────────────────────────────
-function StatCard({ value, label, color }: { value: string | number; label: string; color: string }) {
-  return (
-    <div className="text-center">
-      <div className={`text-3xl font-bold mb-1 ${color}`}>{value}</div>
-      <div className="text-white/40 text-sm">{label}</div>
-    </div>
-  )
-}
-
-// ─── Install Command ───────────────────────────────────
-function InstallCommand() {
-  const [copied, setCopied] = useState(false)
-  const command = "pip install pythonmulakat"
-
-  const handleCopy = async () => {
-    try {
-      await navigator.clipboard.writeText(command)
-      setCopied(true)
-      setTimeout(() => setCopied(false), 2000)
-    } catch (err) {
-      console.error("Kopyalama başarısız:", err)
-    }
-  }
-
+// ─── Step Card (Nasıl Çalışır) ─────────────────────────────
+function StepCard({ number, title, description }: { number: number; title: string; description: string }) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
+      initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="flex justify-center mt-8"
+      transition={{ delay: number * 0.15, duration: 0.5 }}
+      className="relative"
     >
-      <div className="group relative border border-white/10 bg-[#0a0e1a] backdrop-blur-sm rounded-2xl p-4 flex flex-col sm:flex-row items-center justify-between gap-4 max-w-lg w-full shadow-2xl">
-        <div className="flex items-center gap-3">
-          <span className="text-indigo-400 font-mono text-xl">❯</span>
-          <code className="text-white font-mono text-lg tracking-wide">{command}</code>
+      <div className="flex items-start gap-4">
+        <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center text-white font-bold text-lg shadow-lg shadow-indigo-500/20">
+          {number}
         </div>
-        <button
-          onClick={handleCopy}
-          className="relative px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 border border-white/10 text-white/70 hover:text-white text-sm font-medium transition-all flex items-center gap-2"
-        >
-          {copied ? (
-            <>
-              <span className="text-green-400">✓</span>
-              <span>Kopyalandı</span>
-            </>
-          ) : (
-            <>
-              <span>📋</span>
-              <span>Kopyala</span>
-            </>
-          )}
-        </button>
-        <div className="absolute inset-0 rounded-2xl bg-gradient-to-r from-indigo-500/10 to-amber-500/10 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+        <div>
+          <h4 className="text-white font-bold text-lg mb-1">{title}</h4>
+          <p className="text-white/60 text-sm leading-relaxed">{description}</p>
+        </div>
       </div>
     </motion.div>
   )
 }
 
-// ─── Main Page ─────────────────────────────────────────
+// ─── Testimonial Card (sosyal kanıt placeholder) ──────────
+function StatHighlight({ value, label, sub }: { value: string; label: string; sub: string }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
+      viewport={{ once: true }}
+      className="text-center p-6 rounded-2xl border border-white/10 bg-white/[0.02]"
+    >
+      <div className="text-3xl md:text-5xl font-extrabold bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent mb-2">
+        {value}
+      </div>
+      <div className="text-white font-semibold mb-1">{label}</div>
+      <div className="text-white/40 text-xs">{sub}</div>
+    </motion.div>
+  )
+}
+
+// ─── Main Page ─────────────────────────────────────────────
 export default function HomePage() {
   const { user } = useUser()
 
@@ -230,86 +306,246 @@ export default function HomePage() {
       <GridBackground />
       <Hero user={user} />
 
-      {/* Stats */}
+      {/* Stats bar — sosyal kanıt */}
       <section className="relative z-10 px-6 max-w-6xl mx-auto">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-12 mt-16 pt-10 border-t border-white/5"
+          className="flex flex-wrap justify-center gap-x-12 gap-y-6 mt-12 pt-8 border-t border-white/5"
         >
-          <StatCard value="∞" label="Ömür Boyu Ücretsiz" color="text-amber-400" />
-          <StatCard value="50+" label="Hazır Soru (Şimdilik)" color="text-amber-400" />
-          <StatCard value="0" label="Kurulum Gerekmez" color="text-amber-400" />
+          <StatCard value="60+" label="Python Sorusu" color="text-amber-400" />
+          <StatCard value="9+" label="Kategori" color="text-indigo-400" />
+          <StatCard value="7+" label="Uzman Rehber" color="text-amber-400" />
+          <StatCard value="0" label="Kurulum Gereksinimi" color="text-indigo-400" />
         </motion.div>
       </section>
 
-      {/* Features */}
+      {/* Nasıl Çalışır — 3 adım */}
+      <section className="relative z-10 px-6 py-24 max-w-5xl mx-auto">
+        <div className="text-center mb-14">
+          <span className="text-amber-400 text-xs font-semibold tracking-[0.2em] uppercase">
+            60 saniyede başla
+          </span>
+          <h2 className="text-white text-3xl md:text-5xl font-bold mt-3">
+            Nasıl Çalışır?
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10">
+          <StepCard
+            number={1}
+            title="Hemen Dene"
+            description="Üye olmadan bile bir soruyu açabilir, tarayıcıda Python kodunu yazıp Çalıştır'a basabilirsin. Sıfır kurulum."
+          />
+          <StepCard
+            number={2}
+            title="Kodla, Puanla"
+            description="Pyodide motoru kodunu 100 ms içinde çalıştırır. Test case'ler otomatik puanlar, ipuçları seni yönlendirir."
+          />
+          <StepCard
+            number={3}
+            title="Koçun Takip Eder"
+            description="Çözdükçe mail koçun yeni öneriler gönderir. Hangi konuda zorlandığını görür, en iyi kaynağı önerir."
+          />
+        </div>
+      </section>
+
+      {/* Features grid — sunduklarımız */}
       <section className="relative z-10 px-6 py-20 max-w-6xl mx-auto">
-        <div className="text-center mb-16">
-          <span className="text-amber-400 text-sm font-semibold tracking-widest uppercase">
+        <div className="text-center mb-14">
+          <span className="text-amber-400 text-xs font-semibold tracking-[0.2em] uppercase">
             Platform Özellikleri
           </span>
-          <h2 className="text-white text-4xl md:text-5xl font-bold mt-4 mb-6">
-            Bu Platform Ne Sunuyor?
+          <h2 className="text-white text-3xl md:text-5xl font-bold mt-3 mb-4">
+            Neler Sunuyoruz?
           </h2>
-          <p className="text-white/50 text-lg max-w-3xl mx-auto leading-relaxed">
-            PythonMulakat, Python için geliştirilmiş interaktif bir platformdur. Gerçek dünya soruları, interaktif güvenli
-            sandbox ortamı sunan PythonMulakat hem geliştiricilere ve yeni öğrenenlere interaktif ortam hazırlar.
+          <p className="text-white/50 text-base md:text-lg max-w-3xl mx-auto leading-relaxed">
+            Python öğrenmeye yeni başlayanlardan junior dev'lere — her seviyeye uygun,
+            tarayıcı tabanlı, kişiselleştirilmiş bir pratik deneyimi.
           </p>
         </div>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <FeatureCard title="Pyodide Sandbox" description="Pyodide ortamı ile kolayca code execution sağlar. Tarayıcı üzerinde Python kodunuzu çalıştırın." index={0} />
-          <FeatureCard title="Hazır Test Caseler" description="Developer dostu test caseler önceden oluşturulmuş sisteme entegre edilmiştir." index={1} />
-          <FeatureCard title="Paket Entegrasyonu" description="pip install pymulakat ile projelerinize hızlıca entegre edin, yerel ve web ortamında çalıştırın." index={2} />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+          <FeatureCard
+            icon="⚡"
+            title="Tarayıcıda Python"
+            description="Pyodide motoruyla kurulum gerektirmeden Python kodu çalıştır. Pyodide WASM ile 100 ms'de başlar."
+            index={0}
+          />
+          <FeatureCard
+            icon="🧪"
+            title="Otomatik Test Caseleri"
+            description="Her sorunun kendi test suite'i var. Yazdığın kod anında puanlanır, hangi case'in başarısız olduğunu görürsün."
+            index={1}
+          />
+          <FeatureCard
+            icon="💡"
+            title="İpuçları + Açıklamalar"
+            description="Çözemediğinde sıralı ipuçları seni yönlendirir. Çözdükten sonra 'Yaklaşım & Açıklama' bloku konuyu pekiştirir."
+            index={2}
+          />
+          <FeatureCard
+            icon="📘"
+            title="Uzman Rehberler"
+            description="Palindrom, FizzBuzz, Asal Sayı gibi konular için 3 farklı yaklaşımla yazılmış detaylı rehberler."
+            highlight="7+ rehber"
+            index={3}
+          />
+          <FeatureCard
+            icon="📬"
+            title="Kişisel Mail Koçu"
+            description="10 farklı kural ile çalışan mail koçu: başarı kutlaması, kategori zorluk tespiti, ilgili soru önerileri. Spam yok, sadece değerli içerik."
+            highlight="Yeni!"
+            index={4}
+          />
+          <FeatureCard
+            icon="📱"
+            title="Mobil Uyumlu"
+            description="Telefonda, tablette, masaüstünde aynı deneyim. Paylaşım/embed için ?readonly modu da var."
+            index={5}
+          />
+          <FeatureCard
+            icon="🔗"
+            title="İlgili Soru Zinciri"
+            description="Bir soruyu çözdüğünde, onunla ilişkili kavramları ve sonraki soruları öğrenirsin. Sıralı öğrenme."
+            index={6}
+          />
+          <FeatureCard
+            icon="🎯"
+            title="Seviye Bazlı İçerik"
+            description="Beginner'dan Intermediate'a kadar farklı zorluk seviyelerinde sorular. Her seviyede progress takibi."
+            index={7}
+          />
+          <FeatureCard
+            icon="🏆"
+            title="Sosyal Paylaşım"
+            description="Çözümünü syntax-highlighted kodla Twitter'da paylaş. Profil linkin ile başkalarına ilham ver."
+            index={8}
+          />
         </div>
       </section>
 
-      {/* Install */}
-      <section>
-        <InstallCommand />
-        <div className="text-center mt-10">
-          <span className="inline-flex items-center gap-2 border border-white/10 bg-white/5 rounded-full px-6 py-2.5 text-white/60 text-sm">
-            <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-            Ve daha fazlası yakında eklenecek...
-          </span>
+      {/* Highlight band — AI Koç farkı */}
+      <section className="relative z-10 px-6 py-20">
+        <div className="max-w-5xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="relative overflow-hidden rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-500/[0.07] via-indigo-500/[0.05] to-transparent p-8 md:p-12"
+          >
+            <div className="absolute -right-12 -top-12 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl" />
+            <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl" />
+
+            <div className="relative grid md:grid-cols-[auto_1fr] gap-8 items-center">
+              <div className="flex-shrink-0">
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-amber-400 to-indigo-500 flex items-center justify-center text-4xl shadow-2xl shadow-amber-500/30">
+                  📬
+                </div>
+              </div>
+              <div>
+                <div className="text-[11px] uppercase tracking-[0.2em] text-amber-400 font-semibold mb-2">
+                  Yeni — Fark Yaratan Özellik
+                </div>
+                <h3 className="text-white text-2xl md:text-3xl font-bold mb-3">
+                  Mail kutusunda seni tanıyan bir koç
+                </h3>
+                <p className="text-white/70 text-base leading-relaxed mb-4">
+                  Çoğu platform "kullanıcı gitti, geri gelsin" diye spam atar.
+                  Biz farklıyız: <strong className="text-amber-300">10 farklı kural</strong> ile
+                  sadece gerçekten işine yarayacak öneriler gönderiyoruz.
+                  Çözdüğün konuyu kutlarız, zorlandığın konuda rehber öneririz,
+                  uzun süre gelmediysen hafif bir hatırlatma yaparız.
+                  <strong className="text-white"> AI değil, kural tabanlı — her mail somut bir veriye dayanır.</strong>
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {["İlk çözüm kutlaması", "Milestone", "Streak", "Kategori struggle", "ID-chain", "Concept gap"].map((t) => (
+                    <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">
+                      {t}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* CTA */}
+      {/* Stats highlight — sosyal kanıt */}
+      <section className="relative z-10 px-6 py-16 max-w-5xl mx-auto">
+        <div className="text-center mb-10">
+          <h2 className="text-white text-2xl md:text-4xl font-bold">
+            Rakamlarla PythonMulakat
+          </h2>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <StatHighlight value="60+" label="Çözülmeyi Bekleyen Soru" sub="Her hafta yeni ekleniyor" />
+          <StatHighlight value="9" label="Kategori" sub="Temelden ileri seviyeye" />
+          <StatHighlight value="7+" label="Uzman Rehber" sub="3 farklı yaklaşımla" />
+          <StatHighlight value="10" label="Mail Kuralı" sub="AI'sız, kanıta dayalı" />
+        </div>
+      </section>
+
+      {/* Final CTA */}
       <section className="relative z-10 px-6 py-24">
         <div className="max-w-4xl mx-auto text-center relative">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/10 via-amber-500/10 to-indigo-500/10 rounded-3xl blur-3xl -z-10" />
-          <div className="border border-white/10 bg-white/[0.03] backdrop-blur-sm rounded-3xl p-12 md:p-16">
-            <h2 className="text-white text-4xl md:text-5xl font-bold mb-4">
-              {user ? "Devam Et" : "Hemen Başla"}
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="border border-white/10 bg-white/[0.03] backdrop-blur-sm rounded-3xl p-10 md:p-16"
+          >
+            <div className="flex justify-center mb-4">
+              <BrandLogo size={48} />
+            </div>
+            <h2 className="text-white text-3xl md:text-5xl font-bold mb-4">
+              {user ? "Kaldığın Yerden Devam Et" : "İlk Soruyu 60 Saniyede Çöz"}
             </h2>
-            <p className="text-white/50 text-lg mb-10 max-w-lg mx-auto">
+            <p className="text-white/60 text-base md:text-lg mb-10 max-w-xl mx-auto">
               {user
-                ? "Yeni sorular çöz, ilerlemeni takip et, Python mülakatlarına hazırlanmaya devam et."
-                : "Ücretsiz kayıt ol, Python mülakatlarına hazırlan ve kariyerinde bir adım öne geç."}
+                ? "Yeni sorular seni bekliyor. Bugün bir tane daha çöz, mail kutusundaki koçun ne öneriyor gör."
+                : "Ücretsiz kayıt ol, hemen bir soru aç, tarayıcıda kodunu yaz. Mülakat hazırlığı bu kadar kolay olmalıydı."}
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
               {user ? (
                 <Link href="/interviews">
-                  <button className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all">
-                    Soruları Keşfet
-                  </button>
+                  <motion.button
+                    whileHover={{ scale: 1.04 }}
+                    whileTap={{ scale: 0.97 }}
+                    className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
+                  >
+                    Soruları Keşfet →
+                  </motion.button>
                 </Link>
               ) : (
-                <Link href="/register">
-                  <button className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all">
-                    Ücretsiz Kayıt Ol
-                  </button>
-                </Link>
+                <>
+                  <Link href="/register">
+                    <motion.button
+                      whileHover={{ scale: 1.04 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
+                    >
+                      Ücretsiz Başla — Kayıt Ol
+                    </motion.button>
+                  </Link>
+                  <Link href="/interviews/strings/51">
+                    <motion.button
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
+                    >
+                      👀 Önce Dene
+                    </motion.button>
+                  </Link>
+                </>
               )}
             </div>
             {!user && (
-              <p className="text-white/30 text-sm mt-6">
-                Ömür boyu ücretsiz • Kurulum gerektirmez
+              <p className="text-white/30 text-xs mt-6">
+                Kredi kartı gerektirmez · İstediğin zaman sil · Süresiz ücretsiz
               </p>
             )}
-          </div>
+          </motion.div>
         </div>
       </section>
 
@@ -317,13 +553,11 @@ export default function HomePage() {
       <footer className="relative z-10 border-t border-white/5 px-8 py-8">
         <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-400 flex items-center justify-center">
-              <span className="text-white font-bold text-xs">PM</span>
-            </div>
+            <BrandLogo size={32} />
             <span className="text-white/40 text-sm">© 2026 PythonMulakat. Tüm hakları saklıdır.</span>
           </div>
           <div className="flex items-center gap-6">
-            <a href="#" className="text-white/30 hover:text-white/60 text-sm transition-colors">
+            <a href="mailto:mkemal@pythonmulakat.com" className="text-white/30 hover:text-white/60 text-sm transition-colors">
               mkemal@pythonmulakat.com
             </a>
           </div>

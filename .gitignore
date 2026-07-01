@@ -43,3 +43,5 @@ bun.lockb
 screenshot.mjs
 screenshot-guest.mjs
 screenshot-readonly.mjs
+screenshot-landing.mjs
+screenshot-alternatives.mjs
