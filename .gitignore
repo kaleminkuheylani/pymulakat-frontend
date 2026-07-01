@@ -37,4 +37,7 @@ cron.log
 .vercel/
 
 # Bun
-bun.lockbscreenshot.mjs
+bun.lockb
+
+# Local dev helper
+screenshot.mjs

@@ -87,10 +87,21 @@ export default function WorkspaceClient({ initialParams }: Props) {
   // Hint state (paylaşılan hook)
   const { hintsList, revealedHints, onRevealHint } = useHints(interview);
 
+  // Refs — race-safe attempt submit + cleanup-able share modal timer
+  const inFlightRef = useRef(false);
+  const shareTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
   // Timer
   useEffect(() => {
     const interval = setInterval(() => setSeconds((s) => s + 1), 1000);
     return () => clearInterval(interval);
+  }, []);
+
+  // Cleanup share modal timer on unmount (React strict mode + route change)
+  useEffect(() => {
+    return () => {
+      if (shareTimerRef.current) clearTimeout(shareTimerRef.current);
+    };
   }, []);
 
   // Load question + test cases
@@ -126,6 +137,10 @@ export default function WorkspaceClient({ initialParams }: Props) {
   const submitAttempt = useCallback(
     async (success: boolean, passedTests: number, totalTests: number, executionMs: number) => {
       if (attemptSubmitted) return;
+      // 🚦 Race-safe: eş zamanlı çift submit engeli (in-flight ref)
+      if (inFlightRef.current) return;
+      inFlightRef.current = true;
+
       const payload: AttemptPayload = {
         question_id: questionId,
         user_code: code,
@@ -139,7 +154,9 @@ export default function WorkspaceClient({ initialParams }: Props) {
         await sendAttempt(payload);
         setAttemptSubmitted(true);
         if (success) {
-          setTimeout(() => setShowShareModal(true), 1500);
+          // Önceki timer varsa iptal et, yenisi kur
+          if (shareTimerRef.current) clearTimeout(shareTimerRef.current);
+          shareTimerRef.current = setTimeout(() => setShowShareModal(true), 1500);
         } else {
           toast.error("❌ Bazı testler başarısız", {
             description: "Kodunu gözden geçirip tekrar dene.",
@@ -148,6 +165,8 @@ export default function WorkspaceClient({ initialParams }: Props) {
       } catch (e) {
         console.warn("Attempt submission failed", e);
         toast.error("Attempt gönderilemedi");
+      } finally {
+        inFlightRef.current = false;
       }
     },
     [attemptSubmitted, questionId, code, revealedHints]
@@ -291,6 +310,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
         language="python"
         title={interview.title}
         category={category}
+        slug={interview.slug}
         passedCount={passedCount}
         totalCount={totalCount}
       />

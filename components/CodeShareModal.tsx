@@ -13,6 +13,7 @@ interface CodeShareModalProps {
   language?: string;
   title?: string;
   category?: string;
+  slug?: string | null;
   username?: string;
   durationLabel?: string;
   passedCount?: number;
@@ -77,12 +78,22 @@ export default function CodeShareModal({
   language = "python",
   title,
   category,
+  slug,
   username,
   durationLabel,
   passedCount,
   totalCount,
 }: CodeShareModalProps) {
   const [copied, setCopied] = useState(false);
+
+  // 🔗 Share URL: server-side slug öncelikli (canonical), yoksa client-side fallback.
+  //    Server slug ile senkron tutulmazsa kırık link olur.
+  const shareUrl = (() => {
+    if (typeof window === "undefined") return undefined;
+    const base = `${window.location.origin}/interviews/${category || "python-basics"}`;
+    const path = slug || (title ? slugifyTitleLocal(title) : "");
+    return path ? `${base}/${path}` : undefined;
+  })();
 
   const tweetText = buildTweetText({
     title,
@@ -91,9 +102,7 @@ export default function CodeShareModal({
     totalCount,
     durationLabel,
     code,
-    shareUrl: typeof window !== "undefined"
-      ? `${window.location.origin}/interviews/${category || "python-basics"}/${title ? slugifyTitleLocal(title) : ""}`
-      : undefined,
+    shareUrl,
   });
 
   const handleCopy = async () => {
