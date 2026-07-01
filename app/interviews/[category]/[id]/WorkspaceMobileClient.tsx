@@ -225,10 +225,15 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
   };
 
   const handleNextQuestion = useCallback(() => {
-    if (category && questionId && !isNaN(questionId)) {
-      router.push(`/interviews/${category}/${questionId + 1}`);
-    }
-  }, [router, category, questionId]);
+    // ✅ Canonical URL pattern: slug-based push
+    // interview.title'dan slug üret, yoksa QuestionMeta fallback, yoksa ID+1
+    if (!category || !interview) return;
+    const nextId = (interview.id || 0) + 1;
+    const qSlug = (interview as any).slug
+      || getQuestionMeta(nextId)?.slug
+      || (interview.title ? slugifyTitle(interview.title) : String(nextId));
+    router.push(`/interviews/${category}/${qSlug}`);
+  }, [router, category, interview]);
 
   const handleBackToList = useCallback(() => {
     if (category) {
