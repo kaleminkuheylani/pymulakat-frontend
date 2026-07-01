@@ -29,7 +29,7 @@ interface SEOQuestion {
   related_concepts?: string[];
   related_question_ids?: number[];
   slug?: string;
-  related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
+  related_questions?: Array<{ id: number; title: string; category: string; level: string; slug: string }>;
   tutorial_slug?: string;
   hints?: string[];
 }
@@ -68,7 +68,7 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
 async function fetchRelatedTitles(
   ids: number[],
   apiUrl: string
-): Promise<Array<{ id: number; title: string; category: string; level: string }>> {
+): Promise<Array<{ id: number; title: string; category: string; level: string; slug: string }>> {
   if (!ids?.length) return [];
   try {
     const out = await Promise.all(
@@ -80,10 +80,10 @@ async function fetchRelatedTitles(
         if (!res.ok) return null;
         const json = await res.json();
         const q = json.data || json;
-        return { id: q.id, title: q.title, category: q.category, level: q.level };
+        return { id: q.id, title: q.title, category: q.category, level: q.level, slug: q.slug || "" };
       })
     );
-    return out.filter((x): x is { id: number; title: string; category: string; level: string } => x !== null);
+    return out.filter((x): x is { id: number; title: string; category: string; level: string; slug: string } => x !== null);
   } catch {
     return [];
   }
