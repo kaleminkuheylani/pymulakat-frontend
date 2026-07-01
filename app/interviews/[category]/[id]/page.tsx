@@ -41,7 +41,18 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
     const host = h.get("host") || "localhost:3000";
     const protocol = host.includes("localhost") ? "http" : "https";
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
-    const res = await fetch(`${apiUrl}/api/v2/questions/${id}`, {
+
+    // ✅ Slug'tan ID'ye cevir (canonical URL routing)
+    let actualId = id;
+    const asNum = parseInt(id, 10);
+    if (isNaN(asNum)) {
+      const resolvedId = getIdFromSlug(id);
+      if (resolvedId) {
+        actualId = String(resolvedId);
+      }
+    }
+
+    const res = await fetch(`${apiUrl}/api/v2/questions/${actualId}`, {
       next: { revalidate: 3600 },
       signal: AbortSignal.timeout(5000),
     });
