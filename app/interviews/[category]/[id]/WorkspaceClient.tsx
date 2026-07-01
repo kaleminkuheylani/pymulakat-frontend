@@ -12,6 +12,7 @@ import { usePyodide, TestRunResult } from "../../../../hooks/usePyodide";
 import { CodeEditorRef } from "../../../../components/Monaco";
 import { GuestBanner } from "../../../../components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "../../../../api/v2/questions";
+import { getIdFromSlug } from "../../../../lib/questionMeta";
 import CodeShareModal from "../../../../components/CodeShareModal";
 import TestCaseDrawer from "../../../../components/TestCaseDrawer";
 import WorkspaceHeader from "./components/WorkspaceHeader";
@@ -66,7 +67,12 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
   }
 
   const { category, id } = initialParams;
-  const questionId = parseInt(id, 10);
+  // Slug → ID donusumu (sayfa slug ile gelebilir)
+  let questionId = parseInt(id, 10);
+  if (isNaN(questionId)) {
+    const resolvedId = getIdFromSlug(id);
+    if (resolvedId) questionId = resolvedId;
+  }
 
   // Hooks
   const router = useRouter();

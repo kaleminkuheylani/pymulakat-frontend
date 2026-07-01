@@ -120,19 +120,26 @@ export function WorkspaceSidebarMobile({ interview, isGuest, onLogin }: Workspac
         </div>
       )}
 
-      {/* Test cases CTA (misafir) */}
+      {/* Misafir info banner */}
       {isGuest && (
-        <a
-          href={`/login?returnUrl=${encodeURIComponent(`/interviews/${slugifyCat(interview.category || "python-basics")}/${interview.slug || getQuestionMeta(interview.id)?.slug || String(interview.id)}`)}`}
-          onClick={(e) => {
-            e.preventDefault();
-            onLogin();
-          }}
-          className="flex items-center justify-between gap-2 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/20"
-        >
-          <span className="text-[11px] text-indigo-200/80">🔒 Test caseleri görmek için</span>
-          <span className="text-indigo-300 font-semibold text-[11px]">Giriş Yap →</span>
-        </a>
+        <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
+          <div className="text-[10px] uppercase tracking-wider text-indigo-300 mb-1.5 font-bold">
+            👁 Misafir Modu
+          </div>
+          <p className="text-[11px] text-indigo-200/80 leading-relaxed mb-2">
+            Test caseleri görünür, kodu <span className="font-semibold text-indigo-200">inceleyebilirsin</span>. Çalıştırmak için giriş yap.
+          </p>
+          <a
+            href={`/login?returnUrl=${encodeURIComponent(`/interviews/${slugifyCat(interview.category || "python-basics")}/${interview.slug || getQuestionMeta(interview.id)?.slug || String(interview.id)}`)}`}
+            onClick={(e) => {
+              e.preventDefault();
+              onLogin();
+            }}
+            className="inline-block px-3 py-1.5 rounded-lg bg-indigo-500/20 text-indigo-200 font-semibold text-[11px] hover:bg-indigo-500/30"
+          >
+            Giriş Yap →
+          </a>
+        </div>
       )}
 
       {/* Tutorial */}
