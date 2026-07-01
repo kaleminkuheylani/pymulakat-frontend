@@ -315,16 +315,6 @@ export default function ProfilePage() {
         {/* 🔗 KISAYOLLAR */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">
           <Link
-            href="/dashboard"
-            className="flex items-center justify-between p-5 rounded-2xl border border-white/10 bg-gradient-to-br from-amber-500/[0.08] to-transparent hover:border-amber-500/30 transition-colors group"
-          >
-            <div>
-              <div className="text-sm font-semibold text-white">Kişisel Dashboard</div>
-              <div className="text-[11px] text-white/40 mt-0.5">Yetenek yolculuğu, en sık hatalar, son denemeler</div>
-            </div>
-            <span className="text-amber-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
-          </Link>
-          <Link
             href="/coach"
             className="flex items-center justify-between p-5 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/[0.08] to-transparent hover:border-indigo-500/30 transition-colors group"
           >
@@ -333,6 +323,16 @@ export default function ProfilePage() {
               <div className="text-[11px] text-white/40 mt-0.5">Hangi kuralların tetiklendiğini gör</div>
             </div>
             <span className="text-indigo-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
+          </Link>
+          <Link
+            href="/interviews"
+            className="flex items-center justify-between p-5 rounded-2xl border border-white/10 bg-gradient-to-br from-amber-500/[0.08] to-transparent hover:border-amber-500/30 transition-colors group"
+          >
+            <div>
+              <div className="text-sm font-semibold text-white">Soru Çöz</div>
+              <div className="text-[11px] text-white/40 mt-0.5">Pratik yapmaya devam et</div>
+            </div>
+            <span className="text-amber-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
           </Link>
         </div>
 
