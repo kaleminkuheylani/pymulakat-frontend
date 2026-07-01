@@ -261,7 +261,7 @@ export default function ProfilePage() {
 
       
         {/* 📈 Detay & Aksiyonlar */}
-        <div className="grid md:grid-cols-2 gap-6 mb-8">
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           {/* Performans Dağılımı */}
           <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6">
             <h2 className="text-lg font-semibold mb-5 text-amber-400 flex items-center gap-2">
@@ -277,7 +277,42 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          {/* Aksiyon Kartı */}
+          {/* Mail Koç Yönetimi */}
+          <Link
+            href="/coach"
+            className="bg-slate-900/50 border border-slate-800 hover:border-indigo-500/40 hover:bg-slate-900/70 rounded-2xl p-6 flex flex-col justify-between transition-all group"
+          >
+            <div>
+              <h2 className="text-lg font-semibold mb-3 text-indigo-400 flex items-center gap-2">
+                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" /></svg>
+                Mail Koç Yönetimi
+              </h2>
+              <p className="text-slate-400 text-sm leading-relaxed">
+                Hangi kuralların tetiklendiğini gör, son mail özetini incele, frekans limitini takip et.
+              </p>
+              <div className="mt-4 space-y-1.5">
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                  <span>10 kural aktif</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+                  <span>7 gün frekans limiti</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-500">
+                  <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                  <span>Spam yok, somut veriye dayalı</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-5 flex items-center justify-between">
+              <span className="text-xs text-indigo-300 font-semibold uppercase tracking-wider">Yönet</span>
+              <span className="text-indigo-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
+            </div>
+          </Link>
+
+          {/* Hesap & Çıkış Kartı */}
           <div className="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
             <div>
               <h2 className="text-lg font-semibold mb-3 text-amber-400 flex items-center gap-2">
