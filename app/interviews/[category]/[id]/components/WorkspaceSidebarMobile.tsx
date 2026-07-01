@@ -11,7 +11,7 @@ import type { Question } from "../../../../../api/v2/questions";
 
 interface Interview extends Question {}
 
-interface MobileSidebarProps {
+interface WorkspaceSidebarMobileProps {
   interview: Interview;
   isGuest: boolean;
   onLogin: () => void;
@@ -49,7 +49,7 @@ const HintCard = memo(function HintCard({ hint, revealed, onReveal }: { hint: st
 });
 
 // ── Main ──
-export function MobileSidebar({ interview, isGuest, onLogin }: MobileSidebarProps) {
+export function WorkspaceSidebarMobile({ interview, isGuest, onLogin }: WorkspaceSidebarMobileProps) {
   const [revealedHints, setRevealedHints] = useState<Set<number>>(new Set());
   const meta = getQuestionMeta(interview.id);
   const hintsList = interview.hints && interview.hints.length > 0 ? interview.hints : [];

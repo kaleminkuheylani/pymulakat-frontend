@@ -23,8 +23,8 @@ import {
   getIdFromSlug,
   slugifyTitle,
 } from "../../../../lib/questionMeta";
-import { MobileSidebar } from "./components/MobileSidebar";
-import { MobileTestResults } from "./components/MobileTestResults";
+import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
+import { WorkspaceTestResults } from "./components/WorkspaceTestResults";
 
 // Code editor sadece client-side
 const CodeEditor = dynamic(
@@ -234,6 +234,27 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
           <div className="text-[10px] text-white/40 truncate">{category}</div>
           <div className="text-xs font-bold text-white truncate">{interview.title}</div>
         </div>
+        {/* Tab degistirme butonlari (header'da) */}
+        <div className="flex items-center gap-1 mr-1">
+          <button
+            onClick={() => setTab("question")}
+            className={`px-2 py-1 rounded text-[10px] font-semibold ${
+              tab === "question" ? "bg-white/10 text-white" : "text-white/40"
+            }`}
+            aria-label="Soru"
+          >
+            📖
+          </button>
+          <button
+            onClick={() => setTab("tests")}
+            className={`px-2 py-1 rounded text-[10px] font-semibold ${
+              tab === "tests" ? "bg-white/10 text-white" : "text-white/40"
+            }`}
+            aria-label="Testler"
+          >
+            🧪 {results.length > 0 && <span className="ml-0.5">{results.length}</span>}
+          </button>
+        </div>
         <button
           onClick={handleRun}
           disabled={running || pyStatus !== "ready"}
@@ -246,7 +267,7 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
       {/* Tab content */}
       <div className="flex-1 overflow-y-auto">
         {tab === "question" && (
-          <MobileSidebar interview={interview} isGuest={isGuest} onLogin={handleBackToList} />
+          <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} />
         )}
 
         {tab === "workspace" && (
@@ -256,24 +277,26 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
         )}
 
         {tab === "tests" && (
-          <MobileTestResults results={results} isRunning={running} />
+          <WorkspaceTestResults results={results} isRunning={running} />
         )}
       </div>
 
-      {/* Bottom tab bar */}
-      <div className="flex border-t border-white/5 bg-[#0a0e1a]">
-        {(["question", "workspace", "tests"] as const).map((k) => (
-          <button
-            key={k}
-            onClick={() => setTab(k)}
-            className={`flex-1 py-2.5 text-[11px] font-semibold ${
-              tab === k ? "text-white border-t-2 border-amber-500" : "text-white/40"
-            }`}
-          >
-            {k === "question" ? "Soru" : k === "workspace" ? "Editör" : `Testler (${results.length})`}
-          </button>
-        ))}
-      </div>
+      {/* Bottom tab bar — SADECE workspace tab'indayken gizle (editor tam ekran kullanir) */}
+      {tab !== "workspace" && (
+        <div className="flex border-t border-white/5 bg-[#0a0e1a]">
+          {(["question", "workspace", "tests"] as const).map((k) => (
+            <button
+              key={k}
+              onClick={() => setTab(k)}
+              className={`flex-1 py-2 text-[10px] font-semibold ${
+                tab === k ? "text-white border-t-2 border-amber-500" : "text-white/40"
+              }`}
+            >
+              {k === "question" ? "Soru" : k === "workspace" ? "Editör" : `Testler (${results.length})`}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* Share modal placeholder */}
       {showShareModal && (

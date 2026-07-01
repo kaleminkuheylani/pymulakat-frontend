@@ -75,12 +75,12 @@ const TestCard = memo(function TestCard({ result, index }: { result: TestRunResu
 });
 
 // ── Main ──
-interface MobileTestResultsProps {
+interface WorkspaceTestResultsProps {
   results: TestRunResult[];
   isRunning: boolean;
 }
 
-export function MobileTestResults({ results, isRunning }: MobileTestResultsProps) {
+export function WorkspaceTestResults({ results, isRunning }: WorkspaceTestResultsProps) {
   if (isRunning) {
     return (
       <div className="p-4 flex items-center justify-center gap-3">
