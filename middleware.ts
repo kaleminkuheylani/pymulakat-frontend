@@ -2,15 +2,12 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 import { QUESTION_META } from "./lib/questionMeta";
 
-// ═══════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════
 // MIDDLEWARE — Canonical URL routing
-// ═══════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════
 // /interviews/{category}/{id}   → 308 /interviews/{category}/{slug}
 // /interviews/{category}/{slug} → render (canonical, indexlenir)
-//
-// ID gelirse QuestionMeta'dan slug al, redirect et.
-// Slug gelirse direkt geç (canonical zaten).
-// ═══════════════════════════════════════════════════════════
+// ═════════════════════════════════════════════════════════
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -32,17 +29,22 @@ export function middleware(request: NextRequest) {
   // ID geldi — QuestionMeta'dan slug al
   const meta = QUESTION_META[asNumber];
   if (!meta || !meta.slug) {
-    // Bulunamadı — sayfa kendisi 404 versin
-    return NextResponse.next();
+    return NextFound();
   }
 
   // 308 Permanent Redirect (canonical, tarayıcı cache'ler)
+  // ✅ Slug'ı URL-encode et (Türkçe karakterler dahil)
+  const slugEncoded = encodeURIComponent(meta.slug);
   const url = request.nextUrl.clone();
-  url.pathname = `/interviews/${category}/${meta.slug}`;
+  url.pathname = `/interviews/${category}/${slugEncoded}`;
   return NextResponse.redirect(url, 308);
 }
 
+// Yardımcı: sayfa render'a düşsün, page.tsx 404 versin
+function NextFound() {
+  return new NextResponse(null, { status: 404 });
+}
+
 export const config = {
-  // Sadece interview detail sayfaları için
   matcher: ["/interviews/:category/:id"],
 };
