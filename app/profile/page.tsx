@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { interviewsAPI, AttemptResponse } from "../../api/v2/questions";
+import { getQuestionMeta, slugifyTitle } from "../../lib/questionMeta";
 
 // 🔹 Yardımcı: Relative Time
 function timeAgo(dateStr: string): string {
@@ -113,7 +114,7 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
       {attempts.map((attempt) => (
         <Link
           key={attempt.id}
-          href={`/interviews/${attempt.category}/${attempt.question_id}`}
+          href={`/interviews/${attempt.category}/${getQuestionMeta(attempt.question_id)?.slug || (attempt.question_title ? slugifyTitle(attempt.question_title) : String(attempt.question_id))}`}
           className="block group"
         >
           <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/30 border border-slate-800 hover:border-amber-500/30 hover:bg-slate-800/50 transition-all">
