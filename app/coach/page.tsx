@@ -18,14 +18,6 @@ interface RuleInfo {
   note: string;
 }
 
-interface SkillProgress {
-  topic: string;
-  attempted: number;
-  solved: number;
-  failed: number;
-  success_rate: number;
-}
-
 interface CoachStatus {
   user: {
     username: string;
@@ -49,7 +41,6 @@ interface CoachStatus {
     frequency_cap_days: number;
     available_rules: RuleInfo[];
   };
-  skills: SkillProgress[];
 }
 
 function StatusDot({ status }: { status: RuleInfo["status"] }) {
@@ -266,44 +257,6 @@ export default function CoachPage() {
             ))}
           </div>
         </motion.div>
-
-        {/* Skill progress */}
-        {status.skills.length > 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
-            <h2 className="text-xl font-bold mb-4">Konu Bazlı İlerleme</h2>
-            <div className="space-y-2">
-              {status.skills.map((skill, idx) => (
-                <motion.div
-                  key={skill.topic}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * idx }}
-                  className="p-3 rounded-xl border border-white/10 bg-white/[0.02]"
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <code className="text-xs text-white/80 font-mono">{skill.topic}</code>
-                    <div className="text-[10px] text-white/50">
-                      {skill.solved}/{skill.attempted} başarılı · {skill.success_rate}%
-                    </div>
-                  </div>
-                  <div className="h-1.5 rounded-full bg-white/5 overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-indigo-500 to-amber-400 transition-all"
-                      style={{ width: `${skill.success_rate}%` }}
-                    />
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-            <div className="text-[10px] text-white/30 mt-3 italic">
-              Lint bu konu listesini arka planda doğrular — kullanıcıya gösterilmez.
-            </div>
-          </motion.div>
-        )}
 
         {/* Footer note */}
         <div className="mt-10 p-4 rounded-xl border border-white/10 bg-white/[0.02] text-center">
