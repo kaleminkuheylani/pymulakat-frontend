@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Question, QuestionTests } from "../../../../../api/v2/questions";
-import { getQuestionMeta } from "../../../../../lib/questionMeta";
+import { getQuestionMeta, slugifyTitle } from "../../../../../lib/questionMeta";
 import MarkdownLite from "./MarkdownLite";
 
 interface SidebarProps {
@@ -16,7 +16,7 @@ interface SidebarProps {
     explanation?: string;
     complexity?: string;
     related_concepts?: string[];
-    related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
+    related_questions?: Array<{ id: number; title: string; category: string; level: string; slug?: string }>;
     tutorial_slug?: string;
   } | undefined;
   isGuest: boolean;
@@ -62,6 +62,7 @@ export default function WorkspaceSidebar({
           title: m.title,
           category: m.topic || "python-basics",
           level: "beginner",
+          slug: m.slug,
         };
       })
     : [];
@@ -234,7 +235,7 @@ export default function WorkspaceSidebar({
                 {relatedToShow.map((rq) => (
                   <Link
                     key={rq.id}
-                    href={`/interviews/${slugifyCategory(rq.category || "python-basics")}/${rq.id}`}
+                    href={`/interviews/${slugifyCategory(rq.category || "python-basics")}/${rq.slug || getQuestionMeta(rq.id)?.slug || String(rq.id)}`}
                     className="flex items-center gap-2.5 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
                   >
                     <span className="flex-1 text-sm text-white/80 group-hover:text-white line-clamp-2">{rq.title}</span>

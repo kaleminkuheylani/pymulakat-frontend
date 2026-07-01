@@ -25,6 +25,7 @@ export interface Question {
   complexity?: string;
   related_concepts?: string[];
   related_question_ids?: number[];
+  slug?: string;
   tutorial_slug?: string;
   meta_title?: string;
   meta_description?: string;

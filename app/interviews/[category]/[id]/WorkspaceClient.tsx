@@ -34,7 +34,7 @@ interface Props {
     explanation?: string;
     complexity?: string;
     related_concepts?: string[];
-    related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
+    related_questions?: Array<{ id: number; title: string; category: string; level: string; slug?: string }>;
     tutorial_slug?: string;
     hints?: string[];
   };

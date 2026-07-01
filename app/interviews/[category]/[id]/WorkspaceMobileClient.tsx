@@ -9,7 +9,7 @@ import {
   Question,
   QuestionTests,
 } from "../../../../api/v2/questions";
-import { getQuestionMeta } from "../../../../lib/questionMeta";
+import { getQuestionMeta, slugifyTitle } from "../../../../lib/questionMeta";
 import { CodeEditor, CodeEditorRef } from "../../../../components/Editor";
 import { usePyodide, TestRunResult } from "../../../../hooks/usePyodide";
 import { toast, Toaster } from "sonner";
@@ -23,7 +23,7 @@ interface Props {
     explanation?: string;
     complexity?: string;
     related_concepts?: string[];
-    related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
+    related_questions?: Array<{ id: number; title: string; category: string; level: string; slug?: string }>;
     tutorial_slug?: string;
     hints?: string[];
   };
@@ -515,7 +515,7 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
                   return (
                     <a
                       key={rq.id}
-                      href={`/interviews/${slugifyCat(rq.category || "python-basics")}/${rq.id}`}
+                      href={`/interviews/${slugifyCat(rq.category || "python-basics")}/${rq.slug || getQuestionMeta(rq.id)?.slug || String(rq.id)}`}
                       className="block p-2 rounded bg-white/[0.03] border border-white/10 hover:border-cyan-500/30"
                     >
                       <span className="text-[11px] text-white/80 line-clamp-1">{rq.title}</span>

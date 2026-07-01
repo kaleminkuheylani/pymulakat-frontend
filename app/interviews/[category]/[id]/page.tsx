@@ -28,6 +28,7 @@ interface SEOQuestion {
   category: string;
   related_concepts?: string[];
   related_question_ids?: number[];
+  slug?: string;
   related_questions?: Array<{ id: number; title: string; category: string; level: string }>;
   tutorial_slug?: string;
   hints?: string[];
@@ -100,12 +101,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ...(q.related_concepts || []),
     ].join(", "),
     alternates: {
-      canonical: `https://www.pythonmulakat.com/interviews/${q.category}/${q.id}`,
+      canonical: `https://www.pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://www.pythonmulakat.com/interviews/${q.category}/${q.id}`,
+      url: `https://www.pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
       siteName: "PythonMulakat",
       locale: "tr_TR",
       type: "article",
@@ -189,7 +190,9 @@ async function getApiBase(): Promise<string> {
 export default async function Page({ params }: PageProps) {
   const resolvedParams = await params;
 
-  // 🆕 Slug → ID resolution: eğer id parametresi sayı değilse slug'tır
+  // ✅ Slug-based canonical routing (SEO duplication önleme):
+  //   - /interviews/{cat}/{slug}  → render (canonical, indexlenir)
+  //   - /interviews/{cat}/{id}    → redirect → slug URL (301)
   const idAsNumber = parseInt(resolvedParams.id, 10);
   let actualId = resolvedParams.id;
 
@@ -197,14 +200,19 @@ export default async function Page({ params }: PageProps) {
     // Slug geldi — ID'yi bul
     const resolvedId = getIdFromSlug(resolvedParams.id);
     if (resolvedId) {
-      // Redirect ile temiz URL'e yönlendir (canonical SEO)
-      const m = getQuestionMeta(resolvedId);
-      redirect(`/interviews/${resolvedParams.category}/${resolvedId}`);
+      // Slug zaten canonical, direkt render
+      actualId = String(resolvedId);
     } else {
       // Slug bulunamadı, 404'e düşsün
-      actualId = "0"; // invalid ID, DB null döner
+      actualId = "0";
     }
   } else {
+    // ID geldi — slug'a redirect (canonical URL'e 301)
+    const qMeta = getQuestionMeta(idAsNumber);
+    const qSlug = qMeta?.slug || slugifyTitle(qMeta?.title || "");
+    if (qSlug) {
+      redirect(`/interviews/${resolvedParams.category}/${qSlug}`);
+    }
     actualId = String(idAsNumber);
   }
 

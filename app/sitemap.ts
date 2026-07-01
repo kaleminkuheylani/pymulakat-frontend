@@ -1,9 +1,10 @@
 import type { MetadataRoute } from "next";
+import { slugifyTitle } from "../lib/questionMeta";
 
 const BASE = "https://www.pythonmulakat.com";
 
 interface Category { slug: string; question_count?: number; }
-interface Question { id: number; category: string; updated_at?: string; }
+interface Question { id: number; category: string; title: string; slug?: string; updated_at?: string; }
 interface Tutorial { slug: string; updated_at?: string; published_at?: string; }
 
 interface ListResponse<T> { items: T[]; data?: T[]; total: number; }
@@ -66,7 +67,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }
 
   const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
-    url: `${BASE}/interviews/${q.category}/${q.id}`,
+    url: `${BASE}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
     lastModified: q.updated_at || now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
