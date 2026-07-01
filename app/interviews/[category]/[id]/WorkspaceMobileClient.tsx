@@ -246,7 +246,8 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
   // 🆕 Auth gate: misafir ise /login'e yönlendir
   const handleRun = useCallback(async () => {
     if (!user) {
-      const redirect = encodeURIComponent(`/interviews/${category}/${id}`);
+      const qSlug = (interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id);
+      const redirect = encodeURIComponent(`/interviews/${category}/${qSlug}`);
       router.push(`/login?returnUrl=${redirect}&reason=guest_run_code`);
       return;
     }
@@ -444,7 +445,7 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
                 <p className="text-[11px] text-indigo-200/80">
                   🔒 Test caseleri görmek için{" "}
                   <a
-                    href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
+                    href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${(interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id)}`)}`}
                     className="underline font-semibold text-indigo-300"
                   >
                     giriş yap
@@ -546,7 +547,7 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
                   <>
                     <p className="text-xs">🔒 Çalıştırmak için giriş yap</p>
                     <a
-                      href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
+                      href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${(interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id)}`)}`}
                       className="text-[10px] px-3 py-1.5 rounded bg-amber-500/10 border border-amber-500/30 text-amber-400"
                     >
                       Giriş Yap
