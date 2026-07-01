@@ -6,23 +6,12 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
-import Link from "next/link";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useUser } from "../../../../hooks/useUser";
 import { usePyodide } from "../../../../hooks/usePyodide";
-import {
-  questionsAPI,
-  interviewsAPI,
-  AttemptResponse,
-  Question,
-  QuestionTests,
-} from "../../../../api/v2/questions";
-import {
-  getQuestionMeta,
-  getIdFromSlug,
-  slugifyTitle,
-} from "../../../../lib/questionMeta";
+import { questionsAPI, Question, QuestionTests } from "../../../../api/v2/questions";
+import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
 import { WorkspaceTestResults } from "./components/WorkspaceTestResults";
 
@@ -36,30 +25,8 @@ export const dynamic_ = "force-dynamic";
 
 interface Props {
   initialParams?: { category: string; id: string };
-  seoQuestion?: {
-    id: number;
-    title: string;
-    description: string;
-    explanation?: string;
-    complexity?: string;
-    level: string;
-    category: string;
-    hints?: string[];
-    related_concepts?: string[];
-    related_questions?: Array<{
-      id: number;
-      title: string;
-      category: string;
-      level: string;
-      slug?: string;
-    }>;
-    tutorial_slug?: string;
-    slug?: string;
-  };
 }
-
-// ─── Hooks (sabit sıra) ──────────────────────────────────
-export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Props) {
+export default function WorkspaceMobileClient({ initialParams }: Props) {
   const router = useRouter();
   const { user } = useUser();
   const { status: pyStatus, runTests } = usePyodide();
@@ -71,8 +38,9 @@ export default function WorkspaceMobileClient({ initialParams, seoQuestion }: Pr
   const [testCases, setTestCases] = useState<QuestionTests | null>(null);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
-  // 📌 Default "tests" — test caseler ilk açılışta kendi tab'ında görünsün (desktop ile eşit)
-  const [tab, setTab] = useState<"question" | "workspace" | "tests">("tests");
+  // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
+  //     test case'ler Testler tab'ında ayrıca erişilebilir.
+  const [tab, setTab] = useState<"question" | "workspace" | "tests">("workspace");
   const [showShareModal, setShowShareModal] = useState(false);
 
   // ─── Guards ──

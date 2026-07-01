@@ -1,8 +1,7 @@
 "use client";
 
-// WorkspaceClient — orchestrator component
-// State management + 3 sub-components (Header, Sidebar, Editor)
-// 1040 satırdan 380 satıra düşürüldü (refactor: 2026-06-30)
+// WorkspaceClient — desktop orchestrator.
+// State + 3 sub-components: Header, Sidebar, Editor.
 
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
@@ -13,8 +12,8 @@ import { CodeEditorRef } from "../../../../components/Monaco";
 import { GuestBanner } from "../../../../components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "../../../../api/v2/questions";
 import { getIdFromSlug } from "../../../../lib/questionMeta";
+import { useHints } from "../../../../lib/hints";
 import CodeShareModal from "../../../../components/CodeShareModal";
-import TestCaseDrawer from "../../../../components/TestCaseDrawer";
 import WorkspaceHeader from "./components/WorkspaceHeader";
 import WorkspaceSidebar from "./components/WorkspaceSidebar";
 import WorkspaceEditor from "./components/WorkspaceEditor";
@@ -31,18 +30,9 @@ const LEVEL_CONFIG: Record<string, { label: string; color: string; bg: string; b
 
 interface Props {
   initialParams: { category: string; id: string };
-  seoQuestion?: {
-    explanation?: string;
-    complexity?: string;
-    related_concepts?: string[];
-    related_questions?: Array<{ id: number; title: string; category: string; level: string; slug?: string }>;
-    tutorial_slug?: string;
-    hints?: string[];
-  };
 }
 
 interface AttemptPayload {
-  user_id?: string;
   question_id: number;
   user_code: string;
   passed_tests: number;
@@ -53,7 +43,7 @@ interface AttemptPayload {
 }
 
 // ─── Main Component ───────────────────────────────────────
-export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
+export default function WorkspaceClient({ initialParams }: Props) {
   // ✅ Guard
   if (!initialParams || !initialParams.category || !initialParams.id) {
     return (
@@ -89,14 +79,13 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
 
   const [testResults, setTestResults] = useState<TestRunResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const [revealedHints, setRevealedHints] = useState(0);
-  const [hintsList, setHintsList] = useState<string[]>([]);
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
-  const [showTestDrawer, setShowTestDrawer] = useState(false);
-  const [hasAutoOpenedDrawer, setHasAutoOpenedDrawer] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+
+  // Hint state (paylaşılan hook)
+  const { hintsList, revealedHints, onRevealHint } = useHints(interview);
 
   // Timer
   useEffect(() => {
@@ -121,11 +110,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
         if (q.starter_code) setCode(q.starter_code);
 
         const tc = await questionsAPI.getTests(questionId);
-        if (!cancelled && tc) {
-          setTestCases(tc);
-          const hintList = extractHints(q.description || "");
-          setHintsList(hintList);
-        }
+        if (!cancelled && tc) setTestCases(tc);
       } catch (e: any) {
         if (!cancelled) setError(e?.message || "Soru yüklenemedi");
       } finally {
@@ -136,18 +121,6 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
       cancelled = true;
     };
   }, [questionId, category]);
-
-  // Auto-open drawer on mobile after first load
-  useEffect(() => {
-    if (hasAutoOpenedDrawer) return;
-    if (!testCases) return;
-    if (typeof window === "undefined") return;
-    const isMobile = window.innerWidth < 768;
-    if (isMobile) {
-      setShowTestDrawer(true);
-      setHasAutoOpenedDrawer(true);
-    }
-  }, [testCases, hasAutoOpenedDrawer]);
 
   // Submit attempt when all tests pass
   const submitAttempt = useCallback(
@@ -166,10 +139,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
         await sendAttempt(payload);
         setAttemptSubmitted(true);
         if (success) {
-          // 1.5s sonra share modal'i ac (kullanici basari hisseder)
-          setTimeout(() => {
-            setShowShareModal(true);
-          }, 1500);
+          setTimeout(() => setShowShareModal(true), 1500);
         } else {
           toast.error("❌ Bazı testler başarısız", {
             description: "Kodunu gözden geçirip tekrar dene.",
@@ -185,7 +155,6 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
 
   // Run tests
   const handleRun = useCallback(async () => {
-    // ✅ Misafir kullanıcı login'e yönlendir
     if (!user) {
       router.push(`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`);
       return;
@@ -206,12 +175,6 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
       setIsRunning(false);
     }
   }, [user, isRunning, pyStatus, testCases, code, runTests, submitAttempt, router, category, id]);
-
-  const revealNextHint = () => {
-    if (revealedHints < hintsList.length) {
-      setRevealedHints((n) => n + 1);
-    }
-  };
 
   const handleBackToList = () => {
     router.push(`/interviews/${category}`);
@@ -249,7 +212,6 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
   const levelCfg = LEVEL_CONFIG[(interview.level || "").toLowerCase()] || LEVEL_CONFIG.beginner;
   const passedCount = testResults.filter((r) => r.passed).length;
   const totalCount = testResults.length;
-  const allPassed = totalCount > 0 && passedCount === totalCount;
   const mm = Math.floor(seconds / 60).toString().padStart(2, "0");
   const ss = (seconds % 60).toString().padStart(2, "0");
   const formattedTime = `${mm}:${ss}`;
@@ -275,7 +237,7 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
       />
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/* Sidebar — collapse animasyonu (margin-left ile) */}
+        {/* Sidebar — collapse animasyonu */}
         <div
           className={`flex-shrink-0 h-full transition-all duration-200 overflow-hidden ${
             sidebarOpen ? "w-[420px]" : "w-0"
@@ -286,15 +248,14 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
             category={category}
             id={id}
             testCases={testCases}
-            seoQuestion={seoQuestion}
             isGuest={isGuest}
             hintsList={hintsList}
             revealedHints={revealedHints}
-            onRevealHint={revealNextHint}
+            onRevealHint={onRevealHint}
           />
         </div>
 
-        {/* Sidebar toggle — aside dışında, her zaman görünür */}
+        {/* Sidebar toggle */}
         <button
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className={`absolute top-1/2 -translate-y-1/2 z-20 w-6 h-12 bg-white/5 hover:bg-white/15 border border-white/10 rounded-r-lg flex items-center justify-center transition-all ${
@@ -319,19 +280,10 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
           category={category}
           id={id}
           onRun={handleRun}
-          onOpenDrawer={() => setShowTestDrawer(true)}
         />
       </div>
 
       {/* Modals */}
-      <TestCaseDrawer
-        open={showTestDrawer}
-        onClose={() => setShowTestDrawer(false)}
-        results={testResults}
-        showExamples={true}
-        examples={testCases?.test_cases || []}
-      />
-
       <CodeShareModal
         open={showShareModal}
         onClose={() => setShowShareModal(false)}
@@ -339,20 +291,14 @@ export default function WorkspaceClient({ initialParams, seoQuestion }: Props) {
         language="python"
         title={interview.title}
         category={category}
-        passedCount={testResults.filter((r) => r.passed).length}
-        totalCount={testResults.length}
+        passedCount={passedCount}
+        totalCount={totalCount}
       />
     </div>
   );
 }
 
 // ─── Helpers ──────────────────────────────────────────────
-
-function extractHints(description: string): string[] {
-  if (!description) return [];
-  const matches = description.match(/💡\s*İpucu\s*\d+:.*?(?=💡|$)/g);
-  return matches ? matches.map((m) => m.trim()) : [];
-}
 
 async function sendAttempt(payload: AttemptPayload): Promise<void> {
   // Token'i Supabase storage'dan al (sb-pymulakat-auth-token) veya fallback plain

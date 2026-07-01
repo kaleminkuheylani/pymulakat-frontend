@@ -23,7 +23,6 @@ interface EditorProps {
   category: string;
   id: string;
   onRun: () => void;
-  onOpenDrawer: () => void;
 }
 
 type Tab = "examples" | "tests" | "console";
@@ -40,7 +39,6 @@ export default function WorkspaceEditor({
   category,
   id,
   onRun,
-  onOpenDrawer,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState<Tab>("examples");
   const passedCount = testResults.filter((r) => r.passed).length;
@@ -63,16 +61,6 @@ export default function WorkspaceEditor({
       <div className="h-72 border-t border-white/5 bg-[#0a0e1a] flex flex-col flex-shrink-0">
         <div className="h-10 border-b border-white/5 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
-            <button
-              onClick={onOpenDrawer}
-              className="md:hidden px-2 py-1.5 rounded-md text-xs font-medium text-amber-400 hover:bg-amber-500/10 transition-colors flex items-center gap-1.5"
-            >
-              <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
-              </svg>
-              Aç
-            </button>
-
             {(["examples", "tests", "console"] as const).map((tab) => (
               <button
                 key={tab}

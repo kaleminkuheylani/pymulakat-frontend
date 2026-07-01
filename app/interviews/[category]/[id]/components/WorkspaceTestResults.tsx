@@ -146,7 +146,7 @@ const TestCard = memo(function TestCard({
 });
 
 // ── Summary strip ──
-function Summary({ results, isRunning }: { results: TestRunResult[]; isRunning: boolean }) {
+function Summary({ results, isRunning, definedCount }: { results: TestRunResult[]; isRunning: boolean; definedCount: number }) {
   if (isRunning) {
     return (
       <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30">
@@ -160,7 +160,7 @@ function Summary({ results, isRunning }: { results: TestRunResult[]; isRunning: 
     return (
       <div className="flex items-center justify-between p-3 rounded-lg bg-white/[0.02] border border-white/10">
         <span className="text-[11px] text-white/60">
-          🧪 Tanımlı <span className="font-bold text-white">{results.length}</span> test case —
+          🧪 Tanımlı <span className="font-bold text-white">{definedCount}</span> test case —
           çalıştırmak için <span className="text-amber-400 font-semibold">Çalıştır</span>'a bas
         </span>
       </div>
@@ -217,7 +217,7 @@ export function WorkspaceTestResults({ results, isRunning, testCases }: Workspac
 
   return (
     <div className="p-3 space-y-3">
-      <Summary results={results} isRunning={isRunning} />
+      <Summary results={results} isRunning={isRunning} definedCount={testCases.test_cases.length} />
 
       <div className="space-y-2">
         {renderList.map(({ def, result, idx }) => (

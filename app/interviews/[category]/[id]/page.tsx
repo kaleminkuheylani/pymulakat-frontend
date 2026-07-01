@@ -6,7 +6,6 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import Link from "next/link";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
 import { getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
@@ -65,29 +64,7 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
 }
 
 // ─── Related questions fetch (batch) ─────────────────────
-async function fetchRelatedTitles(
-  ids: number[],
-  apiUrl: string
-): Promise<Array<{ id: number; title: string; category: string; level: string; slug: string }>> {
-  if (!ids?.length) return [];
-  try {
-    const out = await Promise.all(
-      ids.map(async (rid) => {
-        const res = await fetch(`${apiUrl}/api/v2/questions/${rid}`, {
-          next: { revalidate: 3600 },
-          signal: AbortSignal.timeout(3000),
-        });
-        if (!res.ok) return null;
-        const json = await res.json();
-        const q = json.data || json;
-        return { id: q.id, title: q.title, category: q.category, level: q.level, slug: q.slug || "" };
-      })
-    );
-    return out.filter((x): x is { id: number; title: string; category: string; level: string; slug: string } => x !== null);
-  } catch {
-    return [];
-  }
-}
+// (Kaldırıldı: Workspace client kendi fetch'ini yapıyor, SSR enrichment gereksiz.)
 
 // ─── generateMetadata (SEO) ───────────────────────────────
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
@@ -190,13 +167,6 @@ async function isMobileDevice(): Promise<boolean> {
   }
 }
 
-async function getApiBase(): Promise<string> {
-  const h = await headers();
-  const host = h.get("host") || "localhost:3000";
-  const protocol = host.includes("localhost") ? "http" : "https";
-  return process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
-}
-
 // ─── Page ─────────────────────────────────────────────────
 export default async function Page({ params }: PageProps) {
   const resolvedParams = await params;
@@ -215,17 +185,7 @@ export default async function Page({ params }: PageProps) {
     fetchQuestionSEO(resolvedParams.category, String(resolvedId)),
   ]);
 
-  // Related soruları paralel çek (SEO + workspace için)
-  const apiBase = await getApiBase();
-  const relatedQuestions = seoQ?.related_question_ids?.length
-    ? await fetchRelatedTitles(seoQ.related_question_ids, apiBase)
-    : [];
-
-  // Question objesine related_questions ekle (Workspace'e prop olarak aktarılır)
-  const enrichedQuestion: SEOQuestion | null = seoQ
-    ? { ...seoQ, related_questions: relatedQuestions }
-    : null;
-
+  // Workspace client kendi fetch'ini yapıyor; burada sadece SEO schema'ları için kullanıyoruz.
   const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
   const baseUrl = "https://www.pythonmulakat.com";
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
@@ -250,10 +210,7 @@ export default async function Page({ params }: PageProps) {
         />
       )}
 
-      <Component
-        initialParams={resolvedParams}
-        seoQuestion={enrichedQuestion || undefined}
-      />
+      <Component initialParams={resolvedParams} />
     </>
   );
 }
