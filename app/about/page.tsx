@@ -35,7 +35,7 @@ export default function AboutPage() {
 
             <p className="text-lg md:text-xl text-white/70 leading-relaxed max-w-2xl mx-auto">
               Python öğretmek için yapay zekâ ile üretilmiş sorular, idealist pedagojik
-              yaklaşım ve sıfır kâr amacı. Hiçbir öğrencinin tek başına öğrenmek
+              yaklaşım ve sıfır bütçe. Hiçbir öğrencinin tek başına öğrenmek
               zorunda kalmaması için.
             </p>
           </motion.div>
@@ -99,14 +99,27 @@ export default function AboutPage() {
               değil, kademeli düşünce iskeleti. Açıklamalar ezber değil, mantık zinciri.
             </p>
           </div>
-          <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-            <div className="text-3xl mb-3">💸</div>
-            <h3 className="text-lg font-semibold mb-2 text-white">Sıfır Kâr</h3>
-            <p className="text-sm text-white/60 leading-relaxed">
-              Platform reklamsız, satmaz, ücretli içerik yok. Sadece iki kişinin
-              cebinden çıkan Vercel + Railway + Supabase faturası. Bu bizim
-              için hobi, öğrenciler için ücretsiz.
+          <div className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.04] p-6">
+            <div className="text-3xl mb-3">🧪</div>
+            <h3 className="text-lg font-semibold mb-2 text-amber-300">
+              Test Kullanıcılar Topluyoruz
+            </h3>
+            <p className="text-sm text-white/70 leading-relaxed">
+              Platform şu anda beta aşamasında. Aktif soru çözen, geri bildirim
+              veren, hata yakalayan test kullanıcıları arıyoruz. Sen de bir
+              öğrenciysen ya da Python'a yeni başlıyorsan, birlikte daha iyi
+              hale getirebiliriz. Geri bildirimlerin içerikleri, soruları ve
+              rehberleri doğrudan şekillendiriyor.
             </p>
+            <a
+              href="https://x.com/PythonMulakat"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 mt-3 text-xs text-amber-300 hover:text-amber-200 transition-colors"
+            >
+              X'ten bize ulaş
+              <span aria-hidden>→</span>
+            </a>
           </div>
         </motion.div>
       </section>
@@ -202,7 +215,7 @@ export default function AboutPage() {
       <footer className="border-t border-white/5 py-10">
         <div className="max-w-3xl mx-auto px-6 text-center text-white/40 text-xs font-mono">
           <p>
-            iki kişi · sıfır bütçe · sıfır kâr · saf niyet · saf Python
+            iki kişi · saf niyet · saf Python · test kullanıcıları arıyoruz
           </p>
           <p className="mt-2">© 2026 Python Mulakat</p>
         </div>
