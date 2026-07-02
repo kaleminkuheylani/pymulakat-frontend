@@ -172,6 +172,11 @@ export default function ProfilePage() {
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const [attempts, setAttempts] = useState<AttemptResponse[]>([]);
   const [attemptsLoading, setAttemptsLoading] = useState(true);
+  // 📌 KVKK hesap silme state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [deleteConfirmText, setDeleteConfirmText] = useState("");
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
 
   // 📥 Son 10 denemeyi çek
   useEffect(() => {
@@ -212,6 +217,39 @@ export default function ProfilePage() {
     localStorage.removeItem("token");
     localStorage.removeItem("user");
     router.push("/");
+  };
+
+  // 📌 KVKK md. 11 - Hesap ve verilerin tamamen silinmesi
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmText !== "HESABIMI SIL") {
+      setDeleteError("Onay metni hatali. 'HESABIMI SIL' yazmalisiniz.");
+      return;
+    }
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+      const apiBase = process.env.NEXT_PUBLIC_API_URL || "";
+      const res = await fetch(`${apiBase}/api/v2/account/delete`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        body: JSON.stringify({ confirmation: deleteConfirmText }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data.detail || "Hesap silinemedi");
+      }
+      // Logout
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      router.push("/?deleted=1");
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Bilinmeyen hata");
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -310,6 +348,82 @@ export default function ProfilePage() {
               )}
             </button>
           </div>
+        </div>
+
+        {/* 📌 KVKK Hesap Silme Alani */}
+        <div className="mb-8 bg-red-950/20 border border-red-900/40 rounded-2xl p-6">
+          <h2 className="text-lg font-semibold mb-2 text-red-400 flex items-center gap-2">
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+            </svg>
+            Hesabımı Sil (KVKK md. 11)
+          </h2>
+          <p className="text-slate-400 text-sm leading-relaxed mb-4">
+            KVKK kapsamında dilediğiniz zaman hesabınızı silebilirsiniz. Bu işlem
+            <strong className="text-red-300"> geri alınamaz</strong>: tüm denemeleriniz,
+            ilerlemeniz ve profil bilgileriniz kalıcı olarak silinir. Detaylı bilgi için
+{" "}<Link href="/terms" className="text-amber-300 underline">Kullanıcı Sözleşmesi</Link>'ni inceleyin.
+          </p>
+
+          {!showDeleteConfirm ? (
+            <button
+              onClick={() => setShowDeleteConfirm(true)}
+              className="px-5 py-2.5 bg-red-500/10 border border-red-500/40 text-red-400 rounded-xl hover:bg-red-500/20 transition-all font-medium text-sm"
+            >
+              Hesabımı Silmek İstiyorum
+            </button>
+          ) : (
+            <div className="space-y-3">
+              <p className="text-white text-sm">
+                Onaylamak için aşağıdaki kutuya <code className="bg-red-900/40 px-1.5 py-0.5 rounded text-red-300 font-mono">HESABIMI SIL</code> yazın:
+              </p>
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => {
+                  setDeleteConfirmText(e.target.value);
+                  setDeleteError(null);
+                }}
+                placeholder="HESABIMI SIL"
+                className="w-full px-4 py-2.5 bg-slate-900 border border-slate-700 rounded-xl text-white placeholder-slate-600 focus:border-red-500 focus:outline-none font-mono text-sm"
+                disabled={isDeleting}
+                autoComplete="off"
+              />
+              {deleteError && (
+                <p className="text-red-400 text-xs">{deleteError}</p>
+              )}
+              <div className="flex gap-2">
+                <button
+                  onClick={handleDeleteAccount}
+                  disabled={isDeleting || deleteConfirmText !== "HESABIMI SIL"}
+                  className="px-5 py-2.5 bg-red-500 text-white rounded-xl hover:bg-red-600 transition-all font-medium text-sm disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                >
+                  {isDeleting ? (
+                    <>
+                      <svg className="animate-spin h-4 w-4" fill="none" viewBox="0 0 24 24">
+                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"></path>
+                      </svg>
+                      Siliniyor...
+                    </>
+                  ) : (
+                    "Kalıcı Olarak Sil"
+                  )}
+                </button>
+                <button
+                  onClick={() => {
+                    setShowDeleteConfirm(false);
+                    setDeleteConfirmText("");
+                    setDeleteError(null);
+                  }}
+                  disabled={isDeleting}
+                  className="px-5 py-2.5 bg-slate-800 text-slate-300 rounded-xl hover:bg-slate-700 transition-all font-medium text-sm"
+                >
+                  Vazgeç
+                </button>
+              </div>
+            </div>
+          )}
         </div>
 
         {/* 🔗 KISAYOLLAR */}
