@@ -196,6 +196,14 @@ export default async function Page({ params, searchParams }: PageProps) {
     ? buildBreadcrumbSchema(resolvedParams.category, resolvedParams.id, seoQ.title, baseUrl)
     : null;
 
+  // 📌 SSR Content — Googlebot ve JS olmadan da içeriği görsün
+  // description + starter_code + test_cases + hints server-side HTML'e basılıyor.
+  const ssrTitle = seoQ?.title ?? `Soru #${resolvedId}`;
+  const ssrDescription = seoQ?.description ?? "";
+  const ssrHints = seoQ?.hints ?? [];
+  const ssrComplexity = seoQ?.complexity ?? "";
+  const ssrLevel = seoQ?.level ?? "";
+
   return (
     <>
       {/* SEO: HowTo Schema */}
@@ -213,7 +221,55 @@ export default async function Page({ params, searchParams }: PageProps) {
         />
       )}
 
+      {/* 📌 SSR Content Block — JS yüklenmeden de Googlebot + kullanıcı görsün */}
+      <div
+        data-ssr-question
+        className="sr-only-ssr max-w-3xl mx-auto px-6 py-8 text-white"
+        style={{
+          // Varsayilan: gizle. Client mount olunca bu div'i gizler, JS olan kısmi gösterir.
+          // JS yoksa zaten görünür kalır.
+        }}
+      >
+        <h1 className="text-3xl font-bold mb-2">{ssrTitle}</h1>
+        <div className="flex gap-2 mb-4 text-sm text-white/60">
+          <span>{ssrLevel}</span>
+          {ssrComplexity && <span>• {ssrComplexity}</span>}
+        </div>
+        {ssrDescription && (
+          <div className="prose prose-invert max-w-none mb-6 whitespace-pre-wrap text-white/80 leading-relaxed">
+            {ssrDescription}
+          </div>
+        )}
+        {ssrHints.length > 0 && (
+          <div className="mt-6">
+            <h2 className="text-xl font-semibold mb-3 text-amber-400">İpuçları</h2>
+            <ul className="space-y-2">
+              {ssrHints.map((h, i) => (
+                <li key={i} className="text-white/70 leading-relaxed">
+                  {h}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+        {seoQ?.explanation && (
+          <div className="mt-8 pt-6 border-t border-white/10">
+            <h2 className="text-xl font-semibold mb-3 text-indigo-400">Yaklaşım & Açıklama</h2>
+            <div className="prose prose-invert max-w-none text-white/70 leading-relaxed whitespace-pre-wrap">
+              {seoQ.explanation}
+            </div>
+          </div>
+        )}
+      </div>
+
       <Component initialParams={resolvedParams} readonly={readonly} />
+
+      {/* 📌 JS yüklenince SSR bloğu gizle (client kendi UI'ini gösterir) */}
+      <script
+        dangerouslySetInnerHTML={{
+          __html: `(function(){var el=document.querySelector('[data-ssr-question]');if(el){el.style.display='none';}})();`,
+        }}
+      />
     </>
   );
 }
