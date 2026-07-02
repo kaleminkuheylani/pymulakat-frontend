@@ -133,8 +133,8 @@ function Hero({ user }: { user: { username: string } | null }) {
           <span className="text-white/95">Ciddiye Al</span>
         </span>
         <span className="block text-base md:text-xl text-white/50 mt-6 font-light max-w-2xl mx-auto leading-relaxed">
-          Tarayıcıda Python kodu yaz, otomatik puanla. Kodun cihazından dışarı çıkmaz,
-          <strong className="text-amber-300">KVKK uyumlu</strong>; sadece ilerleme istatistiğin kaydedilir.
+          Tarayıcıda Python kodu yaz, otomatik puanla. Kodun sadece senin cihazında çalışır;
+          sadece ilerlemen kaydedilir.
           <br className="hidden md:block" />
           Kurulum yok. Python kütüphanesi yok. Sadece 60 saniyede başla.
         </span>
@@ -392,8 +392,8 @@ export default function HomePage() {
           />
           <FeatureCard
             icon="🔒"
-            title="KVKK Uyumlu & Gizli"
-            description="Yazdığın Python kodu cihazından dışarı çıkmaz. Sadece başarı istatistiği kaydedilir, kodun hiçbir yerde saklanmaz."
+            title="Kodun Sana Özel"
+            description="Yazdığın Python kodu sadece senin tarayıcında çalışır. Sunucuya gönderilmez, hiçbir yerde saklanmaz."
             highlight="Yeni!"
             index={4}
           />
@@ -431,35 +431,33 @@ export default function HomePage() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="relative overflow-hidden rounded-3xl border border-emerald-500/20 bg-gradient-to-br from-emerald-500/[0.07] via-indigo-500/[0.05] to-transparent p-8 md:p-12"
+            className="relative overflow-hidden rounded-3xl border border-indigo-500/20 bg-gradient-to-br from-indigo-500/[0.07] via-amber-500/[0.05] to-transparent p-8 md:p-12"
           >
-            <div className="absolute -right-12 -top-12 w-48 h-48 bg-emerald-500/20 rounded-full blur-3xl" />
-            <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl" />
+            <div className="absolute -right-12 -top-12 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl" />
+            <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl" />
 
             <div className="relative grid md:grid-cols-[auto_1fr] gap-8 items-center">
               <div className="flex-shrink-0">
-                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-emerald-400 to-indigo-500 flex items-center justify-center text-4xl shadow-2xl shadow-emerald-500/30">
-                  🔒
+                <div className="w-20 h-20 rounded-2xl bg-gradient-to-br from-indigo-400 to-amber-500 flex items-center justify-center text-4xl shadow-2xl shadow-indigo-500/30">
+                  🚀
                 </div>
               </div>
               <div>
-                <div className="text-[11px] uppercase tracking-[0.2em] text-emerald-400 font-semibold mb-2">
-                  Gizlilik Odaklı
+                <div className="text-[11px] uppercase tracking-[0.2em] text-indigo-400 font-semibold mb-2">
+                  Gerçek Fark
                 </div>
                 <h3 className="text-white text-2xl md:text-3xl font-bold mb-3">
-                  Kodun sende kalır, bizde sadece istatistik olur
+                  Kodun cihazında kalır, ilerleme profilinde yaşar
                 </h3>
                 <p className="text-white/70 text-base leading-relaxed mb-4">
-                  Platformumuzda yazdığın Python kodu cihazından dışarı çıkmaz.
-                  <strong className="text-emerald-300"> Kodlar sunucuya gönderilmez, veritabanında saklanmaz.</strong>{" "}
-                  Sadece test sonucun (kaç test geçti, kaç saniye sürdü, kaç
-                  ipucu kullandın) kaydedilir.{" "}
-                  <strong className="text-white">KVKK ve GDPR uyumlu</strong> — aydınlatma metni
-                  ve açık rıza beyanı <a href="/terms" className="text-amber-300 underline">/terms</a>{" "}
-                  sayfasında.
+                  Yazdığın Python kodu{" "}
+                  <strong className="text-indigo-300">sadece senin tarayıcında çalışır</strong>;
+                  sunucuya gönderilmez. Sadece test sonuçların (kaç test geçti, ne kadar
+                  sürdü, kaç ipucu kullandın) kaydedilir.{" "}
+                  Yani <strong className="text-white">kodun gizli, istatistiğin seninle.</strong>
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {["Kod sadece cihazda", "Sadece istatistik", "Şifreler bcrypt", "KVKK uyumlu", "GDPR uyumlu", "Veri silme hakkı"].map((t) => (
+                  {["Kod cihazda kalır", "Sadece istatistik kaydedilir", "Test otomatik", "İpuçları sıralı", "Açıklamalı çözümler"].map((t) => (
                     <span key={t} className="text-xs px-2.5 py-1 rounded-full bg-white/5 border border-white/10 text-white/60">
                       {t}
                     </span>
