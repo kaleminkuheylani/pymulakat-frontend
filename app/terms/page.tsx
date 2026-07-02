@@ -76,7 +76,7 @@ export default function TermsPage() {
         <ul className="list-disc pl-5 space-y-2">
           <li>
             <strong className="text-zinc-200">İnteraktif Python soruları:</strong>{" "}
-            60+ farklı kategoride, Türkçe açıklamalı mülakat alıştırmaları.
+            70+ farklı kategoride, Türkçe açıklamalı mülakat alıştırmaları.
           </li>
           <li>
             <strong className="text-zinc-200">Tarayıcı tabanlı kod editörü:</strong>{" "}
