@@ -90,6 +90,17 @@ export const QUESTION_META: Record<number, QuestionMeta> = {
   71: { id: 71, title: "🔤 Tekrarlanan Karakter Zinciri", function_name: "repeat_sequence", topic: "Algoritmalar", difficulty_note: "beginner seviye", related_concepts: ["strings"], related_questions: [9, 11, 13], slug: "tekrarlanan-karakter-zinciri" },
   72: { id: 72, title: "📊 Alt Dizi Toplam Kontrolü", function_name: "subarray_sum_check", topic: "Algoritmalar", difficulty_note: "intermediate seviye", related_concepts: ["prefix-sum"], related_questions: [47, 50], slug: "alt-dizi-toplam-kontrolu" },
   73: { id: 73, title: "🔢 Benzersiz Alt Dizgi Sayısı", function_name: "unique_substrings", topic: "Algoritmalar", difficulty_note: "intermediate seviye", related_concepts: ["strings", "hashing"], related_questions: [9, 71], slug: "benzersiz-alt-dizgi-sayisi" },
+  // ── 74-83: Yeni eklenen dict + temel sorular ──
+  74: { id: 74, title: "🗂️ Sözlük Frekans Sayacı", function_name: "word_frequency", topic: "Sözlükler", difficulty_note: "beginner seviye", related_concepts: ["dict", "string"], related_questions: [8, 9], slug: "sozluk-frekans-sayaci" },
+  75: { id: 75, title: "🎯 Sözlük Değer Toplamı", function_name: "sum_values", topic: "Sözlükler", difficulty_note: "beginner seviye", related_concepts: ["dict"], related_questions: [4, 5], slug: "sozluk-deger-toplami" },
+  76: { id: 76, title: "🔡 İlk Harfi Büyük Yap", function_name: "title_case", topic: "String İşlemleri", difficulty_note: "beginner seviye", related_concepts: ["string"], related_questions: [9, 13, 14], slug: "ilk-hafi-buyuk-yap" },
+  77: { id: 77, title: "🔢 Karakter Sayacı", function_name: "char_count", topic: "String İşlemleri", difficulty_note: "beginner seviye", related_concepts: ["string", "dict"], related_questions: [74, 75, 76], slug: "karakter-sayaci" },
+  78: { id: 78, title: "🗃️ Sözlük Birleştir", function_name: "merge_dicts", topic: "Sözlükler", difficulty_note: "beginner seviye", related_concepts: ["dict", "merge"], related_questions: [74, 75, 79], slug: "sozluk-birlestir" },
+  79: { id: 79, title: "📊 Sözlük Tersine Çevir", function_name: "invert_dict", topic: "Sözlükler", difficulty_note: "beginner seviye", related_concepts: ["dict-comprehension"], related_questions: [74, 78], slug: "sozluk-tersine-cevir" },
+  80: { id: 80, title: "🔍 İki Sözlüğün Ortak Anahtarları", function_name: "common_keys", topic: "Sözlükler", difficulty_note: "beginner seviye", related_concepts: ["set", "dict-keys"], related_questions: [74, 78, 79], slug: "iki-sozlugun-ortak-anahtarlari" },
+  81: { id: 81, title: "🐼 DataFrame İlk 3 Satır", function_name: "first_three_rows", topic: "Pandas", difficulty_note: "beginner seviye", related_concepts: ["pandas", "dataframe"], related_questions: [], slug: "dataframe-ilk-3-satir" },
+  82: { id: 82, title: "🔄 Liste Döndürme", function_name: "rotate_list", topic: "Algoritmalar", difficulty_note: "beginner seviye", related_concepts: ["list-slicing", "rotation"], related_questions: [8, 47, 50], slug: "liste-dondurme" },
+  83: { id: 83, title: "📈 İki Sayının OBEB'i", function_name: "gcd", topic: "Algoritmalar", difficulty_note: "beginner seviye", related_concepts: ["euclid-algorithm", "recursion"], related_questions: [47, 50, 72], slug: "iki-sayinin-obeb" },
 };
 
 /**
