@@ -83,6 +83,13 @@ export const QUESTION_META: Record<number, QuestionMeta> = {
   65: { id: 65, title: "🕵️ Emoji Gizemini Çöz: Gizli Mesaj Dekoderi", function_name: "decode_message", topic: "String İşlemleri", difficulty_note: "intermediate seviye", related_concepts: [], related_questions: [1, 2, 3, 10], slug: "emoji-gizemini-coz-gizli-mesaj-dekoderi" },
   66: { id: 66, title: "✨ Pozitif Yorum Filtresi", function_name: "positive_filter", topic: "String İşlemleri", difficulty_note: "intermediate seviye", related_concepts: [], related_questions: [6, 12, 15, 17], slug: "pozitif-yorum-filtresi" },
   67: { id: 67, title: "✨ Tweet Mood Enhancer", function_name: "mood_enhancer", topic: "String İşlemleri", difficulty_note: "intermediate seviye", related_concepts: [], related_questions: [6, 12, 15, 17], slug: "tweet-mood-enhancer" },
+  // ── 68-73: Yeni eklenen algoritma soruları (Google keşfi için) ──
+  68: { id: 68, title: "💰 İki Maaş Bordrosunu Birleştir", function_name: "merge_salaries", topic: "Algoritmalar", difficulty_note: "intermediate seviye", related_concepts: ["merge-sort"], related_questions: [47, 50], slug: "maas-bordrosu-birlestir" },
+  69: { id: 69, title: "🔀 İki Sıralı Listeyi Birleştir (Merge)", function_name: "merge_sorted_lists", topic: "Algoritmalar", difficulty_note: "intermediate seviye", related_concepts: ["merge", "two-pointers"], related_questions: [47, 68], slug: "iki-sirali-listeyi-birlestir-merge" },
+  70: { id: 70, title: "🎯 En Yakın Rakam Toplamı", function_name: "closest_sum", topic: "Algoritmalar", difficulty_note: "intermediate seviye", related_concepts: ["two-pointers", "sorting"], related_questions: [47, 50, 69], slug: "en-yakin-rakam-toplami" },
+  71: { id: 71, title: "🔤 Tekrarlanan Karakter Zinciri", function_name: "repeat_sequence", topic: "Algoritmalar", difficulty_note: "beginner seviye", related_concepts: ["strings"], related_questions: [9, 11, 13], slug: "tekrarlanan-karakter-zinciri" },
+  72: { id: 72, title: "📊 Alt Dizi Toplam Kontrolü", function_name: "subarray_sum_check", topic: "Algoritmalar", difficulty_note: "intermediate seviye", related_concepts: ["prefix-sum"], related_questions: [47, 50], slug: "alt-dizi-toplam-kontrolu" },
+  73: { id: 73, title: "🔢 Benzersiz Alt Dizgi Sayısı", function_name: "unique_substrings", topic: "Algoritmalar", difficulty_note: "intermediate seviye", related_concepts: ["strings", "hashing"], related_questions: [9, 71], slug: "benzersiz-alt-dizgi-sayisi" },
 };
 
 /**
