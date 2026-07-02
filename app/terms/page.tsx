@@ -257,9 +257,11 @@ export default function TermsPage() {
               istatistikleri.
             </li>
             <li>
-              <strong className="text-zinc-200">Kullanıcı içerikleri:</strong>{" "}
-              Platform üzerinde yazılan Python kodları (sadece kullanıcının
-              kendi cihazında işlenir, sunucuya gönderilmez).
+              <strong className="text-zinc-200">Kullanıcı kodları:</strong>{" "}
+              Platform üzerinde yazılan Python kodları sunucuya gönderilmez ve
+              veritabanında saklanmaz. Kodlar yalnızca kullanıcının tarayıcısında
+              çalıştırılır; istatistik (test sonucu, süre, ipucu sayısı) kaydı
+              tutulur.
             </li>
           </ul>
         </>
@@ -403,8 +405,11 @@ export default function TermsPage() {
           </li>
           <li>
             <strong className="text-zinc-200">Hizmet sunumu:</strong>{" "}
-            Çözülen soruların, deneme sonuçlarının ve ilerleme istatistiklerinin
-            kaydedilmesi.
+            Çözülen soruların, deneme sonuçlarının (başarılı/başarısız test
+            sayısı, süre, kullanılan ipucu sayısı) kaydedilmesi.{" "}
+            <em className="text-zinc-300">
+              Kullanıcının yazdığı Python kodları işlenmez ve saklanmaz.
+            </em>
           </li>
           <li>
             <strong className="text-zinc-200">Güvenlik ve loglama:</strong>{" "}
