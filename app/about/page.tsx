@@ -54,9 +54,8 @@ export default function AboutPage() {
               alın yazısı değil — <strong className="text-white">bu sadece bizim çabasızlığımız.</strong>
             </p>
             <p>
-              Biz, sıradan iki kişiyiz. İstanbul'da, Ankara'da, İzmir'de ya da
-              Diyarbakır'da — hangi şehirde olursa olsun, Türkiye'de Python
-              öğrenmek isteyen bir öğrenci yeterince sabırlı bir eğitmene, yeterince
+              Biz, sıradan iki kişiyiz. Türkiye'de Python öğrenmek isteyen
+              bir öğrenci yeterince sabırlı bir eğitmene, yeterince
               net bir içeriğe, yeterince dürüst geri bildirime ulaşamıyor.
             </p>
             <p>
