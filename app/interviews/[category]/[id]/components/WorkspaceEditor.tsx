@@ -55,6 +55,9 @@ export default function WorkspaceEditor({
           height="100%"
           language="python"
           readOnly={isGuest}
+          // 📌 Desktop client'ta copy/paste/cut engelli
+          // (kontext menu zaten readonly'da kapanir, ek Monaco command override)
+          disableCopyPaste={!isGuest}
         />
       </div>
 

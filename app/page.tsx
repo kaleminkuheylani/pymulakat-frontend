@@ -2,7 +2,7 @@
 import { motion } from "framer-motion"
 import Link from "next/link"
 import Image from "next/image"
-import { useState } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useUser } from "../hooks/useUser"
 
 // ═══════════════════════════════════════════════════════════
@@ -279,7 +279,56 @@ function StepCard({ number, title, description }: { number: number; title: strin
   )
 }
 
-// ─── Testimonial Card (sosyal kanıt placeholder) ──────────
+// ─── StatHighlight — CountUp animasyonu (0 → hedef) ────────
+function CountUpNumber({ value, duration = 1.6 }: { value: string; duration?: number }) {
+  // "73+" → 73, suffix="+"
+  // "9"  → 9,  suffix=""
+  // "7+" → 7,  suffix="+"
+  const match = value.match(/^(\d+)(.*)$/);
+  const target = match ? parseInt(match[1], 10) : 0;
+  const suffix = match ? match[2] : "";
+  const [display, setDisplay] = useState(0);
+  const ref = useRef<HTMLSpanElement>(null);
+  const startedRef = useRef(false);
+
+  useEffect(() => {
+    if (!ref.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting && !startedRef.current) {
+            startedRef.current = true;
+            const startTime = performance.now();
+            const animate = (now: number) => {
+              const elapsed = (now - startTime) / 1000;
+              const progress = Math.min(elapsed / duration, 1);
+              // Easing: easeOutCubic — yavaslasarak yaklasir
+              const eased = 1 - Math.pow(1 - progress, 3);
+              setDisplay(Math.floor(eased * target));
+              if (progress < 1) {
+                requestAnimationFrame(animate);
+              } else {
+                setDisplay(target);
+              }
+            };
+            requestAnimationFrame(animate);
+          }
+        });
+      },
+      { threshold: 0.3 }
+    );
+    observer.observe(ref.current);
+    return () => observer.disconnect();
+  }, [target, duration]);
+
+  return (
+    <span ref={ref}>
+      {display}
+      {suffix}
+    </span>
+  );
+}
+
 function StatHighlight({ value, label, sub }: { value: string; label: string; sub: string }) {
   return (
     <motion.div
@@ -289,7 +338,7 @@ function StatHighlight({ value, label, sub }: { value: string; label: string; su
       className="text-center p-6 rounded-2xl border border-white/10 bg-white/[0.02]"
     >
       <div className="text-3xl md:text-5xl font-extrabold bg-gradient-to-r from-amber-300 to-amber-500 bg-clip-text text-transparent mb-2">
-        {value}
+        <CountUpNumber value={value} />
       </div>
       <div className="text-white font-semibold mb-1">{label}</div>
       <div className="text-white/40 text-xs">{sub}</div>
