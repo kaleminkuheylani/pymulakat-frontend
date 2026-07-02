@@ -47,12 +47,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     description,
     keywords: [tutorial.title, "python rehber", "python mülakat", ...(tutorial.faq?.map((f) => f.question) || [])].join(", "),
     alternates: {
-      canonical: `https://www.pythonmulakat.com/guides/${tutorial.slug}`,
+      canonical: `https://pythonmulakat.com/guides/${tutorial.slug}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://www.pythonmulakat.com/guides/${tutorial.slug}`,
+      url: `https://pythonmulakat.com/guides/${tutorial.slug}`,
       siteName: "PythonMulakat",
       locale: "tr_TR",
       type: "article",
@@ -242,7 +242,7 @@ export default async function Page({ params }: PageProps) {
   const { slug } = await params;
   const tutorial = await fetchTutorial(slug);
 
-  const baseUrl = "https://www.pythonmulakat.com";
+  const baseUrl = "https://pythonmulakat.com";
 
   // Bulunamadıysa 404 fallback
   if (!tutorial) {

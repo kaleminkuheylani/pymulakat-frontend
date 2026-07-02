@@ -20,7 +20,7 @@ const geistMono = Geist_Mono({
 // 🌐 GLOBAL SEO METADATA
 // ────────────────────────────────────────────────────────────
 export const metadata: Metadata = {
-  metadataBase: new URL("https://www.pythonmulakat.com"),
+  metadataBase: new URL("https://pythonmulakat.com"),
 
   title: {
     default:
@@ -72,7 +72,7 @@ export const metadata: Metadata = {
     "yapay zeka destekli python pratiği",
   ],
 
-  authors: [{ name: "Python Mülakat", url: "https://www.pythonmulakat.com" }],
+  authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
 
@@ -94,14 +94,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    url: "https://www.pythonmulakat.com",
+    url: "https://pythonmulakat.com",
     siteName: "Python Mülakat",
     title: "Python Mülakat Hazırlığı | Yeni Başlayanlar İçin Ücretsiz Pratik",
     description:
       "Sıfırdan Python öğrenenler için Türkçe interaktif mülakat soruları. OOP, SQLite, Pandas, sandbox ve anlık AI geri bildirimi.",
     images: [
       {
-        url: "https://www.pythonmulakat.com/og-default.png",
+        url: "https://pythonmulakat.com/og-default.png",
         width: 1200,
         height: 630,
         alt: "Python Mülakat Hazırlığı — pythonmulakat.com",
@@ -115,14 +115,14 @@ export const metadata: Metadata = {
     title: "Python Mülakat Hazırlığı | Yeni Başlayanlar İçin",
     description:
       "Türkçe interaktif Python mülakat soruları. OOP, veri tipleri, SQLite, sandbox ve anlık AI geri bildirimi.",
-    images: ["https://www.pythonmulakat.com/og-default.png"],
+    images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
 
   // ── Canonical & Alternates ──────────────────────────────────
   alternates: {
-    canonical: "https://www.pythonmulakat.com",
-    languages: { "tr-TR": "https://www.pythonmulakat.com" },
+    canonical: "https://pythonmulakat.com",
+    languages: { "tr-TR": "https://pythonmulakat.com" },
   },
 
   icons: {
@@ -165,12 +165,12 @@ const siteJsonLd = {
     // ── Organization ──────────────────────────────────────────
     {
       "@type": "Organization",
-      "@id": "https://www.pythonmulakat.com/#organization",
+      "@id": "https://pythonmulakat.com/#organization",
       name: "Python Mülakat",
-      url: "https://www.pythonmulakat.com",
+      url: "https://pythonmulakat.com",
       logo: {
         "@type": "ImageObject",
-        url: "https://www.pythonmulakat.com/og-default.png",
+        url: "https://pythonmulakat.com/og-default.png",
         width: 1200,
         height: 630,
       },
@@ -182,19 +182,19 @@ const siteJsonLd = {
     // ── WebSite + SearchAction ────────────────────────────────
     {
       "@type": "WebSite",
-      "@id": "https://www.pythonmulakat.com/#website",
-      url: "https://www.pythonmulakat.com",
+      "@id": "https://pythonmulakat.com/#website",
+      url: "https://pythonmulakat.com",
       name: "Python Mülakat",
       description:
         "Python öğrenmeye yeni başlayanlar için gerçek dünya mülakat soruları, interaktif sandbox ve AI geri bildirimi.",
-      publisher: { "@id": "https://www.pythonmulakat.com/#organization" },
+      publisher: { "@id": "https://pythonmulakat.com/#organization" },
       inLanguage: "tr-TR",
       potentialAction: {
         "@type": "SearchAction",
         target: {
           "@type": "EntryPoint",
           urlTemplate:
-            "https://www.pythonmulakat.com/interviews/{search_term_string}",
+            "https://pythonmulakat.com/interviews/{search_term_string}",
         },
         "query-input": "required name=search_term_string",
       },
@@ -203,12 +203,12 @@ const siteJsonLd = {
     // ── Course (Yeni: Eğitim içeriği olarak işaretle) ─────────
     {
       "@type": "Course",
-      "@id": "https://www.pythonmulakat.com/#course",
+      "@id": "https://pythonmulakat.com/#course",
       name: "Yeni Başlayanlar İçin Python Mülakat Hazırlığı",
       description:
         "Python'a yeni başlayanlar için veri tipleri, OOP, SQLite, Pandas ve algoritmik düşünme konularını kapsayan interaktif mülakat hazırlık kursu.",
-      provider: { "@id": "https://www.pythonmulakat.com/#organization" },
-      url: "https://www.pythonmulakat.com",
+      provider: { "@id": "https://pythonmulakat.com/#organization" },
+      url: "https://pythonmulakat.com",
       inLanguage: "tr-TR",
       educationalLevel: "Beginner",
       teaches:
@@ -222,7 +222,7 @@ const siteJsonLd = {
         courseMode: "online",
         location: {
           "@type": "VirtualLocation",
-          url: "https://www.pythonmulakat.com",
+          url: "https://pythonmulakat.com",
         },
       },
     },
@@ -230,11 +230,11 @@ const siteJsonLd = {
     // ── LearningResource (Yeni: Öğrenme kaynağı) ──────────────
     {
       "@type": "LearningResource",
-      "@id": "https://www.pythonmulakat.com/#learning-resource",
+      "@id": "https://pythonmulakat.com/#learning-resource",
       name: "Python Mülakat Soruları - İnteraktif Sandbox",
       description:
         "Tarayıcıda kod yazarak Python mülakat sorularını çözebileceğin, yapay zekâ destekli geri bildirim veren interaktif öğrenme platformu.",
-      url: "https://www.pythonmulakat.com",
+      url: "https://pythonmulakat.com",
       educationalUse: "practice",
       learningResourceType: "interactive tutorial",
       audience: {
@@ -259,13 +259,13 @@ const siteJsonLd = {
           "@type": "ListItem",
           position: 1,
           name: "Ana Sayfa",
-          item: "https://www.pythonmulakat.com",
+          item: "https://pythonmulakat.com",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: "Mülakat Soruları",
-          item: "https://www.pythonmulakat.com/interviews",
+          item: "https://pythonmulakat.com/interviews",
         },
       ],
     },
@@ -273,7 +273,7 @@ const siteJsonLd = {
     // ── FAQPage ───────────────────────────────────────────────
     {
       "@type": "FAQPage",
-      "@id": "https://www.pythonmulakat.com/#faq",
+      "@id": "https://pythonmulakat.com/#faq",
       mainEntity: [
         {
           "@type": "Question",

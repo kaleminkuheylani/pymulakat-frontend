@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { slugifyTitle } from "../lib/questionMeta";
 
-const BASE = "https://www.pythonmulakat.com";
+const BASE = "https://pythonmulakat.com";
 
 interface Category { slug: string; question_count?: number; }
 interface Question { id: number; category: string; title: string; slug?: string; updated_at?: string; }

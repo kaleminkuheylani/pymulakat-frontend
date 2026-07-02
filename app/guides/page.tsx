@@ -13,12 +13,12 @@ export const metadata: Metadata = {
     "Python mülakat soruları için uzun form rehberler: palindrome, FizzBuzz, binary search, pandas groupby ve daha fazlası. Türkçe, derinlemesine açıklamalar.",
   keywords: "python rehber, python mülakat, python tutorial, türkçe python",
   alternates: {
-    canonical: "https://www.pythonmulakat.com/guides",
+    canonical: "https://pythonmulakat.com/guides",
   },
   openGraph: {
     title: "Python Rehberleri — PythonMulakat",
     description: "Python mülakat soruları için uzun form Türkçe rehberler.",
-    url: "https://www.pythonmulakat.com/guides",
+    url: "https://pythonmulakat.com/guides",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",

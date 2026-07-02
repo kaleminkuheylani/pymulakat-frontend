@@ -89,22 +89,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ...(q.related_concepts || []),
     ].join(", "),
     alternates: {
-      canonical: `https://www.pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
+      canonical: `https://pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://www.pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
+      url: `https://pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
       siteName: "PythonMulakat",
       locale: "tr_TR",
       type: "article",
-      images: [{ url: "https://www.pythonmulakat.com/og-default.png", width: 1200, height: 630 }],
+      images: [{ url: "https://pythonmulakat.com/og-default.png", width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://www.pythonmulakat.com/og-default.png"],
+      images: ["https://pythonmulakat.com/og-default.png"],
     },
   };
 }
@@ -190,7 +190,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   // Workspace client kendi fetch'ini yapıyor; burada sadece SEO schema'ları için kullanıyoruz.
   const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
-  const baseUrl = "https://www.pythonmulakat.com";
+  const baseUrl = "https://pythonmulakat.com";
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
     ? buildBreadcrumbSchema(resolvedParams.category, resolvedParams.id, seoQ.title, baseUrl)

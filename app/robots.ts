@@ -9,7 +9,7 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/_next/", "/api/", "/admin/", "/auth/callback", "/auth/reset-password"],
       },
     ],
-    sitemap: "https://www.pythonmulakat.com/sitemap.xml",
-    host: "https://www.pythonmulakat.com",
+    sitemap: "https://pythonmulakat.com/sitemap.xml",
+    host: "https://pythonmulakat.com",
   };
 }

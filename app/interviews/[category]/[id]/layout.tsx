@@ -115,7 +115,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     `${libLabel} mülakat sorusu. Güvenli sandbox ortamında Python kodu yaz, anlık AI geri bildirimi al.`;
 
   const title = `${topic}${level ? ` (${level})` : ""} — ${libLabel} Mülakat Sorusu`;
-  const url = `https://www.pythonmulakat.com/interviews/${libKey}/${id}`;
+  const url = `https://pythonmulakat.com/interviews/${libKey}/${id}`;
 
   return {
     title,
@@ -181,7 +181,7 @@ async function WorkspaceLayout({
     LIB_DESCRIPTIONS[libKey] ??
     `${libLabel} mülakat sorusu. Güvenli sandbox ortamında Python kodu yaz.`;
 
-  const url = `https://www.pythonmulakat.com/interviews/${libKey}/${id}`;
+  const url = `https://pythonmulakat.com/interviews/${libKey}/${id}`;
 
   const schemaLevel =
     level === "başlangıç" || level === "beginner"
@@ -211,7 +211,7 @@ async function WorkspaceLayout({
       provider: {
         "@type": "Organization",
         name: "Python Mülakat",
-        url: "https://www.pythonmulakat.com",
+        url: "https://pythonmulakat.com",
       },
     },
     breadcrumb: {
@@ -221,13 +221,13 @@ async function WorkspaceLayout({
           "@type": "ListItem",
           position: 1,
           name: "Ana Sayfa",
-          item: "https://www.pythonmulakat.com",
+          item: "https://pythonmulakat.com",
         },
         {
           "@type": "ListItem",
           position: 2,
           name: `${libLabel} Soruları`,
-          item: `https://www.pythonmulakat.com/interviews/${libKey}`,
+          item: `https://pythonmulakat.com/interviews/${libKey}`,
         },
         { "@type": "ListItem", position: 3, name: topic, item: url },
       ],

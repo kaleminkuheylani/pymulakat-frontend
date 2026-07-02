@@ -312,7 +312,7 @@ function ShareModal({
   onClose: () => void;
 }) {
   const slug = getQuestionMeta(questionId)?.slug || slugifyTitle(title);
-  const shareUrl = `https://www.pythonmulakat.com/interviews/${category}/${slug}`;
+  const shareUrl = `https://pythonmulakat.com/interviews/${category}/${slug}`;
 
   const tweetText = `✅ ${title} çözdüm!\n\n${code.split("\n").slice(0, 6).join("\n")}\n\n${shareUrl} #python #mülakat`;
 
