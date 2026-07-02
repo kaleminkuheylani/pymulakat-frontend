@@ -210,16 +210,6 @@ function Hero({ user }: { user: { username: string } | null }) {
   )
 }
 
-// ─── Stat Card ─────────────────────────────────────────────
-function StatCard({ value, label, color }: { value: string | number; label: string; color: string }) {
-  return (
-    <div className="text-center">
-      <div className={`text-3xl md:text-4xl font-bold mb-1 ${color}`}>{value}</div>
-      <div className="text-white/40 text-xs md:text-sm">{label}</div>
-    </div>
-  )
-}
-
 // ─── Feature Card ─────────────────────────────────────────
 function FeatureCard({
   icon, title, description, highlight, index,
@@ -355,20 +345,8 @@ export default function HomePage() {
       <GridBackground />
       <Hero user={user} />
 
-      {/* Stats bar — sosyal kanıt */}
-      <section className="relative z-10 px-6 max-w-6xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="flex flex-wrap justify-center gap-x-12 gap-y-6 mt-12 pt-8 border-t border-white/5"
-        >
-          <StatCard value="60+" label="Python Sorusu" color="text-amber-400" />
-          <StatCard value="9+" label="Kategori" color="text-indigo-400" />
-          <StatCard value="7+" label="Uzman Rehber" color="text-amber-400" />
-          <StatCard value="0" label="Kurulum Gereksinimi" color="text-indigo-400" />
-        </motion.div>
-      </section>
+      {/* 📌 Hero altindaki stats bar kaldirildi (duplicate). */}
+      {/* CountUp animasyonlu stats asagidaki 'Rakamlarla PythonMulakat' bolumunde. */}
 
       {/* Nasıl Çalışır — 3 adım */}
       <section className="relative z-10 px-6 py-24 max-w-5xl mx-auto">
