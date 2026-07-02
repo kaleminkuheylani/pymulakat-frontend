@@ -1,16 +1,14 @@
-
-
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kullanım Şartları ve Gizlilik Politikası",
+  title: "Kullanıcı Sözleşmesi, Aydınlatma ve Açık Rıza Metni | Python Mulakat",
   description:
-    "Python Mulakat platformunun kullanım şartları ve hizmet koşulları.",
+    "Python Mulakat platformu kullanıcı sözleşmesi, KVKK aydınlatma metni ve açık rıza beyanı.",
 };
 
-const LAST_UPDATED = "29 Mayıs 2026";
-const COMPANY_NAME = "Python Mulakat";
-const CONTACT_EMAIL = "kaleminkuheylani@gmail.com";
+const LAST_UPDATED = "2 Temmuz 2026";
+const PLATFORM_NAME = "Python Mulakat";
+const PLATFORM_URL = "https://www.pythonmulakat.com";
 
 interface Section {
   num: string;
@@ -29,304 +27,430 @@ function SectionBlock({ num, title, content }: Section) {
         {title}
       </h2>
 
-      <div className="text-[14px] leading-relaxed text-zinc-500 space-y-3">
+      <div className="text-[14px] leading-relaxed text-zinc-400 space-y-3">
         {content}
       </div>
     </div>
   );
 }
 
+function PartTitle({ num, title, color = "cyan" }: { num: string; title: string; color?: string }) {
+  return (
+    <div className="pt-8 pb-2 border-t border-zinc-900 first:pt-0 first:border-t-0">
+      <p className={`font-mono text-[11px] tracking-widest uppercase mb-1 ${
+        color === "amber" ? "text-amber-500" : "text-cyan-500"
+      }`}>
+        BÖLÜM {num}
+      </p>
+      <h2 className="text-2xl font-bold text-zinc-100">{title}</h2>
+    </div>
+  );
+}
+
 export default function TermsPage() {
-  const sections: Section[] = [
+  // ─── BÖLÜM 1: KULLANICI SÖZLEŞMESİ ─────────────────────────
+  const sozlesme: Section[] = [
     {
-      num: "01",
-      title: "Sözleşmenin Kapsamı",
+      num: "1.1",
+      title: "Sözleşmenin Kapsamı ve Taraflar",
       content: (
         <>
           <p>
-            Bu Kullanım Koşulları,{" "}
-            <strong className="text-zinc-300">{COMPANY_NAME}</strong>{" "}
-            platformunu kullanan tüm ziyaretçiler ve kayıtlı kullanıcılar için
-            bağlayıcıdır.
+            Bu Kullanıcı Sözleşmesi ("Sözleşme"),{" "}
+            <strong className="text-zinc-200">{PLATFORM_NAME}</strong>{" "}
+            platformunu ("Platform") kullanan tüm ziyaretçiler ve kayıtlı
+            kullanıcılar ("Kullanıcı") için bağlayıcıdır.
           </p>
-
           <p>
-            Platformu kullanmanız, aşağıda belirtilen şartları kabul ettiğiniz
-            anlamına gelir.
+            Platformu ziyaret ederek ve/veya kayıt olarak Kullanıcı, bu
+            Sözleşmenin tüm hükümlerini okuduğunu, anladığını ve kabul ettiğini
+            beyan eder.
           </p>
         </>
       ),
     },
-
     {
-      num: "02",
-      title: "Hizmet Tanımı",
+      num: "1.2",
+      title: "Platformun Kullanıcıya Sundukları",
       content: (
-        <>
-          <p>
-            Platform; Python programlama mülakatları, teknik değerlendirmeler,
-            eğitim içerikleri, tarayıcı tabanlı kod editörü ve istemci taraflı
-            Python çalıştırma araçları sunmaktadır.
-          </p>
-
-          <p>
-            Kod yürütme işlemleri Pyodide teknolojisi aracılığıyla doğrudan
-            kullanıcının tarayıcısında gerçekleştirilmektedir.
-          </p>
-
-          <p>
-            Platform, herhangi bir iş teklifini, işe alım garantisini veya
-            sertifikasyon sonucunu taahhüt etmez.
-          </p>
-        </>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            <strong className="text-zinc-200">İnteraktif Python soruları:</strong>{" "}
+            60+ farklı kategoride, Türkçe açıklamalı mülakat alıştırmaları.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Tarayıcı tabanlı kod editörü:</strong>{" "}
+            Pyodide altyapısı ile kurulum gerektirmeyen Python çalıştırma
+            ortamı.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Otomatik test değerlendirmesi:</strong>{" "}
+            Her soru için yazılmış test case'leri, anlık puanlama ve geri
+            bildirim.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Uzman rehberler:</strong>{" "}
+            Uzun form içerikli, SEO uyumlu, Türkçe Python öğretici
+            makaleleri.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Kişisel ilerleme takibi:</strong>{" "}
+            Kullanıcı hesabı altında çözülen soruların ve ilerlemenin
+            kaydedilmesi.
+          </li>
+        </ul>
       ),
     },
-
     {
-      num: "03",
-      title: "Hesap Sorumluluğu",
+      num: "1.3",
+      title: "Platformun Hakları ve Yükümlülükleri",
       content: (
-        <>
-          <p>
-            Kullanıcı hesabınızın güvenliğinden ve hesabınız üzerinden
-            gerçekleştirilen işlemlerden siz sorumlusunuz.
-          </p>
-
-          <p>
-            Hesap bilgilerinizin üçüncü kişilerle paylaşılması önerilmez.
-          </p>
-
-          <p>
-            Platform, şüpheli kullanım durumlarında hesabı askıya alma veya
-            sonlandırma hakkını saklı tutar.
-          </p>
-        </>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            Platform, hizmetleri "olduğu gibi" esasıyla sunar. Kesintisiz veya
+            hatasız çalışma garantisi vermez.
+          </li>
+          <li>
+            Platform; önceden bildirim yapmaksızın içerik, özellik ve arayüz
+            değişiklikleri yapma hakkını saklı tutar.
+          </li>
+          <li>
+            Platform; kötüye kullanım, güvenlik ihlali veya yasa dışı
+            faaliyetlerde hesabı askıya alma veya sonlandırma hakkına sahiptir.
+          </li>
+          <li>
+            Platform; üçüncü taraf altyapı servislerinin (Railway, Vercel,
+            Supabase, jsDelivr, Google Analytics) kesintilerinden doğrudan sorumlu
+            değildir.
+          </li>
+        </ul>
       ),
     },
-
     {
-      num: "04",
-      title: "Kod Çalıştırma Ortamı ve Sandbox",
+      num: "1.4",
+      title: "Kullanıcının Hakları ve Yükümlülükleri",
       content: (
-        <>
-          <p>
-            Platformda çalıştırılan Python kodları sunucularımızda değil,
-            doğrudan tarayıcınız içerisinde çalışan Pyodide tabanlı izole bir
-            çalışma ortamında yürütülmektedir.
-          </p>
-
-          <p>
-            Kod çalıştırma ortamı güvenlik katmanları içerse de mutlak güvenlik
-            garantisi verilmemektedir.
-          </p>
-
-          <p>
-            Platform; sonsuz döngüler, aşırı bellek tüketimi, tarayıcı
-            performans kaybı, cihaz yavaşlaması veya istemci taraflı kaynak
-            tüketiminden doğabilecek dolaylı zararlardan sorumlu değildir.
-          </p>
-
-          <p>
-            Kullanıcı, çalıştırdığı kodun kendi cihazında işleneceğini kabul
-            eder.
-          </p>
-        </>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            Kullanıcı, hesap bilgilerinin güvenliğinden ve hesabı üzerinden
+            yapılan tüm işlemlerden bizzat sorumludur.
+          </li>
+          <li>
+            Kullanıcı, Platformu aşağıdaki amaçlarla kullanamaz:
+            <ul className="list-disc pl-5 mt-2 space-y-1">
+              <li>Zararlı yazılım geliştirme veya dağıtma</li>
+              <li>Yetkisiz erişim girişimleri veya sandbox bypass</li>
+              <li>Otomatik yoğun istek gönderme (rate limit aşımı)</li>
+              <li>Kripto madenciliği veya kaynak sömürüsü</li>
+              <li>Yasa dışı veri toplama veya scraping</li>
+              <li>Üçüncü kişilerin haklarını ihlal eden içerik yükleme</li>
+            </ul>
+          </li>
+          <li>
+            Kullanıcı, Platformu kullanırken Türkiye Cumhuriyeti yasalarına ve
+            genel ahlak kurallarına uymayı taahhüt eder.
+          </li>
+        </ul>
       ),
     },
-
     {
-      num: "05",
-      title: "Yasaklı Kullanımlar",
+      num: "1.5",
+      title: "Kod Çalıştırma Ortamı (Sandbox)",
       content: (
-        <>
-          <p>
-            Platform aşağıdaki amaçlarla kullanılamaz:
-          </p>
-
-          <ul className="list-disc pl-5 space-y-2">
-            <li>Zararlı yazılım geliştirme veya dağıtımı</li>
-            <li>Yetkisiz erişim girişimleri</li>
-            <li>Kripto madenciliği veya kaynak sömürüsü</li>
-            <li>Sandbox bypass denemeleri</li>
-            <li>Otomatik yoğun istek gönderimi</li>
-            <li>Platform güvenliğini test etmeye yönelik saldırılar</li>
-            <li>Yasadışı veri toplama veya scraping faaliyetleri</li>
-          </ul>
-
-          <p>
-            Bu tür faaliyetler tespit edildiğinde erişim engellenebilir ve
-            gerekli durumlarda hukuki süreç başlatılabilir.
-          </p>
-        </>
+        <p>
+          Kullanıcının yazdığı Python kodları, sunucularda değil doğrudan
+          kullanıcının tarayıcısında çalışan Pyodide tabanlı izole bir ortamda
+          yürütülür. Kod çalıştırma ortamı güvenlik katmanları içerse de mutlak
+          güvenlik garantisi verilmez. Kullanıcı, çalıştırdığı kodun kendi
+          cihazında işleneceğini ve cihaz performansını etkileyebileceğini kabul
+          eder.
+        </p>
       ),
     },
-
     {
-      num: "06",
+      num: "1.6",
       title: "Fikri Mülkiyet",
       content: (
-        <>
-          <p>
-            Platformdaki arayüzler, içerikler, soru sistemleri, tasarımlar ve
-            marka unsurları ilgili fikri mülkiyet mevzuatı kapsamında
-            korunmaktadır.
-          </p>
-
-          <p>
-            Kullanıcılar yalnızca kişisel ve eğitim amaçlı kullanım hakkına
-            sahiptir.
-          </p>
-
-          <p>
-            İçeriklerin izinsiz çoğaltılması, ticari kullanımı veya yeniden
-            dağıtımı yasaktır.
-          </p>
-        </>
+        <p>
+          Platformdaki tüm arayüzler, soru metinleri, test case'leri, tasarımlar
+          ve marka unsurları ilgili mevzuat kapsamında korunmaktadır. Kullanıcı,
+          Platform içeriklerini yalnızca kişisel ve eğitim amaçlı kullanma
+          hakkına sahiptir. İçeriklerin izinsiz çoğaltılması, ticari
+          kullanımı veya yeniden dağıtımı yasaktır.
+        </p>
       ),
     },
-
     {
-      num: "07",
-      title: "Kullanıcı Kodları ve İçerikleri",
-      content: (
-        <>
-          <p>
-            Kullanıcı tarafından yazılan kodlar ve çıktılar esas olarak
-            kullanıcının cihazında işlenmektedir.
-          </p>
-
-          <p>
-            Bazı teknik hata kayıtları, performans logları veya değerlendirme
-            sonuçları hizmet kalitesini artırmak amacıyla geçici olarak
-            işlenebilir.
-          </p>
-
-          <p>
-            Kullanıcı, platforma yüklediği içeriklerin hukuka uygun olduğunu
-            kabul eder.
-          </p>
-        </>
-      ),
-    },
-
-    {
-      num: "08",
-      title: "Hizmet Sürekliliği",
-      content: (
-        <>
-          <p>
-            Platform kesintisiz veya hatasız çalışma garantisi vermez.
-          </p>
-
-          <p>
-            Bakım, altyapı değişiklikleri, üçüncü taraf servis kesintileri veya
-            teknik problemler nedeniyle hizmet geçici olarak durabilir.
-          </p>
-
-          <p>
-            Platform özellikleri önceden bildirim yapılmaksızın değiştirilebilir
-            veya kaldırılabilir.
-          </p>
-        </>
-      ),
-    },
-
-    {
-      num: "09",
-      title: "Üçüncü Taraf Hizmetler",
-      content: (
-        <>
-          <p>
-            Platform; Railway, Vercel, Google Analytics ve jsDelivr CDN gibi
-            üçüncü taraf altyapılar kullanmaktadır.
-          </p>
-
-          <p>
-            Bu servislerin kendi gizlilik politikaları ve hizmet koşulları
-            bulunmaktadır.
-          </p>
-
-          <p>
-            Üçüncü taraf servis kesintileri veya güvenlik olaylarından doğrudan
-            sorumluluk kabul edilmez.
-          </p>
-        </>
-      ),
-    },
-
-    {
-      num: "10",
-      title: "Sorumluluğun Sınırlandırılması",
-      content: (
-        <>
-          <p>
-            Platform, eğitim ve değerlendirme amacıyla “olduğu gibi”
-            sunulmaktadır.
-          </p>
-
-          <p>
-            Teknik hata, veri kaybı, tarayıcı çökmesi, performans düşüşü,
-            cihaz uyumsuzluğu veya üçüncü taraf servis kesintilerinden doğan
-            dolaylı zararlardan sorumluluk kabul edilmez.
-          </p>
-
-          <p>
-            Kullanıcı, platformu kendi sorumluluğu altında kullandığını kabul
-            eder.
-          </p>
-        </>
-      ),
-    },
-
-    {
-      num: "11",
+      num: "1.7",
       title: "Hesap Sonlandırma",
       content: (
+        <p>
+          Kullanıcı, istediği zaman hesabını kapatma hakkına sahiptir. Platform;
+          bu Sözleşmeye aykırılık durumunda hesabı askıya alma veya kalıcı
+          olarak sonlandırma hakkını saklı tutar. Hesap kapatıldığında, Kullanıcı
+          Sözleşmesi Bölüm 2 (Aydınlatma Metni) kapsamındaki veriler silinir.
+        </p>
+      ),
+    },
+    {
+      num: "1.8",
+      title: "Sorumluluğun Sınırlandırılması",
+      content: (
+        <p>
+          Platform; teknik hata, veri kaybı, tarayıcı çökmesi, performans
+          düşüşü, cihaz uyumsuzluğu veya üçüncü taraf servis kesintilerinden
+          doğan dolaylı zararlardan sorumluluk kabul etmez. Kullanıcı, Platformu
+          kendi sorumluluğu altında kullandığını kabul eder.
+        </p>
+      ),
+    },
+    {
+      num: "1.9",
+      title: "Uygulanacak Hukuk ve Yetki",
+      content: (
+        <p>
+          Bu Sözleşme Türkiye Cumhuriyeti hukukuna tabidir. Sözleşmeden
+          doğacak uyuşmazlıklarda Türkiye Cumhuriyeti mahkemeleri ve icra
+          daireleri yetkilidir.
+        </p>
+      ),
+    },
+  ];
+
+  // ─── BÖLÜM 2: AYDINLATMA METNİ ─────────────────────────────
+  const aydinlatma: Section[] = [
+    {
+      num: "2.1",
+      title: "Veri Sorumlusu",
+      content: (
+        <p>
+          6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca,
+          Kullanıcıların kişisel verilerinin işlenmesinde{" "}
+          <strong className="text-zinc-200">{PLATFORM_NAME}</strong> veri
+          sorumlusu sıfatıyla hareket etmektedir.
+        </p>
+      ),
+    },
+    {
+      num: "2.2",
+      title: "İşlenen Kişisel Veriler",
+      content: (
+        <>
+          <p>Platform kapsamında aşağıdaki kişisel veriler işlenmektedir:</p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>
+              <strong className="text-zinc-200">Kimlik bilgileri:</strong>{" "}
+              E-posta adresi (hesap oluşturma ve kimlik doğrulama amacıyla).
+            </li>
+            <li>
+              <strong className="text-zinc-200">Hesap bilgileri:</strong>{" "}
+              Kullanıcı adı, şifre (şifreler bcrypt algoritması ile
+              şifrelenmiş olarak saklanır).
+            </li>
+            <li>
+              <strong className="text-zinc-200">İşlem güvenliği:</strong>{" "}
+              IP adresi, oturum bilgileri, cihaz ve tarayıcı bilgileri.
+            </li>
+            <li>
+              <strong className="text-zinc-200">Kullanım verileri:</strong>{" "}
+              Çözülen sorular, başarı durumu, deneme sayıları, ilerleme
+              istatistikleri.
+            </li>
+            <li>
+              <strong className="text-zinc-200">Kullanıcı içerikleri:</strong>{" "}
+              Platform üzerinde yazılan Python kodları (sadece kullanıcının
+              kendi cihazında işlenir, sunucuya gönderilmez).
+            </li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      num: "2.3",
+      title: "Kişisel Verilerin İşlenme Amaçları",
+      content: (
+        <ul className="list-disc pl-5 space-y-2">
+          <li>Hesap oluşturma, kimlik doğrulama ve oturum yönetimi</li>
+          <li>Platform üzerinden sunulan hizmetlerin sağlanması ve iyileştirilmesi</li>
+          <li>
+            Kullanıcının ilerlemesinin ve performansının takibi, kişiselleştirilmiş
+            deneyim sunulması
+          </li>
+          <li>Teknik sorunların tespiti, hata giderme ve güvenlik sağlama</li>
+          <li>Yasal yükümlülüklerin yerine getirilmesi</li>
+          <li>İstatistik ve analiz (anonimleştirilmiş)</li>
+        </ul>
+      ),
+    },
+    {
+      num: "2.4",
+      title: "Verilerin Toplanma Yöntemi ve Hukuki Sebepleri",
+      content: (
+        <p>
+          Veriler; Platform üzerindeki kayıt formu, hesap ayarları, soru çözme
+          etkileşimleri ve çerezler (cookies) aracılığıyla otomatik veya
+          yarı-otomatik yöntemlerle toplanmaktadır. İşleme hukuki sebepleri:
+          sözleşmenin kurulması ve ifası (KVKK md. 5/2-c), veri sorumlusunun
+          meşru menfaatleri (KVKK md. 5/2-f) ve açık rıza (KVKK md. 5/1).
+        </p>
+      ),
+    },
+    {
+      num: "2.5",
+      title: "Verilerin Aktarımı",
+      content: (
         <>
           <p>
-            Kullanıcı istediği zaman hesabını kapatabilir.
+            Kişisel veriler, aşağıdaki alıcı gruplarına aktarılabilir:
           </p>
-
-          <p>
-            Platform; kötüye kullanım, güvenlik ihlali, yasa dışı faaliyet veya
-            bu sözleşmeye aykırılık durumlarında hesabı askıya alma veya kalıcı
-            olarak sonlandırma hakkını saklı tutar.
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>
+              <strong className="text-zinc-200">Altyapı sağlayıcıları:</strong>{" "}
+              Supabase (veritabanı ve kimlik doğrulama, ABD), Railway (uygulama
+              sunucusu), Vercel (ön yüz barındırma).
+            </li>
+            <li>
+              <strong className="text-zinc-200">Analiz servisleri:</strong>{" "}
+              Google Analytics (anonim trafik analizi).
+            </li>
+            <li>
+              <strong className="text-zinc-200">Yasal merciler:</strong>{" "}
+              Yetkili kamu kurum ve kuruluşları, talep halinde.
+            </li>
+          </ul>
+          <p className="mt-2">
+            Yurt dışı veri aktarımı KVKK md. 9 kapsamında, ilgili ülkedeki
+            yeterlilik kararı veya uygun güvenceler çerçevesinde
+            gerçekleştirilmektedir.
           </p>
         </>
       ),
     },
-
     {
-      num: "12",
-      title: "Uygulanacak Hukuk",
+      num: "2.6",
+      title: "Verilerin Saklama Süresi",
+      content: (
+        <p>
+          Kişisel veriler, işlenme amacının gerektirdiği süre boyunca ve ilgili
+          mevzuatın öngördüğü azami süreler dahilinde saklanır. Kullanıcı
+          hesabının kapatılması halinde veriler, yasal yükümlülükler saklı
+          kalmak kaydıyla, makul bir süre içinde silinir veya anonimleştirilir.
+        </p>
+      ),
+    },
+    {
+      num: "2.7",
+      title: "KVKK Madde 11 Uyarınca Kullanıcı Hakları",
       content: (
         <>
           <p>
-            Bu sözleşme Türkiye Cumhuriyeti hukukuna tabidir.
+            Kullanıcı, KVKK'nın 11. maddesi uyarınca aşağıdaki haklara
+            sahiptir:
           </p>
-
-         
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>Kişisel verilerinin işlenip işlenmediğini öğrenme</li>
+            <li>İşlenmişse buna ilişkin bilgi talep etme</li>
+            <li>
+              İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını
+              öğrenme
+            </li>
+            <li>Yurt içinde/dışında aktarıldığı üçüncü kişileri öğrenme</li>
+            <li>
+              Eksik/yanlış işlenen verilerin düzeltilmesini isteme ve
+              yapılan işlemlerin üçüncü kişilere bildirilmesini talep etme
+            </li>
+            <li>
+              Şartlar oluştuğunda verilerin silinmesini/yok edilmesini isteme
+            </li>
+            <li>
+              Otomatik sistemlerle analiz sonucu aleyhine sonuç doğan
+              durumlarda itiraz etme
+            </li>
+          </ul>
+          <p className="mt-2">
+            Bu haklarınızı kullanmak için Platform üzerindeki hesap ayarları
+            bölümünden veya aşağıdaki iletişim kanallarından biri ile
+            başvurabilirsiniz.
+          </p>
         </>
       ),
     },
+  ];
 
+  // ─── BÖLÜM 3: AÇIK RIZA METNİ ──────────────────────────────
+  const acikRiza: Section[] = [
     {
-      num: "13",
-      title: "İletişim",
+      num: "3.1",
+      title: "Açık Rızanın Kapsamı",
       content: (
-        <>
-          <p>
-            Kullanım koşulları hakkında bizimle aşağıdaki e-posta adresi
-            üzerinden iletişime geçebilirsiniz:
+        <p>
+          Bu bölüm, Platforma kayıt olurken ve hizmetleri kullanırken verdiğiniz
+          açık rızanın kapsamını belirler. Açık rıza, KVKK md. 5/1 uyarınca
+          belirli bir konuya ilişkin, bilgilendirmeye dayanan ve özgür iradeyle
+          açıklanan rızadır.
+        </p>
+      ),
+    },
+    {
+      num: "3.2",
+      title: "Rıza Verilen İşlem Türleri",
+      content: (
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            <strong className="text-zinc-200">Hesap oluşturma ve yönetimi:</strong>{" "}
+            E-posta adresi, kullanıcı adı ve şifre bilgilerinin Platform
+            tarafından saklanması.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Hizmet sunumu:</strong>{" "}
+            Çözülen soruların, deneme sonuçlarının ve ilerleme istatistiklerinin
+            kaydedilmesi.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Güvenlik ve loglama:</strong>{" "}
+            IP adresi, oturum ve cihaz bilgilerinin teknik güvenlik amaçlı
+            işlenmesi.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Çerez kullanımı:</strong>{" "}
+            Oturum çerezleri, tercih çerezleri ve anonim analiz çerezleri
+            (Google Analytics) için rıza.
+          </li>
+          <li>
+            <strong className="text-zinc-200">Üçüncü taraf altyapı:</strong>{" "}
+            Supabase, Railway ve Vercel'e veri aktarımı için rıza.
+          </li>
+        </ul>
+      ),
+    },
+    {
+      num: "3.3",
+      title: "Rızanın Geri Çekilmesi",
+      content: (
+        <p>
+          Kullanıcı, verdiği açık rızayı geri çekme hakkına sahiptir. Rıza
+          geri çekildiğinde, geri çekme tarihinden önce yapılan işlemelerin
+          hukuka uygunluğu etkilenmez. Rıza geri çekme talebi için hesap
+          ayarlarından veya iletişim kanallarından başvurulabilir. Rıza
+          geri çekildiğinde hesap kapatılır ve kişisel veriler mevzuat
+          çerçevesinde silinir.
+        </p>
+      ),
+    },
+    {
+      num: "3.4",
+      title: "Açık Rıza Beyanı",
+      content: (
+        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 mt-3">
+          <p className="text-zinc-300 italic">
+            "Yukarıda yer alan Kullanıcı Sözleşmesi'ni, Aydınlatma Metni'ni ve
+            bu Açık Rıza Metni'ni okuduğumu, anladığımı; Platform üzerinden
+            sunulan hizmetler kapsamında kişisel verilerimin yukarıda
+            belirtilen amaçlarla işlenmesine, saklanmasına ve belirtilen
+            üçüncü taraflara aktarılmasına özgür irademle açık rıza
+            gösterdiğimi beyan ederim."
           </p>
-
-          <a
-            href={`mailto:${CONTACT_EMAIL}`}
-            className="text-zinc-300 underline underline-offset-2 hover:text-zinc-100 transition-colors"
-          >
-            {CONTACT_EMAIL}
-          </a>
-        </>
+        </div>
       ),
     },
   ];
@@ -338,34 +462,53 @@ export default function TermsPage() {
         {/* Badge */}
         <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded px-3 py-1.5 mb-10">
           <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-
           <span className="font-mono text-[11px] text-zinc-500">
-            Terms of Service · Güncel
+            Yasal Metinler · Güncel
           </span>
         </div>
 
         {/* Title */}
         <h1 className="text-3xl font-semibold text-zinc-100 mb-2">
-          Kullanım Koşulları
+          Kullanıcı Sözleşmesi, Aydınlatma ve Açık Rıza Metni
         </h1>
-
         <p className="font-mono text-[13px] text-zinc-600 mb-14">
           Son güncelleme: {LAST_UPDATED}
         </p>
 
-        {/* Sections */}
-        <div className="space-y-10">
-          {sections.map((s) => (
+        {/* BÖLÜM 1 */}
+        <PartTitle num="1" title="Kullanıcı Sözleşmesi" color="cyan" />
+        <div className="space-y-10 mt-6">
+          {sozlesme.map((s) => (
             <SectionBlock key={s.num} {...s} />
           ))}
+        </div>
+
+        {/* BÖLÜM 2 */}
+        <div className="mt-20">
+          <PartTitle num="2" title="Aydınlatma Metni (KVKK md. 10)" color="amber" />
+          <div className="space-y-10 mt-6">
+            {aydinlatma.map((s) => (
+              <SectionBlock key={s.num} {...s} />
+            ))}
+          </div>
+        </div>
+
+        {/* BÖLÜM 3 */}
+        <div className="mt-20">
+          <PartTitle num="3" title="Açık Rıza Metni (KVKK md. 5/1)" color="cyan" />
+          <div className="space-y-10 mt-6">
+            {acikRiza.map((s) => (
+              <SectionBlock key={s.num} {...s} />
+            ))}
+          </div>
         </div>
 
         {/* Footer */}
         <hr className="border-zinc-900 my-12" />
 
         <p className="font-mono text-[11px] text-zinc-700">
-          Bu kullanım koşulları Türkiye Cumhuriyeti mevzuatı kapsamında
-          hazırlanmıştır. · Türkiye
+          Bu metinler 6698 sayılı Kişisel Verilerin Korunması Kanunu ve ilgili
+          mevzuat kapsamında hazırlanmıştır. · Türkiye Cumhuriyeti
         </p>
       </div>
     </main>
