@@ -221,31 +221,30 @@ export default async function Page({ params, searchParams }: PageProps) {
         />
       )}
 
-      {/* 📌 SSR Content Block — JS yüklenmeden de Googlebot + kullanıcı görsün */}
+      {/* 📌 SSR Content Block — JS yüklenmeden de Googlebot + kullanıcı görsün
+          Hem desktop hem mobile için responsive: küçük ekranda padding/font azalır.
+          JS yüklenince script ile gizlenir (client component kendi UI'ini gösterir).
+          JS yoksa (Googlebot ilk crawl, no-JS kullanıcı) içerik görünür kalır. */}
       <div
         data-ssr-question
-        className="sr-only-ssr max-w-3xl mx-auto px-6 py-8 text-white"
-        style={{
-          // Varsayilan: gizle. Client mount olunca bu div'i gizler, JS olan kısmi gösterir.
-          // JS yoksa zaten görünür kalır.
-        }}
+        className="ssr-question-block bg-[#050816] text-white px-4 py-6 sm:px-6 sm:py-8 md:max-w-3xl md:mx-auto"
       >
-        <h1 className="text-3xl font-bold mb-2">{ssrTitle}</h1>
-        <div className="flex gap-2 mb-4 text-sm text-white/60">
-          <span>{ssrLevel}</span>
-          {ssrComplexity && <span>• {ssrComplexity}</span>}
+        <h1 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">{ssrTitle}</h1>
+        <div className="flex flex-wrap gap-2 mb-4 text-xs sm:text-sm text-white/60">
+          <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10">{ssrLevel}</span>
+          {ssrComplexity && <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10">{ssrComplexity}</span>}
         </div>
         {ssrDescription && (
-          <div className="prose prose-invert max-w-none mb-6 whitespace-pre-wrap text-white/80 leading-relaxed">
+          <div className="text-sm sm:text-base whitespace-pre-wrap text-white/80 leading-relaxed mb-6">
             {ssrDescription}
           </div>
         )}
         {ssrHints.length > 0 && (
           <div className="mt-6">
-            <h2 className="text-xl font-semibold mb-3 text-amber-400">İpuçları</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 text-amber-400">İpuçları</h2>
             <ul className="space-y-2">
               {ssrHints.map((h, i) => (
-                <li key={i} className="text-white/70 leading-relaxed">
+                <li key={i} className="text-sm sm:text-base text-white/70 leading-relaxed">
                   {h}
                 </li>
               ))}
@@ -254,20 +253,26 @@ export default async function Page({ params, searchParams }: PageProps) {
         )}
         {seoQ?.explanation && (
           <div className="mt-8 pt-6 border-t border-white/10">
-            <h2 className="text-xl font-semibold mb-3 text-indigo-400">Yaklaşım & Açıklama</h2>
-            <div className="prose prose-invert max-w-none text-white/70 leading-relaxed whitespace-pre-wrap">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 text-indigo-400">Yaklaşım & Açıklama</h2>
+            <div className="text-sm sm:text-base text-white/70 leading-relaxed whitespace-pre-wrap">
               {seoQ.explanation}
             </div>
           </div>
         )}
+        <noscript>
+          <p className="mt-6 text-amber-300 text-sm">
+            💡 İnteraktif editör için JavaScript gerekiyor. İçerik yine de görünür durumda.
+          </p>
+        </noscript>
       </div>
 
       <Component initialParams={resolvedParams} readonly={readonly} />
 
-      {/* 📌 JS yüklenince SSR bloğu gizle (client kendi UI'ini gösterir) */}
+      {/* 📌 JS yüklenince SSR bloğu gizle (client kendi UI'ini gösterir).
+          Hem desktop hem mobile için aynı davranış. */}
       <script
         dangerouslySetInnerHTML={{
-          __html: `(function(){var el=document.querySelector('[data-ssr-question]');if(el){el.style.display='none';}})();`,
+          __html: `(function(){var els=document.querySelectorAll('[data-ssr-question]');for(var i=0;i<els.length;i++){els[i].style.display='none';}})();`,
         }}
       />
     </>
