@@ -370,7 +370,30 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased`}
       >
-        <Analytics />
+        <Analytics
+          // 📌 Vercel Analytics — privacy-first
+          // IP adresleri otomatik anonymize (son okteti atilir)
+          // debug=false: console.log'lar kapali
+          // mode='production': sadece production'da calisir (dev'de opt-out)
+          mode="production"
+          debug={false}
+          beforeSend={(event) => {
+            // 📌 KVKK: pathname'de user ID veya query string temizligi
+            // Ornek: /?email=user@example.com gibi durumlar icin
+            if (event.url) {
+              try {
+                const url = new URL(event.url);
+                // Hassas query paramlarini kaldir
+                const sensitiveParams = ['email', 'token', 'id', 'user_id', 'auth'];
+                sensitiveParams.forEach(p => url.searchParams.delete(p));
+                event.url = url.toString();
+              } catch {
+                // ignore
+              }
+            }
+            return event;
+          }}
+        />
 
         <GlobalNav />
 
