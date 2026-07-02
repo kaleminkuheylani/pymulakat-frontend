@@ -195,8 +195,48 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
               e.preventDefault();
               e.stopPropagation();
             }
+            // F1-F12 (Help), Insert, Print Screen, Menu (Context Menu tuşu)
+            if (['F1', 'F3', 'F11', 'F12', 'Insert', 'PrintScreen', 'ContextMenu'].includes(e.key)) {
+              e.preventDefault();
+              e.stopPropagation();
+            }
           };
           domNode.addEventListener('keydown', blockEvent, true);
+
+          // 📌 Sürükle engelle (text drag-drop ile kopyalama)
+          const blockDrag = (e: DragEvent) => {
+            e.preventDefault();
+            e.stopPropagation();
+          };
+          domNode.addEventListener('dragstart', blockDrag, true);
+          domNode.addEventListener('drop', blockDrag, true);
+
+          // 📌 Text selection'i engelle (DOM-level)
+          const blockSelection = (e: Event) => {
+            const target = e.target as HTMLElement;
+            if (target && target.closest('.monaco-editor')) {
+              const selection = window.getSelection();
+              if (selection) selection.removeAllRanges();
+            }
+          };
+          domNode.addEventListener('copy', blockSelection, true);
+          domNode.addEventListener('cut', blockSelection, true);
+
+          // 📌 Tarayici menu Edit > Copy'yi engelle (document-level)
+          const docBlock = (e: ClipboardEvent) => {
+            const sel = window.getSelection();
+            if (sel && sel.toString().length > 0) {
+              // Editör içinden mi kontrol et
+              const anchor = sel.anchorNode;
+              if (anchor && domNode.contains(anchor)) {
+                e.preventDefault();
+                e.stopPropagation();
+                e.clipboardData?.clearData();
+              }
+            }
+          };
+          document.addEventListener('copy', docBlock, true);
+          document.addEventListener('cut', docBlock, true);
         }
       }
 
