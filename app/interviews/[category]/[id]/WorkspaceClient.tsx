@@ -98,6 +98,12 @@ export default function WorkspaceClient({ initialParams }: Props) {
     return () => clearInterval(interval);
   }, []);
 
+  // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi)
+  useEffect(() => {
+    const els = document.querySelectorAll('[data-ssr-question]');
+    els.forEach((el) => el.remove());
+  }, []);
+
   // Cleanup share modal timer on unmount (React strict mode + route change)
   useEffect(() => {
     return () => {

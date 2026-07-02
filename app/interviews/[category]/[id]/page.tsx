@@ -266,7 +266,21 @@ export default async function Page({ params, searchParams }: PageProps) {
         </noscript>
       </div>
 
-      <Component initialParams={resolvedParams} readonly={readonly} />
+      <div data-client-workspace>
+        <Component initialParams={resolvedParams} readonly={readonly} />
+      </div>
+
+      {/* 📌 JS yoksa: üstteki description paneli zaten SSR ile geliyor.
+          "Soru yükleniyor" loading JS olmadan takılı kalır, gizle. */}
+      <noscript>
+        <style>{`[data-client-workspace]{display:none!important}`}</style>
+        <div className="max-w-3xl mx-auto px-4 py-8 sm:px-6 text-center">
+          <p className="text-white/60 text-sm">
+            💡 İnteraktif editör ve kod çalıştırma için JavaScript gerekiyor.
+            Soru açıklamasını yukarıda görebilirsiniz.
+          </p>
+        </div>
+      </noscript>
 
       {/* 📌 JS yüklenince SSR bloğu useEffect ile kaldırılır (WorkspaceClient / MobileClient)
           — hem desktop hem mobile için aynı davranış. Bu sayede React hydration

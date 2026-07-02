@@ -74,6 +74,12 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   }
 
   // ─── Effects ──
+  // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi)
+  useEffect(() => {
+    const els = document.querySelectorAll('[data-ssr-question]');
+    els.forEach((el) => el.remove());
+  }, []);
+
   useEffect(() => {
     let cancelled = false;
     (async () => {
