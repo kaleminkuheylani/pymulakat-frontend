@@ -3,16 +3,26 @@ import type { NextRequest } from "next/server";
 import { QUESTION_META } from "./lib/questionMeta";
 
 // ═════════════════════════════════════════════════════════
-// MIDDLEWARE — Canonical URL routing
+// MIDDLEWARE — Host + Canonical URL routing
 // ═════════════════════════════════════════════════════════
-// /interviews/{category}/{id}   → 308 /interviews/{category}/{slug}
-// /interviews/{category}/{slug} → render (canonical, indexlenir)
+// www.pythonmulakat.com -> 308 pythonmulakat.com (apex)
+// /interviews/{category}/{id}   -> 308 /interviews/{category}/{slug}
+// /interviews/{category}/{slug} -> render (canonical, indexlenir)
 // ═════════════════════════════════════════════════════════
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+  const host = request.headers.get("host") || "";
 
-  // Sadece /interviews/{category}/{id|slug} pattern'i
+  // 1) www -> apex (308 Permanent)
+  if (host.startsWith("www.")) {
+    const url = request.nextUrl.clone();
+    url.host = host.replace(/^www\./, "");
+    url.protocol = "https";
+    return NextResponse.redirect(url, 308);
+  }
+
+  // 2) /interviews/{category}/{id} -> slug (308 Permanent)
   const match = pathname.match(/^\/interviews\/([a-z0-9-]+)\/([a-z0-9-]+)$/i);
   if (!match) {
     return NextResponse.next();
@@ -46,5 +56,5 @@ function NextFound() {
 }
 
 export const config = {
-  matcher: ["/interviews/:category/:id"],
+  matcher: ["/((?!_next|api|favicon.ico).*)"],
 };
