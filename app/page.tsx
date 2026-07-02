@@ -391,35 +391,28 @@ export default function HomePage() {
             index={3}
           />
           <FeatureCard
-            icon="🔒"
-            title="Kodun Sana Özel"
-            description="Yazdığın Python kodu sadece senin tarayıcında çalışır. Sunucuya gönderilmez, hiçbir yerde saklanmaz."
-            highlight="Yeni!"
-            index={4}
-          />
-          <FeatureCard
             icon="📱"
             title="Mobil Uyumlu"
             description="Telefonda, tablette, masaüstünde aynı deneyim. Paylaşım/embed için ?readonly modu da var."
-            index={5}
+            index={4}
           />
           <FeatureCard
             icon="🔗"
             title="İlgili Soru Zinciri"
             description="Bir soruyu çözdüğünde, onunla ilişkili kavramları ve sonraki soruları öğrenirsin. Sıralı öğrenme."
-            index={6}
+            index={5}
           />
           <FeatureCard
             icon="🎯"
             title="Seviye Bazlı İçerik"
             description="Beginner'dan Intermediate'a kadar farklı zorluk seviyelerinde sorular. Her seviyede progress takibi."
-            index={7}
+            index={6}
           />
           <FeatureCard
             icon="🚀"
             title="Sıfır Kurulum"
             description="Python, pip, virtualenv yok. Sadece tarayıcıyı aç, hesap oluştur, hemen kodlamaya başla. 60 saniyede ilk soruyu çöz."
-            index={8}
+            index={7}
           />
         </div>
       </section>
