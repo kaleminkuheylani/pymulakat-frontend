@@ -35,7 +35,8 @@ interface Props {
 
 interface AttemptPayload {
   question_id: number;
-  user_code: string;
+  // 📌 user_code KALDIRILDI — KVKK uyumu
+  // Sandbox client-side (Pyodide), kod server'a gonderilmiyor
   passed_tests: number;
   total_tests: number;
   success: boolean;
@@ -150,7 +151,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
 
       const payload: AttemptPayload = {
         question_id: questionId,
-        user_code: code,
+        // user_code gonderilmiyor — KVKK
         passed_tests: passedTests,
         total_tests: totalTests,
         success,

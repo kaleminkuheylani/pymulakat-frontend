@@ -129,7 +129,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
               total_tests: total,
               success,
               execution_time_ms: durationMs,
-              user_code: code,
+              // user_code gonderilmiyor — KVKK
             }),
           }
         );
