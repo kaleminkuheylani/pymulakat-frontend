@@ -469,11 +469,10 @@ export default function HomePage() {
             Rakamlarla PythonMulakat
           </h2>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <StatHighlight value="60+" label="Çözülmeyi Bekleyen Soru" sub="Her hafta yeni ekleniyor" />
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 max-w-3xl mx-auto">
+          <StatHighlight value="73+" label="Çözülmeyi Bekleyen Soru" sub="Her hafta yeni ekleniyor" />
           <StatHighlight value="9" label="Kategori" sub="Temelden ileri seviyeye" />
           <StatHighlight value="7+" label="Uzman Rehber" sub="3 farklı yaklaşımla" />
-          <StatHighlight value="10" label="Mail Kuralı" sub="AI'sız, kanıta dayalı" />
         </div>
       </section>
 
