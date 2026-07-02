@@ -268,13 +268,9 @@ export default async function Page({ params, searchParams }: PageProps) {
 
       <Component initialParams={resolvedParams} readonly={readonly} />
 
-      {/* 📌 JS yüklenince SSR bloğu gizle (client kendi UI'ini gösterir).
-          Hem desktop hem mobile için aynı davranış. */}
-      <script
-        dangerouslySetInnerHTML={{
-          __html: `(function(){var els=document.querySelectorAll('[data-ssr-question]');for(var i=0;i<els.length;i++){els[i].style.display='none';}})();`,
-        }}
-      />
+      {/* 📌 JS yüklenince SSR bloğu useEffect ile kaldırılır (WorkspaceClient / MobileClient)
+          — hem desktop hem mobile için aynı davranış. Bu sayede React hydration
+          sırasında duplicate render oluşmuyor. */}
     </>
   );
 }
