@@ -29,6 +29,18 @@ interface EditorProps {
 
 type Tab = "examples" | "console";
 
+// ─── Value formatter: primitive, list, dict, string hepsini okunur bas ───
+function formatValue(v: any): string {
+  if (v === undefined) return "undefined";
+  if (v === null) return "null";
+  if (typeof v === "string") return v;
+  try {
+    return JSON.stringify(v, null, 2);
+  } catch {
+    return String(v);
+  }
+}
+
 export default function WorkspaceEditor({
   editorRef,
   code,
@@ -187,14 +199,19 @@ function ExamplesTab({
       {testCases.test_cases.map((tc: TestCase, idx: number) => {
         const result = testResults[idx];
         const hasRun = result !== undefined;
+        const actualDisplay = hasRun
+          ? result.errorCategory
+            ? getErrorLabel(result.errorCategory)
+            : formatValue(result.actual)
+          : null;
         return (
           <div
             key={idx}
             className={`p-4 rounded-lg border ${
               hasRun
                 ? result.passed
-                  ? "bg-green-500/5 border-green-500/20"
-                  : "bg-red-500/5 border-red-500/20"
+                  ? "bg-green-500/5 border-green-500/30"
+                  : "bg-red-500/5 border-red-500/30"
                 : "bg-white/5 border-white/10"
             }`}
           >
@@ -202,40 +219,65 @@ function ExamplesTab({
               <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
                 Örnek #{idx + 1}
               </span>
-              {hasRun && (
-                <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
-                  result.passed ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
-                }`}>
-                  {result.passed ? "✓ Geçti" : "✗ Başarısız"}
-                </span>
-              )}
+              <div className="flex items-center gap-2">
+                {hasRun && result.execution_ms != null && (
+                  <span className="text-[10px] text-white/40 font-mono">
+                    {result.execution_ms}ms
+                  </span>
+                )}
+                {hasRun && (
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    result.passed ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                  }`}>
+                    {result.passed ? "✓ Geçti" : "✗ Başarısız"}
+                  </span>
+                )}
+              </div>
             </div>
             <div className="space-y-2">
+              {/* Input */}
               <div>
-                <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Input</div>
-                <pre className="text-xs font-mono text-white/70 bg-black/20 p-2 rounded overflow-x-auto">
-                  {JSON.stringify(tc.input, null, 2)}
+                <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1 font-bold">
+                  📥 Input
+                </div>
+                <pre className="text-xs font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border border-white/5">
+                  {formatValue(tc.input)}
                 </pre>
               </div>
-              <div>
-                <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Expected Output</div>
-                <pre className="text-xs font-mono text-green-400/80 bg-black/20 p-2 rounded overflow-x-auto">
-                  {JSON.stringify(tc.expected, null, 2)}
-                </pre>
-              </div>
-              {hasRun && (
+
+              {/* Expected vs Actual — yan yana diff */}
+              <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1">Your Output</div>
-                  <pre className={`text-xs font-mono bg-black/20 p-2 rounded overflow-x-auto ${
-                    result.passed ? "text-green-400/80" : "text-amber-300"
-                  }`}>
-                    {/* 📌 Raw Python error ASLA gösterilmez — kategori varsa sabit etiket, yoksa actual */}
-                    {result.errorCategory
-                      ? getErrorLabel(result.errorCategory)
-                      : JSON.stringify(result.actual, null, 2)}
+                  <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
+                    ✓ Expected
+                  </div>
+                  <pre className="text-xs font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded overflow-x-auto border border-emerald-500/20 min-h-[2.5rem]">
+                    {formatValue(tc.expected)}
                   </pre>
                 </div>
-              )}
+                <div>
+                  <div className={`text-[10px] uppercase tracking-wider mb-1 font-bold ${
+                    hasRun
+                      ? result.passed
+                        ? "text-green-400/80"
+                        : "text-rose-400/80"
+                      : "text-white/40"
+                  }`}>
+                    {hasRun ? (result.passed ? "✓ Actual" : "✗ Actual") : "⏳ Henüz çalıştırılmadı"}
+                  </div>
+                  <pre className={`text-xs font-mono p-2 rounded overflow-x-auto border min-h-[2.5rem] ${
+                    hasRun
+                      ? result.passed
+                        ? "text-green-300 bg-green-500/5 border-green-500/20"
+                        : result.errorCategory
+                          ? "text-rose-300 bg-rose-500/5 border-rose-500/20"
+                          : "text-amber-300 bg-amber-500/5 border-amber-500/20"
+                      : "text-white/30 bg-black/20 border-white/5 italic"
+                  }`}>
+                    {actualDisplay ?? "Çalıştır'a bas"}
+                  </pre>
+                </div>
+              </div>
             </div>
           </div>
         );
