@@ -49,7 +49,8 @@ interface FlowResponse {
   };
   context: {
     is_authenticated: boolean;
-    top_categories: string[];
+    solved_categories: string[];
+    top_categories?: string[];
     weak_categories?: string[];
     success_rate: number;
     target_level: string;
@@ -115,9 +116,13 @@ function buildLocalFallback(isAuthed: boolean = false): FlowResponse {
     sections: { personal, recent, popular, next_level: recommended },
     context: {
       is_authenticated: isAuthed,
+      solved_categories: [],
       top_categories: [],
       success_rate: 0,
+      current_level: "beginner",
       target_level: "beginner",
+      total_attempts: 0,
+      total_items: personal.length + recent.length + popular.length + recommended.length,
     },
   };
 }

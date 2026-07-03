@@ -25,12 +25,15 @@ interface FlowResponse {
     recent: FlowItem[];
     popular: FlowItem[];
     next_level: FlowItem[];
-    // Geriye uyumlu eski alan (backend yeni versiyonda göndermiyor ama main'de hâlâ olabilir)
+    // Geriye uyumlu eski alan
     recommended?: FlowItem[];
   };
   context: {
     is_authenticated: boolean;
-    top_categories: string[];
+    // Yeni motor: çözülmüş soruların kategorileri
+    solved_categories: string[];
+    // Eski motor ile geriye uyum
+    top_categories?: string[];
     weak_categories?: string[];
     success_rate: number;
     target_level: string;
@@ -60,29 +63,33 @@ export default function PersonalFlow({ flow }: { flow: FlowResponse | null }) {
   return (
     <div className="space-y-4">
       <FlowSection
-        title="✨ Sana Özel Öneriler"
-        subtitle={context.is_authenticated ? `${context.top_categories[0] || "python-basics"} kategorisinde başarılısın · mevcut seviye` : "Genel öneriler"}
+        title="✨ Senin İçin Seçtiklerimiz"
+        subtitle={context.is_authenticated ? `${context.solved_categories?.[0] || context.top_categories?.[0] || "python-basics"} kategorisinde başarılısın · daha fazlası için` : "Genel öneriler — giriş yaparak kişiselleştir"}
         accent="indigo" icon="✨"
         emptyText="Henüz öneri yok. Birkaç soru çözdükten sonra kişiselleştirilmiş öneriler görünür."
         items={personalItems}
       />
       <FlowSection
-        title="🆕 Son Eklenenler"
+        title="🆕 Yeni Eklenenler"
         subtitle="Platforma yeni eklenen içerikler"
         accent="amber" icon="🆕"
         emptyText="Yeni içerik yok."
         items={recentItems}
       />
       <FlowSection
-        title="🔥 En Çok Gösterilenler"
-        subtitle="Topluluğun en çok etkileşim aldığı içerikler"
+        title="🔥 En Çok Çözülenler"
+        subtitle="Topluluğun en çok çözdüğü sorular"
         accent="rose" icon="🔥"
         emptyText="Henüz popüler içerik yok."
         items={popularItems}
       />
       <FlowSection
-        title="🚀 Sıradaki Seviye"
-        subtitle={context.target_level ? `Bir üst seviye: ${context.target_level}` : "Başarı oranına göre sıradaki adım"}
+        title="🚀 Bir Sonraki Seviye"
+        subtitle={context.target_level && context.current_level
+          ? `Mevcut: ${context.current_level} · Hedef: ${context.target_level}`
+          : context.target_level
+            ? `Hedef seviye: ${context.target_level}`
+            : "Başarı oranına göre sıradaki adım"}
         accent="emerald" icon="🚀"
         emptyText="Şu an için ek tavsiye yok."
         items={nextLevelItems}
