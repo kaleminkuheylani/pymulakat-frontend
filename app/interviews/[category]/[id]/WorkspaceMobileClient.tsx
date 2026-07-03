@@ -179,6 +179,11 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   }, [router, category, interview]);
 
   const handleBackToList = useCallback(() => {
+    // 📌 SPA navigation: history varsa geri git, yoksa kategoriye dön
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back();
+      return;
+    }
     if (category) {
       router.push(`/interviews/${category}`);
     } else {
