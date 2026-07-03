@@ -177,6 +177,7 @@ function ExamplesTab({
   isGuest: boolean;
   category: string;
   id: string;
+  generalErrorCategory?: ErrorCategory;
 }) {
   if (!testCases || testCases.test_cases.length === 0) {
     return (
