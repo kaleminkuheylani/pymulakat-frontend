@@ -409,6 +409,9 @@ function ConsoleTabMobile({ consoleOutput }: { consoleOutput: string }) {
           if (line.startsWith("[stderr]")) {
             return <div key={i} className="text-amber-300/90">{line}</div>;
           }
+          if (line.startsWith("[error]")) {
+            return <div key={i} className="text-rose-300/90 font-semibold">{line}</div>;
+          }
           if (line.startsWith("[import hatası]")) {
             return <div key={i} className="text-rose-300/90">{line}</div>;
           }

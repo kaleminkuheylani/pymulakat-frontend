@@ -5,6 +5,30 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { classifyError, type ErrorCategory } from "../lib/errorClassifier";
 
+// ─── Traceback helper: sadece son satırı döner (File "..." line X kısmı atılır) ───
+// Örn. tam metin:
+//   Traceback (most recent call last):
+//     File "<exec>", line 5, in <module>
+//   ValueError: invalid literal for int() with base 10: 'abc'
+// → "ValueError: invalid literal for int() with base 10: 'abc'"
+function lastErrorLine(raw: string | undefined | null): string {
+  if (!raw) return "";
+  // Önce string'i normalize et — \n veya gerçek yeni satırlar
+  const lines = String(raw)
+    .replace(/\\n/g, "\n")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (!lines.length) return "";
+  // Son satır (genelde "ValueError: ..." gibi exception+message)
+  const last = lines[lines.length - 1];
+  // Eğer son satır Traceback başlıksa (çok nadir), bir önceki satıra düş
+  if (/^Traceback \(most recent call last\)/i.test(last) && lines.length > 1) {
+    return lines[lines.length - 2];
+  }
+  return last;
+}
+
 export type PyodideStatus = "idle" | "loading" | "ready" | "running" | "error";
 
 export interface TestCase {
@@ -217,16 +241,21 @@ export function usePyodide(): UsePyodideReturn {
               execution_ms: Math.round(performance.now() - tcStart),
             });
           } catch (e: any) {
-            // 📌 Raw e.message UI'a, console'a, server'a GİTMEZ
+            // 📌 Raw e.message UI'a sızmaz; konsola sadece son satırı düşer
+            const rawMsg = e?.message || "";
+            const last = lastErrorLine(rawMsg);
             results.push({
               input: tc.input,
               expected: tc.expected,
               actual: undefined,
               passed: false,
-              errorCategory: classifyError(e?.message || ""),
+              errorCategory: classifyError(rawMsg),
               description: tc.description,
               execution_ms: Math.round(performance.now() - tcStart),
             });
+            if (last) {
+              consoleOutput += `[error] ${last}\n`;
+            }
           }
         }
 
@@ -235,7 +264,13 @@ export function usePyodide(): UsePyodideReturn {
         }
       } catch (err: any) {
         // 📌 Raw err.message asla UI'a düşmez — sadece kategori enum
-        generalErrorCategory = classifyError(err?.message || "");
+        const rawMsg = err?.message || "";
+        generalErrorCategory = classifyError(rawMsg);
+        // Konsola sadece traceback'in son satırı (genelde "ValueError: ..." gibi)
+        const last = lastErrorLine(rawMsg);
+        if (last) {
+          consoleOutput += `[error] ${last}\n`;
+        }
       } finally {
         // Stdout reset
         try {
