@@ -25,6 +25,7 @@ interface EditorProps {
   category: string;
   id: string;
   onRun: () => void;
+  generalErrorCategory?: ErrorCategory;
 }
 
 type Tab = "examples" | "console";
@@ -54,6 +55,7 @@ export default function WorkspaceEditor({
   category,
   id,
   onRun,
+  generalErrorCategory,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState<Tab>("examples");
   
@@ -149,6 +151,7 @@ export default function WorkspaceEditor({
               isGuest={isGuest}
               category={category}
               id={id}
+              generalErrorCategory={generalErrorCategory}
             />
           )}
 
