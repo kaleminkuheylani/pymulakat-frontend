@@ -99,9 +99,9 @@ export default function WorkspaceEditor({
 
           <button
             onClick={onRun}
-            disabled={isRunning || pyStatus !== "ready"}
+            disabled={isRunning || (pyStatus !== "ready" && pyStatus !== "idle")}
             className={`px-5 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${
-              isRunning || pyStatus !== "ready"
+              isRunning || (pyStatus !== "ready" && pyStatus !== "idle")
                 ? "bg-white/5 text-white/30 cursor-not-allowed"
                 : isGuest
                 ? "bg-amber-500/10 border border-amber-400/40 text-amber-400 hover:bg-amber-500/20"
@@ -236,7 +236,7 @@ function ExamplesTab({
                   <pre className={`text-xs font-mono bg-black/20 p-2 rounded overflow-x-auto ${
                     result.passed ? "text-green-400/80" : "text-amber-300"
                   }`}>
-                    {result.error || JSON.stringify(result.output, null, 2)}
+                    {result.error || JSON.stringify(result.actual, null, 2)}
                   </pre>
                 </div>
               )}
@@ -271,14 +271,14 @@ function TestsTab({ testResults }: { testResults: TestRunResult[] }) {
               {r.passed ? "✓" : "✗"}
             </div>
             <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold mb-1 text-white/80">Test #{r.test_number}</div>
+              <div className="text-xs font-semibold mb-1 text-white/80">Test #{i + 1}</div>
               {r.error ? (
                 <pre className="text-xs text-red-300/80 font-mono whitespace-pre-wrap break-words">{r.error}</pre>
               ) : (
                 <div className="space-y-1 text-xs font-mono">
                   <div><span className="text-white/40">Girdi: </span>{JSON.stringify(r.input)}</div>
                   <div><span className="text-white/40">Beklenen: </span>{JSON.stringify(r.expected)}</div>
-                  {!r.passed && <div><span className="text-white/40">Alınan: </span><span className="text-amber-300">{JSON.stringify(r.output)}</span></div>}
+                  {!r.passed && <div><span className="text-white/40">Alınan: </span><span className="text-amber-300">{JSON.stringify(r.actual)}</span></div>}
                 </div>
               )}
             </div>

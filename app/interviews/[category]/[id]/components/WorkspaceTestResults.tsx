@@ -136,7 +136,7 @@ const TestCard = memo(function TestCard({
         {hasRun && (
           <Row
             label={isPassed ? "✓ Actual" : "✗ Actual"}
-            value={result!.error || result!.output}
+            value={result!.error || result!.actual}
             tone={isPassed ? "success" : "fail"}
           />
         )}
@@ -170,7 +170,7 @@ function Summary({ results, isRunning, definedCount }: { results: TestRunResult[
   const passed = results.filter((r) => r.passed).length;
   const total = results.length;
   const allPassed = passed === total;
-  const ms = results.reduce((s, r) => s + (r.duration_ms || 0), 0);
+  const ms = results.reduce((s, r) => s + (r.execution_ms || 0), 0);
 
   return (
     <div
@@ -211,7 +211,7 @@ export function WorkspaceTestResults({ results, isRunning, testCases }: Workspac
   // Test case'leri her zaman göster (definition).
   // Sonuç varsa, eşleşen index'e yerleştir (test_number 1-based, index 0-based).
   const renderList = testCases.test_cases.map((def, idx) => {
-    const result = results.find((r) => r.test_number === idx + 1) || results[idx];
+    const result = results[idx];
     return { def, result, idx };
   });
 

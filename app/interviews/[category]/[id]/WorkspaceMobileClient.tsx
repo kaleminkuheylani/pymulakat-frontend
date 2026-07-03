@@ -148,7 +148,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
       router.push(`/login?returnUrl=${redirect}&reason=guest_run_code`);
       return;
     }
-    if (!testCases || running || pyStatus !== "ready") return;
+    if (!testCases || running || (pyStatus !== "ready" && pyStatus !== "idle")) return;
     setRunning(true);
     setResults([]);
     try {
@@ -157,7 +157,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
       const passed = result.results.filter((r: any) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
-      await submitAttempt(success, passed, total, result.duration_ms);
+      await submitAttempt(success, passed, total, result.execution_ms);
       setTab("tests");
       if (success) {
         setTimeout(() => setShowShareModal(true), 1500);
@@ -245,7 +245,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         ) : (
           <button
             onClick={handleRun}
-            disabled={running || pyStatus !== "ready"}
+            disabled={running || (pyStatus !== "ready" && pyStatus !== "idle")}
             className="px-3 py-1.5 rounded-lg bg-amber-500 text-slate-900 text-[11px] font-bold disabled:opacity-50"
           >
             {running ? "..." : "▶ Çalıştır"}

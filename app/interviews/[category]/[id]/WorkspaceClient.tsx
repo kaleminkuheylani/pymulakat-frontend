@@ -186,7 +186,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
       router.push(`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`);
       return;
     }
-    if (isRunning || pyStatus !== "ready" || !testCases) return;
+    if (isRunning || (pyStatus !== "ready" && pyStatus !== "idle") || !testCases) return;
     setIsRunning(true);
     setTestResults([]);
     try {
@@ -195,7 +195,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
       const passed = result.results.filter((r) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
-      await submitAttempt(success, passed, total, result.duration_ms);
+      await submitAttempt(success, passed, total, result.execution_ms);
     } catch (e: any) {
       toast.error("Çalıştırma hatası", { description: e?.message });
     } finally {
