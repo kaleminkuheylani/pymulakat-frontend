@@ -24,13 +24,19 @@ interface FlowResponse {
     personal: FlowItem[];
     recent: FlowItem[];
     popular: FlowItem[];
-    recommended: FlowItem[];
+    next_level: FlowItem[];
+    // Geriye uyumlu eski alan (backend yeni versiyonda göndermiyor ama main'de hâlâ olabilir)
+    recommended?: FlowItem[];
   };
   context: {
     is_authenticated: boolean;
     top_categories: string[];
+    weak_categories?: string[];
     success_rate: number;
     target_level: string;
+    current_level?: string;
+    total_attempts?: number;
+    total_items?: number;
   };
 }
 
@@ -74,7 +80,7 @@ export default function PersonalFlow({ flow }: { flow: FlowResponse | null }) {
         subtitle={context.target_level ? `Bir üst seviye: ${context.target_level}` : "Başarı oranına göre sıradaki adım"}
         accent="emerald" icon="🚀"
         emptyText="Şu an için ek tavsiye yok."
-        items={sections.next_level ?? sections.recommended ?? []}
+        items={sections.next_level}
       />
     </div>
   );
