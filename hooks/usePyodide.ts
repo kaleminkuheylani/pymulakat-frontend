@@ -324,8 +324,10 @@ export function usePyodide(): UsePyodideReturn {
   // 📌 Cleanup (component unmount): Pyodide instance'ı temizle
   useEffect(() => {
     return () => {
-      // Pyodide ref'i GC'ye bırak (her şey tarayıcıda, WebAssembly belleği serbest bırakır)
+      // Pyodide ref'leri sıfırla — WebAssembly belleği serbest, init promise cache temizlendi
+      // (yoksa yeniden mount eski promise'i bekler)
       pyodideRef.current = null;
+      initPromiseRef.current = null;
     };
   }, []);
 

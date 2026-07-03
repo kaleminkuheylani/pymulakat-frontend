@@ -1,6 +1,6 @@
 // hooks/useUser.ts — Supabase SSR tabanlı, çoklu kaynaklardan token çıkarımı + auto-refresh.
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { getSupabaseBrowser } from "./useSupabaseBrowser";
 
 const AUTH_EVENT = "auth-state-changed";
@@ -233,6 +233,7 @@ export function useUser() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const mountedRef = useRef(true);
   const fetchUser = useCallback(async () => {
     if (typeof window === "undefined") {
       setLoading(false);
@@ -244,6 +245,7 @@ export function useUser() {
 
     try {
       const data = await fetchMe();
+      if (!mountedRef.current) return;
       setUser(data);
       if (data) {
         localStorage.setItem("user", JSON.stringify(data));
@@ -251,14 +253,20 @@ export function useUser() {
         localStorage.removeItem("user");
       }
     } catch (err: unknown) {
+      if (!mountedRef.current) return;
       const message =
         err instanceof Error ? err.message : "Bilinmeyen hata";
       console.error("useUser fetch error:", message);
       setError(message);
       setUser(null);
     } finally {
-      setLoading(false);
+      if (mountedRef.current) setLoading(false);
     }
+  }, []);
+
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => { mountedRef.current = false; };
   }, []);
 
   useEffect(() => {
