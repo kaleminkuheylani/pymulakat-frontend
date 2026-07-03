@@ -46,45 +46,64 @@ interface FlowResponse {
 const API = () => process.env.NEXT_PUBLIC_API_URL || "";
 
 // 📌 Local fallback: backend /flow endpoint'i yoksa veya timeout olursa
-// QUESTION_META'dan client-side basit akis uretir.
-async function buildLocalFallback(): Promise<FlowResponse> {
-  try {
-    const { QUESTION_META } = await import("../../lib/questionMeta");
-    const all: any[] = Object.values(QUESTION_META || {});
-    const items: FlowItem[] = all.filter((q: any) => q && q.slug).map((q: any, idx: number) => ({
+// QUESTION_META + lib'ten client-side akis uretir. ML yok, sadece siralama.
+import { QUESTION_META, getQuestionMeta } from "../../lib/questionMeta";
+
+function buildLocalFallback(isAuthed: boolean = false): FlowResponse {
+  // Tum sorulari QUESTION_META'dan al, siraya gore
+  const allIds = Object.keys(QUESTION_META)
+    .map(Number)
+    .filter((id) => !isNaN(id) && QUESTION_META[id]?.slug)
+    .sort((a, b) => a - b);
+
+  const now = Date.now();
+  const maxId = Math.max(...allIds, 88);
+
+  // ID-bazli tarih (DB created_at'e guvenmiyoruz)
+  // maxId = bugun, dusuk id = eski (gun sayisi = maxId - id)
+  const items: FlowItem[] = allIds.map((id) => {
+    const q = QUESTION_META[id];
+    const daysAgo = maxId - id;
+    return {
       type: "question" as const,
       id: q.id,
       title: q.title,
       category: q.topic,
       level: q.difficulty_note?.includes("intermediate") ? "intermediate" : "beginner",
       slug: q.slug,
-      score: 100 - idx,
+      score: 100 - id,
       reason: "📌 Öneri",
-      created_at: new Date(Date.now() - idx * 86400000).toISOString(),
+      created_at: new Date(now - daysAgo * 86400000).toISOString(),
       view_count: 0,
       attempt_count: 0,
-    }));
+    };
+  });
 
-    return {
-      sections: {
-        personal: items.slice(0, 5),
-        recent: items.slice(-5).reverse(),
-        popular: items.slice(0, 5),
-        recommended: items.slice(5, 10),
-      },
-      context: {
-        is_authenticated: false,
-        top_categories: [],
-        success_rate: 0,
-        target_level: "beginner",
-      },
-    };
-  } catch {
-    return {
-      sections: { personal: [], recent: [], popular: [], recommended: [] },
-      context: { is_authenticated: false, top_categories: [], success_rate: 0, target_level: "beginner" },
-    };
-  }
+  // 📌 Backend ile ayni mantik (id-bazli tarih fallback)
+  // recent: maxId'ye en yakin = en yeni (id buyuk = yeni)
+  const recent = items
+    .slice()
+    .sort((a, b) => b.id - a.id)
+    .slice(0, 5);
+  // personal: ilk 5 ID sirasi (temel sorular)
+  const personal = items.slice(0, 5);
+  // popular: ID 1-15 klasikler (gercek DB view yoksa fallback)
+  const popular = items.filter((i) => i.id >= 1 && i.id <= 15).slice(0, 5);
+  // recommended: ID 6-25 (baslangic-oncesi tavsiye)
+  const recommended = items.filter((i) => i.id >= 6 && i.id <= 25).slice(0, 5);
+
+  for (const p of popular) p.reason = "🔥 Klasik — mülakatlarda sıkça çıkıyor";
+  for (const r of recent) r.reason = `🆕 #${r.id} — yakın zamanda eklendi`;
+
+  return {
+    sections: { personal, recent, popular, recommended },
+    context: {
+      is_authenticated: isAuthed,
+      top_categories: [],
+      success_rate: 0,
+      target_level: "beginner",
+    },
+  };
 }
 
 export default function DashboardHome() {
@@ -107,12 +126,12 @@ export default function DashboardHome() {
         setFlow(data);
         setLastUpdated(new Date());
       } else {
-        // 404 veya 500 → local fallback
-        buildLocalFallback().then(setFlow);
+        // 404 veya 500 → local fallback (kullanici login mi?)
+        setFlow(buildLocalFallback(!!user));
         setLastUpdated(new Date());
       }
     } catch {
-      buildLocalFallback().then(setFlow);
+      setFlow(buildLocalFallback(!!user));
       setLastUpdated(new Date());
     }
     if (showSpinner) setRefreshing(false);
