@@ -56,9 +56,10 @@ export default function GlobalNav() {
           </Link>
           <Link
             href="/dashboard"
-            className="text-white/70 hover:text-white text-xs sm:text-sm font-medium transition-colors whitespace-nowrap hidden sm:inline"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-indigo-500/20 to-purple-500/20 hover:from-indigo-500/30 hover:to-purple-500/30 border border-indigo-500/40 rounded-lg text-xs sm:text-sm font-semibold text-indigo-200 transition-colors whitespace-nowrap"
           >
-            Dashboard
+            <span>✨</span>
+            <span>Akışım</span>
           </Link>
           <Link
             href="/guides"

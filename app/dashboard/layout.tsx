@@ -43,8 +43,31 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           {/* Sidebar */}
           <aside className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 h-fit md:sticky md:top-4">
             <div className="mb-4 pb-4 border-b border-white/10">
-              <div className="text-xs text-white/40 uppercase tracking-wide mb-1">Hoş geldin</div>
-              <div className="font-semibold text-white">{user.username}</div>
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-bold text-white">
+                  {(user.username || "U").slice(0, 1).toUpperCase()}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs text-white/40 uppercase tracking-wide">Hoş geldin</div>
+                  <div className="font-semibold text-white truncate">{user.username}</div>
+                </div>
+              </div>
+
+              {/* 📌 Stats — dashboard'a girer girmez görsün */}
+              <div className="grid grid-cols-3 gap-2 text-center">
+                <div className="bg-white/[0.04] rounded-lg p-2">
+                  <div className="text-base font-bold text-amber-400">{user.total_attempts || 0}</div>
+                  <div className="text-[10px] text-white/40">Deneme</div>
+                </div>
+                <div className="bg-white/[0.04] rounded-lg p-2">
+                  <div className="text-base font-bold text-emerald-400">{user.success_count || 0}</div>
+                  <div className="text-[10px] text-white/40">Başarılı</div>
+                </div>
+                <div className="bg-white/[0.04] rounded-lg p-2">
+                  <div className="text-base font-bold text-indigo-400">{Math.round((user.success_rate || 0) * 100)}%</div>
+                  <div className="text-[10px] text-white/40">Oran</div>
+                </div>
+              </div>
             </div>
             <nav className="space-y-1">
               {NAV.map((item) => {
