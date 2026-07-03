@@ -51,6 +51,11 @@ const ACCENT_STYLES: Record<Accent, { gradient: string; border: string; bg: stri
 export default function PersonalFlow({ flow }: { flow: FlowResponse | null }) {
   if (!flow) return <EmptyState text="Akış yüklenemedi." />;
   const { sections, context } = flow;
+  // Tolerans: eski/yeni backend response şekillerini destekle
+  const personalItems = sections.personal || [];
+  const recentItems = sections.recent || [];
+  const popularItems = sections.popular || [];
+  const nextLevelItems = sections.next_level || sections.recommended || [];
 
   return (
     <div className="space-y-4">
@@ -59,28 +64,28 @@ export default function PersonalFlow({ flow }: { flow: FlowResponse | null }) {
         subtitle={context.is_authenticated ? `${context.top_categories[0] || "python-basics"} kategorisinde başarılısın · mevcut seviye` : "Genel öneriler"}
         accent="indigo" icon="✨"
         emptyText="Henüz öneri yok. Birkaç soru çözdükten sonra kişiselleştirilmiş öneriler görünür."
-        items={sections.personal}
+        items={personalItems}
       />
       <FlowSection
         title="🆕 Son Eklenenler"
         subtitle="Platforma yeni eklenen içerikler"
         accent="amber" icon="🆕"
         emptyText="Yeni içerik yok."
-        items={sections.recent}
+        items={recentItems}
       />
       <FlowSection
         title="🔥 En Çok Gösterilenler"
         subtitle="Topluluğun en çok etkileşim aldığı içerikler"
         accent="rose" icon="🔥"
         emptyText="Henüz popüler içerik yok."
-        items={sections.popular}
+        items={popularItems}
       />
       <FlowSection
         title="🚀 Sıradaki Seviye"
         subtitle={context.target_level ? `Bir üst seviye: ${context.target_level}` : "Başarı oranına göre sıradaki adım"}
         accent="emerald" icon="🚀"
         emptyText="Şu an için ek tavsiye yok."
-        items={sections.next_level}
+        items={nextLevelItems}
       />
     </div>
   );
