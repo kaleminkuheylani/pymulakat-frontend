@@ -19,6 +19,7 @@ interface EditorProps {
   testCases: QuestionTests | null;
   testResults: TestRunResult[];
   isRunning: boolean;
+  consoleOutput: string;
   pyStatus: "idle" | "loading" | "ready" | "running" | "error";
   isGuest: boolean;
   category: string;
@@ -35,6 +36,7 @@ export default function WorkspaceEditor({
   testCases,
   testResults,
   isRunning,
+  consoleOutput,
   pyStatus,
   isGuest,
   category,
@@ -148,7 +150,7 @@ export default function WorkspaceEditor({
             <TestsTab testResults={testResults} />
           )}
 
-          {activeTab === "console" && <ConsoleTab />}
+          {activeTab === "console" && <ConsoleTab consoleOutput={consoleOutput} />}
         </div>
       </div>
     </main>
@@ -303,10 +305,54 @@ function TestsTab({ testResults }: { testResults: TestRunResult[] }) {
   );
 }
 
-function ConsoleTab() {
+function ConsoleTab({ consoleOutput }: { consoleOutput: string }) {
+  // Boş durum
+  if (!consoleOutput || consoleOutput.trim() === "") {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 py-8">
+        <div className="text-2xl">🖨️</div>
+        <p className="text-xs">Henüz print() çıktısı yok.</p>
+        <p className="text-[10px] text-white/20">Kodunda print() kullanıp Çalıştır'a bas</p>
+      </div>
+    );
+  }
+
+  // Satır satır böl: stderr olanları renklendir, stdout olanları normal
+  const lines = consoleOutput.split("\n");
+
   return (
-    <pre className="text-xs text-white/60 font-mono whitespace-pre-wrap leading-relaxed">
-      <span className="text-white/20">Konsol çıktısı için print() kullanın</span>
-    </pre>
+    <div className="p-3 space-y-2">
+      <div className="flex items-center justify-between pb-2 border-b border-white/5">
+        <span className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
+          📤 Konsol Çıktısı
+        </span>
+        <span className="text-[10px] text-white/30 font-mono">
+          {lines.filter((l) => l.trim()).length} satır
+        </span>
+      </div>
+      <pre className="text-xs text-white/80 font-mono whitespace-pre-wrap leading-relaxed">
+        {lines.map((line, i) => {
+          if (line.startsWith("[stderr]")) {
+            return (
+              <div key={i} className="text-amber-300/90">
+                {line}
+              </div>
+            );
+          }
+          if (line.startsWith("[import hatası]")) {
+            return (
+              <div key={i} className="text-rose-300/90">
+                {line}
+              </div>
+            );
+          }
+          return (
+            <div key={i} className="text-white/80">
+              {line || "\u00A0"}
+            </div>
+          );
+        })}
+      </pre>
+    </div>
   );
 }

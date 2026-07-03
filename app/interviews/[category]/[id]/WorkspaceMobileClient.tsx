@@ -40,9 +40,10 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [generalErrorCategory, setGeneralErrorCategory] = useState<import("../../../../lib/errorClassifier").ErrorCategory | undefined>();
+  const [consoleOutput, setConsoleOutput] = useState<string>("");
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
-  const [tab, setTab] = useState<"question" | "workspace" | "tests">("workspace");
+  const [tab, setTab] = useState<"question" | "workspace" | "tests" | "console">("workspace");
   const [showShareModal, setShowShareModal] = useState(false);
 
   // ─── Guards ──
@@ -153,10 +154,12 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     setRunning(true);
     setResults([]);
     setGeneralErrorCategory(undefined);
+    setConsoleOutput("");
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setResults(result.results);
       setGeneralErrorCategory(result.errorCategory);
+      setConsoleOutput(result.console_output || "");
       const passed = result.results.filter((r: any) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
@@ -272,12 +275,14 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         {tab === "tests" && (
           <WorkspaceTestResults results={results} isRunning={running} testCases={testCases} generalErrorCategory={generalErrorCategory} />
         )}
+
+        {tab === "console" && <ConsoleTabMobile consoleOutput={consoleOutput} />}
       </div>
 
       {/* Bottom tab bar — SADECE workspace tab'indayken gizle (editor tam ekran kullanir) */}
       {tab !== "workspace" && (
         <div className="flex border-t border-white/5 bg-[#0a0e1a]">
-          {(["question", "workspace", "tests"] as const).map((k) => (
+          {(["question", "workspace", "tests", "console"] as const).map((k) => (
             <button
               key={k}
               onClick={() => setTab(k)}
@@ -289,7 +294,9 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
                 ? "Soru"
                 : k === "workspace"
                 ? "Editör"
-                : `Testler (${testCases?.test_cases.length ?? 0})`}
+                : k === "tests"
+                ? `Testler (${testCases?.test_cases.length ?? 0})`
+                : "🖨️ Konsol"}
             </button>
           ))}
         </div>
@@ -370,5 +377,44 @@ function ShareModal({
         </button>
       </motion.div>
     </motion.div>
+  );
+}
+function ConsoleTabMobile({ consoleOutput }: { consoleOutput: string }) {
+  if (!consoleOutput || consoleOutput.trim() === "") {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12">
+        <div className="text-3xl">🖨️</div>
+        <p className="text-sm">Henüz print() çıktısı yok.</p>
+        <p className="text-[10px] text-white/20 text-center">
+          Kodunda print() kullanıp Çalıştır'a bas
+        </p>
+      </div>
+    );
+  }
+
+  const lines = consoleOutput.split("\n");
+
+  return (
+    <div className="p-3 space-y-2 h-full overflow-y-auto">
+      <div className="flex items-center justify-between pb-2 border-b border-white/5">
+        <span className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
+          📤 Konsol Çıktısı
+        </span>
+        <span className="text-[10px] text-white/30 font-mono">
+          {lines.filter((l) => l.trim()).length} satır
+        </span>
+      </div>
+      <pre className="text-xs text-white/80 font-mono whitespace-pre-wrap leading-relaxed">
+        {lines.map((line, i) => {
+          if (line.startsWith("[stderr]")) {
+            return <div key={i} className="text-amber-300/90">{line}</div>;
+          }
+          if (line.startsWith("[import hatası]")) {
+            return <div key={i} className="text-rose-300/90">{line}</div>;
+          }
+          return <div key={i} className="text-white/80">{line || "\u00A0"}</div>;
+        })}
+      </pre>
+    </div>
   );
 }
