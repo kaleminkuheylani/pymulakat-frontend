@@ -197,7 +197,8 @@ export default function WorkspaceClient({ initialParams }: Props) {
       const success = total > 0 && passed === total;
       await submitAttempt(success, passed, total, result.execution_ms);
     } catch (e: any) {
-      toast.error("Çalıştırma hatası", { description: e?.message });
+      // 📌 Raw error sızmaz — sabit hardcoded mesaj
+      toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
     } finally {
       setIsRunning(false);
     }

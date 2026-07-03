@@ -39,6 +39,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   const [testCases, setTestCases] = useState<QuestionTests | null>(null);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
+  const [generalErrorCategory, setGeneralErrorCategory] = useState<import("../../../../lib/errorClassifier").ErrorCategory | undefined>();
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
   const [tab, setTab] = useState<"question" | "workspace" | "tests">("workspace");
@@ -89,7 +90,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         setInterview(q);
         setCode(q.starter_code || "");
       } catch (e: any) {
-        toast.error("Soru yüklenemedi", { description: e?.message });
+        toast.error("Soru yüklenemedi", { description: "Bağlantını kontrol et." });
       }
     })();
     return () => {
@@ -105,7 +106,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         const tc = await questionsAPI.getTests(questionId);
         if (!cancelled) setTestCases(tc);
       } catch (e: any) {
-        toast.error("Test caseleri yüklenemedi", { description: e?.message });
+        toast.error("Test caseleri yüklenemedi", { description: "Bağlantını kontrol et." });
       }
     })();
     return () => {
@@ -151,9 +152,11 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     if (!testCases || running || (pyStatus !== "ready" && pyStatus !== "idle")) return;
     setRunning(true);
     setResults([]);
+    setGeneralErrorCategory(undefined);
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setResults(result.results);
+      setGeneralErrorCategory(result.errorCategory);
       const passed = result.results.filter((r: any) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
@@ -163,7 +166,8 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         setTimeout(() => setShowShareModal(true), 1500);
       }
     } catch (e: any) {
-      toast.error("Çalıştırma hatası", { description: e?.message });
+      // 📌 Raw error sızmaz — sabit hardcoded mesaj
+      toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
     } finally {
       setRunning(false);
     }
@@ -266,7 +270,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         )}
 
         {tab === "tests" && (
-          <WorkspaceTestResults results={results} isRunning={running} testCases={testCases} />
+          <WorkspaceTestResults results={results} isRunning={running} testCases={testCases} generalErrorCategory={generalErrorCategory} />
         )}
       </div>
 

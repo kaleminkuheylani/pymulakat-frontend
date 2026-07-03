@@ -2,6 +2,7 @@
 
 import { memo } from "react";
 import type { TestRunResult } from "../../../../../hooks/usePyodide";
+import { getErrorLabel, getErrorBadgeClass } from "../../../../../lib/errorClassifier";
 
 // ═══════════════════════════════════════════════════════════
 // WorkspaceTestResults — Test case'ler + çalıştırma sonuçları
@@ -28,6 +29,7 @@ interface WorkspaceTestResultsProps {
     function_name: string;
     test_cases: TestCaseDef[];
   } | null;
+  generalErrorCategory?: import("../../../../../lib/errorClassifier").ErrorCategory;
 }
 
 // ── Helpers ──
@@ -133,12 +135,32 @@ const TestCard = memo(function TestCard({
       <div className="p-2.5 space-y-2">
         <Row label="📥 Input" value={def.input} />
         <Row label="✓ Expected" value={def.expected} tone="success" />
-        {hasRun && (
+        {hasRun && isPassed && (
           <Row
-            label={isPassed ? "✓ Actual" : "✗ Actual"}
-            value={result!.error || result!.actual}
-            tone={isPassed ? "success" : "fail"}
+            label="✓ Actual"
+            value={result!.actual}
+            tone="success"
           />
+        )}
+        {hasRun && isFailed && (
+          <div className="space-y-1.5">
+            <div className="text-[9px] uppercase tracking-wider text-white/40 font-bold">
+              ✗ Error
+            </div>
+            {/* 📌 Raw Python error ASLA gösterilmez — sadece hardcoded kategori badge */}
+            <div className="flex items-center gap-2">
+              <span
+                className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border ${getErrorBadgeClass(
+                  result!.errorCategory || "unknown"
+                )}`}
+              >
+                {getErrorLabel(result!.errorCategory || "unknown")}
+              </span>
+              <span className="text-[10px] text-white/40">
+                Detay için ipuçlarına bak
+              </span>
+            </div>
+          </div>
         )}
       </div>
     </div>
@@ -146,7 +168,17 @@ const TestCard = memo(function TestCard({
 });
 
 // ── Summary strip ──
-function Summary({ results, isRunning, definedCount }: { results: TestRunResult[]; isRunning: boolean; definedCount: number }) {
+function Summary({
+  results,
+  isRunning,
+  definedCount,
+  generalErrorCategory,
+}: {
+  results: TestRunResult[];
+  isRunning: boolean;
+  definedCount: number;
+  generalErrorCategory?: import("../../../../../lib/errorClassifier").ErrorCategory;
+}) {
   if (isRunning) {
     return (
       <div className="flex items-center justify-center gap-2 p-3 rounded-lg bg-indigo-500/10 border border-indigo-500/30">
@@ -173,31 +205,54 @@ function Summary({ results, isRunning, definedCount }: { results: TestRunResult[
   const ms = results.reduce((s, r) => s + (r.execution_ms || 0), 0);
 
   return (
-    <div
-      className={`flex items-center justify-between p-3 rounded-lg border ${
-        allPassed ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"
-      }`}
-    >
-      <div className="flex items-center gap-2">
-        <span className={`text-lg ${allPassed ? "text-green-400" : "text-red-400"}`}>
-          {allPassed ? "🏆" : "⚠"}
-        </span>
-        <div>
-          <div className="text-xs font-bold text-white">
-            {passed} / {total} geçti
-          </div>
-          <div className="text-[10px] text-white/40">
-            {allPassed ? "Tebrikler, tüm testler geçti!" : "Bazı testler başarısız oldu"}
+    <div className="space-y-2">
+      {generalErrorCategory && generalErrorCategory !== "unknown" && (
+        <div className="flex items-center gap-2 p-3 rounded-lg bg-rose-500/10 border border-rose-500/30">
+          <span className="text-rose-300 text-sm">⚠</span>
+          <span className="text-[10px] text-rose-200/70">Çalıştırma Hatası:</span>
+          <span
+            className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border ${getErrorBadgeClass(
+              generalErrorCategory
+            )}`}
+          >
+            {getErrorLabel(generalErrorCategory)}
+          </span>
+          <span className="text-[10px] text-white/40 ml-auto">
+            Detay için ipuçlarına bak
+          </span>
+        </div>
+      )}
+      <div
+        className={`flex items-center justify-between p-3 rounded-lg border ${
+          allPassed ? "bg-green-500/10 border-green-500/30" : "bg-red-500/10 border-red-500/30"
+        }`}
+      >
+        <div className="flex items-center gap-2">
+          <span className={`text-lg ${allPassed ? "text-green-400" : "text-red-400"}`}>
+            {allPassed ? "🏆" : "⚠"}
+          </span>
+          <div>
+            <div className="text-xs font-bold text-white">
+              {passed} / {total} geçti
+            </div>
+            <div className="text-[10px] text-white/40">
+              {allPassed ? "Tebrikler, tüm testler geçti!" : "Bazı testler başarısız oldu"}
+            </div>
           </div>
         </div>
+        <div className="text-[10px] text-white/40 font-mono">{ms}ms</div>
       </div>
-      <div className="text-[10px] text-white/40 font-mono">{ms}ms</div>
     </div>
   );
 }
 
 // ── Main ──
-export function WorkspaceTestResults({ results, isRunning, testCases }: WorkspaceTestResultsProps) {
+export function WorkspaceTestResults({
+  results,
+  isRunning,
+  testCases,
+  generalErrorCategory,
+}: WorkspaceTestResultsProps & { generalErrorCategory?: import("../../../../../lib/errorClassifier").ErrorCategory }) {
   // Test case'ler henüz yüklenmedi → spinner
   if (!testCases || testCases.test_cases.length === 0) {
     return (
@@ -217,7 +272,12 @@ export function WorkspaceTestResults({ results, isRunning, testCases }: Workspac
 
   return (
     <div className="p-3 space-y-3">
-      <Summary results={results} isRunning={isRunning} definedCount={testCases.test_cases.length} />
+      <Summary
+        results={results}
+        isRunning={isRunning}
+        definedCount={testCases.test_cases.length}
+        generalErrorCategory={generalErrorCategory}
+      />
 
       <div className="space-y-2">
         {renderList.map(({ def, result, idx }) => (

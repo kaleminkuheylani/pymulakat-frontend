@@ -3,6 +3,7 @@
 // Toplamda 14MB script yerine ilk yüklemede 0KB. İlk çalıştırma yavaş, sonrakiler cache'li.
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { classifyError, type ErrorCategory } from "../lib/errorClassifier";
 
 export type PyodideStatus = "idle" | "loading" | "ready" | "running" | "error";
 
@@ -17,7 +18,8 @@ export interface TestRunResult {
   expected: any;
   actual: any;
   passed: boolean;
-  error?: string;
+  // 📌 Raw Python error ASLA UI'a dönmez — sadece hardcoded kategori enum
+  errorCategory?: ErrorCategory;
   description?: string;
   execution_ms?: number;
 }
@@ -29,11 +31,13 @@ export interface PyodideRunResult {
   console_output: string;
   all_passed: boolean;
   execution_ms: number;
-  error?: string;
+  // Genel hata varsa kategori (örn. import hatası, fonksiyon bulunamadı)
+  errorCategory?: ErrorCategory;
 }
 
 export interface UsePyodideReturn {
   status: PyodideStatus;
+  // UI'da gösterilecek hata mesajı: sabit hardcoded string. Raw Python error değil.
   errorMsg: string | null;
   runTests: (
     userCode: string,
@@ -126,7 +130,8 @@ export function usePyodide(): UsePyodideReturn {
         setStatus("ready");
       } catch (err: any) {
         setStatus("error");
-        setErrorMsg(err.message);
+        // 📌 Raw error.message UI'a sızmaz — sabit hardcoded mesaj
+        setErrorMsg("Çalıştırma ortamı yüklenemedi");
         throw err;
       }
     })();
@@ -153,7 +158,9 @@ export function usePyodide(): UsePyodideReturn {
       const startTime = performance.now();
       const results: TestRunResult[] = [];
       let consoleOutput = "";
-      let errorMsg: string | undefined;
+      // 📌 Raw Python error ASLA UI'a, console'a, toast'a sızmaz.
+      //    Sadece kategori enum'u tutulur.
+      let generalErrorCategory: ErrorCategory | undefined;
 
       try {
         // Her çalıştırmada temiz stdout
@@ -164,6 +171,7 @@ export function usePyodide(): UsePyodideReturn {
         });
         py.setStderr({
           batched: (s: string) => {
+            // stderr çıktısı da kullanıcıya gösterilmez — generic etiket yeterli
             consoleOutput += `[stderr] ${s}\n`;
           },
         });
@@ -181,7 +189,8 @@ export function usePyodide(): UsePyodideReturn {
             try {
               await py.runPythonAsync(im);
             } catch (e: any) {
-              consoleOutput += `[import hatası] ${e.message}\n`;
+              // Raw mesaj yerine sadece kategori — içerik sızmaz
+              consoleOutput += `[import hatası] ${classifyError(e?.message || "")}\n`;
             }
           }
           fullCode = userCode.replace(/^((?:from\s+\S+\s+)?import\s+.*(?:\n(?!\S).*)*)/gm, "");
@@ -208,12 +217,13 @@ export function usePyodide(): UsePyodideReturn {
               execution_ms: Math.round(performance.now() - tcStart),
             });
           } catch (e: any) {
+            // 📌 Raw e.message UI'a, console'a, server'a GİTMEZ
             results.push({
               input: tc.input,
               expected: tc.expected,
               actual: undefined,
               passed: false,
-              error: e.message,
+              errorCategory: classifyError(e?.message || ""),
               description: tc.description,
               execution_ms: Math.round(performance.now() - tcStart),
             });
@@ -221,11 +231,11 @@ export function usePyodide(): UsePyodideReturn {
         }
 
         if (!functionMatch) {
-          errorMsg = `Fonksiyon '${functionName}' bulunamadı`;
+          generalErrorCategory = "syntax_error"; // fonksiyon tanımı yok → syntax/setup hatası
         }
       } catch (err: any) {
-        errorMsg = err.message || "Çalıştırma hatası";
-        consoleOutput += `[error] ${errorMsg}\n`;
+        // 📌 Raw err.message asla UI'a düşmez — sadece kategori enum
+        generalErrorCategory = classifyError(err?.message || "");
       } finally {
         // Stdout reset
         try {
@@ -244,9 +254,9 @@ export function usePyodide(): UsePyodideReturn {
         total_tests: testCases.length,
         passed_tests: passedTests,
         console_output: consoleOutput,
-        all_passed: passedTests === testCases.length && !errorMsg,
+        all_passed: passedTests === testCases.length && !generalErrorCategory,
         execution_ms: totalMs,
-        error: errorMsg,
+        errorCategory: generalErrorCategory,
       };
     },
     [ensureReady]

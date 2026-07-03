@@ -4,6 +4,7 @@ import { useState } from "react";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../components/Monaco";
 import { TestRunResult } from "../../../../../hooks/usePyodide";
 import { QuestionTests } from "../../../../../api/v2/questions";
+import { getErrorLabel, getErrorBadgeClass, type ErrorCategory } from "../../../../../lib/errorClassifier";
 
 interface TestCase {
   input: any[];
@@ -236,7 +237,10 @@ function ExamplesTab({
                   <pre className={`text-xs font-mono bg-black/20 p-2 rounded overflow-x-auto ${
                     result.passed ? "text-green-400/80" : "text-amber-300"
                   }`}>
-                    {result.error || JSON.stringify(result.actual, null, 2)}
+                    {/* 📌 Raw Python error ASLA gösterilmez — kategori varsa sabit etiket, yoksa actual */}
+                    {result.errorCategory
+                      ? getErrorLabel(result.errorCategory)
+                      : JSON.stringify(result.actual, null, 2)}
                   </pre>
                 </div>
               )}
@@ -272,8 +276,18 @@ function TestsTab({ testResults }: { testResults: TestRunResult[] }) {
             </div>
             <div className="flex-1 min-w-0">
               <div className="text-xs font-semibold mb-1 text-white/80">Test #{i + 1}</div>
-              {r.error ? (
-                <pre className="text-xs text-red-300/80 font-mono whitespace-pre-wrap break-words">{r.error}</pre>
+              {r.errorCategory ? (
+                // 📌 Raw Python error ASLA gösterilmez — sadece hardcoded kategori badge
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border ${getErrorBadgeClass(
+                      r.errorCategory
+                    )}`}
+                  >
+                    {getErrorLabel(r.errorCategory)}
+                  </span>
+                  <span className="text-[10px] text-white/40">Detay için ipuçlarına bak</span>
+                </div>
               ) : (
                 <div className="space-y-1 text-xs font-mono">
                   <div><span className="text-white/40">Girdi: </span>{JSON.stringify(r.input)}</div>
