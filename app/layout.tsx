@@ -355,15 +355,10 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* Preconnect & Preload (performans + SEO) */}
-        <link rel="preconnect" href="https://cdn.jsdelivr.net" />
-        <link
-          rel="preload"
-          href="https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js"
-          as="script"
-        />
-        <link rel="dns-prefetch" href="https://www.googletagmanager.com" />
-        <link rel="dns-prefetch" href="https://www.google-analytics.com" />
+        {/* 📌 Pyodide artık self-hosted (Vercel CDN, aynı origin).
+            Her sayfada preload/preconnect YAPMA — sadece workspace açılınca
+            lazy yüklensin (~14MB tasarruf, LCP + Lighthouse mobile ↑).
+            Analytics DNS-prefetch aşağıda kaldı (GTM/GA hâlâ 3rd-party). */}
       </head>
 
       <body

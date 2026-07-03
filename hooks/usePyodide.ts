@@ -34,8 +34,11 @@ export interface UsePyodideReturn {
   ) => Promise<PyodideRunResult>;
 }
 
-const PYODIDE_VERSION = "v0.25.0";
-const PYODIDE_CDN = `https://cdn.jsdelivr.net/pyodide/${PYODIDE_VERSION}/full/`;
+const PYODIDE_VERSION = "v0.27.7";
+// 📌 Self-hosted: Pyodide bundle'ı Vercel'in kendi CDN'inden sunuluyor.
+//    jsdelivr.net, unpkg.com gibi 3rd-party CDN'lere gidiş yok —
+//    kullanıcı IP'si sızmıyor, KVKK uyumu tam.
+const PYODIDE_CDN = `/pyodide/${PYODIDE_VERSION}/full/`;
 const PYODIDE_SCRIPT_URL = `${PYODIDE_CDN}pyodide.js`;
 
 declare global {

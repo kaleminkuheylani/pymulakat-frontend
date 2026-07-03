@@ -1,4 +1,6 @@
-importScripts("https://cdn.jsdelivr.net/pyodide/v0.27.7/full/pyodide.js");
+// 📌 Self-hosted Pyodide — aynı origin'den yüklenir (Vercel CDN).
+//    Üçüncü taraf CDN çağrısı yok, kullanıcı IP'si sızmıyor.
+importScripts("/pyodide/v0.27.7/full/pyodide.js");
 
 let pyodide = null;
 
@@ -55,7 +57,7 @@ async function initPyodideRuntime() {
   if (pyodide) return;
 
   pyodide = await loadPyodide({
-    indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.7/full/"
+    indexURL: "/pyodide/v0.27.7/full/"
   });
 
   await pyodide.loadPackage([

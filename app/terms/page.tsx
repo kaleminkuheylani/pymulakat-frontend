@@ -120,8 +120,10 @@ export default function TermsPage() {
           </li>
           <li>
             Platform; üçüncü taraf altyapı servislerinin (Railway, Vercel,
-            Supabase, jsDelivr, Google Analytics) kesintilerinden doğrudan sorumlu
-            değildir.
+            Supabase, Google Analytics) kesintilerinden doğrudan sorumlu
+            değildir. Python çalışma zamanı (Pyodide) platformun kendi CDN'i
+            üzerinden sunulur; üçüncü taraf bir kod dağıtım servisine
+            (jsDelivr, unpkg vb.) bağımlılık yoktur.
           </li>
         </ul>
       ),
@@ -408,7 +410,11 @@ export default function TermsPage() {
             Çözülen soruların, deneme sonuçlarının (başarılı/başarısız test
             sayısı, süre, kullanılan ipucu sayısı) kaydedilmesi.{" "}
             <em className="text-zinc-300">
-              Kullanıcının yazdığı Python kodları işlenmez ve saklanmaz.
+              Kullanıcının yazdığı Python kodları işlenmez ve saklanmaz. Kod
+              çalıştırma işlemi kullanıcının tarayıcısında, kendi cihazında
+              gerçekleşir; Python çalışma zamanı (Pyodide) platformun kendi
+              CDN'i üzerinden, üçüncü taraf bir kod dağıtım servisine
+              başvurulmadan sunulur. Yazılan kod hiçbir sunucuya iletilmez.
             </em>
           </li>
           <li>
