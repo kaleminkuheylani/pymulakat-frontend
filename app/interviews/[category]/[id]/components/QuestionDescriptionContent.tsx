@@ -96,6 +96,14 @@ export default function QuestionDescriptionContent({
         {interview.description}
       </p>
 
+      {/* ─── Toplulukta Sor — question-aware CTA ─────── */}
+      <AskCommunityButton
+        questionId={interview.id}
+        questionTitle={interview.title}
+        category={category}
+        isLoggedIn={!isGuest}
+      />
+
       {/* ─── Complexity + Tags + related_concepts ──────── */}
       {(interview.complexity ||
         interview.related_concepts?.length ||
@@ -271,6 +279,54 @@ export default function QuestionDescriptionContent({
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// ─── Toplulukta Sor — question-aware CTA ────────────
+// Tıklanınca dashboard'a login required yönlendirir, modal pre-fill olur:
+//   ?question_id=7&title=...&category=...
+// Auth varsa direkt /dashboard/forms?question_id=... gider
+// Değilse /login?returnUrl=... üzerinden dashboard'a
+function AskCommunityButton({
+  questionId,
+  questionTitle,
+  category,
+  isLoggedIn,
+}: {
+  questionId: number;
+  questionTitle: string;
+  category: string;
+  isLoggedIn: boolean;
+}) {
+  const target = `/dashboard/forms?question_id=${questionId}&title=${encodeURIComponent(questionTitle)}&category=${encodeURIComponent(category)}`;
+  const href = isLoggedIn
+    ? target
+    : `/login?returnUrl=${encodeURIComponent(target)}`;
+
+  return (
+    <div className="rounded-2xl border border-emerald-500/30 bg-gradient-to-br from-emerald-500/10 via-teal-500/5 to-transparent p-3.5">
+      <div className="flex items-start gap-3">
+        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-emerald-500/30">
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8h2a2 2 0 012 2v6a2 2 0 01-2 2h-2v4l-4-4H9a2 2 0 01-2-2v-1m6-10a2 2 0 012 2v6a2 2 0 01-2 2H9l-4 4V8a2 2 0 014-4h6a2 2 0 014 4z" />
+          </svg>
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3 className="text-sm font-bold text-white">Takıldın mı?</h3>
+          <p className="text-[11px] text-white/60 mt-0.5 leading-relaxed">
+            Topluluktan bu soruya yardım iste — kod parçan, test case'in veya hatanı paylaş.
+          </p>
+          <a
+            href={href}
+            className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all shadow-md shadow-emerald-500/30 active:scale-95"
+          >
+            <span>💬</span>
+            <span>Toplulukta Sor</span>
+            <span>→</span>
+          </a>
+        </div>
+      </div>
     </div>
   );
 }

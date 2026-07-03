@@ -4,17 +4,29 @@
 
 import { useState, useEffect } from "react";
 import { useUser } from "../../../hooks/useUser";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import FormCategoryTabs from "../../../components/forms/FormCategoryTabs";
 import FormCard from "../../../components/forms/FormCard";
 
 export default function FormsPage() {
   const { user } = useUser();
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const qId = searchParams?.get("question_id") || "";
+  const qTitle = searchParams?.get("title") || "";
+  const qCat = searchParams?.get("category") || "";
   const [active, setActive] = useState<string | null>(null);
   const [forms, setForms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+
+  // 📌 question-aware: ?question_id=7&title=... ile gelindiyse auto-open modal
+  useEffect(() => {
+    if (qId && qTitle) {
+      setActive("question_help");
+      setShowCreate(true);
+    }
+  }, [qId, qTitle]);
 
   useEffect(() => {
     setLoading(true);
@@ -62,7 +74,9 @@ export default function FormsPage() {
 
       {showCreate && (
         <CreateFormModal
-          defaultCategory={active || "feedback"}
+          defaultCategory={qId ? "question_help" : (active || "feedback")}
+          defaultTitle={qId ? `Soru #${qId} — yardım lazım` : ""}
+          defaultBody={qId ? `📌 **${qTitle}** hakkında yardım istiyorum.\n\nDenemek istedim ama...` : ""}
           onClose={() => setShowCreate(false)}
           onCreated={() => {
             setShowCreate(false);
@@ -81,16 +95,20 @@ export default function FormsPage() {
 
 function CreateFormModal({
   defaultCategory,
+  defaultTitle = "",
+  defaultBody = "",
   onClose,
   onCreated,
 }: {
   defaultCategory: string;
+  defaultTitle?: string;
+  defaultBody?: string;
   onClose: () => void;
   onCreated: () => void;
 }) {
   const [category, setCategory] = useState(defaultCategory);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
+  const [title, setTitle] = useState(defaultTitle);
+  const [body, setBody] = useState(defaultBody);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
