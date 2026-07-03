@@ -135,6 +135,14 @@ export default function DashboardHome() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
+  // Mounted guard: async fetch'lerde unmount sonrası setState engeli
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const fetchFlow = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
