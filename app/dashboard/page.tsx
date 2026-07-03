@@ -45,6 +45,48 @@ interface FlowResponse {
 
 const API = () => process.env.NEXT_PUBLIC_API_URL || "";
 
+// 📌 Local fallback: backend /flow endpoint'i yoksa veya timeout olursa
+// QUESTION_META'dan client-side basit akis uretir.
+async function buildLocalFallback(): Promise<FlowResponse> {
+  try {
+    const { QUESTION_META } = await import("../../lib/questionMeta");
+    const all: any[] = Object.values(QUESTION_META || {});
+    const items: FlowItem[] = all.filter((q: any) => q && q.slug).map((q: any, idx: number) => ({
+      type: "question" as const,
+      id: q.id,
+      title: q.title,
+      category: q.topic,
+      level: q.difficulty_note?.includes("intermediate") ? "intermediate" : "beginner",
+      slug: q.slug,
+      score: 100 - idx,
+      reason: "📌 Öneri",
+      created_at: new Date(Date.now() - idx * 86400000).toISOString(),
+      view_count: 0,
+      attempt_count: 0,
+    }));
+
+    return {
+      sections: {
+        personal: items.slice(0, 5),
+        recent: items.slice(-5).reverse(),
+        popular: items.slice(0, 5),
+        recommended: items.slice(5, 10),
+      },
+      context: {
+        is_authenticated: false,
+        top_categories: [],
+        success_rate: 0,
+        target_level: "beginner",
+      },
+    };
+  } catch {
+    return {
+      sections: { personal: [], recent: [], popular: [], recommended: [] },
+      context: { is_authenticated: false, top_categories: [], success_rate: 0, target_level: "beginner" },
+    };
+  }
+}
+
 export default function DashboardHome() {
   const { user } = useUser();
   const [tab, setTab] = useState<Tab>("personal");
@@ -64,8 +106,15 @@ export default function DashboardHome() {
         const data = await res.json();
         setFlow(data);
         setLastUpdated(new Date());
+      } else {
+        // 404 veya 500 → local fallback
+        buildLocalFallback().then(setFlow);
+        setLastUpdated(new Date());
       }
-    } catch {}
+    } catch {
+      buildLocalFallback().then(setFlow);
+      setLastUpdated(new Date());
+    }
     if (showSpinner) setRefreshing(false);
   }, []);
 
