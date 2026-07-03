@@ -65,7 +65,7 @@ function FloatingBadge({ text, index }: { text: string; index: number }) {
 }
 
 // ─── Hero ─────────────────────────────────────────────────
-function Hero({ user }: { user: { username: string } | null }) {
+function Hero({ user: _ }: { user: any }) {
   return (
     <section className="relative z-10 flex flex-col items-center justify-center px-6 pt-12 pb-16">
       {/* Logo */}
@@ -105,17 +105,9 @@ function Hero({ user }: { user: { username: string } | null }) {
         ))}
       </div>
 
-      {/* User-aware greeting */}
-      {user && (
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.4 }}
-          className="mb-6 px-4 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-sm font-medium"
-        >
-          Tekrar hoş geldin, <strong>{user.username}</strong> 👋
-        </motion.div>
-      )}
+      {/* 📌 Landing page tamamen misafir odakli — user bilgisi gostermez.
+          Login sonrasi dashboard'a yonlendirilir, dashboard'ta kullanici
+          bilgisi OnboardingGate ve dashboard tarafindan gosterilir. */}
 
       {/* Title */}
       <motion.h1
@@ -147,53 +139,32 @@ function Hero({ user }: { user: { username: string } | null }) {
         transition={{ delay: 0.9, duration: 0.6 }}
         className="flex flex-col sm:flex-row items-center gap-4 mt-8"
       >
-        {user ? (
-          <>
-            <Link href="/interviews">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="relative group bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
-              >
-                <span className="relative z-10">Sorulara Başla →</span>
-              </motion.button>
-            </Link>
-            <Link href="/profile">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
-              >
-                👤 Profilim
-              </motion.button>
-            </Link>
-          </>
-        ) : (
-          <>
-            <Link href="/register">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.97 }}
-                className="relative group bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
-              >
-                <span className="relative z-10">Ücretsiz Başla — 60 Saniyede</span>
-              </motion.button>
-            </Link>
-            <Link href="/interviews/strings/51">
-              <motion.button
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
-                className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
-              >
-                👀 Kayıt Olmadan Dene
-              </motion.button>
-            </Link>
-          </>
-        )}
+        (
+        <>
+          <Link href="/register">
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.97 }}
+              className="relative group bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
+            >
+              <span className="relative z-10">Ücretsiz Başla — 60 Saniyede</span>
+            </motion.button>
+          </Link>
+          <Link href="/interviews/strings/51">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
+            >
+              👀 Kayıt Olmadan Dene
+            </motion.button>
+          </Link>
+        </>
+      )
       </motion.div>
 
       {/* Trust signals */}
-      {!user && (
+      (
         <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -205,7 +176,6 @@ function Hero({ user }: { user: { username: string } | null }) {
           <span>✓ Kurulum yok</span>
           <span>✓ Süresiz ücretsiz</span>
         </motion.div>
-      )}
     </section>
   )
 }
@@ -338,12 +308,13 @@ function StatHighlight({ value, label, sub }: { value: string; label: string; su
 
 // ─── Main Page ─────────────────────────────────────────────
 export default function HomePage() {
-  const { user } = useUser()
+  // 📌 Landing page — user bilgisi gostermiyor. Kullanici giris yapmis olsa bile
+  // bu sayfa tamamen misafir modunda. Login sonrasi yonlendirme dashboard'a.
 
   return (
     <div className="relative bg-[#050816] min-h-screen w-full overflow-x-hidden">
       <GridBackground />
-      <Hero user={user} />
+      <Hero user={null} />
 
       {/* 📌 Hero altindaki stats bar kaldirildi (duplicate). */}
       {/* CountUp animasyonlu stats asagidaki 'Rakamlarla PythonMulakat' bolumunde. */}
@@ -517,52 +488,35 @@ export default function HomePage() {
               <BrandLogo size={48} />
             </div>
             <h2 className="text-white text-3xl md:text-5xl font-bold mb-4">
-              {user ? "Kaldığın Yerden Devam Et" : "İlk Soruyu 60 Saniyede Çöz"}
+              "İlk Soruyu 60 Saniyede Çöz"
             </h2>
             <p className="text-white/60 text-base md:text-lg mb-10 max-w-xl mx-auto">
-              {user
-                ? "Yeni sorular seni bekliyor. Bugün bir tane daha çöz, ilerlemen profilinde kaydedilsin."
-                : "Ücretsiz kayıt ol, hemen bir soru aç, tarayıcıda kodunu yaz. Mülakat hazırlığı bu kadar kolay olmalıydı."}
+              "Ücretsiz kayıt ol, hemen bir soru aç, tarayıcıda kodunu yaz. Mülakat hazırlığı bu kadar kolay olmalıydı."
             </p>
             <div className="flex flex-col sm:flex-row justify-center gap-4">
-              {user ? (
-                <Link href="/interviews">
-                  <motion.button
-                    whileHover={{ scale: 1.04 }}
-                    whileTap={{ scale: 0.97 }}
-                    className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
-                  >
-                    Soruları Keşfet →
-                  </motion.button>
-                </Link>
-              ) : (
-                <>
-                  <Link href="/register">
-                    <motion.button
-                      whileHover={{ scale: 1.04 }}
-                      whileTap={{ scale: 0.97 }}
-                      className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
-                    >
-                      Ücretsiz Başla — Kayıt Ol
-                    </motion.button>
-                  </Link>
-                  <Link href="/interviews/strings/51">
-                    <motion.button
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
-                      className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
-                    >
-                      👀 Önce Dene
-                    </motion.button>
-                  </Link>
-                </>
-              )}
+              {/* Landing her zaman misafir odakli */}
+              <Link href="/register">
+                <motion.button
+                  whileHover={{ scale: 1.04 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
+                >
+                  Ücretsiz Başla — Kayıt Ol
+                </motion.button>
+              </Link>
+              <Link href="/interviews/strings/51">
+                <motion.button
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.97 }}
+                  className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
+                >
+                  👀 Önce Dene
+                </motion.button>
+              </Link>
             </div>
-            {!user && (
-              <p className="text-white/30 text-xs mt-6">
-                Kredi kartı gerektirmez · İstediğin zaman sil · Süresiz ücretsiz
-              </p>
-            )}
+            <p className="text-white/30 text-xs mt-6">
+              Kredi kartı gerektirmez · İstediğin zaman sil · Süresiz ücretsiz
+            </p>
           </motion.div>
         </div>
       </section>

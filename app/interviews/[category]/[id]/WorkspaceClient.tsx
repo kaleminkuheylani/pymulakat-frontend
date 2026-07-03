@@ -365,4 +365,9 @@ async function sendAttempt(payload: AttemptPayload): Promise<void> {
   if (!res.ok) {
     throw new Error(`Attempt gönderilemedi: ${res.status}`);
   }
+
+  // 📌 Flow sayfası dinliyor — otomatik yenileme tetikler
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("pm:attempt-submitted"));
+  }
 }

@@ -69,6 +69,9 @@ export default function FormsPage() {
             fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms${active ? `?category=${active}` : ""}`)
               .then((r) => r.json())
               .then((d) => setForms(d.data || []));
+            if (typeof window !== "undefined") {
+              window.dispatchEvent(new CustomEvent("pm:form-created"));
+            }
           }}
         />
       )}
