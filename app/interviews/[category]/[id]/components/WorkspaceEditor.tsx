@@ -199,11 +199,11 @@ function ExamplesTab({
       {testCases.test_cases.map((tc: TestCase, idx: number) => {
         const result = testResults[idx];
         const hasRun = result !== undefined;
-        const actualDisplay = hasRun
-          ? result.errorCategory
-            ? getErrorLabel(result.errorCategory)
-            : formatValue(result.actual)
-          : null;
+        // 1) Hata varsa: traceback'in son satırı + kategori badge
+        // 2) Hata yok ama fail: expected vs actual karşılaştırması
+        // 3) Pass: tek "actual = expected" gösterimi
+        const isError = hasRun && !!result.errorCategory;
+        const isLogicFail = hasRun && !result.passed && !isError;
         return (
           <div
             key={idx}
@@ -229,7 +229,7 @@ function ExamplesTab({
                   <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
                     result.passed ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
                   }`}>
-                    {result.passed ? "✓ Geçti" : "✗ Başarısız"}
+                    {result.passed ? "✓ Geçti" : isError ? "✗ Hata" : "✗ Yanlış"}
                   </span>
                 )}
               </div>
@@ -245,45 +245,77 @@ function ExamplesTab({
                 </pre>
               </div>
 
-              {/* Expected vs Actual — yan yana diff */}
-              <div className="grid grid-cols-2 gap-2">
+              {/* ─── HATA DURUMU ─── */}
+              {isError && (
                 <div>
-                  <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
-                    ✓ Expected
+                  <div className="text-[10px] uppercase tracking-wider text-rose-400/80 mb-1 font-bold">
+                    ⚠ Traceback (son satır)
                   </div>
-                  <pre className="text-xs font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded overflow-x-auto border border-emerald-500/20 min-h-[2.5rem]">
-                    {formatValue(tc.expected)}
+                  <pre className="text-xs font-mono text-rose-300 bg-rose-500/10 p-2 rounded overflow-x-auto border border-rose-500/30 min-h-[2.5rem]">
+                    {result.errorLine || getErrorLabel(result.errorCategory!) || "Bilinmeyen hata"}
                   </pre>
                 </div>
-                <div>
-                  <div className={`text-[10px] uppercase tracking-wider mb-1 font-bold ${
-                    hasRun
-                      ? result.passed
-                        ? "text-green-400/80"
-                        : "text-rose-400/80"
-                      : "text-white/40"
-                  }`}>
-                    {hasRun ? (result.passed ? "✓ Actual" : "✗ Actual") : "⏳ Henüz çalıştırılmadı"}
+              )}
+
+              {/* ─── HATA YOKSA: Expected vs Actual karşılaştırma ─── */}
+              {!isError && (
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
+                      ✓ Expected
+                    </div>
+                    <pre className={`text-xs font-mono p-2 rounded overflow-x-auto border min-h-[2.5rem] ${
+                      hasRun && isLogicFail && !valueMatches(result.actual, tc.expected)
+                        ? "text-emerald-300 bg-emerald-500/5 border-emerald-500/20"
+                        : "text-white/70 bg-black/20 border-white/5"
+                    }`}>
+                      {formatValue(tc.expected)}
+                    </pre>
                   </div>
-                  <pre className={`text-xs font-mono p-2 rounded overflow-x-auto border min-h-[2.5rem] ${
-                    hasRun
-                      ? result.passed
-                        ? "text-green-300 bg-green-500/5 border-green-500/20"
-                        : result.errorCategory
-                          ? "text-rose-300 bg-rose-500/5 border-rose-500/20"
-                          : "text-amber-300 bg-amber-500/5 border-amber-500/20"
-                      : "text-white/30 bg-black/20 border-white/5 italic"
-                  }`}>
-                    {actualDisplay ?? "Çalıştır'a bas"}
-                  </pre>
+                  <div>
+                    <div className={`text-[10px] uppercase tracking-wider mb-1 font-bold ${
+                      hasRun
+                        ? result.passed
+                          ? "text-green-400/80"
+                          : "text-amber-400/80"
+                        : "text-white/40"
+                    }`}>
+                      {hasRun ? (result.passed ? "✓ Actual" : "✗ Actual") : "⏳ Henüz çalıştırılmadı"}
+                    </div>
+                    <pre className={`text-xs font-mono p-2 rounded overflow-x-auto border min-h-[2.5rem] ${
+                      hasRun
+                        ? result.passed
+                          ? "text-green-300 bg-green-500/5 border-green-500/20"
+                          : "text-amber-200 bg-amber-500/10 border-amber-500/40"
+                        : "text-white/30 bg-black/20 border-white/5 italic"
+                    }`}>
+                      {hasRun ? formatValue(result.actual) : "Çalıştır'a bas"}
+                    </pre>
+                  </div>
                 </div>
-              </div>
+              )}
+
+              {/* ─── Logic fail diff hint ─── */}
+              {isLogicFail && (
+                <div className="text-[10px] text-amber-300/80 italic px-1">
+                  💡 Return değeri beklenenle eşleşmiyor — sol sütun ne bekleniyor, sağ sütun senin kodun ne döndü.
+                </div>
+              )}
             </div>
           </div>
         );
       })}
     </div>
   );
+}
+
+// ─── Basit karşılaştırma: eşit mi? (UI'da vurgu için) ───
+function valueMatches(a: any, b: any): boolean {
+  try {
+    return JSON.stringify(a) === JSON.stringify(b);
+  } catch {
+    return a === b;
+  }
 }
 
 function ConsoleTab({ consoleOutput }: { consoleOutput: string }) {

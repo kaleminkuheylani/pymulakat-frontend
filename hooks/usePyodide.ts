@@ -44,6 +44,9 @@ export interface TestRunResult {
   passed: boolean;
   // 📌 Raw Python error ASLA UI'a dönmez — sadece hardcoded kategori enum
   errorCategory?: ErrorCategory;
+  // Traceback'in son satırı (örn. "ValueError: invalid literal...").
+  // Hata olduğunda UI'da gösterilir, hata yoksa undefined.
+  errorLine?: string;
   description?: string;
   execution_ms?: number;
 }
@@ -250,6 +253,7 @@ export function usePyodide(): UsePyodideReturn {
               actual: undefined,
               passed: false,
               errorCategory: classifyError(rawMsg),
+              errorLine: last || undefined,
               description: tc.description,
               execution_ms: Math.round(performance.now() - tcStart),
             });
