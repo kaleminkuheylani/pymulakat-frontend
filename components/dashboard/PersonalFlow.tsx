@@ -74,7 +74,7 @@ export default function PersonalFlow({ flow }: { flow: FlowResponse | null }) {
         subtitle={context.target_level ? `Bir üst seviye: ${context.target_level}` : "Başarı oranına göre sıradaki adım"}
         accent="emerald" icon="🚀"
         emptyText="Şu an için ek tavsiye yok."
-        items={sections.recommended}
+        items={sections.next_level ?? sections.recommended ?? []}
       />
     </div>
   );
@@ -144,13 +144,9 @@ function FlowRow({ item, rank, accent }: { item: FlowItem; rank: number; accent:
   const a = ACCENT_STYLES[accent];
   const badge = TYPE_BADGE[item.type] ?? { label: item.type, emoji: "•", pill: "bg-white/10 border border-white/20 text-white/70" };
 
-  // ── Reason'ı kategoriye göre zenginleştir ──
-  // API'den gelen reason kısa, biz detay + kaynak gösterelim
-  const reasonDetail = item.type === "question" && item.attempt_count != null && item.attempt_count > 0
-    ? `${item.reason} · ${item.attempt_count} kişi denedi`
-    : item.type === "question" && item.view_count != null && item.view_count > 0
-    ? `${item.reason} · ${item.view_count} görüntülenme`
-    : item.reason;
+  // ── Reason backend'den zaten spesifik geliyor (soru ID, kategori, sayılar) ──
+  // Frontend ekstra bir şey eklemiyor; sadece gösterir.
+  const reasonDetail = item.reason || "Önerildi";
 
   const inner = (
     <>
