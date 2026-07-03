@@ -132,7 +132,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
         const tc = await questionsAPI.getTests(questionId);
         if (!cancelled && tc) setTestCases(tc);
       } catch (e: any) {
-        if (!cancelled) setError(e?.message || "Soru yüklenemedi");
+        if (!cancelled) setError("Soru yüklenemedi — bağlantını kontrol et.");
       } finally {
         if (!cancelled) setLoading(false);
       }
