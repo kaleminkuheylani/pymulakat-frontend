@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../components/Monaco";
 import { TestRunResult } from "../../../../../hooks/usePyodide";
 import { QuestionTests } from "../../../../../api/v2/questions";
-import { getErrorLabel, getErrorBadgeClass, type ErrorCategory } from "../../../../../lib/errorClassifier";
+import { getErrorLabel } from "../../../../../lib/errorClassifier";
 
 interface TestCase {
   input: any[];
@@ -25,7 +25,6 @@ interface EditorProps {
   category: string;
   id: string;
   onRun: () => void;
-  generalErrorCategory?: ErrorCategory;
 }
 
 type Tab = "examples" | "console";
@@ -55,7 +54,6 @@ export default function WorkspaceEditor({
   category,
   id,
   onRun,
-  generalErrorCategory,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState<Tab>("examples");
   
@@ -151,7 +149,6 @@ export default function WorkspaceEditor({
               isGuest={isGuest}
               category={category}
               id={id}
-              generalErrorCategory={generalErrorCategory}
             />
           )}
 
@@ -170,14 +167,12 @@ function ExamplesTab({
   isGuest,
   category,
   id,
-  generalErrorCategory,
 }: {
   testCases: QuestionTests | null;
   testResults: TestRunResult[];
   isGuest: boolean;
   category: string;
   id: string;
-  generalErrorCategory?: ErrorCategory;
 }) {
   if (!testCases || testCases.test_cases.length === 0) {
     return (
@@ -201,14 +196,6 @@ function ExamplesTab({
 
   return (
     <div className="space-y-3 p-3">
-      {/* ─── Sonuç Şeridi: genel özet + kategori (varsa) ─── */}
-      {testResults.length > 0 && (
-        <ResultBanner
-          testResults={testResults}
-          generalErrorCategory={generalErrorCategory}
-        />
-      )}
-
       {testCases.test_cases.map((tc: TestCase, idx: number) => {
         const result = testResults[idx];
         const hasRun = result !== undefined;
@@ -354,89 +341,6 @@ function ConsoleTab({ consoleOutput }: { consoleOutput: string }) {
           );
         })}
       </pre>
-    </div>
-  );
-}
-// ─── Sonuç Şeridi: tüm örneklerin özeti + kategori badge ───
-function ResultBanner({
-  testResults,
-  generalErrorCategory,
-}: {
-  testResults: TestRunResult[];
-  generalErrorCategory?: ErrorCategory;
-}) {
-  const total = testResults.length;
-  const passed = testResults.filter((r) => r.passed).length;
-  const failed = total - passed;
-  const allPassed = failed === 0;
-  const totalMs = testResults.reduce((s, r) => s + (r.execution_ms || 0), 0);
-
-  // Kategori dağılımı — hangi hata tipleri var?
-  const catCounts: Partial<Record<ErrorCategory, number>> = {};
-  for (const r of testResults) {
-    if (r.errorCategory) {
-      catCounts[r.errorCategory] = (catCounts[r.errorCategory] || 0) + 1;
-    }
-  }
-
-  return (
-    <div
-      className={`rounded-xl border p-3 ${
-        allPassed
-          ? "bg-green-500/10 border-green-500/30"
-          : "bg-red-500/10 border-red-500/30"
-      }`}
-    >
-      <div className="flex items-center justify-between gap-3 flex-wrap">
-        <div className="flex items-center gap-3">
-          <span className={`text-2xl ${allPassed ? "text-green-400" : "text-red-400"}`}>
-            {allPassed ? "🏆" : "⚠️"}
-          </span>
-          <div>
-            <div className="text-base font-bold text-white">
-              {passed} / {total} geçti
-            </div>
-            <div className="text-[10px] text-white/60">
-              {allPassed
-                ? "Tüm örnekler başarılı — Tebrikler!"
-                : `${failed} örnek başarısız`}
-              {totalMs > 0 && ` · toplam ${totalMs}ms`}
-            </div>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-1.5 flex-wrap">
-          {generalErrorCategory && generalErrorCategory !== "unknown" && (
-            <span
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${getErrorBadgeClass(
-                generalErrorCategory
-              )}`}
-            >
-              ⚡ {getErrorLabel(generalErrorCategory)}
-            </span>
-          )}
-          {Object.entries(catCounts).map(([cat, count]) => (
-            <span
-              key={cat}
-              className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${getErrorBadgeClass(
-                cat as ErrorCategory
-              )}`}
-            >
-              {getErrorLabel(cat as ErrorCategory)} · {count}
-            </span>
-          ))}
-        </div>
-      </div>
-
-      {/* Mini progress bar */}
-      <div className="mt-2 h-1.5 bg-white/5 rounded-full overflow-hidden">
-        <div
-          className={`h-full transition-all ${
-            allPassed ? "bg-green-400" : "bg-amber-400"
-          }`}
-          style={{ width: `${(passed / total) * 100}%` }}
-        />
-      </div>
     </div>
   );
 }
