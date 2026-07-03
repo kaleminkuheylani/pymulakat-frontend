@@ -101,6 +101,12 @@ export const QUESTION_META: Record<number, QuestionMeta> = {
   81: { id: 81, title: "🐼 DataFrame İlk 3 Satır", function_name: "first_three_rows", topic: "Pandas", difficulty_note: "beginner seviye", related_concepts: ["pandas", "dataframe"], related_questions: [], slug: "dataframe-ilk-3-satir" },
   82: { id: 82, title: "🔄 Liste Döndürme", function_name: "rotate_list", topic: "Algoritmalar", difficulty_note: "beginner seviye", related_concepts: ["list-slicing", "rotation"], related_questions: [8, 47, 50], slug: "liste-dondurme" },
   83: { id: 83, title: "📈 İki Sayının OBEB'i", function_name: "gcd", topic: "Algoritmalar", difficulty_note: "beginner seviye", related_concepts: ["euclid-algorithm", "recursion"], related_questions: [47, 50, 72], slug: "iki-sayinin-obeb" },
+  // ── 84-88: 2026-07-03 — Yeni başlangıç soruları (ipucu yok) ──
+  84: { id: 84, title: "🔢 Çarpım Tablosu Matrisi", function_name: "carpim_tablosu", topic: "Python Temelleri", difficulty_note: "beginner seviye", related_concepts: ["iç içe döngü", "matris", "list comprehension"], related_questions: [1, 2, 86], slug: "carpim-tablosu-matrisi" },
+  85: { id: 85, title: "📐 Hipotenüs Hesaplama", function_name: "hipotenus", topic: "Python Temelleri", difficulty_note: "beginner seviye", related_concepts: ["math.sqrt", "pisagor teoremi", "mutlak değer"], related_questions: [1, 86, 88], slug: "hipotenus-hesaplama" },
+  86: { id: 86, title: "✨ Sayıların Sihri — Rakamları Topla", function_name: "rakam_toplami", topic: "String İşlemleri", difficulty_note: "beginner seviye", related_concepts: ["string conversion", "modulo", "while loop"], related_questions: [84, 87, 88], slug: "sayilarin-sihri-rakam-toplami" },
+  87: { id: 87, title: "📝 Cümleyi Kelimelere Ayır", function_name: "cumleyi_kelimeye_ayir", topic: "String İşlemleri", difficulty_note: "beginner seviye", related_concepts: ["str.split", "string parsing", "whitespace"], related_questions: [86, 88, 1], slug: "cumleyi-kelimelere-ayir" },
+  88: { id: 88, title: "🔗 İlk ve Son Karakteri Birleştir", function_name: "ilk_ve_son", topic: "String İşlemleri", difficulty_note: "beginner seviye", related_concepts: ["string indexing", "negative index", "f-string"], related_questions: [86, 87, 1], slug: "ilk-ve-son-karakteri-birlestir" },
 };
 
 /**
