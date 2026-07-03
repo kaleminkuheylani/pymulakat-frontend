@@ -161,8 +161,10 @@ export default function DashboardHome() {
   const fetchCommunity = useCallback(async () => {
     try {
       const res = await fetch(`${API()}/api/v2/recommendations/community?limit=15`);
+      if (!mountedRef.current) return;
       if (res.ok) {
         const data = await res.json();
+        if (!mountedRef.current) return;
         setCommunity(data.data || []);
       }
     } catch {}
