@@ -30,7 +30,10 @@ export default function FormsPage() {
 
   useEffect(() => {
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms${active ? `?category=${active}` : ""}`)
+    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms${active ? `?category=${active}` : ""}`, {
+      headers: token ? { Authorization: `Bearer ${token}` } : {},
+    })
       .then((r) => r.json())
       .then((d) => setForms(d.data || []))
       .catch(() => setForms([]))
@@ -80,7 +83,10 @@ export default function FormsPage() {
           onClose={() => setShowCreate(false)}
           onCreated={() => {
             setShowCreate(false);
-            fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms${active ? `?category=${active}` : ""}`)
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+            fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms${active ? `?category=${active}` : ""}`, {
+              headers: token ? { Authorization: `Bearer ${token}` } : {},
+            })
               .then((r) => r.json())
               .then((d) => setForms(d.data || []));
             if (typeof window !== "undefined") {
@@ -120,10 +126,14 @@ function CreateFormModal({
     setSubmitting(true);
     setError(null);
     try {
+      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms`, {
         method: "POST",
         credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
         body: JSON.stringify({ category, title, body }),
       });
       if (!res.ok) {
