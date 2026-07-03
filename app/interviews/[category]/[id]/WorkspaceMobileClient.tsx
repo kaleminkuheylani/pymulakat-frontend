@@ -13,7 +13,7 @@ import { usePyodide } from "../../../../hooks/usePyodide";
 import { questionsAPI, Question, QuestionTests } from "../../../../api/v2/questions";
 import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
-import { WorkspaceTestResults } from "./components/WorkspaceTestResults";
+
 
 // Code editor sadece client-side
 const CodeEditor = dynamic(
@@ -39,9 +39,11 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   const [testCases, setTestCases] = useState<QuestionTests | null>(null);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
+  
+  const [consoleOutput, setConsoleOutput] = useState<string>("");
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
-  const [tab, setTab] = useState<"question" | "workspace" | "tests">("workspace");
+  const [tab, setTab] = useState<"question" | "workspace" | "console">("workspace");
   const [showShareModal, setShowShareModal] = useState(false);
 
   // ─── Guards ──
@@ -89,7 +91,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         setInterview(q);
         setCode(q.starter_code || "");
       } catch (e: any) {
-        toast.error("Soru yüklenemedi", { description: e?.message });
+        toast.error("Soru yüklenemedi", { description: "Bağlantını kontrol et." });
       }
     })();
     return () => {
@@ -105,7 +107,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         const tc = await questionsAPI.getTests(questionId);
         if (!cancelled) setTestCases(tc);
       } catch (e: any) {
-        toast.error("Test caseleri yüklenemedi", { description: e?.message });
+        toast.error("Test caseleri yüklenemedi", { description: "Bağlantını kontrol et." });
       }
     })();
     return () => {
@@ -151,19 +153,21 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     if (!testCases || running || (pyStatus !== "ready" && pyStatus !== "idle")) return;
     setRunning(true);
     setResults([]);
+    setConsoleOutput("");
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setResults(result.results);
+      setConsoleOutput(result.console_output || "");
       const passed = result.results.filter((r: any) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
       await submitAttempt(success, passed, total, result.execution_ms);
-      setTab("tests");
       if (success) {
         setTimeout(() => setShowShareModal(true), 1500);
       }
     } catch (e: any) {
-      toast.error("Çalıştırma hatası", { description: e?.message });
+      // 📌 Raw error sızmaz — sabit hardcoded mesaj
+      toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
     } finally {
       setRunning(false);
     }
@@ -191,8 +195,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     }
   }, [router, category]);
 
-  // ─── Render: Loading — sadece interview beklenir, test case yoksa
-  //              WorkspaceTestResults kendi loading state'ini gösterir (default tab = tests).
+  // ─── Render: Loading — sadece interview beklenir
   if (!interview) {
     return (
       <div className="h-screen bg-[#050816] flex items-center justify-center">
@@ -229,13 +232,13 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
             📖
           </button>
           <button
-            onClick={() => setTab("tests")}
+            onClick={() => setTab("console")}
             className={`px-2 py-1 rounded text-[10px] font-semibold ${
-              tab === "tests" ? "bg-white/10 text-white" : "text-white/40"
+              tab === "console" ? "bg-white/10 text-white" : "text-white/40"
             }`}
-            aria-label="Testler"
+            aria-label="Konsol"
           >
-            🧪 {results.length > 0 && <span className="ml-0.5">{results.length}</span>}
+            🖨️
           </button>
         </div>
         {readonly ? (
@@ -265,15 +268,13 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
           </div>
         )}
 
-        {tab === "tests" && (
-          <WorkspaceTestResults results={results} isRunning={running} testCases={testCases} />
-        )}
+        {tab === "console" && <ConsoleTabMobile consoleOutput={consoleOutput} />}
       </div>
 
       {/* Bottom tab bar — SADECE workspace tab'indayken gizle (editor tam ekran kullanir) */}
       {tab !== "workspace" && (
         <div className="flex border-t border-white/5 bg-[#0a0e1a]">
-          {(["question", "workspace", "tests"] as const).map((k) => (
+          {(["question", "workspace", "console"] as const).map((k) => (
             <button
               key={k}
               onClick={() => setTab(k)}
@@ -285,7 +286,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
                 ? "Soru"
                 : k === "workspace"
                 ? "Editör"
-                : `Testler (${testCases?.test_cases.length ?? 0})`}
+                : "🖨️ Konsol"}
             </button>
           ))}
         </div>
@@ -366,5 +367,47 @@ function ShareModal({
         </button>
       </motion.div>
     </motion.div>
+  );
+}
+function ConsoleTabMobile({ consoleOutput }: { consoleOutput: string }) {
+  if (!consoleOutput || consoleOutput.trim() === "") {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12">
+        <div className="text-3xl">🖨️</div>
+        <p className="text-sm">Henüz print() çıktısı yok.</p>
+        <p className="text-[10px] text-white/20 text-center">
+          Kodunda print() kullanıp Çalıştır'a bas
+        </p>
+      </div>
+    );
+  }
+
+  const lines = consoleOutput.split("\n");
+
+  return (
+    <div className="p-3 space-y-2 h-full overflow-y-auto">
+      <div className="flex items-center justify-between pb-2 border-b border-white/5">
+        <span className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
+          📤 Konsol Çıktısı
+        </span>
+        <span className="text-[10px] text-white/30 font-mono">
+          {lines.filter((l) => l.trim()).length} satır
+        </span>
+      </div>
+      <pre className="text-xs text-white/80 font-mono whitespace-pre-wrap leading-relaxed">
+        {lines.map((line, i) => {
+          if (line.startsWith("[stderr]")) {
+            return <div key={i} className="text-amber-300/90">{line}</div>;
+          }
+          if (line.startsWith("[error]")) {
+            return <div key={i} className="text-rose-300/90 font-semibold">{line}</div>;
+          }
+          if (line.startsWith("[import hatası]")) {
+            return <div key={i} className="text-rose-300/90">{line}</div>;
+          }
+          return <div key={i} className="text-white/80">{line || "\u00A0"}</div>;
+        })}
+      </pre>
+    </div>
   );
 }

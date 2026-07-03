@@ -81,6 +81,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
 
   const [testResults, setTestResults] = useState<TestRunResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
+  const [consoleOutput, setConsoleOutput] = useState<string>("");
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -189,15 +190,18 @@ export default function WorkspaceClient({ initialParams }: Props) {
     if (isRunning || (pyStatus !== "ready" && pyStatus !== "idle") || !testCases) return;
     setIsRunning(true);
     setTestResults([]);
+    setConsoleOutput("");
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setTestResults(result.results);
+      setConsoleOutput(result.console_output || "");
       const passed = result.results.filter((r) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
       await submitAttempt(success, passed, total, result.execution_ms);
     } catch (e: any) {
-      toast.error("Çalıştırma hatası", { description: e?.message });
+      // 📌 Raw error sızmaz — sabit hardcoded mesaj
+      toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
     } finally {
       setIsRunning(false);
     }
@@ -302,6 +306,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
           testCases={testCases}
           testResults={testResults}
           isRunning={isRunning}
+          consoleOutput={consoleOutput}
           pyStatus={pyStatus}
           isGuest={isGuest}
           category={category}

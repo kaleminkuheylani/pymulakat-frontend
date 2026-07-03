@@ -96,14 +96,6 @@ export default function QuestionDescriptionContent({
         {interview.description}
       </p>
 
-      {/* ─── Toplulukta Sor — question-aware CTA ─────── */}
-      <AskCommunityButton
-        questionId={interview.id}
-        questionTitle={interview.title}
-        category={category}
-        isLoggedIn={!isGuest}
-      />
-
       {/* ─── Complexity + Tags + related_concepts ──────── */}
       {(interview.complexity ||
         interview.related_concepts?.length ||
@@ -243,6 +235,14 @@ export default function QuestionDescriptionContent({
           </svg>
         </Link>
       )}
+
+      {/* ─── Toplulukta Sor — question-aware CTA ─────── */}
+      <AskCommunityButton
+        questionId={interview.id}
+        questionTitle={interview.title}
+        category={category}
+        isLoggedIn={!isGuest}
+      />
 
       {/* ─── Related questions ──────────────────────────── */}
       {relatedToShow && relatedToShow.length > 0 && (

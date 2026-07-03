@@ -3,6 +3,31 @@
 // Toplamda 14MB script yerine ilk yüklemede 0KB. İlk çalıştırma yavaş, sonrakiler cache'li.
 
 import { useState, useRef, useCallback, useEffect } from "react";
+import { classifyError, type ErrorCategory } from "../lib/errorClassifier";
+
+// ─── Traceback helper: sadece son satırı döner (File "..." line X kısmı atılır) ───
+// Örn. tam metin:
+//   Traceback (most recent call last):
+//     File "<exec>", line 5, in <module>
+//   ValueError: invalid literal for int() with base 10: 'abc'
+// → "ValueError: invalid literal for int() with base 10: 'abc'"
+function lastErrorLine(raw: string | undefined | null): string {
+  if (!raw) return "";
+  // Önce string'i normalize et — \n veya gerçek yeni satırlar
+  const lines = String(raw)
+    .replace(/\\n/g, "\n")
+    .split("\n")
+    .map((l) => l.trim())
+    .filter(Boolean);
+  if (!lines.length) return "";
+  // Son satır (genelde "ValueError: ..." gibi exception+message)
+  const last = lines[lines.length - 1];
+  // Eğer son satır Traceback başlıksa (çok nadir), bir önceki satıra düş
+  if (/^Traceback \(most recent call last\)/i.test(last) && lines.length > 1) {
+    return lines[lines.length - 2];
+  }
+  return last;
+}
 
 export type PyodideStatus = "idle" | "loading" | "ready" | "running" | "error";
 
@@ -17,7 +42,11 @@ export interface TestRunResult {
   expected: any;
   actual: any;
   passed: boolean;
-  error?: string;
+  // 📌 Raw Python error ASLA UI'a dönmez — sadece hardcoded kategori enum
+  errorCategory?: ErrorCategory;
+  // Traceback'in son satırı (örn. "ValueError: invalid literal...").
+  // Hata olduğunda UI'da gösterilir, hata yoksa undefined.
+  errorLine?: string;
   description?: string;
   execution_ms?: number;
 }
@@ -29,11 +58,13 @@ export interface PyodideRunResult {
   console_output: string;
   all_passed: boolean;
   execution_ms: number;
-  error?: string;
+  // Genel hata varsa kategori (örn. import hatası, fonksiyon bulunamadı)
+  errorCategory?: ErrorCategory;
 }
 
 export interface UsePyodideReturn {
   status: PyodideStatus;
+  // UI'da gösterilecek hata mesajı: sabit hardcoded string. Raw Python error değil.
   errorMsg: string | null;
   runTests: (
     userCode: string,
@@ -88,14 +119,26 @@ function loadScript(src: string): Promise<void> {
 }
 
 // ─── Deep equality for test outputs ────────────────────────────────────────
+// ─── Deep equality: tip bağımsız, sayı/string dönüşümü tolerant ───
 function deepEqual(a: any, b: any): boolean {
   if (a === b) return true;
-  if (typeof a !== typeof b) return false;
-  if (a === null || b === null) return a === b;
-  if (typeof a === "object") {
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
+  // Sayı ↔ numeric string toleransı: "5" ile 5 eşit sayılır
+  if (typeof a === "number" && typeof b === "string") {
+    const nb = Number(b);
+    if (!Number.isNaN(nb) && a === nb) return true;
+  }
+  if (typeof a === "string" && typeof b === "number") {
+    const na = Number(a);
+    if (!Number.isNaN(na) && na === b) return true;
+  }
+  // Her iki taraf object ise (array dahil) JSON normalize karşılaştırması
+  if (typeof a === "object" && typeof b === "object") {
     return JSON.stringify(a) === JSON.stringify(b);
   }
-  return false;
+  // Son çare: primitive karşılaştırması
+  return a === b;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -126,7 +169,8 @@ export function usePyodide(): UsePyodideReturn {
         setStatus("ready");
       } catch (err: any) {
         setStatus("error");
-        setErrorMsg(err.message);
+        // 📌 Raw error.message UI'a sızmaz — sabit hardcoded mesaj
+        setErrorMsg("Çalıştırma ortamı yüklenemedi");
         throw err;
       }
     })();
@@ -153,7 +197,9 @@ export function usePyodide(): UsePyodideReturn {
       const startTime = performance.now();
       const results: TestRunResult[] = [];
       let consoleOutput = "";
-      let errorMsg: string | undefined;
+      // 📌 Raw Python error ASLA UI'a, console'a, toast'a sızmaz.
+      //    Sadece kategori enum'u tutulur.
+      let generalErrorCategory: ErrorCategory | undefined;
 
       try {
         // Her çalıştırmada temiz stdout
@@ -164,6 +210,7 @@ export function usePyodide(): UsePyodideReturn {
         });
         py.setStderr({
           batched: (s: string) => {
+            // stderr çıktısı da kullanıcıya gösterilmez — generic etiket yeterli
             consoleOutput += `[stderr] ${s}\n`;
           },
         });
@@ -181,7 +228,8 @@ export function usePyodide(): UsePyodideReturn {
             try {
               await py.runPythonAsync(im);
             } catch (e: any) {
-              consoleOutput += `[import hatası] ${e.message}\n`;
+              // Raw mesaj yerine sadece kategori — içerik sızmaz
+              consoleOutput += `[import hatası] ${classifyError(e?.message || "")}\n`;
             }
           }
           fullCode = userCode.replace(/^((?:from\s+\S+\s+)?import\s+.*(?:\n(?!\S).*)*)/gm, "");
@@ -191,11 +239,19 @@ export function usePyodide(): UsePyodideReturn {
         await py.runPythonAsync(fullCode);
 
         // Her test case'i çalıştır
+        // 📌 Input tipi fark etmez: primitive (string, number) ya da array olabilir.
+        //    Her birini JSON.stringify ile sar → Python'a tırnakl gönder.
+        //    Eski hatalı kod: JSON.stringify(tc.input).slice(1,-1) — primitive için bozuk.
         for (const tc of testCases) {
           const tcStart = performance.now();
+          // Array ise spread et (her elemana ayrı stringify), primitive ise tek başına
+          const args = Array.isArray(tc.input) ? tc.input : [tc.input];
+          const pyArgs = args
+            .map((a) => (typeof a === "string" ? JSON.stringify(a) : JSON.stringify(a)))
+            .join(", ");
           try {
             const pyResult = await py.runPythonAsync(
-              `${functionName}(${JSON.stringify(tc.input).slice(1, -1)})`
+              `${functionName}(${pyArgs})`
             );
             const actual = pyResult?.toJs ? pyResult.toJs() : pyResult;
             const passed = deepEqual(actual, tc.expected);
@@ -208,24 +264,37 @@ export function usePyodide(): UsePyodideReturn {
               execution_ms: Math.round(performance.now() - tcStart),
             });
           } catch (e: any) {
+            // 📌 Raw e.message UI'a sızmaz; konsola sadece son satırı düşer
+            const rawMsg = e?.message || "";
+            const last = lastErrorLine(rawMsg);
             results.push({
               input: tc.input,
               expected: tc.expected,
               actual: undefined,
               passed: false,
-              error: e.message,
+              errorCategory: classifyError(rawMsg),
+              errorLine: last || undefined,
               description: tc.description,
               execution_ms: Math.round(performance.now() - tcStart),
             });
+            if (last) {
+              consoleOutput += `[error] ${last}\n`;
+            }
           }
         }
 
         if (!functionMatch) {
-          errorMsg = `Fonksiyon '${functionName}' bulunamadı`;
+          generalErrorCategory = "syntax_error"; // fonksiyon tanımı yok → syntax/setup hatası
         }
       } catch (err: any) {
-        errorMsg = err.message || "Çalıştırma hatası";
-        consoleOutput += `[error] ${errorMsg}\n`;
+        // 📌 Raw err.message asla UI'a düşmez — sadece kategori enum
+        const rawMsg = err?.message || "";
+        generalErrorCategory = classifyError(rawMsg);
+        // Konsola sadece traceback'in son satırı (genelde "ValueError: ..." gibi)
+        const last = lastErrorLine(rawMsg);
+        if (last) {
+          consoleOutput += `[error] ${last}\n`;
+        }
       } finally {
         // Stdout reset
         try {
@@ -244,9 +313,9 @@ export function usePyodide(): UsePyodideReturn {
         total_tests: testCases.length,
         passed_tests: passedTests,
         console_output: consoleOutput,
-        all_passed: passedTests === testCases.length && !errorMsg,
+        all_passed: passedTests === testCases.length && !generalErrorCategory,
         execution_ms: totalMs,
-        error: errorMsg,
+        errorCategory: generalErrorCategory,
       };
     },
     [ensureReady]
