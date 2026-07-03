@@ -55,6 +55,12 @@ export default function GlobalNav() {
             Sorular
           </Link>
           <Link
+            href="/dashboard"
+            className="text-white/70 hover:text-white text-xs sm:text-sm font-medium transition-colors whitespace-nowrap hidden sm:inline"
+          >
+            Dashboard
+          </Link>
+          <Link
             href="/guides"
             className="text-white/70 hover:text-white text-xs sm:text-sm font-medium transition-colors flex items-center gap-1 sm:gap-1.5 whitespace-nowrap"
           >

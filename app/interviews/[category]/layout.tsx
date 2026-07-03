@@ -5,7 +5,6 @@
 // - GlobalNav ile uyumlu
 
 import { ReactNode } from "react";
-import { getQuestionMeta, QuestionMeta } from "../../../lib/questionMeta";
 
 interface LayoutProps {
   children: ReactNode;
@@ -26,12 +25,4 @@ export default async function CategoryLayout({ children, params }: LayoutProps) 
   // (page.tsx'te override edilebilir)
 
   return <>{children}</>;
-}
-
-/**
- * Helper hook benzeri: sayfa içinden QuestionMeta çekmek için
- * (layout provider pattern yerine import-based, daha basit)
- */
-export function useQuestionMeta(questionId: number): QuestionMeta {
-  return getQuestionMeta(questionId);
 }

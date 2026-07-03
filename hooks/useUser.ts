@@ -17,6 +17,7 @@ export interface UserResponse {
   success_rate?: number;
   solution_average_time?: number;
   solution_average_time_ms?: number;
+  created_at?: string;
 }
 
 export function notifyAuthChange() {

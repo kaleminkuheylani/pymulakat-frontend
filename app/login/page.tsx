@@ -194,7 +194,7 @@ function LoginFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const returnUrl =
-    searchParams.get("returnUrl") || "/interviews";
+    searchParams.get("returnUrl") || "/dashboard";
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
