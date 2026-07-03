@@ -44,13 +44,18 @@ interface FlowResponse {
     personal: FlowItem[];
     recent: FlowItem[];
     popular: FlowItem[];
-    recommended: FlowItem[];
+    next_level: FlowItem[];
+    recommended?: FlowItem[];
   };
   context: {
     is_authenticated: boolean;
     top_categories: string[];
+    weak_categories?: string[];
     success_rate: number;
     target_level: string;
+    current_level?: string;
+    total_attempts?: number;
+    total_items?: number;
   };
 }
 
@@ -107,7 +112,7 @@ function buildLocalFallback(isAuthed: boolean = false): FlowResponse {
   for (const r of recent) r.reason = `🆕 #${r.id} — yakın zamanda eklendi`;
 
   return {
-    sections: { personal, recent, popular, recommended },
+    sections: { personal, recent, popular, next_level: recommended },
     context: {
       is_authenticated: isAuthed,
       top_categories: [],
@@ -226,7 +231,7 @@ export default function DashboardHome() {
 
           {/* 2 TAB */}
           <div className="flex gap-1 border-b border-white/10">
-            <TabButton active={tab === "personal"} onClick={() => setTab("personal")} label="✨ Sana Özel" count={flow ? flow.sections.personal.length + flow.sections.recent.length + flow.sections.popular.length + flow.sections.recommended.length : 0} />
+            <TabButton active={tab === "personal"} onClick={() => setTab("personal")} label="✨ Sana Özel" count={flow ? flow.sections.personal.length + flow.sections.recent.length + flow.sections.popular.length + flow.sections.next_level.length : 0} />
             <TabButton active={tab === "community"} onClick={() => setTab("community")} label="💬 Topluluk" count={community.length} />
           </div>
 
