@@ -119,14 +119,26 @@ function loadScript(src: string): Promise<void> {
 }
 
 // ─── Deep equality for test outputs ────────────────────────────────────────
+// ─── Deep equality: tip bağımsız, sayı/string dönüşümü tolerant ───
 function deepEqual(a: any, b: any): boolean {
   if (a === b) return true;
-  if (typeof a !== typeof b) return false;
-  if (a === null || b === null) return a === b;
-  if (typeof a === "object") {
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
+  // Sayı ↔ numeric string toleransı: "5" ile 5 eşit sayılır
+  if (typeof a === "number" && typeof b === "string") {
+    const nb = Number(b);
+    if (!Number.isNaN(nb) && a === nb) return true;
+  }
+  if (typeof a === "string" && typeof b === "number") {
+    const na = Number(a);
+    if (!Number.isNaN(na) && na === b) return true;
+  }
+  // Her iki taraf object ise (array dahil) JSON normalize karşılaştırması
+  if (typeof a === "object" && typeof b === "object") {
     return JSON.stringify(a) === JSON.stringify(b);
   }
-  return false;
+  // Son çare: primitive karşılaştırması
+  return a === b;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -227,11 +239,19 @@ export function usePyodide(): UsePyodideReturn {
         await py.runPythonAsync(fullCode);
 
         // Her test case'i çalıştır
+        // 📌 Input tipi fark etmez: primitive (string, number) ya da array olabilir.
+        //    Her birini JSON.stringify ile sar → Python'a tırnakl gönder.
+        //    Eski hatalı kod: JSON.stringify(tc.input).slice(1,-1) — primitive için bozuk.
         for (const tc of testCases) {
           const tcStart = performance.now();
+          // Array ise spread et (her elemana ayrı stringify), primitive ise tek başına
+          const args = Array.isArray(tc.input) ? tc.input : [tc.input];
+          const pyArgs = args
+            .map((a) => (typeof a === "string" ? JSON.stringify(a) : JSON.stringify(a)))
+            .join(", ");
           try {
             const pyResult = await py.runPythonAsync(
-              `${functionName}(${JSON.stringify(tc.input).slice(1, -1)})`
+              `${functionName}(${pyArgs})`
             );
             const actual = pyResult?.toJs ? pyResult.toJs() : pyResult;
             const passed = deepEqual(actual, tc.expected);
