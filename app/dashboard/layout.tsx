@@ -9,10 +9,9 @@ import { useEffect } from "react";
 import Link from "next/link";
 
 const NAV = [
-  { href: "/dashboard", label: "Ana Sayfa", icon: "🏠" },
-  { href: "/dashboard/flow", label: "Akışım", icon: "🌊" },
-  { href: "/dashboard/recommendations", label: "Öneriler", icon: "✨" },
+  { href: "/dashboard", label: "Akışım", icon: "✨" },
   { href: "/dashboard/forms", label: "Topluluk", icon: "💬" },
+  { href: "/dashboard/recommendations", label: "Öneriler", icon: "🎯" },
   { href: "/dashboard/settings", label: "Ayarlar", icon: "⚙️" },
 ];
 
