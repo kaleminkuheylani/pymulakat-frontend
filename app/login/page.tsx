@@ -32,11 +32,6 @@ const inlineAuthAPI = {
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
-    console.log("[AUTH] Supabase env:", {
-      url: url ? `${url.slice(0, 30)}...` : "MISSING",
-      key: key ? `${key.slice(0, 20)}...` : "MISSING",
-    });
-
     if (!url || !key) {
       throw new Error(
         "NEXT_PUBLIC_SUPABASE_URL veya NEXT_PUBLIC_SUPABASE_ANON_KEY tanımlı değil!"
@@ -53,8 +48,6 @@ const inlineAuthAPI = {
         storage: typeof window !== "undefined" ? window.localStorage : undefined,
       },
     });
-
-    console.log("[AUTH] Supabase client olusturuldu, signIn deneniyor...");
 
     const { data, error } = await supabase.auth.signInWithPassword({
       email: payload.email,
@@ -77,13 +70,6 @@ const inlineAuthAPI = {
       throw new Error("Oturum açılamadı");
     }
 
-    console.log("[AUTH] Login basarili:", {
-      user_id: data.user.id,
-      email: data.user.email,
-      hasAccessToken: !!data.session.access_token,
-      hasRefreshToken: !!data.session.refresh_token,
-    });
-
     // Token'ları manual yaz (storage wrapper bazen çalışmıyor)
     if (typeof window !== "undefined") {
       try {
@@ -101,7 +87,6 @@ const inlineAuthAPI = {
         if (data.session.refresh_token) {
           localStorage.setItem("refresh_token", data.session.refresh_token);
         }
-        console.log("[AUTH] Token'lar localStorage'a yazildi");
       } catch (e) {
         console.error("[AUTH] Storage yazma hatasi:", e);
       }
