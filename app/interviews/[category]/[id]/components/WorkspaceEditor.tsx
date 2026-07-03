@@ -4,7 +4,7 @@ import { useState } from "react";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../components/Monaco";
 import { TestRunResult } from "../../../../../hooks/usePyodide";
 import { QuestionTests } from "../../../../../api/v2/questions";
-import { getErrorLabel, getErrorBadgeClass, type ErrorCategory } from "../../../../../lib/errorClassifier";
+import { getErrorLabel, type ErrorCategory } from "../../../../../lib/errorClassifier";
 
 interface TestCase {
   input: any[];
@@ -27,7 +27,7 @@ interface EditorProps {
   onRun: () => void;
 }
 
-type Tab = "examples" | "tests" | "console";
+type Tab = "examples" | "console";
 
 export default function WorkspaceEditor({
   editorRef,
@@ -44,9 +44,7 @@ export default function WorkspaceEditor({
   onRun,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState<Tab>("examples");
-  const passedCount = testResults.filter((r) => r.passed).length;
-  const totalCount = testResults.length;
-  const allPassed = totalCount > 0 && passedCount === totalCount;
+  
 
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
@@ -67,7 +65,7 @@ export default function WorkspaceEditor({
       <div className="h-72 border-t border-white/5 bg-[#0a0e1a] flex flex-col flex-shrink-0">
         <div className="h-10 border-b border-white/5 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
-            {(["examples", "tests", "console"] as const).map((tab) => (
+            {(["examples", "console"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
@@ -75,16 +73,7 @@ export default function WorkspaceEditor({
                   activeTab === tab ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
                 }`}
               >
-                {tab === "tests" ? (
-                  <span className="flex items-center gap-2">
-                    Testler
-                    {totalCount > 0 && (
-                      <span className={`px-1.5 py-0.5 rounded text-[10px] font-bold ${allPassed ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"}`}>
-                        {passedCount}/{totalCount}
-                      </span>
-                    )}
-                  </span>
-                ) : tab === "examples" ? (
+                {tab === "examples" ? (
                   <span className="flex items-center gap-2">
                     Örnekler
                     {testCases && (
@@ -94,7 +83,12 @@ export default function WorkspaceEditor({
                     )}
                   </span>
                 ) : (
-                  "Konsol"
+                  <span className="flex items-center gap-2">
+                    🖨️ Konsol
+                    {consoleOutput && consoleOutput.trim() && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    )}
+                  </span>
                 )}
               </button>
             ))}
@@ -146,10 +140,6 @@ export default function WorkspaceEditor({
             />
           )}
 
-          {activeTab === "tests" && (
-            <TestsTab testResults={testResults} />
-          )}
-
           {activeTab === "console" && <ConsoleTab consoleOutput={consoleOutput} />}
         </div>
       </div>
@@ -193,7 +183,7 @@ function ExamplesTab({
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 p-3">
       {testCases.test_cases.map((tc: TestCase, idx: number) => {
         const result = testResults[idx];
         const hasRun = result !== undefined;
@@ -250,57 +240,6 @@ function ExamplesTab({
           </div>
         );
       })}
-    </div>
-  );
-}
-
-function TestsTab({ testResults }: { testResults: TestRunResult[] }) {
-  if (testResults.length === 0) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30">
-        <p className="text-xs">Testleri çalıştırmak için "Çalıştır" butonuna bas</p>
-      </div>
-    );
-  }
-
-  return (
-    <div className="space-y-2">
-      {testResults.map((r, i) => (
-        <div
-          key={i}
-          className={`p-3 rounded-lg border ${
-            r.passed ? "bg-green-500/5 border-green-500/20" : "bg-red-500/5 border-red-500/20"
-          }`}
-        >
-          <div className="flex items-start gap-2">
-            <div className={`w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${r.passed ? "bg-green-500/20" : "bg-red-500/20"}`}>
-              {r.passed ? "✓" : "✗"}
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="text-xs font-semibold mb-1 text-white/80">Test #{i + 1}</div>
-              {r.errorCategory ? (
-                // 📌 Raw Python error ASLA gösterilmez — sadece hardcoded kategori badge
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md text-[10px] font-bold border ${getErrorBadgeClass(
-                      r.errorCategory
-                    )}`}
-                  >
-                    {getErrorLabel(r.errorCategory)}
-                  </span>
-                  <span className="text-[10px] text-white/40">Detay için ipuçlarına bak</span>
-                </div>
-              ) : (
-                <div className="space-y-1 text-xs font-mono">
-                  <div><span className="text-white/40">Girdi: </span>{JSON.stringify(r.input)}</div>
-                  <div><span className="text-white/40">Beklenen: </span>{JSON.stringify(r.expected)}</div>
-                  {!r.passed && <div><span className="text-white/40">Alınan: </span><span className="text-amber-300">{JSON.stringify(r.actual)}</span></div>}
-                </div>
-              )}
-            </div>
-          </div>
-        </div>
-      ))}
     </div>
   );
 }

@@ -13,7 +13,7 @@ import { usePyodide } from "../../../../hooks/usePyodide";
 import { questionsAPI, Question, QuestionTests } from "../../../../api/v2/questions";
 import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
-import { WorkspaceTestResults } from "./components/WorkspaceTestResults";
+
 
 // Code editor sadece client-side
 const CodeEditor = dynamic(
@@ -39,11 +39,11 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   const [testCases, setTestCases] = useState<QuestionTests | null>(null);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
-  const [generalErrorCategory, setGeneralErrorCategory] = useState<import("../../../../lib/errorClassifier").ErrorCategory | undefined>();
+  
   const [consoleOutput, setConsoleOutput] = useState<string>("");
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
-  const [tab, setTab] = useState<"question" | "workspace" | "tests" | "console">("workspace");
+  const [tab, setTab] = useState<"question" | "workspace" | "console">("workspace");
   const [showShareModal, setShowShareModal] = useState(false);
 
   // ─── Guards ──
@@ -153,18 +153,15 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     if (!testCases || running || (pyStatus !== "ready" && pyStatus !== "idle")) return;
     setRunning(true);
     setResults([]);
-    setGeneralErrorCategory(undefined);
     setConsoleOutput("");
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setResults(result.results);
-      setGeneralErrorCategory(result.errorCategory);
       setConsoleOutput(result.console_output || "");
       const passed = result.results.filter((r: any) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
       await submitAttempt(success, passed, total, result.execution_ms);
-      setTab("tests");
       if (success) {
         setTimeout(() => setShowShareModal(true), 1500);
       }
@@ -198,8 +195,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     }
   }, [router, category]);
 
-  // ─── Render: Loading — sadece interview beklenir, test case yoksa
-  //              WorkspaceTestResults kendi loading state'ini gösterir (default tab = tests).
+  // ─── Render: Loading — sadece interview beklenir
   if (!interview) {
     return (
       <div className="h-screen bg-[#050816] flex items-center justify-center">
@@ -236,13 +232,13 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
             📖
           </button>
           <button
-            onClick={() => setTab("tests")}
+            onClick={() => setTab("console")}
             className={`px-2 py-1 rounded text-[10px] font-semibold ${
-              tab === "tests" ? "bg-white/10 text-white" : "text-white/40"
+              tab === "console" ? "bg-white/10 text-white" : "text-white/40"
             }`}
-            aria-label="Testler"
+            aria-label="Konsol"
           >
-            🧪 {results.length > 0 && <span className="ml-0.5">{results.length}</span>}
+            🖨️
           </button>
         </div>
         {readonly ? (
@@ -272,17 +268,13 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
           </div>
         )}
 
-        {tab === "tests" && (
-          <WorkspaceTestResults results={results} isRunning={running} testCases={testCases} generalErrorCategory={generalErrorCategory} />
-        )}
-
         {tab === "console" && <ConsoleTabMobile consoleOutput={consoleOutput} />}
       </div>
 
       {/* Bottom tab bar — SADECE workspace tab'indayken gizle (editor tam ekran kullanir) */}
       {tab !== "workspace" && (
         <div className="flex border-t border-white/5 bg-[#0a0e1a]">
-          {(["question", "workspace", "tests", "console"] as const).map((k) => (
+          {(["question", "workspace", "console"] as const).map((k) => (
             <button
               key={k}
               onClick={() => setTab(k)}
@@ -294,8 +286,6 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
                 ? "Soru"
                 : k === "workspace"
                 ? "Editör"
-                : k === "tests"
-                ? `Testler (${testCases?.test_cases.length ?? 0})`
                 : "🖨️ Konsol"}
             </button>
           ))}
