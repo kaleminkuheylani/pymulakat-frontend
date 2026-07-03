@@ -371,7 +371,7 @@ function ResultBanner({
   const totalMs = testResults.reduce((s, r) => s + (r.execution_ms || 0), 0);
 
   // Kategori dağılımı — hangi hata tipleri var?
-  const catCounts: Record<string, number> = {};
+  const catCounts: Partial<Record<ErrorCategory, number>> = {};
   for (const r of testResults) {
     if (r.errorCategory) {
       catCounts[r.errorCategory] = (catCounts[r.errorCategory] || 0) + 1;
@@ -418,10 +418,10 @@ function ResultBanner({
             <span
               key={cat}
               className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-bold border ${getErrorBadgeClass(
-                cat as any
+                cat as ErrorCategory
               )}`}
             >
-              {getErrorLabel(cat as any)} · {count}
+              {getErrorLabel(cat as ErrorCategory)} · {count}
             </span>
           ))}
         </div>
