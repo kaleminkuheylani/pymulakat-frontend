@@ -57,7 +57,7 @@ function parseFunctionSignature(starterCode: string, functionName: string): Para
     // "name: type = default" veya "name = default" veya "name"
     const colonIdx = p.indexOf(":");
     let name: string;
-    let pyType = "any";
+    let pyType: ParamInfo["type"] = "any";
     if (colonIdx > -1) {
       name = p.slice(0, colonIdx).trim();
       const typePart = p.slice(colonIdx + 1).split("=")[0].trim();
@@ -143,6 +143,8 @@ export default function WorkspaceEditor({
   category,
   id,
   onRun,
+  starterCode,
+  onCustomRun,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState<Tab>("examples");
   
