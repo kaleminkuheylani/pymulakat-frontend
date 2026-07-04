@@ -200,9 +200,11 @@ export default function WorkspaceClient({ initialParams }: Props) {
             description: "Kodunu gözden geçirip tekrar dene.",
           });
         }
-      } catch (e) {
+      } catch (e: any) {
         console.warn("Attempt submission failed", e);
-        toast.error("Attempt gönderilemedi");
+        toast.error("Attempt kaydedilemedi", {
+          description: e?.message || "Token veya sunucu hatası olabilir.",
+        });
       } finally {
         inFlightRef.current = false;
       }
