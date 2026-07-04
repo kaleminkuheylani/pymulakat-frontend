@@ -144,18 +144,35 @@ export default function DashboardHome() {
     };
   }, []);
 
+  // Token helper (desktop submitAttempt ile aynı mantık)
+  const getToken = (): string | null => {
+    if (typeof window === "undefined") return null;
+    try {
+      const raw = localStorage.getItem("sb-pymulakat-auth-token");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed?.access_token) return parsed.access_token;
+      }
+    } catch {
+      // ignore
+    }
+    return localStorage.getItem("token");
+  };
+
   const fetchFlow = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
     try {
+      const token = getToken();
       const res = await fetch(`${API()}/api/v2/recommendations/flow`, {
         credentials: "include",
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
       if (res.ok) {
         const data = await res.json();
         setFlow(data);
         setLastUpdated(new Date());
       } else {
-        // 404 veya 500 → local fallback (kullanici login mi?)
+        // 401/404/500 → local fallback
         setFlow(buildLocalFallback(!!user));
         setLastUpdated(new Date());
       }
@@ -164,11 +181,14 @@ export default function DashboardHome() {
       setLastUpdated(new Date());
     }
     if (showSpinner) setRefreshing(false);
-  }, []);
+  }, [user]);
 
   const fetchCommunity = useCallback(async () => {
     try {
-      const res = await fetch(`${API()}/api/v2/recommendations/community?limit=15`);
+      const token = getToken();
+      const res = await fetch(`${API()}/api/v2/recommendations/community?limit=15`, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
       if (!mountedRef.current) return;
       if (res.ok) {
         const data = await res.json();
