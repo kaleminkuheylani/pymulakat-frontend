@@ -672,8 +672,16 @@ function ExamplesTabMobile({
             </div>
 
             {isLogicFail && (
-              <div className="text-[10px] text-amber-300/80 italic mt-1">
-                💡 Return değeri beklenenle eşleşmiyor — debug için kendi kodunu kontrol et
+              <div className="mt-2 space-y-1">
+                <div className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+                  ✗ Actual (senin kodun)
+                </div>
+                <pre className="text-[11px] font-mono text-rose-300 bg-rose-500/5 p-2 rounded overflow-x-auto border border-rose-500/20 min-h-[2rem]">
+                  {formatValue(result.actual)}
+                </pre>
+                <div className="text-[10px] text-amber-300/80 italic px-1">
+                  💡 Return değeri beklenenle eşleşmiyor — yukarıdaki Actual, senin kodun bu test için ne döndüğü.
+                </div>
               </div>
             )}
           </div>
