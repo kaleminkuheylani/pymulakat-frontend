@@ -228,6 +228,10 @@ export default function WorkspaceClient({ initialParams }: Props) {
       const total = result.results.length;
       const success = total > 0 && passed === total;
       await submitAttempt(success, passed, total, result.execution_ms);
+      if (success) {
+        // Tüm testler geçti → paylaşım modalı (1.5 sn gecikmeyle daha okunaklı)
+        setTimeout(() => setShowShareModal(true), 1500);
+      }
     } catch (e: any) {
       // 📌 Raw error sızmaz — sabit hardcoded mesaj
       toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
