@@ -70,19 +70,20 @@ export default function WorkspaceClient({ initialParams }: Props) {
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
   const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
-  // Custom input runner — EditorProps sadece args[] veriyor, code + functionName'i
-  // burada kapatıyoruz
-  const handleCustomRun = useCallback(
-    async (args: any[]) =>
-      runWithCustomInput(code, testCases?.function_name || "", args),
-    [runWithCustomInput, code, testCases?.function_name]
-  );
   const editorRef = useRef<CodeEditorRef>(null);
 
   // State
   const [interview, setInterview] = useState<Question | null>(null);
   const [testCases, setTestCases] = useState<QuestionTests | null>(null);
   const [code, setCode] = useState("");
+
+  // Custom input runner — EditorProps sadece args[] veriyor, code + functionName'i
+  // burada kapatıyoruz. code state'inden SONRA tanımlı olmalı.
+  const handleCustomRun = useCallback(
+    async (args: any[]) =>
+      runWithCustomInput(code, testCases?.function_name || "", args),
+    [runWithCustomInput, code, testCases?.function_name]
+  );
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
