@@ -118,8 +118,6 @@ function parseUserInput(raw: string): any {
   }
 }
 
-type Tab = "examples" | "console";
-
 // ─── Value formatter: primitive, list, dict, string hepsini okunur bas ───
 function formatValue(v: any): string {
   if (v === undefined) return "undefined";
