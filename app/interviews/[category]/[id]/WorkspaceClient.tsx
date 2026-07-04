@@ -270,7 +270,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
   const isGuest = !user && !userLoading;
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white flex flex-col">
+    <div className="h-screen bg-[#050816] text-white flex flex-col overflow-hidden">
       {isGuest && <GuestBanner feature="kod çalıştırma" />}
 
       <WorkspaceHeader
