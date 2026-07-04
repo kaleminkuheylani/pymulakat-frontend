@@ -436,7 +436,7 @@ function ConsoleTab({
   return (
     <div className="p-3 space-y-3 overflow-y-auto h-full">
       {/* Custom Input paneli */}
-      {maxParams > 0 ? (
+      {params.length > 0 ? (
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-wider text-white/60 font-bold">
