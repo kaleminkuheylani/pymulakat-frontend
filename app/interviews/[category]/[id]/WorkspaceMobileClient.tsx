@@ -35,12 +35,33 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
 
   // ─── State ──
   const [code, setCode] = useState<string>("");
+
+  // 📌 Her kod değişikliğinde backend'e play_count increment gönder (debounced 2s)
+  const playCountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleCodeChange = useCallback((next: string) => {
+    setCode(next);
+    if (typeof window === "undefined") return;
+    if (playCountTimerRef.current) clearTimeout(playCountTimerRef.current);
+    playCountTimerRef.current = setTimeout(() => {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/users/me/play-count`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
+    }, 2000);
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (playCountTimerRef.current) clearTimeout(playCountTimerRef.current);
+    };
+  }, []);
   const [interview, setInterview] = useState<Question | null>(null);
   const [testCases, setTestCases] = useState<QuestionTests | null>(null);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   
-  const [consoleOutput, setConsoleOutput] = useState<string>("");
+  const [errorLines, setErrorLines] = useState<string[]>([]);
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
   const [tab, setTab] = useState<"question" | "workspace" | "examples" | "console">("workspace");
@@ -153,11 +174,11 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     if (!testCases || running || (pyStatus !== "ready" && pyStatus !== "idle")) return;
     setRunning(true);
     setResults([]);
-    setConsoleOutput("");
+    setErrorLines([]);
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setResults(result.results);
-      setConsoleOutput(result.console_output || "");
+      setErrorLines(result.error_lines || []);
       const passed = result.results.filter((r: any) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
@@ -273,11 +294,11 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
 
         {tab === "workspace" && (
           <div className="h-full pb-20">
-            <CodeEditor ref={editorRef} value={code} onChange={setCode} height="100%" language="python" readOnly={readonly || isGuest} />
+            <CodeEditor ref={editorRef} value={code} onChange={handleCodeChange} height="100%" language="python" readOnly={readonly || isGuest} />
           </div>
         )}
 
-        {tab === "console" && <ConsoleTabMobile consoleOutput={consoleOutput} />}
+        {tab === "console" && <ConsoleTabMobile errorLines={errorLines} />}
 
         {tab === "examples" && (
           <ExamplesTabMobile
@@ -390,44 +411,35 @@ function ShareModal({
     </motion.div>
   );
 }
-function ConsoleTabMobile({ consoleOutput }: { consoleOutput: string }) {
-  if (!consoleOutput || consoleOutput.trim() === "") {
+function ConsoleTabMobile({ errorLines }: { errorLines: string[] }) {
+  if (errorLines.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12">
-        <div className="text-3xl">🖨️</div>
-        <p className="text-sm">Henüz print() çıktısı yok.</p>
+        <div className="text-3xl">✅</div>
+        <p className="text-sm">Kodun hatasız çalışıyor.</p>
         <p className="text-[10px] text-white/20 text-center">
-          Kodunda print() kullanıp Çalıştır'a bas
+          Hata olduğunda traceback buraya düşer
         </p>
       </div>
     );
   }
 
-  const lines = consoleOutput.split("\n");
-
   return (
     <div className="p-3 space-y-2 h-full overflow-y-auto">
       <div className="flex items-center justify-between pb-2 border-b border-white/5">
-        <span className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
-          📤 Konsol Çıktısı
+        <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+          ⚠ Hata Traceback
         </span>
         <span className="text-[10px] text-white/30 font-mono">
-          {lines.filter((l) => l.trim()).length} satır
+          {errorLines.length} satır
         </span>
       </div>
-      <pre className="text-xs text-white/80 font-mono whitespace-pre-wrap leading-relaxed">
-        {lines.map((line, i) => {
-          if (line.startsWith("[stderr]")) {
-            return <div key={i} className="text-amber-300/90">{line}</div>;
-          }
-          if (line.startsWith("[error]")) {
-            return <div key={i} className="text-rose-300/90 font-semibold">{line}</div>;
-          }
-          if (line.startsWith("[import hatası]")) {
-            return <div key={i} className="text-rose-300/90">{line}</div>;
-          }
-          return <div key={i} className="text-white/80">{line || "\u00A0"}</div>;
-        })}
+      <pre className="text-xs text-rose-200 font-mono whitespace-pre-wrap leading-relaxed">
+        {errorLines.map((line, i) => (
+          <div key={i} className="text-rose-300/90 font-semibold">
+            {line}
+          </div>
+        ))}
       </pre>
     </div>
   );
@@ -528,43 +540,19 @@ function ExamplesTabMobile({
               </div>
             )}
 
-            {/* Logic fail veya pass: Expected vs Actual */}
-            {!isError && (
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
-                    ✓ Expected
-                  </div>
-                  <pre className="text-[11px] font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded overflow-x-auto border border-emerald-500/20 min-h-[2rem]">
-                    {formatValue(tc.expected)}
-                  </pre>
-                </div>
-                <div>
-                  <div className={`text-[10px] uppercase tracking-wider mb-1 font-bold ${
-                    hasRun
-                      ? result.passed
-                        ? "text-green-400/80"
-                        : "text-amber-400/80"
-                      : "text-white/40"
-                  }`}>
-                    {hasRun ? (result.passed ? "✓ Actual" : "✗ Actual") : "⏳"}
-                  </div>
-                  <pre className={`text-[11px] font-mono p-2 rounded overflow-x-auto border min-h-[2rem] ${
-                    hasRun
-                      ? result.passed
-                        ? "text-green-300 bg-green-500/5 border-green-500/20"
-                        : "text-amber-200 bg-amber-500/10 border-amber-500/40"
-                      : "text-white/30 bg-black/20 border-white/5 italic"
-                  }`}>
-                    {hasRun ? formatValue(result.actual) : "—"}
-                  </pre>
-                </div>
+            {/* Expected (her zaman gösterilir) */}
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
+                ✓ Expected
               </div>
-            )}
+              <pre className="text-[11px] font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded overflow-x-auto border border-emerald-500/20 min-h-[2rem]">
+                {formatValue(tc.expected)}
+              </pre>
+            </div>
 
             {isLogicFail && (
               <div className="text-[10px] text-amber-300/80 italic mt-1">
-                💡 Return değeri beklenenle eşleşmiyor
+                💡 Return değeri beklenenle eşleşmiyor — debug için kendi kodunu kontrol et
               </div>
             )}
           </div>

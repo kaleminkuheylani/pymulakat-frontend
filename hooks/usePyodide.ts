@@ -55,7 +55,9 @@ export interface PyodideRunResult {
   results: TestRunResult[];
   total_tests: number;
   passed_tests: number;
-  console_output: string;
+  // Sadece hata traceback'lerinin son satırları — print() çıktıları YAKALANMAZ
+  // (kullanıcı kendi debug'ını kendi mantığıyla yapar; UI sadece hata varsa bilgi verir)
+  error_lines: string[];
   all_passed: boolean;
   execution_ms: number;
   // Genel hata varsa kategori (örn. import hatası, fonksiyon bulunamadı)
@@ -196,24 +198,17 @@ export function usePyodide(): UsePyodideReturn {
 
       const startTime = performance.now();
       const results: TestRunResult[] = [];
-      let consoleOutput = "";
+      // 📌 Sadece hata traceback'lerinin son satırları toplanır.
+      //    print() / stdout YAKALANMAZ (kullanıcı kendi debug'ını kendi yapar).
+      const errorLines: string[] = [];
       // 📌 Raw Python error ASLA UI'a, console'a, toast'a sızmaz.
       //    Sadece kategori enum'u tutulur.
       let generalErrorCategory: ErrorCategory | undefined;
 
       try {
-        // Her çalıştırmada temiz stdout
-        py.setStdout({
-          batched: (s: string) => {
-            consoleOutput += s + "\n";
-          },
-        });
-        py.setStderr({
-          batched: (s: string) => {
-            // stderr çıktısı da kullanıcıya gösterilmez — generic etiket yeterli
-            consoleOutput += `[stderr] ${s}\n`;
-          },
-        });
+        // Stdout/stderr callback'leri boş — print() ÇIKTILARI YAKALANMAZ
+        py.setStdout({ batched: () => {} });
+        py.setStderr({ batched: () => {} });
 
         // Kullanıcı kodunu çalıştır
         // 1) Import'lar ve setup
@@ -229,7 +224,8 @@ export function usePyodide(): UsePyodideReturn {
               await py.runPythonAsync(im);
             } catch (e: any) {
               // Raw mesaj yerine sadece kategori — içerik sızmaz
-              consoleOutput += `[import hatası] ${classifyError(e?.message || "")}\n`;
+              const last = lastErrorLine(e?.message || "");
+              if (last) errorLines.push(`[import hatası] ${last}`);
             }
           }
           fullCode = userCode.replace(/^((?:from\s+\S+\s+)?import\s+.*(?:\n(?!\S).*)*)/gm, "");
@@ -278,7 +274,7 @@ export function usePyodide(): UsePyodideReturn {
               execution_ms: Math.round(performance.now() - tcStart),
             });
             if (last) {
-              consoleOutput += `[error] ${last}\n`;
+              errorLines.push(`[error] ${last}`);
             }
           }
         }
@@ -293,7 +289,7 @@ export function usePyodide(): UsePyodideReturn {
         // Konsola sadece traceback'in son satırı (genelde "ValueError: ..." gibi)
         const last = lastErrorLine(rawMsg);
         if (last) {
-          consoleOutput += `[error] ${last}\n`;
+          errorLines.push(`[error] ${last}`);
         }
       } finally {
         // Stdout reset
@@ -312,7 +308,7 @@ export function usePyodide(): UsePyodideReturn {
         results,
         total_tests: testCases.length,
         passed_tests: passedTests,
-        console_output: consoleOutput,
+        error_lines: errorLines,
         all_passed: passedTests === testCases.length && !generalErrorCategory,
         execution_ms: totalMs,
         errorCategory: generalErrorCategory,

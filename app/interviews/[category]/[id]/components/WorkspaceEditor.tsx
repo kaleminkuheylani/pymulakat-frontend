@@ -19,7 +19,7 @@ interface EditorProps {
   testCases: QuestionTests | null;
   testResults: TestRunResult[];
   isRunning: boolean;
-  consoleOutput: string;
+  errorLines: string[];
   pyStatus: "idle" | "loading" | "ready" | "running" | "error";
   isGuest: boolean;
   category: string;
@@ -48,7 +48,7 @@ export default function WorkspaceEditor({
   testCases,
   testResults,
   isRunning,
-  consoleOutput,
+  errorLines,
   pyStatus,
   isGuest,
   category,
@@ -97,8 +97,8 @@ export default function WorkspaceEditor({
                 ) : (
                   <span className="flex items-center gap-2">
                     🖨️ Konsol
-                    {consoleOutput && consoleOutput.trim() && (
-                      <span className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
+                    {errorLines.length > 0 && (
+                      <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                     )}
                   </span>
                 )}
@@ -152,7 +152,7 @@ export default function WorkspaceEditor({
             />
           )}
 
-          {activeTab === "console" && <ConsoleTab consoleOutput={consoleOutput} />}
+          {activeTab === "console" && <ConsoleTab errorLines={errorLines} />}
         </div>
       </div>
     </main>
@@ -245,11 +245,21 @@ function ExamplesTab({
                 </pre>
               </div>
 
-              {/* ─── HATA DURUMU ─── */}
+              {/* Expected (her zaman gösterilir) */}
+              <div>
+                <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
+                  ✓ Expected
+                </div>
+                <pre className="text-xs font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded overflow-x-auto border border-emerald-500/20 min-h-[2.5rem]">
+                  {formatValue(tc.expected)}
+                </pre>
+              </div>
+
+              {/* Hata varsa: traceback son satırı (debug için) */}
               {isError && (
                 <div>
                   <div className="text-[10px] uppercase tracking-wider text-rose-400/80 mb-1 font-bold">
-                    ⚠ Traceback (son satır)
+                    ⚠ Traceback
                   </div>
                   <pre className="text-xs font-mono text-rose-300 bg-rose-500/10 p-2 rounded overflow-x-auto border border-rose-500/30 min-h-[2.5rem]">
                     {result.errorLine || getErrorLabel(result.errorCategory!) || "Bilinmeyen hata"}
@@ -257,45 +267,7 @@ function ExamplesTab({
                 </div>
               )}
 
-              {/* ─── HATA YOKSA: Expected vs Actual karşılaştırma ─── */}
-              {!isError && (
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
-                      ✓ Expected
-                    </div>
-                    <pre className={`text-xs font-mono p-2 rounded overflow-x-auto border min-h-[2.5rem] ${
-                      hasRun && isLogicFail && !valueMatches(result.actual, tc.expected)
-                        ? "text-emerald-300 bg-emerald-500/5 border-emerald-500/20"
-                        : "text-white/70 bg-black/20 border-white/5"
-                    }`}>
-                      {formatValue(tc.expected)}
-                    </pre>
-                  </div>
-                  <div>
-                    <div className={`text-[10px] uppercase tracking-wider mb-1 font-bold ${
-                      hasRun
-                        ? result.passed
-                          ? "text-green-400/80"
-                          : "text-amber-400/80"
-                        : "text-white/40"
-                    }`}>
-                      {hasRun ? (result.passed ? "✓ Actual" : "✗ Actual") : "⏳ Henüz çalıştırılmadı"}
-                    </div>
-                    <pre className={`text-xs font-mono p-2 rounded overflow-x-auto border min-h-[2.5rem] ${
-                      hasRun
-                        ? result.passed
-                          ? "text-green-300 bg-green-500/5 border-green-500/20"
-                          : "text-amber-200 bg-amber-500/10 border-amber-500/40"
-                        : "text-white/30 bg-black/20 border-white/5 italic"
-                    }`}>
-                      {hasRun ? formatValue(result.actual) : "Çalıştır'a bas"}
-                    </pre>
-                  </div>
-                </div>
-              )}
-
-              {/* ─── Logic fail diff hint ─── */}
+              {/* Logic fail: hint (Actual gösterilmez, kullanıcı kendi mantığıyla debug eder) */}
               {isLogicFail && (
                 <div className="text-[10px] text-amber-300/80 italic px-1">
                   💡 Return değeri beklenenle eşleşmiyor — sol sütun ne bekleniyor, sağ sütun senin kodun ne döndü.
@@ -309,69 +281,38 @@ function ExamplesTab({
   );
 }
 
-// ─── Basit karşılaştırma: eşit mi? (UI'da vurgu için) ───
-function valueMatches(a: any, b: any): boolean {
-  try {
-    return JSON.stringify(a) === JSON.stringify(b);
-  } catch {
-    return a === b;
-  }
-}
 
-function ConsoleTab({ consoleOutput }: { consoleOutput: string }) {
-  // Boş durum
-  if (!consoleOutput || consoleOutput.trim() === "") {
+
+function ConsoleTab({ errorLines }: { errorLines: string[] }) {
+  // Hata yoksa: print() yakalanmıyor, placeholder göster
+  if (errorLines.length === 0) {
     return (
       <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 py-8">
-        <div className="text-2xl">🖨️</div>
-        <p className="text-xs">Henüz print() çıktısı yok.</p>
-        <p className="text-[10px] text-white/20">Kodunda print() kullanıp Çalıştır'a bas</p>
+        <div className="text-2xl">✅</div>
+        <p className="text-xs">Kodun hatasız çalışıyor.</p>
+        <p className="text-[10px] text-white/20">
+          Hata olduğunda traceback buraya düşer
+        </p>
       </div>
     );
   }
 
-  // Satır satır böl: stderr olanları renklendir, stdout olanları normal
-  const lines = consoleOutput.split("\n");
-
   return (
     <div className="p-3 space-y-2">
       <div className="flex items-center justify-between pb-2 border-b border-white/5">
-        <span className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
-          📤 Konsol Çıktısı
+        <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+          ⚠ Hata Traceback
         </span>
         <span className="text-[10px] text-white/30 font-mono">
-          {lines.filter((l) => l.trim()).length} satır
+          {errorLines.length} satır
         </span>
       </div>
-      <pre className="text-xs text-white/80 font-mono whitespace-pre-wrap leading-relaxed">
-        {lines.map((line, i) => {
-          if (line.startsWith("[stderr]")) {
-            return (
-              <div key={i} className="text-amber-300/90">
-                {line}
-              </div>
-            );
-          }
-          if (line.startsWith("[error]")) {
-            return (
-              <div key={i} className="text-rose-300/90 font-semibold">
-                {line}
-              </div>
-            );
-          }
-          if (line.startsWith("[import hatası]")) {
-            return (
-              <div key={i} className="text-rose-300/90">
-                {line}
-              </div>
-            );
-          }
-          return (
-            <div key={i} className="text-white/80">
-              {line || "\u00A0"}
-            </div>
-          );
-        })}
+      <pre className="text-xs text-rose-200 font-mono whitespace-pre-wrap leading-relaxed">
+        {errorLines.map((line, i) => (
+          <div key={i} className="text-rose-300/90 font-semibold">
+            {line}
+          </div>
+        ))}
       </pre>
     </div>
   );

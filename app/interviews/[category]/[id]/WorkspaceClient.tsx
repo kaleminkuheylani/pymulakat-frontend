@@ -79,9 +79,30 @@ export default function WorkspaceClient({ initialParams }: Props) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  // 📌 Her kod değişikliğinde backend'e play_count increment gönder (debounced 2s)
+  const playCountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleCodeChange = useCallback((next: string) => {
+    setCode(next);
+    if (typeof window === "undefined") return;
+    if (playCountTimerRef.current) clearTimeout(playCountTimerRef.current);
+    playCountTimerRef.current = setTimeout(() => {
+      const token = localStorage.getItem("token");
+      if (!token) return; // misafir → sayma
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/users/me/play-count`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {/* silent fail */});
+    }, 2000);
+  }, []);
+  useEffect(() => {
+    return () => {
+      if (playCountTimerRef.current) clearTimeout(playCountTimerRef.current);
+    };
+  }, []);
+
   const [testResults, setTestResults] = useState<TestRunResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
-  const [consoleOutput, setConsoleOutput] = useState<string>("");
+  const [errorLines, setErrorLines] = useState<string[]>([]);
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -190,11 +211,11 @@ export default function WorkspaceClient({ initialParams }: Props) {
     if (isRunning || (pyStatus !== "ready" && pyStatus !== "idle") || !testCases) return;
     setIsRunning(true);
     setTestResults([]);
-    setConsoleOutput("");
+    setErrorLines([]);
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setTestResults(result.results);
-      setConsoleOutput(result.console_output || "");
+      setErrorLines(result.error_lines || []);
       const passed = result.results.filter((r) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
@@ -302,11 +323,11 @@ export default function WorkspaceClient({ initialParams }: Props) {
         <WorkspaceEditor
           editorRef={editorRef}
           code={code}
-          onCodeChange={setCode}
+          onCodeChange={handleCodeChange}
           testCases={testCases}
           testResults={testResults}
           isRunning={isRunning}
-          consoleOutput={consoleOutput}
+          errorLines={errorLines}
           pyStatus={pyStatus}
           isGuest={isGuest}
           category={category}
