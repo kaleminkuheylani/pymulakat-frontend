@@ -5,6 +5,7 @@ import "./global.css";
 import Script from "next/script";
 import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
+import ClientOnly from "../components/ClientOnly";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -366,7 +367,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased min-h-screen`}
         suppressHydrationWarning
       >
+        <ClientOnly fallback={<div style={{ height: 64 }} />}>
         <GlobalNav />
+      </ClientOnly>
 
         {/* GTM noscript fallback */}
         <noscript>
@@ -380,7 +383,9 @@ export default function RootLayout({
 
         {/* <Toaster position="top-right" theme="dark" richColors closeButton /> */}
         {children}
+        <ClientOnly>
         <ConditionalFooter />
+      </ClientOnly>
       </body>
     </html>
   );
