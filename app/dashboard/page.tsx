@@ -14,7 +14,6 @@ import OnboardingGate from "../../components/OnboardingGate";
 const PersonalFlow = dynamic(() => import("../../components/dashboard/PersonalFlow"), {
   ssr: false,
   loading: () => <div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>,
-  ssr: false,
 });
 const CommunityFlow = dynamic(() => import("../../components/dashboard/CommunityFlow"), {
   loading: () => <div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-rose-500/30 border-t-rose-500 rounded-full animate-spin" /></div>,
