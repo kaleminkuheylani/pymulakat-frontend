@@ -363,7 +363,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased flex flex-col min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased min-h-screen`}
       >
         <GlobalNav />
 
