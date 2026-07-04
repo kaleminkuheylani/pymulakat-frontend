@@ -1,6 +1,7 @@
 // components/parsePython.ts
 // Python fonksiyon imzasını parse edip input paneli için parametre listesi döndürür.
-// Hem desktop hem mobile ConsoleTab tarafından kullanılır.
+// Sadece mobil WorkspaceMobileClient tarafından kullanılır.
+// Desktop WorkspaceEditor kendi inline parser'larını kullanıyor (tarihsel).
 
 export type PyParamType = "str" | "int" | "float" | "bool" | "list" | "dict" | "tuple" | "any";
 
@@ -43,13 +44,8 @@ function normalizeType(t: string): PyParamType {
   return "any";
 }
 
-/**
- * "def is_palindrome(text: str) -> bool:" gibi bir starter satırdan
- * veya fonksiyon imzasından parametre listesi çıkarır.
- */
 export function parseFunctionSignature(starterCode: string, functionName: string): ParamInfo[] {
   if (!starterCode || !functionName) return [];
-  // def functionName(...) ... — ilk parantez bloğunu al
   const m = starterCode.match(
     new RegExp(`def\\s+${functionName}\\s*\\(([^)]*)\\)`, "m")
   );
@@ -58,7 +54,6 @@ export function parseFunctionSignature(starterCode: string, functionName: string
   if (!raw) return [];
   return raw.split(",").map((p) => {
     p = p.trim();
-    // "name: type = default" veya "name = default" veya "name"
     const colonIdx = p.indexOf(":");
     let name: string;
     let pyType: PyParamType = "any";
@@ -74,28 +69,20 @@ export function parseFunctionSignature(starterCode: string, functionName: string
   });
 }
 
-/**
- * "42" → 42, "'hello'" → "hello", "[1,2,3]" → [1,2,3]
- * Gibi primitive input'ları parse eder. Hata olursa raw string'i döndürür.
- */
 export function parseUserInput(raw: string): any {
   const s = raw.trim();
   if (s === "") return "";
-  // Tırnak ile çevrili ise string
   if (
     (s.startsWith('"') && s.endsWith('"')) ||
     (s.startsWith("'") && s.endsWith("'"))
   ) {
     return s.slice(1, -1);
   }
-  // bool
   if (s === "True" || s === "true") return true;
   if (s === "False" || s === "false") return false;
   if (s === "None" || s === "null") return null;
-  // int / float
   if (/^-?\d+$/.test(s)) return parseInt(s, 10);
   if (/^-?\d*\.\d+$/.test(s)) return parseFloat(s);
-  // list / dict / tuple
   if (
     (s.startsWith("[") && s.endsWith("]")) ||
     (s.startsWith("{") && s.endsWith("}")) ||
@@ -111,9 +98,6 @@ export function parseUserInput(raw: string): any {
   return s;
 }
 
-/**
- * Primitive, list, dict, string, tuple hepsini okunur formata bas.
- */
 export function formatValue(v: any): string {
   if (v === undefined) return "undefined";
   if (v === null) return "null";
