@@ -142,7 +142,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     async (success: boolean, passed: number, total: number, durationMs: number) => {
       if (!user || !interview) return;
       try {
-        await fetch(
+        const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/attempts`,
           {
             method: "POST",
@@ -157,8 +157,12 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
             }),
           }
         );
+        if (!res.ok) {
+          const txt = await res.text();
+          console.warn("[attempt] non-2xx:", res.status, txt);
+        }
       } catch (e) {
-        // Sessizce yoksay
+        console.warn("[attempt] fetch error:", e);
       }
     },
     [user, interview, questionId, code]
