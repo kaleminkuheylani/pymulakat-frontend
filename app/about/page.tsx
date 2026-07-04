@@ -209,16 +209,6 @@ export default function AboutPage() {
           </div>
         </motion.div>
       </section>
-
-      {/* ─── FOOTER ────────────────────────────────────── */}
-      <footer className="border-t border-white/5 py-10">
-        <div className="max-w-3xl mx-auto px-6 text-center text-white/40 text-xs font-mono">
-          <p>
-            iki kişi · saf niyet · saf Python · test kullanıcıları arıyoruz
-          </p>
-          <p className="mt-2">© 2026 Python Mulakat</p>
-        </div>
-      </footer>
     </main>
   );
 }

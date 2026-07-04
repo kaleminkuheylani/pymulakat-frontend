@@ -405,15 +405,6 @@ export default async function Page({ params }: PageProps) {
             </Link>
           </section>
         </article>
-
-        {/* Footer */}
-        <footer className="mt-20 py-8 border-t border-white/5 text-center text-sm text-white/40">
-          <Link href="/" className="hover:text-white">PythonMulakat</Link>
-          {" · "}
-          <Link href="/guides" className="hover:text-white">Tüm Rehberler</Link>
-          {" · "}
-          <Link href="/interviews" className="hover:text-white">Sorular</Link>
-        </footer>
       </div>
     </>
   );

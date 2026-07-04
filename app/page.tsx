@@ -520,21 +520,6 @@ export default function HomePage() {
           </motion.div>
         </div>
       </section>
-
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-white/5 px-8 py-8">
-        <div className="max-w-6xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <BrandLogo size={32} />
-            <span className="text-white/40 text-sm">© 2026 PythonMulakat. Tüm hakları saklıdır.</span>
-          </div>
-          <div className="flex items-center gap-6">
-            <a href="mailto:mkemal@pythonmulakat.com" className="text-white/30 hover:text-white/60 text-sm transition-colors">
-              mkemal@pythonmulakat.com
-            </a>
-          </div>
-        </div>
-      </footer>
     </div>
   )
 }
