@@ -69,7 +69,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
   // Hooks
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
-  const { status: pyStatus, runTests } = usePyodide();
+  const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
   const editorRef = useRef<CodeEditorRef>(null);
 
   // State
@@ -333,6 +333,8 @@ export default function WorkspaceClient({ initialParams }: Props) {
           category={category}
           id={id}
           onRun={handleRun}
+          starterCode={interview?.starter_code || undefined}
+          onCustomRun={runWithCustomInput}
         />
       </div>
 

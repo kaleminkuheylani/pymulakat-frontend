@@ -73,6 +73,11 @@ export interface UsePyodideReturn {
     functionName: string,
     testCases: TestCase[]
   ) => Promise<PyodideRunResult>;
+  runWithCustomInput: (
+    userCode: string,
+    functionName: string,
+    args: any[]
+  ) => Promise<{ actual: any; errorLine?: string; errorCategory?: ErrorCategory }>;
 }
 
 const PYODIDE_VERSION = "v0.27.7";
@@ -327,7 +332,41 @@ export function usePyodide(): UsePyodideReturn {
     };
   }, []);
 
-  return { status, errorMsg, runTests };
+  // Tek seferlik custom input ile fonksiyon çağrısı — Konsol Custom Input için
+  const runWithCustomInput = useCallback(
+    async (
+      userCode: string,
+      functionName: string,
+      args: any[]
+    ): Promise<{ actual: any; errorLine?: string; errorCategory?: ErrorCategory }> => {
+      await ensureReady();
+      const py = pyodideRef.current;
+      if (!py) throw new Error("Pyodide yüklenmedi");
+
+      try {
+        py.setStdout({ batched: () => {} });
+        py.setStderr({ batched: () => {} });
+        await py.runPythonAsync(userCode);
+        const pyArgs = args
+          .map((a) => (typeof a === "string" ? JSON.stringify(a) : JSON.stringify(a)))
+          .join(", ");
+        const pyResult = await py.runPythonAsync(`${functionName}(${pyArgs})`);
+        const actual = pyResult?.toJs ? pyResult.toJs() : pyResult;
+        return { actual };
+      } catch (e: any) {
+        const rawMsg = e?.message || "";
+        const last = lastErrorLine(rawMsg);
+        return {
+          actual: undefined,
+          errorLine: last,
+          errorCategory: classifyError(rawMsg),
+        };
+      }
+    },
+    [ensureReady]
+  );
+
+  return { status, errorMsg, runTests, runWithCustomInput };
 }
 
 // 📌 Diğer componentler için yardımcı export

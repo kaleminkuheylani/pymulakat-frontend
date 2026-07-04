@@ -25,6 +25,109 @@ interface EditorProps {
   category: string;
   id: string;
   onRun: () => void;
+  starterCode?: string;       // Fonksiyon imzası parse için
+  onCustomRun?: (args: any[]) => Promise<{ actual: any; errorLine?: string; errorCategory?: string }>;
+}
+
+type Tab = "examples" | "console";
+
+// ─── Value formatter: primitive, list, dict, string hepsini okunur bas ───
+function formatValue(v: any): string {
+  if (v === undefined) return "undefined";
+  if (v === null) return "null";
+  if (typeof v === "string") return v;
+  try {
+    return JSON.stringify(v, null, 2);
+  } catch {
+    return String(v);
+  }
+}
+
+// ─── Python def satırını parse → parametre listesi (name + type + placeholder) ───
+type ParamInfo = {
+  name: string;
+  type: "str" | "int" | "float" | "bool" | "list" | "dict" | "tuple" | "any";
+  placeholder: string;
+};
+
+function parseFunctionSignature(starterCode: string, functionName: string): ParamInfo[] {
+  if (!starterCode || !functionName) return [];
+  // def name(p1: t1, p2: t2 = None, *args, **kwargs) -> ret:
+  const m = starterCode.match(
+    new RegExp(`def\\s+${functionName}\\s*\\(([^)]*)\\)`, "m")
+  );
+  if (!m) return [];
+  const raw = m[1].trim();
+  if (!raw) return [];
+
+  const paramStrs = raw
+    .split(",")
+    .map((s) => s.trim())
+    .filter((s) => s && !s.startsWith("*") && !s.startsWith("self"));
+
+  return paramStrs.map((p): ParamInfo => {
+    // "name: type = default" veya "name = default" veya "name"
+    const colonIdx = p.indexOf(":");
+    let name: string;
+    let pyType = "any";
+    if (colonIdx > -1) {
+      name = p.slice(0, colonIdx).trim();
+      const typePart = p.slice(colonIdx + 1).split("=")[0].trim();
+      pyType = normalizeType(typePart);
+    } else {
+      const eqIdx = p.indexOf("=");
+      name = (eqIdx > -1 ? p.slice(0, eqIdx) : p).trim();
+    }
+    return { name, type: pyType, placeholder: placeholderFor(pyType) };
+  });
+}
+
+function normalizeType(t: string): ParamInfo["type"] {
+  const s = t.toLowerCase().trim();
+  if (s.includes("str")) return "str";
+  if (s.includes("float")) return "float";
+  if (s.includes("int")) return "int";
+  if (s.includes("bool")) return "bool";
+  if (s.includes("dict")) return "dict";
+  if (s.includes("tuple")) return "tuple";
+  if (s.includes("list") || s.includes("[")) return "list";
+  return "any";
+}
+
+function placeholderFor(t: ParamInfo["type"]): string {
+  switch (t) {
+    case "str": return '"text"';
+    case "int": return "42";
+    case "float": return "3.14";
+    case "bool": return "True";
+    case "list": return "[1, 2, 3]";
+    case "tuple": return "(1, 2)";
+    case "dict": return '{"key": "value"}';
+    default: return "value";
+  }
+}
+
+// ─── Kullanıcı string'ini Python değerine parse et ───
+// Sıra: JSON.parse → Python literal_eval (Pyodide) → string fallback.
+// Konsol Custom Input için.
+function parseUserInput(raw: string): any {
+  const trimmed = raw.trim();
+  if (!trimmed) return undefined;
+  // Önce JSON
+  try {
+    return JSON.parse(trimmed);
+  } catch {
+    // Python literal'leri (None, True, False, '...', "...") için basit fallback:
+    if (trimmed === "None") return null;
+    if (trimmed === "True") return true;
+    if (trimmed === "False") return false;
+    // Tek tırnaklı Python string'i düzelt
+    if (trimmed.startsWith("'") && trimmed.endsWith("'")) {
+      return trimmed.slice(1, -1);
+    }
+    // Hiçbir şey tutmuyorsa string olarak gönder
+    return trimmed;
+  }
 }
 
 type Tab = "examples" | "console";
@@ -152,7 +255,15 @@ export default function WorkspaceEditor({
             />
           )}
 
-          {activeTab === "console" && <ConsoleTab errorLines={errorLines} />}
+          {activeTab === "console" && (
+            <ConsoleTab
+              errorLines={errorLines}
+              starterCode={starterCode}
+              functionName={testCases?.function_name}
+              isRunning={isRunning}
+              onCustomRun={onCustomRun}
+            />
+          )}
         </div>
       </div>
     </main>
@@ -283,37 +394,144 @@ function ExamplesTab({
 
 
 
-function ConsoleTab({ errorLines }: { errorLines: string[] }) {
-  // Hata yoksa: print() yakalanmıyor, placeholder göster
-  if (errorLines.length === 0) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 py-8">
-        <div className="text-2xl">✅</div>
-        <p className="text-xs">Kodun hatasız çalışıyor.</p>
-        <p className="text-[10px] text-white/20">
-          Hata olduğunda traceback buraya düşer
-        </p>
-      </div>
-    );
-  }
+// ─── Konsol: Custom Input + Hata Traceback ───
+function ConsoleTab({
+  errorLines,
+  starterCode,
+  functionName,
+  isRunning,
+  onCustomRun,
+}: {
+  errorLines: string[];
+  starterCode?: string;
+  functionName?: string;
+  isRunning?: boolean;
+  onCustomRun?: (args: any[]) => Promise<{ actual: any; errorLine?: string; errorCategory?: string }>;
+}) {
+  const params = parseFunctionSignature(starterCode || "", functionName || "");
+  const maxParams = Math.min(params.length, 3); // Max 3 input
+  const [inputs, setInputs] = useState<string[]>(
+    Array.from({ length: maxParams }, () => "")
+  );
+  const [result, setResult] = useState<any>(undefined);
+  const [resultError, setResultError] = useState<string | null>(null);
+  const [running, setRunning] = useState(false);
+
+  const handleRun = async () => {
+    if (!onCustomRun) return;
+    setRunning(true);
+    setResult(undefined);
+    setResultError(null);
+    try {
+      // Parse user inputs — kullanıcı JSON ya da Python literal yazabilir
+      const parsed = inputs.map((s) => parseUserInput(s));
+      const r = await onCustomRun(parsed);
+      setResult(r.actual);
+      setResultError(r.errorLine || null);
+    } catch (e: any) {
+      setResultError(e?.message || "Çalıştırma hatası");
+    } finally {
+      setRunning(false);
+    }
+  };
 
   return (
-    <div className="p-3 space-y-2">
-      <div className="flex items-center justify-between pb-2 border-b border-white/5">
-        <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
-          ⚠ Hata Traceback
-        </span>
-        <span className="text-[10px] text-white/30 font-mono">
-          {errorLines.length} satır
-        </span>
-      </div>
-      <pre className="text-xs text-rose-200 font-mono whitespace-pre-wrap leading-relaxed">
-        {errorLines.map((line, i) => (
-          <div key={i} className="text-rose-300/90 font-semibold">
-            {line}
+    <div className="p-3 space-y-3 overflow-y-auto h-full">
+      {/* Custom Input paneli */}
+      {maxParams > 0 ? (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between">
+            <span className="text-[10px] uppercase tracking-wider text-white/60 font-bold">
+              🧪 Kendi Input'unla Dene
+            </span>
+            <span className="text-[10px] text-white/40">
+              max 3 parametre
+            </span>
           </div>
-        ))}
-      </pre>
+
+          {params.slice(0, 3).map((p, idx) => (
+            <div key={idx} className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-mono text-white/70">
+                  {p.name}
+                  <span className="text-[10px] text-white/40 ml-2">: {p.type}</span>
+                </label>
+                <span className="text-[9px] text-white/30 font-mono">
+                  {p.type}
+                </span>
+              </div>
+              <input
+                type="text"
+                value={inputs[idx] || ""}
+                placeholder={p.placeholder}
+                onChange={(e) => {
+                  const next = [...inputs];
+                  next[idx] = e.target.value;
+                  setInputs(next);
+                }}
+                className="w-full px-2.5 py-1.5 text-xs font-mono bg-black/30 border border-white/10 rounded text-white placeholder-white/30 focus:outline-none focus:border-indigo-500/50"
+              />
+            </div>
+          ))}
+
+          <button
+            onClick={handleRun}
+            disabled={running || isRunning}
+            className="w-full px-3 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-400 hover:to-purple-400 disabled:opacity-50 text-white text-xs font-bold rounded-lg transition-all shadow-md shadow-indigo-500/20"
+          >
+            {running ? "⏳ Çalışıyor..." : "▶ Kendi Input'umla Çalıştır"}
+          </button>
+        </div>
+      ) : (
+        <div className="text-[10px] text-white/30 text-center py-4">
+          Fonksiyon imzası bulunamadı
+        </div>
+      )}
+
+      {/* Sonuç */}
+      {result !== undefined && (
+        <div className="p-2.5 rounded-lg bg-green-500/10 border border-green-500/30">
+          <div className="text-[10px] uppercase tracking-wider text-green-400/80 mb-1 font-bold">
+            ✓ Sonuç
+          </div>
+          <pre className="text-xs font-mono text-green-200 whitespace-pre-wrap break-all">
+            {formatValue(result)}
+          </pre>
+        </div>
+      )}
+
+      {/* Hata Traceback */}
+      {errorLines.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between pb-1 border-b border-white/5">
+            <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+              ⚠ Son Çalıştırma Hatası
+            </span>
+            <span className="text-[10px] text-white/30 font-mono">
+              {errorLines.length} satır
+            </span>
+          </div>
+          <pre className="text-xs text-rose-200 font-mono whitespace-pre-wrap leading-relaxed">
+            {errorLines.map((line, i) => (
+              <div key={i} className="text-rose-300/90 font-semibold">
+                {line}
+              </div>
+            ))}
+          </pre>
+        </div>
+      )}
+
+      {/* Custom run sonucu hata */}
+      {resultError && !errorLines.length && (
+        <div className="p-2.5 rounded-lg bg-rose-500/10 border border-rose-500/30">
+          <div className="text-[10px] uppercase tracking-wider text-rose-400/80 mb-1 font-bold">
+            ⚠ Çalıştırma Hatası
+          </div>
+          <pre className="text-xs font-mono text-rose-200 whitespace-pre-wrap">
+            {resultError}
+          </pre>
+        </div>
+      )}
     </div>
   );
 }
