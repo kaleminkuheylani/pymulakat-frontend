@@ -139,7 +139,6 @@ function Hero({ user: _ }: { user: any }) {
         transition={{ delay: 0.9, duration: 0.6 }}
         className="flex flex-col sm:flex-row items-center gap-4 mt-8"
       >
-        (
         <>
           <Link href="/register">
             <motion.button
@@ -160,7 +159,6 @@ function Hero({ user: _ }: { user: any }) {
             </motion.button>
           </Link>
         </>
-      )
       </motion.div>
 
       {/* Trust signals */}
