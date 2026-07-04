@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useUser } from "../../../../hooks/useUser";
 import { usePyodide } from "../../../../hooks/usePyodide";
-import { parseFunctionSignature, parseUserInput, formatValue } from "../../../../../components/parsePython";
+import { parseFunctionSignature, parseUserInput, formatValue } from "../../../../components/parsePython";
 import { questionsAPI, Question, QuestionTests, TestCase } from "../../../../api/v2/questions";
 import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
