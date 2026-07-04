@@ -408,9 +408,8 @@ function ConsoleTab({
   onCustomRun?: (args: any[]) => Promise<{ actual: any; errorLine?: string; errorCategory?: string }>;
 }) {
   const params = parseFunctionSignature(starterCode || "", functionName || "");
-  const maxParams = Math.min(params.length, 3); // Max 3 input
   const [inputs, setInputs] = useState<string[]>(
-    Array.from({ length: maxParams }, () => "")
+    Array.from({ length: params.length }, () => "")
   );
   const [result, setResult] = useState<any>(undefined);
   const [resultError, setResultError] = useState<string | null>(null);
@@ -444,11 +443,11 @@ function ConsoleTab({
               🧪 Kendi Input'unla Dene
             </span>
             <span className="text-[10px] text-white/40">
-              max 3 parametre
+              {params.length} parametre
             </span>
           </div>
 
-          {params.slice(0, 3).map((p, idx) => (
+          {params.map((p, idx) => (
             <div key={idx} className="space-y-1">
               <div className="flex items-center justify-between">
                 <label className="text-[11px] font-mono text-white/70">
