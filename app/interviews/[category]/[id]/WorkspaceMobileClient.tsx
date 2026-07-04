@@ -309,8 +309,8 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         {tab === "console" && (
           <ConsoleTabMobile
             errorLines={errorLines}
-            starterCode={interview?.starter_code}
-            functionName={testCases?.function_name}
+            starterCode={interview?.starter_code || undefined}
+            functionName={testCases?.function_name || undefined}
             isRunning={running}
             onCustomRun={handleCustomRun}
           />
