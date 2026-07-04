@@ -245,8 +245,18 @@ export function usePyodide(): UsePyodideReturn {
         //    Eski hatalı kod: JSON.stringify(tc.input).slice(1,-1) — primitive için bozuk.
         for (const tc of testCases) {
           const tcStart = performance.now();
-          // Array ise spread et (her elemana ayrı stringify), primitive ise tek başına
-          const args = Array.isArray(tc.input) ? tc.input : [tc.input];
+          // Input formatları:
+          //   - Array  → spread et (her elemanı ayrı arg)
+          //   - Object → values() spread et (test case dict format: {arr, target} → arr, target)
+          //   - Primitive → [value]
+          let args: any[];
+          if (Array.isArray(tc.input)) {
+            args = tc.input;
+          } else if (tc.input && typeof tc.input === "object") {
+            args = Object.values(tc.input);
+          } else {
+            args = [tc.input];
+          }
           const pyArgs = args
             .map((a) => (typeof a === "string" ? JSON.stringify(a) : JSON.stringify(a)))
             .join(", ");
