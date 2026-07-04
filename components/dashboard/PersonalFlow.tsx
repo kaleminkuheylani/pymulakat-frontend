@@ -51,7 +51,15 @@ const ACCENT_STYLES: Record<Accent, { gradient: string; border: string; bg: stri
   emerald: { gradient: "from-emerald-500/20 via-emerald-500/10 to-transparent", border: "border-emerald-500/30", bg: "bg-gradient-to-br", text: "text-emerald-300", pill: "bg-emerald-500 text-white", ring: "ring-emerald-500/30" },
 };
 
-export default function PersonalFlow({ flow }: { flow: FlowResponse | null }) {
+export default function PersonalFlow({ flow, error }: { flow: FlowResponse | null; error?: string | null }) {
+  if (error) {
+    return (
+      <div className="rounded-xl border border-rose-500/30 bg-rose-500/5 p-4 text-rose-300 text-sm">
+        <div className="font-semibold mb-1">Akış yüklenemedi</div>
+        <pre className="text-xs font-mono whitespace-pre-wrap break-all opacity-80">{error}</pre>
+      </div>
+    );
+  }
   if (!flow) return <EmptyState text="Akış yüklenemedi." />;
   const { sections, context } = flow;
   // Tolerans: eski/yeni backend response şekillerini destekle

@@ -12,6 +12,7 @@ import OnboardingGate from "../../components/OnboardingGate";
 
 // 📌 Lazy load — initial bundle'dan cikar (mobil performans)
 const PersonalFlow = dynamic(() => import("../../components/dashboard/PersonalFlow"), {
+  ssr: false,
   loading: () => <div className="flex items-center justify-center py-12"><div className="w-6 h-6 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" /></div>,
   ssr: false,
 });
@@ -131,6 +132,7 @@ export default function DashboardHome() {
   const { user } = useUser();
   const [tab, setTab] = useState<Tab>("personal");
   const [flow, setFlow] = useState<FlowResponse | null>(null);
+  const [flowError, setFlowError] = useState<string | null>(null);
   const [community, setCommunity] = useState<FlowItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -161,6 +163,7 @@ export default function DashboardHome() {
 
   const fetchFlow = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
+    setFlowError(null);
     try {
       const token = getToken();
       const res = await fetch(`${API()}/api/v2/recommendations/flow`, {
@@ -172,16 +175,18 @@ export default function DashboardHome() {
         setFlow(data);
         setLastUpdated(new Date());
       } else {
-        // 401/404/500 → local fallback
-        setFlow(buildLocalFallback(!!user));
-        setLastUpdated(new Date());
+        const txt = await res.text();
+        console.warn("[flow] non-2xx:", res.status, txt);
+        setFlowError(`${res.status} — ${txt.slice(0, 200)}`);
+        setFlow(null);
       }
-    } catch {
-      setFlow(buildLocalFallback(!!user));
-      setLastUpdated(new Date());
+    } catch (e: any) {
+      console.warn("[flow] fetch error:", e);
+      setFlowError(e?.message || "Bağlantı hatası");
+      setFlow(null);
     }
     if (showSpinner) setRefreshing(false);
-  }, [user]);
+  }, []);
 
   const fetchCommunity = useCallback(async () => {
     try {
@@ -276,7 +281,7 @@ export default function DashboardHome() {
               <div className="w-8 h-8 border-2 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
             </div>
           ) : tab === "personal" ? (
-            <PersonalFlow flow={flow} />
+            <PersonalFlow flow={flow} error={flowError} />
           ) : (
             <CommunityFlow items={community} />
           )}
