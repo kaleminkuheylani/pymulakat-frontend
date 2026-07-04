@@ -10,6 +10,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useUser } from "../../../../hooks/useUser";
 import { usePyodide } from "../../../../hooks/usePyodide";
+import { parseFunctionSignature, parseUserInput, formatValue } from "../../../../../components/parsePython";
 import { questionsAPI, Question, QuestionTests, TestCase } from "../../../../api/v2/questions";
 import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
@@ -30,7 +31,7 @@ interface Props {
 export default function WorkspaceMobileClient({ initialParams, readonly = false }: Props) {
   const router = useRouter();
   const { user } = useUser();
-  const { status: pyStatus, runTests } = usePyodide();
+  const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
   const editorRef = useRef<any>(null);
 
   // ─── State ──
@@ -194,6 +195,13 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     }
   }, [readonly, user, testCases, running, pyStatus, runTests, code, submitAttempt, router, category, interview, id]);
 
+  // Custom input runner — code + functionName'i kapatır, sadece args[] alır
+  const handleCustomRun = useCallback(
+    async (args: any[]) =>
+      runWithCustomInput(code, testCases?.function_name || "", args),
+    [runWithCustomInput, code, testCases?.function_name]
+  );
+
   const handleNextQuestion = useCallback(() => {
     if (!category || !interview) return;
     const nextId = (interview.id || 0) + 1;
@@ -298,7 +306,15 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
           </div>
         )}
 
-        {tab === "console" && <ConsoleTabMobile errorLines={errorLines} />}
+        {tab === "console" && (
+          <ConsoleTabMobile
+            errorLines={errorLines}
+            starterCode={interview?.starter_code}
+            functionName={testCases?.function_name}
+            isRunning={running}
+            onCustomRun={handleCustomRun}
+          />
+        )}
 
         {tab === "examples" && (
           <ExamplesTabMobile
@@ -411,36 +427,141 @@ function ShareModal({
     </motion.div>
   );
 }
-function ConsoleTabMobile({ errorLines }: { errorLines: string[] }) {
-  if (errorLines.length === 0) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12">
-        <div className="text-3xl">✅</div>
-        <p className="text-sm">Kodun hatasız çalışıyor.</p>
-        <p className="text-[10px] text-white/20 text-center">
-          Hata olduğunda traceback buraya düşer
-        </p>
-      </div>
-    );
-  }
+function ConsoleTabMobile({
+  errorLines,
+  starterCode,
+  functionName,
+  isRunning,
+  onCustomRun,
+}: {
+  errorLines: string[];
+  starterCode?: string;
+  functionName?: string;
+  isRunning?: boolean;
+  onCustomRun?: (args: any[]) => Promise<{ actual: any; errorLine?: string; errorCategory?: string }>;
+}) {
+  // ── Yardımcılar (desktop ConsoleTab ile aynı parser) ──
+  const params = parseFunctionSignature(starterCode || "", functionName || "");
+  const [inputs, setInputs] = useState<string[]>(
+    Array.from({ length: params.length }, () => "")
+  );
+  const [result, setResult] = useState<any>(undefined);
+  const [resultError, setResultError] = useState<string | null>(null);
+  const [localRunning, setLocalRunning] = useState(false);
+
+  const handleRun = async () => {
+    if (!onCustomRun) return;
+    setLocalRunning(true);
+    setResult(undefined);
+    setResultError(null);
+    try {
+      const parsed = inputs.map((raw) => parseUserInput(raw));
+      const r = await onCustomRun(parsed);
+      setResult(r.actual);
+      setResultError(r.errorLine || null);
+    } catch {
+      setResultError("Çalıştırma hatası");
+    } finally {
+      setLocalRunning(false);
+    }
+  };
 
   return (
-    <div className="p-3 space-y-2 h-full overflow-y-auto">
-      <div className="flex items-center justify-between pb-2 border-b border-white/5">
-        <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
-          ⚠ Hata Traceback
-        </span>
-        <span className="text-[10px] text-white/30 font-mono">
-          {errorLines.length} satır
-        </span>
-      </div>
-      <pre className="text-xs text-rose-200 font-mono whitespace-pre-wrap leading-relaxed">
-        {errorLines.map((line, i) => (
-          <div key={i} className="text-rose-300/90 font-semibold">
-            {line}
+    <div className="p-3 space-y-3 h-full overflow-y-auto">
+      {/* ── Custom Input paneli (mobil) ── */}
+      {params.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between pb-1 border-b border-white/5">
+            <span className="text-[10px] uppercase tracking-wider text-white/60 font-bold">
+              🧪 Kendi Input'unla Dene
+            </span>
+            <span className="text-[10px] text-white/40">{params.length} parametre</span>
           </div>
-        ))}
-      </pre>
+          {params.map((p, idx) => (
+            <div key={idx} className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-mono text-white/70">
+                  {p.name}
+                  <span className="text-[10px] text-white/40 ml-2">: {p.type}</span>
+                </label>
+                <span className="text-[9px] text-white/30 font-mono">{p.placeholder}</span>
+              </div>
+              <input
+                type="text"
+                value={inputs[idx] || ""}
+                onChange={(e) => {
+                  const next = [...inputs];
+                  next[idx] = e.target.value;
+                  setInputs(next);
+                }}
+                placeholder={p.placeholder}
+                className="w-full bg-black/40 border border-white/10 rounded px-2 py-1.5 text-xs font-mono text-white placeholder-white/20 focus:border-indigo-500/50 outline-none"
+              />
+            </div>
+          ))}
+          <button
+            onClick={handleRun}
+            disabled={localRunning || isRunning || !onCustomRun}
+            className="w-full mt-1 py-2 rounded bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold hover:bg-indigo-500/30 disabled:opacity-40"
+          >
+            {localRunning ? "⏳ Çalışıyor..." : "▶ Çalıştır"}
+          </button>
+
+          {/* ── Sonuç ── */}
+          {result !== undefined && (
+            <div className="space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 font-bold">
+                ✓ Sonuç
+              </div>
+              <pre className="text-xs font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded border border-emerald-500/20 overflow-x-auto">
+                {formatValue(result)}
+              </pre>
+            </div>
+          )}
+          {resultError && (
+            <div className="space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+                ✗ Hata
+              </div>
+              <pre className="text-xs font-mono text-rose-300 bg-rose-500/10 p-2 rounded border border-rose-500/30 overflow-x-auto">
+                {resultError}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Run Tests'ten gelen traceback ── */}
+      {errorLines.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between pb-1 border-b border-white/5">
+            <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+              ⚠ Traceback
+            </span>
+            <span className="text-[10px] text-white/30 font-mono">
+              {errorLines.length} satır
+            </span>
+          </div>
+          <pre className="text-xs text-rose-200 font-mono whitespace-pre-wrap leading-relaxed">
+            {errorLines.map((line, i) => (
+              <div key={i} className="text-rose-300/90 font-semibold">
+                {line}
+              </div>
+            ))}
+          </pre>
+        </div>
+      )}
+
+      {/* Boş durum (parametre yok + hata yok) */}
+      {params.length === 0 && errorLines.length === 0 && (
+        <div className="flex flex-col items-center justify-center gap-2 text-white/30 py-12">
+          <div className="text-3xl">✅</div>
+          <p className="text-sm">Kodun hatasız çalışıyor.</p>
+          <p className="text-[10px] text-white/20 text-center px-4">
+            Buraya Custom Input sonuçları veya hata traceback düşer.
+          </p>
+        </div>
+      )}
     </div>
   );
 }
