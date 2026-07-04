@@ -369,10 +369,18 @@ function ExamplesTab({
                 </div>
               )}
 
-              {/* Logic fail: hint (Actual gösterilmez, kullanıcı kendi mantığıyla debug eder) */}
+              {/* Logic fail: Actual + beklenen karşılaştırması (debug için) */}
               {isLogicFail && (
-                <div className="text-[10px] text-amber-300/80 italic px-1">
-                  💡 Return değeri beklenenle eşleşmiyor — sol sütun ne bekleniyor, sağ sütun senin kodun ne döndü.
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-rose-400/80 mb-1 font-bold">
+                    ✗ Actual (senin kodun)
+                  </div>
+                  <pre className="text-xs font-mono text-rose-300 bg-rose-500/5 p-2 rounded overflow-x-auto border border-rose-500/20 min-h-[2.5rem]">
+                    {formatValue(result.actual)}
+                  </pre>
+                  <div className="text-[10px] text-amber-300/80 italic px-1 mt-1">
+                    💡 Return değeri beklenenle eşleşmiyor — yukarıdaki Actual, senin kodun bu test için ne döndüğü.
+                  </div>
                 </div>
               )}
             </div>
