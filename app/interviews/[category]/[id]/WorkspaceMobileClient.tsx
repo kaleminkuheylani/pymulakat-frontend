@@ -10,7 +10,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useUser } from "../../../../hooks/useUser";
 import { usePyodide } from "../../../../hooks/usePyodide";
-import { questionsAPI, Question, QuestionTests } from "../../../../api/v2/questions";
+import { questionsAPI, Question, QuestionTests, TestCase } from "../../../../api/v2/questions";
 import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
 
@@ -43,7 +43,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   const [consoleOutput, setConsoleOutput] = useState<string>("");
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
-  const [tab, setTab] = useState<"question" | "workspace" | "console">("workspace");
+  const [tab, setTab] = useState<"question" | "workspace" | "examples" | "console">("workspace");
   const [showShareModal, setShowShareModal] = useState(false);
 
   // ─── Guards ──
@@ -232,6 +232,15 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
             📖
           </button>
           <button
+            onClick={() => setTab("examples")}
+            className={`px-2 py-1 rounded text-[10px] font-semibold ${
+              tab === "examples" ? "bg-white/10 text-white" : "text-white/40"
+            }`}
+            aria-label="Örnekler"
+          >
+            📋
+          </button>
+          <button
             onClick={() => setTab("console")}
             className={`px-2 py-1 rounded text-[10px] font-semibold ${
               tab === "console" ? "bg-white/10 text-white" : "text-white/40"
@@ -269,12 +278,22 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         )}
 
         {tab === "console" && <ConsoleTabMobile consoleOutput={consoleOutput} />}
+
+        {tab === "examples" && (
+          <ExamplesTabMobile
+            testCases={testCases}
+            results={results}
+            isGuest={isGuest}
+            category={category}
+            id={id}
+          />
+        )}
       </div>
 
       {/* Bottom tab bar — SADECE workspace tab'indayken gizle (editor tam ekran kullanir) */}
       {tab !== "workspace" && (
         <div className="flex border-t border-white/5 bg-[#0a0e1a]">
-          {(["question", "workspace", "console"] as const).map((k) => (
+          {(["question", "workspace", "examples", "console"] as const).map((k) => (
             <button
               key={k}
               onClick={() => setTab(k)}
@@ -286,6 +305,8 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
                 ? "Soru"
                 : k === "workspace"
                 ? "Editör"
+                : k === "examples"
+                ? `Örnekler (${testCases?.test_cases.length ?? 0})`
                 : "🖨️ Konsol"}
             </button>
           ))}
@@ -410,4 +431,157 @@ function ConsoleTabMobile({ consoleOutput }: { consoleOutput: string }) {
       </pre>
     </div>
   );
+}
+
+// ─── Examples Tab (mobil) — Input | Expected | Actual + 3 modlu render ───
+function ExamplesTabMobile({
+  testCases,
+  results,
+  isGuest,
+  category,
+  id,
+}: {
+  testCases: QuestionTests | null;
+  results: any[];
+  isGuest: boolean;
+  category: string;
+  id: string;
+}) {
+  if (!testCases || testCases.test_cases.length === 0) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12">
+        {isGuest ? (
+          <>
+            <p className="text-xs">Test caseleri üyelikle erişilebilir.</p>
+            <a
+              href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
+              className="text-xs px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors"
+            >
+              Giriş Yap
+            </a>
+          </>
+        ) : (
+          <p className="text-xs">Bu soru için örnek test case bulunmuyor.</p>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 p-3 pb-20 overflow-y-auto h-full">
+      {testCases.test_cases.map((tc: TestCase, idx: number) => {
+        const result = results[idx];
+        const hasRun = result !== undefined;
+        const isError = hasRun && !!result.errorCategory;
+        const isLogicFail = hasRun && !result.passed && !isError;
+
+        return (
+          <div
+            key={idx}
+            className={`p-3 rounded-lg border ${
+              hasRun
+                ? result.passed
+                  ? "bg-green-500/5 border-green-500/30"
+                  : "bg-red-500/5 border-red-500/30"
+                : "bg-white/5 border-white/10"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
+                Örnek #{idx + 1}
+              </span>
+              <div className="flex items-center gap-2">
+                {hasRun && result.execution_ms != null && (
+                  <span className="text-[10px] text-white/40 font-mono">
+                    {result.execution_ms}ms
+                  </span>
+                )}
+                {hasRun && (
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    result.passed ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                  }`}>
+                    {result.passed ? "✓" : isError ? "✗ Hata" : "✗ Yanlış"}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Input */}
+            <div className="mb-2">
+              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1 font-bold">
+                📥 Input
+              </div>
+              <pre className="text-[11px] font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border border-white/5">
+                {formatValue(tc.input)}
+              </pre>
+            </div>
+
+            {/* HATA: traceback son satırı */}
+            {isError && (
+              <div className="mb-2">
+                <div className="text-[10px] uppercase tracking-wider text-rose-400/80 mb-1 font-bold">
+                  ⚠ Traceback
+                </div>
+                <pre className="text-[11px] font-mono text-rose-300 bg-rose-500/10 p-2 rounded overflow-x-auto border border-rose-500/30">
+                  {result.errorLine || "Bilinmeyen hata"}
+                </pre>
+              </div>
+            )}
+
+            {/* Logic fail veya pass: Expected vs Actual */}
+            {!isError && (
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
+                    ✓ Expected
+                  </div>
+                  <pre className="text-[11px] font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded overflow-x-auto border border-emerald-500/20 min-h-[2rem]">
+                    {formatValue(tc.expected)}
+                  </pre>
+                </div>
+                <div>
+                  <div className={`text-[10px] uppercase tracking-wider mb-1 font-bold ${
+                    hasRun
+                      ? result.passed
+                        ? "text-green-400/80"
+                        : "text-amber-400/80"
+                      : "text-white/40"
+                  }`}>
+                    {hasRun ? (result.passed ? "✓ Actual" : "✗ Actual") : "⏳"}
+                  </div>
+                  <pre className={`text-[11px] font-mono p-2 rounded overflow-x-auto border min-h-[2rem] ${
+                    hasRun
+                      ? result.passed
+                        ? "text-green-300 bg-green-500/5 border-green-500/20"
+                        : "text-amber-200 bg-amber-500/10 border-amber-500/40"
+                      : "text-white/30 bg-black/20 border-white/5 italic"
+                  }`}>
+                    {hasRun ? formatValue(result.actual) : "—"}
+                  </pre>
+                </div>
+              </div>
+            )}
+
+            {isLogicFail && (
+              <div className="text-[10px] text-amber-300/80 italic mt-1">
+                💡 Return değeri beklenenle eşleşmiyor
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+// ─── Value formatter (mobil) ───
+function formatValue(v: any): string {
+  if (v === undefined) return "undefined";
+  if (v === null) return "null";
+  if (typeof v === "string") return v;
+  try {
+    return JSON.stringify(v, null, 2);
+  } catch {
+    return String(v);
+  }
 }
