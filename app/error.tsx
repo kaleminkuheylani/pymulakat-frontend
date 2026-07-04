@@ -45,6 +45,13 @@ export default function GlobalError({
             Hata kodu: {error.digest}
           </p>
         )}
+        <details className="mt-4 text-left bg-black/30 border border-white/10 rounded-lg p-3 text-xs">
+          <summary className="cursor-pointer text-white/40 hover:text-white/70">Teknik detaylar</summary>
+          <pre className="mt-2 text-rose-300 whitespace-pre-wrap break-all">
+            {error.message}
+            {error.stack && `\n\n${error.stack.split('\n').slice(0, 5).join('\n')}`}
+          </pre>
+        </details>
       </div>
     </div>
   );
