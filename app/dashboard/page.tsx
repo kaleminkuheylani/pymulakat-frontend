@@ -239,7 +239,7 @@ export default function DashboardHome() {
             <div className="grid grid-cols-4 gap-2">
               <MiniStat icon="📊" value={user.total_attempts || 0} label="Deneme" color="amber" />
               <MiniStat icon="✅" value={user.success_count || 0} label="Başarılı" color="emerald" />
-              <MiniStat icon="🎯" value={`%${Math.round((user.success_rate || 0) * 100)}`} label="Oran" color="indigo" />
+              <MiniStat icon="🎯" value={`%${Math.round(user.success_rate || 0)}`} label="Oran" color="indigo" />
               <MiniStat icon="⭐" value={user.points || 0} label="Puan" color="rose" />
             </div>
           </div>
