@@ -378,7 +378,7 @@ export default function RootLayout({
           />
         </noscript>
 
-        <Toaster position="top-right" theme="dark" richColors closeButton />
+        {/* <Toaster position="top-right" theme="dark" richColors closeButton /> */}
         {children}
         <ConditionalFooter />
       </body>
