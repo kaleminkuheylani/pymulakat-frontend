@@ -29,8 +29,7 @@ export default function WorkspaceSidebar({
   onRevealHint,
 }: SidebarProps) {
   return (
-    <aside className="w-[420px] flex-shrink-0 border-r border-white/5 bg-[#0a0e1a] flex flex-col min-h-0 overflow-hidden relative">
-      <div className="w-[420px] h-full min-h-0 overflow-y-auto">
+    <aside className="w-[420px] flex-shrink-0 border-r border-white/5 bg-[#0a0e1a] h-full overflow-y-auto relative">
         <div className="p-6">
           <QuestionDescriptionContent
             interview={interview}
@@ -43,7 +42,6 @@ export default function WorkspaceSidebar({
             onRevealHint={onRevealHint}
           />
         </div>
-      </div>
     </aside>
   );
 }
