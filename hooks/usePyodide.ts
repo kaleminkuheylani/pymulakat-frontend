@@ -354,11 +354,12 @@ export function usePyodide(): UsePyodideReturn {
         const actual = pyResult?.toJs ? pyResult.toJs() : pyResult;
         return { actual };
       } catch (e: any) {
-        const rawMsg = e?.message || "";
+        const rawMsg = e?.message || String(e);
         const last = lastErrorLine(rawMsg);
+        console.error("[runWithCustomInput] failed:", rawMsg, "args:", args, "userCode:", userCode?.slice(0, 200));
         return {
           actual: undefined,
-          errorLine: last,
+          errorLine: last || rawMsg,
           errorCategory: classifyError(rawMsg),
         };
       }
