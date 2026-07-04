@@ -682,15 +682,4 @@ function ExamplesTabMobile({
     </div>
   );
 }
-
-// ─── Value formatter (mobil) ───
-function formatValue(v: any): string {
-  if (v === undefined) return "undefined";
-  if (v === null) return "null";
-  if (typeof v === "string") return v;
-  try {
-    return JSON.stringify(v, null, 2);
-  } catch {
-    return String(v);
-  }
-}
+// (formatValue + parseUserInput + parseFunctionSignature components/parsePython.ts'ten import)
