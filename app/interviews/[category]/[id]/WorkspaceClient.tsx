@@ -70,6 +70,13 @@ export default function WorkspaceClient({ initialParams }: Props) {
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
   const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
+  // Custom input runner — EditorProps sadece args[] veriyor, code + functionName'i
+  // burada kapatıyoruz
+  const handleCustomRun = useCallback(
+    async (args: any[]) =>
+      runWithCustomInput(code, testCases?.function_name || "", args),
+    [runWithCustomInput, code, testCases?.function_name]
+  );
   const editorRef = useRef<CodeEditorRef>(null);
 
   // State
@@ -334,7 +341,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
           id={id}
           onRun={handleRun}
           starterCode={interview?.starter_code || undefined}
-          onCustomRun={runWithCustomInput}
+          onCustomRun={handleCustomRun}
         />
       </div>
 
