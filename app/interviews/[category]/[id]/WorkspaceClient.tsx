@@ -174,7 +174,6 @@ export default function WorkspaceClient({ initialParams }: Props) {
   // Submit attempt when all tests pass
   const submitAttempt = useCallback(
     async (success: boolean, passedTests: number, totalTests: number, executionMs: number) => {
-      if (attemptSubmitted) return;
       // 🚦 Race-safe: eş zamanlı çift submit engeli (in-flight ref)
       if (inFlightRef.current) return;
       inFlightRef.current = true;
@@ -222,6 +221,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
     setIsRunning(true);
     setTestResults([]);
     setErrorLines([]);
+    setAttemptSubmitted(false); // her Run'da sıfırla — eski attempt state'i yutmasın
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setTestResults(result.results);
