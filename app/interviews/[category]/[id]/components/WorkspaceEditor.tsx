@@ -198,7 +198,10 @@ export default function WorkspaceEditor({
           </div>
 
           <button
-            onClick={onRun}
+            onClick={() => {
+              setActiveTab("examples");
+              onRun();
+            }}
             disabled={isRunning || (pyStatus !== "ready" && pyStatus !== "idle")}
             className={`px-5 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${
               isRunning || (pyStatus !== "ready" && pyStatus !== "idle")
