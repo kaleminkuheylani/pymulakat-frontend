@@ -141,12 +141,30 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   const submitAttempt = useCallback(
     async (success: boolean, passed: number, total: number, durationMs: number) => {
       if (!user || !interview) return;
+      // Supabase token'ı al (desktop sendAttempt ile aynı mantık)
+      const getToken = (): string | null => {
+        if (typeof window === "undefined") return null;
+        try {
+          const raw = localStorage.getItem("sb-pymulakat-auth-token");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.access_token) return parsed.access_token;
+          }
+        } catch {
+          // ignore
+        }
+        return localStorage.getItem("token");
+      };
+      const token = getToken();
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/attempts`,
           {
             method: "POST",
-            headers: { "Content-Type": "application/json" },
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
             body: JSON.stringify({
               question_id: questionId,
               passed_tests: passed,
