@@ -31,18 +31,6 @@ interface EditorProps {
 
 type Tab = "examples" | "console";
 
-// ─── Value formatter: primitive, list, dict, string hepsini okunur bas ───
-function formatValue(v: any): string {
-  if (v === undefined) return "undefined";
-  if (v === null) return "null";
-  if (typeof v === "string") return v;
-  try {
-    return JSON.stringify(v, null, 2);
-  } catch {
-    return String(v);
-  }
-}
-
 // ─── Python def satırını parse → parametre listesi (name + type + placeholder) ───
 type ParamInfo = {
   name: string;
