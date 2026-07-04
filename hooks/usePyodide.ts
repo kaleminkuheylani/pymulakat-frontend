@@ -347,6 +347,15 @@ export function usePyodide(): UsePyodideReturn {
         py.setStdout({ batched: () => {} });
         py.setStderr({ batched: () => {} });
         await py.runPythonAsync(userCode);
+        // Boş input'lar için kullanıcıya açık hata dön (Python TypeError'dan önce)
+        const emptyIdx = args.findIndex((a) => a === "" || a === undefined);
+        if (emptyIdx !== -1) {
+          return {
+            actual: undefined,
+            errorLine: `${emptyIdx + 1}. parametre boş bırakılmış — değer gir ve tekrar dene.`,
+            errorCategory: "TypeError" as ErrorCategory,
+          };
+        }
         const pyArgs = args
           .map((a) => (typeof a === "string" ? JSON.stringify(a) : JSON.stringify(a)))
           .join(", ");
