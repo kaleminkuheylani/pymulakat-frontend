@@ -84,16 +84,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (tData) {
     tutorials = Array.isArray(tData) ? tData : tData.data || [];
   } else {
-    // Fallback: SEO_CONTENT.py'deki tutorial_slug'lardan üret
-    tutorials = [
-      { slug: "python-palindrome-cozum" },
-      { slug: "python-fizzbuzz-algoritma" },
-      { slug: "python-binary-search" },
-      { slug: "python-asal-sayi-algoritma" },
-      { slug: "python-obeb-oklid" },
-      { slug: "python-two-sum" },
-      { slug: "pandas-groupby-rehberi" },
+    // Fallback: SEO_CONTENT.py'deki tutorial_slug'lardan üret (unique)
+    const fallbackSlugs = [
+      "python-palindrome-cozum",
+      "python-fizzbuzz-algoritma",
+      "python-binary-search",
+      "python-asal-sayi-algoritma",
+      "python-obeb-oklid",
+      "python-two-sum",
+      "python-degisken-nedir",
+      "python-if-else-kosullar",
+      "pandas-groupby-rehberi",
     ];
+    tutorials = fallbackSlugs.map((slug) => ({ slug }));
   }
 
   const tutorialPages: MetadataRoute.Sitemap = tutorials.map((t) => ({
