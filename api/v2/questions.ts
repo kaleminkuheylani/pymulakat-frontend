@@ -86,6 +86,9 @@ export interface AttemptResponse {
   user_id: string;
   question_id: number;
   question_title?: string;
+  question_slug?: string;
+  question_category?: string;
+  is_orphaned?: boolean;
   category?: string;
   passed_tests: number;
   total_tests: number;

@@ -111,56 +111,80 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
 
   return (
     <div className="space-y-2">
-      {attempts.map((attempt) => (
-        <Link
-          key={attempt.id}
-          href={`/interviews/${attempt.category}/${getQuestionMeta(attempt.question_id)?.slug || (attempt.question_title ? slugifyTitle(attempt.question_title) : String(attempt.question_id))}`}
-          className="block group"
-        >
-          <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-800/30 border border-slate-800 hover:border-amber-500/30 hover:bg-slate-800/50 transition-all">
-            {/* Durum İkonu */}
-            <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${attempt.success
-              ? "bg-green-500/15 border border-green-500/30"
-              : "bg-red-500/15 border border-red-500/30"
-              }`}>
-              {attempt.success ? (
-                <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                  <polyline points="20 6 9 17 4 12" />
-                </svg>
-              ) : (
-                <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
-                  <line x1="18" y1="6" x2="6" y2="18" />
-                  <line x1="6" y1="6" x2="18" y2="18" />
+      {attempts.map((attempt) => {
+        // Orphans: eski 6, 17, 51 — yeni DB'de yok, ESKİ rozet
+        const isOrphaned = attempt.is_orphaned === true;
+        const targetHref = `/interviews/${attempt.category || "python-basics"}/${
+          attempt.question_slug ||
+          getQuestionMeta(attempt.question_id)?.slug ||
+          (attempt.question_title ? slugifyTitle(attempt.question_title) : String(attempt.question_id))
+        }`;
+        return (
+          <Link
+            key={attempt.id}
+            href={targetHref}
+            className={`block group ${isOrphaned ? "pointer-events-none" : ""}`}
+          >
+            <div className={`flex items-center gap-3 p-3 rounded-xl bg-slate-800/30 border transition-all ${
+              isOrphaned
+                ? "border-slate-800/60 opacity-70 cursor-not-allowed"
+                : "border-slate-800 hover:border-amber-500/30 hover:bg-slate-800/50"
+            }`}>
+              {/* Durum İkonu */}
+              <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 ${attempt.success
+                ? "bg-green-500/15 border border-green-500/30"
+                : "bg-red-500/15 border border-red-500/30"
+                }`}>
+                {attempt.success ? (
+                  <svg className="w-4 h-4 text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                    <polyline points="20 6 9 17 4 12" />
+                  </svg>
+                ) : (
+                  <svg className="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth={3}>
+                    <line x1="18" y1="6" x2="6" y2="18" />
+                    <line x1="6" y1="6" x2="18" y2="18" />
+                  </svg>
+                )}
+              </div>
+
+              {/* Soru Bilgisi */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2">
+                  <span className={`text-sm font-medium truncate transition-colors ${
+                    isOrphaned
+                      ? "text-slate-400 italic"
+                      : "text-white/90 group-hover:text-amber-400"
+                  }`}>
+                    {attempt.question_title || `Soru #${attempt.question_id}`}
+                  </span>
+                  <span className="text-white/30 text-xs font-mono flex-shrink-0">
+                    #{attempt.question_id}
+                  </span>
+                  {isOrphaned && (
+                    <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/40 text-slate-500 border border-slate-700/50 font-medium tracking-wide">
+                      ESKİ
+                    </span>
+                  )}
+                </div>
+                <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
+                  <span>{timeAgo(attempt.created_at)}</span>
+                  <span>•</span>
+                  <span>{attempt.passed_tests}/{attempt.total_tests} test</span>
+                  <span>•</span>
+                  <span>{formatDuration(attempt.execution_time_ms)}</span>
+                </div>
+              </div>
+
+              {/* Ok İkonu — sadece orphaned değilse */}
+              {!isOrphaned && (
+                <svg className="w-4 h-4 text-slate-600 group-hover:text-amber-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                 </svg>
               )}
             </div>
-
-            {/* Soru Bilgisi */}
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-2">
-                <span className="text-white/90 text-sm font-medium truncate group-hover:text-amber-400 transition-colors">
-                  {attempt.question_title || `Soru #${attempt.question_id}`}
-                </span>
-                <span className="text-white/30 text-xs font-mono flex-shrink-0">
-                  #{attempt.question_id}
-                </span>
-              </div>
-              <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
-                <span>{timeAgo(attempt.created_at)}</span>
-                <span>•</span>
-                <span>{attempt.passed_tests}/{attempt.total_tests} test</span>
-                <span>•</span>
-                <span>{formatDuration(attempt.execution_time_ms)}</span>
-              </div>
-            </div>
-
-            {/* Ok İkonu */}
-            <svg className="w-4 h-4 text-slate-600 group-hover:text-amber-400 transition-colors flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-            </svg>
-          </div>
-        </Link>
-      ))}
+          </Link>
+        );
+      })}
     </div>
   );
 }
