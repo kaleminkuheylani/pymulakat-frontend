@@ -6,6 +6,7 @@ import Script from "next/script";
 import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
 import ClientOnly from "../components/ClientOnly";
+import CookieConsent from "../components/CookieConsent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -385,6 +386,9 @@ export default function RootLayout({
         {children}
         <ClientOnly>
         <ConditionalFooter />
+      </ClientOnly>
+      <ClientOnly>
+        <CookieConsent />
       </ClientOnly>
       </body>
     </html>

@@ -256,7 +256,8 @@ export default function TermsPage() {
             <li>
               <strong className="text-zinc-200">Kullanım verileri:</strong>{" "}
               Çözülen sorular, başarı durumu, deneme sayıları, ilerleme
-              istatistikleri.
+              istatistikleri, toplam kod çalıştırma (oynama) sayacı
+              (<code className="text-zinc-400">play_count</code>).
             </li>
             <li>
               <strong className="text-zinc-200">Kullanıcı kodları:</strong>{" "}
@@ -297,6 +298,40 @@ export default function TermsPage() {
           sözleşmenin kurulması ve ifası (KVKK md. 5/2-c), veri sorumlusunun
           meşru menfaatleri (KVKK md. 5/2-f) ve açık rıza (KVKK md. 5/1).
         </p>
+      ),
+    },
+    {
+      num: "2.5",
+      title: "Veri Saklama Süreleri (Retention Policy)",
+      content: (
+        <>
+          <p>
+            KVKK md. 5/e ("İşlendikleri amaçla bağlantılı, sınırlı ve ölçülü
+            olma") ve md. 7 ("Silme, yok etme veya anonim hale getirme")
+            kapsamında veriler aşağıdaki sürelerle sınırlıdır:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>
+              <strong className="text-zinc-200">Kod çalıştırma sayacı (play_count):</strong>{" "}
+              Son etkileşimden itibaren <strong>1 yıl</strong> sonra otomatik
+              olarak sıfırlanır. Silme talebinde anında silinir.
+            </li>
+            <li>
+              <strong className="text-zinc-200">Soru çözme attempt'leri:</strong>{" "}
+              Son etkileşimden itibaren <strong>2 yıl</strong> sonra
+              anonimleştirilir. Silme talebinde anında silinir.
+            </li>
+            <li>
+              <strong className="text-zinc-200">IP adresi / log kayıtları:</strong>{" "}
+              Güvenlik amacıyla <strong>30 gün</strong> sonra otomatik silinir.
+            </li>
+            <li>
+              <strong className="text-zinc-200">Anonim kullanım istatistikleri
+              (Google Analytics):</strong> Google'ın kendi saklama politikasına
+              tabidir (IP anonymization aktif).
+            </li>
+          </ul>
+        </>
       ),
     },
     {
