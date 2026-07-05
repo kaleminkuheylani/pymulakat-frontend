@@ -41,11 +41,26 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
     const protocol = host.includes("localhost") ? "http" : "https";
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
 
-    // ✅ Slug'tan ID'ye cevir (canonical URL routing)
+    // ✅ Slug'ı ID'ye çevir (canonical URL routing)
     let actualId = id;
     const asNum = parseInt(id, 10);
+
+    // 🆕 Önce DB'de slug ile ara — yeni frontend mimarisi
     if (isNaN(asNum)) {
-      const resolvedId = getIdFromSlug(id);
+      const slug = id;
+      try {
+        const bySlugRes = await fetch(
+          `${apiUrl}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,
+          { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
+        );
+        if (bySlugRes.ok) {
+          const data = await bySlugRes.json();
+          return data.data || data;
+        }
+      } catch {
+        // Fallback: slug -> ID resolver
+      }
+      const resolvedId = getIdFromSlug(slug);
       if (resolvedId) {
         actualId = String(resolvedId);
       }

@@ -176,6 +176,39 @@ export const questionsAPI = {
     return fetchJson<Question>(url);
   },
 
+  async getBySlug(category: string, slug: string, options: { includeStarter?: boolean } = {}): Promise<Question> {
+    const qs = options.includeStarter ? "?include_starter=true" : "";
+    const url = `${BASE_URL}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}${qs}`;
+    return fetchJson<Question>(url);
+  },
+
+  async getTestsBySlug(category: string, slug: string): Promise<QuestionTests> {
+    const url = `${BASE_URL}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}/tests`;
+    const response = await fetchJson<{ data: QuestionTests }>(url, { headers: authHeaders() });
+    return response.data ?? {
+      question_id: 0,
+      function_name: "solution",
+      test_cases: [],
+    } as QuestionTests;
+  },
+
+  async getDiffSources(): Promise<{
+    db_count: number;
+    v3_count: number;
+    in_both_count: number;
+    in_db_only: number[];
+    in_v3_only: number[];
+    field_mismatches: Array<{
+      id: number;
+      title: string;
+      diffs: Record<string, { db: any; v3: any }>;
+    }>;
+    sync_status: string;
+  }> {
+    const url = `${BASE_URL}/api/v2/questions/diff-sources`;
+    return fetchJson(url);
+  },
+
   async getTests(id: number): Promise<QuestionTests> {
     const url = `${BASE_URL}/api/v2/questions/${id}/tests`;
     // ✅ Backend envelope döndürüyor: { data: {...} }

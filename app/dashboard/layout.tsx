@@ -64,7 +64,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <div className="text-[10px] text-white/40">Başarılı</div>
                 </div>
                 <div className="bg-white/[0.04] rounded-lg p-2">
-                  <div className="text-base font-bold text-indigo-400">{Math.round((user.success_rate || 0) * 100)}%</div>
+                  <div className="text-base font-bold text-indigo-400">{Math.round(user.success_rate || 0)}%</div>
                   <div className="text-[10px] text-white/40">Oran</div>
                 </div>
               </div>

@@ -301,10 +301,14 @@ export function useUser() {
 
     window.addEventListener("storage", onStorage);
     window.addEventListener(AUTH_EVENT, onAuthChange);
+    // Attempt gönderildiğinde user stats'larını tazele (deneme/başarılı sayısı)
+    const onAttemptSubmitted = () => fetchUser();
+    window.addEventListener("pm:attempt-submitted", onAttemptSubmitted);
 
     return () => {
       window.removeEventListener("storage", onStorage);
       window.removeEventListener(AUTH_EVENT, onAuthChange);
+      window.removeEventListener("pm:attempt-submitted", onAttemptSubmitted);
       sub?.unsubscribe();
     };
   }, [fetchUser]);
