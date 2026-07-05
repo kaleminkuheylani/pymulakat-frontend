@@ -240,29 +240,32 @@ export function usePyodide(): UsePyodideReturn {
         await py.runPythonAsync(fullCode);
 
         // Her test case'i çalıştır
-        // 📌 Input tipi fark etmez: primitive (string, number) ya da array olabilir.
-        //    Her birini JSON.stringify ile sar → Python'a tırnakl gönder.
-        //    Eski hatalı kod: JSON.stringify(tc.input).slice(1,-1) — primitive için bozuk.
+        // 📌 Input formatı: function_input olduğu gibi tek arg olarak geçer.
+        //   - Array  → doğrudan geçir (Python list parametresi olarak)
+        //   - Object → values spread (örn {arr, target} → arr, target — multi-arg)
+        //   - Primitive → direkt geçir
+        // 📌 NOT: Test case input'u ARRAY olduğunda spread YAPMA —
+        //         çünkü fonksiyon (nums: list) imzasıyla çağrılıyor,
+        //         tek parametre olarak list alıyor.
         for (const tc of testCases) {
           const tcStart = performance.now();
-          // Input formatları:
-          //   - Array  → spread et (her elemanı ayrı arg)
-          //   - Object → values() spread et (test case dict format: {arr, target} → arr, target)
-          //   - Primitive → [value]
-          let args: any[];
+          let pyArg: string;
           if (Array.isArray(tc.input)) {
-            args = tc.input;
+            // Array'i spread etmeden tek arg olarak geçir: [1,3,5] → "[1,3,5]"
+            pyArg = JSON.stringify(tc.input);
           } else if (tc.input && typeof tc.input === "object") {
-            args = Object.values(tc.input);
+            // Object ise values'ları spread et: {arr:[1,3], target:7} → "[1,3], 7"
+            const values = Object.values(tc.input);
+            pyArg = values
+              .map((a) => (typeof a === "string" ? JSON.stringify(a) : JSON.stringify(a)))
+              .join(", ");
           } else {
-            args = [tc.input];
+            // Primitive
+            pyArg = typeof tc.input === "string" ? JSON.stringify(tc.input) : String(tc.input);
           }
-          const pyArgs = args
-            .map((a) => (typeof a === "string" ? JSON.stringify(a) : JSON.stringify(a)))
-            .join(", ");
           try {
             const pyResult = await py.runPythonAsync(
-              `${functionName}(${pyArgs})`
+              `${functionName}(${pyArg})`
             );
             const actual = pyResult?.toJs ? pyResult.toJs() : pyResult;
             const passed = deepEqual(actual, tc.expected);
