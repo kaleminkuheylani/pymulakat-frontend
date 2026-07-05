@@ -11,7 +11,7 @@ export const dynamic = "force-dynamic";
 // ─── Sadece QUESTIONS.py'de gerçekten olan kategoriler ─────
 const CATEGORY_LABELS: Record<string, string> = {
   "python-basics": "🐍 Python Temelleri",
-  strings: "🔤 String İşlemleri",
+  "data-structures": "🗂️ Veri Yapıları",
   "list-dict": "📋 Liste & Sözlük",
   pandas: "🐼 Pandas",
   algorithms: "🧮 Algoritmalar",
@@ -19,8 +19,8 @@ const CATEGORY_LABELS: Record<string, string> = {
 
 const CATEGORY_DESCRIPTIONS: Record<string, string> = {
   "python-basics": "Döngüler, koşullar, fonksiyonlar ve temel syntax alıştırmaları.",
-  strings: "String işleme, slicing, formatlama ve metotlar.",
-  "list-dict": "Liste, sözlük ve tuple işlemleri.",
+  "data-structures": "List, dict, set, tuple, deque, heapq gibi veri yapıları — mulakat prensibi: hangi yapi kullanilacagina SEN karar verirsin!",
+  "list-dict": "Liste, sözlük ve temel veri yapısı işlemleri.",
   pandas: "Veri temizleme, groupby, merge ve zaman serisi.",
   algorithms: "Algoritmik düşünme ve optimizasyon.",
 };

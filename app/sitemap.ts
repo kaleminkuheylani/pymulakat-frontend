@@ -53,7 +53,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .filter(Boolean);
   } else {
     // Fallback
-    categorySlugs = ["python-basics", "strings", "list-dict", "pandas", "algorithms"];
+    categorySlugs = ["python-basics", "data-structures", "list-dict", "pandas", "algorithms"];
   }
 
   const categoryPages: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({

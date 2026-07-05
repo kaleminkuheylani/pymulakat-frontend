@@ -35,7 +35,7 @@ const STEPS = [
 
 const INTERESTS = [
   { slug: "python-basics", label: "Python Temelleri", icon: "🐍" },
-  { slug: "strings", label: "String İşlemleri", icon: "🔤" },
+  { slug: "data-structures", label: "Veri Yapıları", icon: "🗂️" },
   { slug: "list-dict", label: "Liste & Sözlük", icon: "📋" },
   { slug: "pandas", label: "Pandas", icon: "🐼" },
   { slug: "algorithms", label: "Algoritmalar", icon: "🧮" },

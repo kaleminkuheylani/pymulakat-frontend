@@ -18,7 +18,7 @@ interface LayoutProps {
 export default async function CategoryLayout({ children, params }: LayoutProps) {
   const { category } = await params;
   // Category adını validate et (SEO + hata önleme)
-  const validCategories = ["python-basics", "strings", "list-dict", "pandas", "algorithms"];
+  const validCategories = ["python-basics", "data-structures", "list-dict", "pandas", "algorithms"];
   const cat = validCategories.includes(category) ? category : "python-basics";
 
   // Metadata tüm sayfalara uygulansın (SEO için)

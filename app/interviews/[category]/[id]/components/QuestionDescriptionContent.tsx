@@ -23,7 +23,7 @@ interface Props {
 const slugifyCategory = (cat: string): string => {
   const map: Record<string, string> = {
     "python-basics": "python-basics",
-    "strings": "strings",
+    "data-structures": "data-structures",
     "list-dict": "list-dict",
     "pandas": "pandas",
     "algorithms": "algorithms",

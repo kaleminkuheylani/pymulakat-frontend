@@ -167,10 +167,10 @@ export default async function GuidesPage() {
     return acc;
   }, {});
 
-  const categoryOrder = ["python-basics", "strings", "list-dict", "algorithms", "pandas", "other"];
+  const categoryOrder = ["python-basics", "data-structures", "list-dict", "algorithms", "pandas", "other"];
   const categoryLabels: Record<string, { name: string; icon: string; color: string }> = {
     "python-basics": { name: "Python Temelleri", icon: "🐍", color: "text-emerald-400" },
-    strings: { name: "String İşlemleri", icon: "🔤", color: "text-blue-400" },
+    "data-structures": { name: "Veri Yapıları", icon: "🗂️", color: "text-amber-400" },
     "list-dict": { name: "Liste & Sözlük", icon: "📋", color: "text-purple-400" },
     algorithms: { name: "Algoritmalar", icon: "🧮", color: "text-orange-400" },
     pandas: { name: "Pandas", icon: "🐼", color: "text-pink-400" },
