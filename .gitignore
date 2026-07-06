@@ -48,3 +48,5 @@ screenshot-alternatives.mjs
 
 # Build artifact (prebuild script tarafından üretilir)
 lib/questions.json
+lib/questions-v4-static.json
+lib/questions-v4-full.json

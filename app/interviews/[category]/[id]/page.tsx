@@ -9,6 +9,25 @@ import type { Metadata } from "next";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
 import { getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
+import questionsV4Full from "../../../../lib/questions-v4-full.json";
+
+interface V4FullQuestion {
+  id: number;
+  slug: string;
+  category: string;
+  title: string;
+  description: string;
+  starter_code: string;
+  hints: string[];
+  complexity: string;
+  level: string;
+  explanation: string;
+  tags: string[];
+}
+
+function getV4FromBuild(slug: string): V4FullQuestion | null {
+  return (questionsV4Full as V4FullQuestion[]).find((q) => q.slug === slug) || null;
+}
 
 export const dynamic = "force-dynamic";
 
@@ -45,9 +64,27 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
     let actualId = id;
     const asNum = parseInt(id, 10);
 
-    // 🆕 Önce DB'de slug ile ara — yeni frontend mimarisi
+    // 🆕 Önce build-time Q-V4 data (backend bagimsiz, Railway 502 workaround)
     if (isNaN(asNum)) {
       const slug = id;
+      // Q-V4: build-time data var mi?
+      const v4 = getV4FromBuild(slug);
+      if (v4) {
+        return {
+          id: v4.id,
+          title: v4.title,
+          description: v4.description,
+          explanation: v4.explanation,
+          complexity: v4.complexity,
+          level: v4.level,
+          category: v4.category,
+          hints: v4.hints,
+          slug: v4.slug,
+          related_concepts: [],
+          tags: v4.tags,
+        };
+      }
+      // Q-V3: backend by-slug API
       try {
         const bySlugRes = await fetch(
           `${apiUrl}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,

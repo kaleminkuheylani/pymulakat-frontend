@@ -130,6 +130,8 @@ export function getQuestionMeta(id: number): QuestionMeta {
  * Sadece QuestionMeta.slug ile çalışır (DB ile senkronize).
  * Örn: "fibonacci-dizisi" → 9
  */
+import questionsV4Static from "./questions-v4-static.json";
+
 export function getIdFromSlug(slug: string): number | null {
   // 1. Slug direkt QuestionMeta'da var mi?
   for (const idStr of Object.keys(QUESTION_META)) {
@@ -137,7 +139,10 @@ export function getIdFromSlug(slug: string): number | null {
     const m = QUESTION_META[id];
     if (m.slug === slug) return id;
   }
-  // 2. Belki slug zaten ID mi? (sayisal slug)
+  // 2. Q-V4 static fallback (build-time artifact, backend bagimsiz)
+  const v4Match = (questionsV4Static as Array<{ slug: string; id: number }>).find((q) => q.slug === slug);
+  if (v4Match) return v4Match.id;
+  // 3. Belki slug zaten ID mi? (sayisal slug)
   const asNum = parseInt(slug, 10);
   if (!isNaN(asNum) && QUESTION_META[asNum]) return asNum;
   return null;
