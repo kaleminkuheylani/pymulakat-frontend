@@ -52,37 +52,44 @@ export default function InterviewsPage() {
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
     const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
+    const fetchCategories = () => {
+      setLoading(true);
+      setError(null);
 
-    fetch(`${apiUrl}/api/v2/categories`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+      const apiUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
+      const timeoutId = setTimeout(() => controller.abort(), 8000);
+
+      fetch(`${apiUrl}/api/v2/categories`, {
+        cache: "no-store",
+        signal: controller.signal,
       })
-      .then((data: CategoriesResponse | Category[]) => {
-        if (Array.isArray(data)) {
-          setCategories(data);
-        } else if (data && Array.isArray(data.data)) {
-          setCategories(data.data);
-        } else {
-          setCategories([]);
-        }
-      })
-      .catch((err) => {
-        if (err.name !== "AbortError") {
-          console.warn("[InterviewsPage] fetch error:", err);
-          setError(err.message || "Kategoriler yüklenemedi");
-        }
-      })
-      .finally(() => {
-        clearTimeout(timeoutId);
-        setLoading(false);
-      });
+        .then((res) => {
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          return res.json();
+        })
+        .then((data: CategoriesResponse | Category[]) => {
+          if (Array.isArray(data)) {
+            setCategories(data);
+          } else if (data && Array.isArray(data.data)) {
+            setCategories(data.data);
+          } else {
+            setCategories([]);
+          }
+        })
+        .catch((err) => {
+          if (err.name !== "AbortError") {
+            console.warn("[InterviewsPage] fetch error:", err);
+            setError(err.message || "Kategoriler yüklenemedi");
+          }
+        })
+        .finally(() => {
+          clearTimeout(timeoutId);
+          setLoading(false);
+        });
+    };
+
+    fetchCategories();
 
     return () => controller.abort();
   }, []);
@@ -135,13 +142,25 @@ export default function InterviewsPage() {
           </div>
         ) : categories.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-            <div className="text-5xl mb-4">📭</div>
+            <div className="text-5xl mb-4">{error ? "⚠️" : "📭"}</div>
             <h2 className="text-xl font-semibold mb-2">
-              {error ? "Yükleme hatası" : "Henüz kategori yok"}
+              {error ? "Kategoriler yüklenemedi" : "Henüz kategori yok"}
             </h2>
-            <p className="text-white/50 text-sm">
-              {error || "Backend'den kategori yüklenemedi. Biraz sonra tekrar dene."}
+            <p className="text-white/50 text-sm mb-6 max-w-md mx-auto">
+              {error ? (
+                <>
+                  Backend'e bağlanılamadı ({error}). Birkaç saniye sonra tekrar deneyebilirsin.
+                </>
+              ) : (
+                "Backend'de henüz kategori yok. Biraz sonra tekrar dene."
+              )}
             </p>
+            <button
+              onClick={() => window.location.reload()}
+              className="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold transition-colors"
+            >
+              Tekrar Dene
+            </button>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

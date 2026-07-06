@@ -10,19 +10,21 @@ const nextConfig = {
     // Production-grade security headers (OWASP önerileri)
     const csp = [
       "default-src 'self'",
-      // Next.js inline script + Pyodide WebAssembly
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net",
+      // Next.js inline script + Pyodide WebAssembly + GTM
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com",
       // Tailwind inline style + Monaco editor
       "style-src 'self' 'unsafe-inline'",
       // Supabase storage + general image hosting
       "img-src 'self' data: blob: https:",
       // Fonts (next/font inline data URIs)
       "font-src 'self' data:",
-      // API calls (Supabase REST + Realtime WebSocket + own backend)
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app`,
+      // API calls (Supabase REST + Realtime WebSocket + own backend + GTM)
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app https://www.googletagmanager.com https://www.google-analytics.com`,
+      // GTM iframe (noscript fallback) + Clickjacking koruması (X-Frame-Options yerine modern alternatif)
+      "frame-src 'self' https://www.googletagmanager.com",
       // Web Workers (Pyodide runs in a worker)
       "worker-src 'self' blob:",
-      // Clickjacking koruması (X-Frame-Options yerine modern alternatif)
+      // Clickjacking koruması (CSP frame-ancestors modern ama X-Frame-Options eski tarayıcılar için)
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",

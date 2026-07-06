@@ -69,7 +69,18 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
-  const [, category, idOrSlug] = match;
+  let [, category, idOrSlug] = match;
+
+  // Legacy/deprecated category alias'lar (eski URL'leri canlı kategoriye yönlendir)
+  const CATEGORY_ALIASES: Record<string, string> = {
+    strings: "python-basics",        // strings → python-basics (deprecated)
+  };
+  if (CATEGORY_ALIASES[category]) {
+    const url = request.nextUrl.clone();
+    url.pathname = `/interviews/${CATEGORY_ALIASES[category]}/${idOrSlug}`;
+    return NextResponse.redirect(url, 308);
+  }
+
   const asNumber = parseInt(idOrSlug, 10);
   if (isNaN(asNumber)) {
     // Slug ise — canonical, geç
