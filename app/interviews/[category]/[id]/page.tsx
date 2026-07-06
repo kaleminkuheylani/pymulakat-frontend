@@ -192,8 +192,38 @@ export default async function Page({ params, searchParams }: PageProps) {
   // ✅ Canonical routing middleware tarafindan yonetiliyor:
   //   - /interviews/{cat}/{slug}  → burada render (canonical, indexlenir)
   //   - /interviews/{cat}/{id}    → middleware slug URL'e yonlendirir (308)
-  // Burada sadece slug'in gecerli oldugunu dogrulayip fetch ediyoruz.
-  const resolvedId = getIdFromSlug(resolvedParams.id);
+  // Burada slug'in gecerli oldugunu dogrulayip fetch ediyoruz.
+  let resolvedId: number | null = null;
+  const _asNum = parseInt(resolvedParams.id, 10);
+  if (!isNaN(_asNum)) {
+    resolvedId = _asNum;  // Eski ID URL (legacy /interviews/python-basics/3 gibi)
+  } else {
+    // Slug → ID cozumleme:
+    // 1) Oncelikle QUESTION_META (build-time, hizli, eski 1-88 slug'lar)
+    resolvedId = getIdFromSlug(resolvedParams.id);
+    // 2) Q-v4 (89+) icin DB uzerinden by-slug API dene (runtime fetch)
+    if (!resolvedId) {
+      try {
+        const h2 = await headers();
+        const host2 = h2.get("host") || "localhost:3000";
+        const protocol2 = host2.includes("localhost") ? "http" : "https";
+        const apiBase2 = process.env.NEXT_PUBLIC_API_URL || `${protocol2}://${host2}`;
+        const bySlugRes = await fetch(
+          `${apiBase2}/api/v2/questions/by-slug/${encodeURIComponent(resolvedParams.category)}/${encodeURIComponent(resolvedParams.id)}`,
+          { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
+        );
+        if (bySlugRes.ok) {
+          const data = await bySlugRes.json();
+          const q = data.data || data;
+          if (q && typeof q.id === "number") {
+            resolvedId = q.id;
+          }
+        }
+      } catch {
+        // Sessizce devam et, notFound fallback
+      }
+    }
+  }
   if (!resolvedId) {
     notFound();
   }
