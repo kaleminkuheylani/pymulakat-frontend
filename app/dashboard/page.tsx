@@ -136,8 +136,8 @@ export default function DashboardHome() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
-  // Mounted guard: async fetch'lerde unmount sonrası setState engeli
-  const mountedRef = useRef(true);
+  // Mounted guard (TS strict mode + Vercel SWC uyumluluğu icin explicit type)
+  const mountedRef = useRef<boolean>(true);
   useEffect(() => {
     mountedRef.current = true;
     return () => {
@@ -188,6 +188,7 @@ export default function DashboardHome() {
   }, []);
 
   const fetchCommunity = useCallback(async () => {
+    if (!mountedRef.current) return;
     try {
       const token = getToken();
       const res = await fetch(`${API()}/api/v2/recommendations/community?limit=15`, {
