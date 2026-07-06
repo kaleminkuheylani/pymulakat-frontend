@@ -24,6 +24,8 @@ const nextConfig = {
       "frame-src 'self' https://www.googletagmanager.com",
       // Web Workers (Pyodide runs in a worker)
       "worker-src 'self' blob:",
+      // Manifest (Vercel SSO preloading + PWA manifest)
+      "manifest-src 'self' https://vercel.com",
       // Clickjacking koruması (CSP frame-ancestors modern ama X-Frame-Options eski tarayıcılar için)
       "frame-ancestors 'none'",
       "base-uri 'self'",
