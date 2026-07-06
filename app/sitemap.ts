@@ -3,9 +3,9 @@ import { slugifyTitle } from "../lib/questionMeta";
 
 const BASE = "https://pythonmulakat.com";
 
-interface Category { slug: string; question_count?: number; }
-interface Question { id: number; category: string; title: string; slug?: string; updated_at?: string; }
-interface Tutorial { slug: string; updated_at?: string; published_at?: string; }
+interface Category { category?: string | null; question_count?: number; }
+interface Question { id: number; category?: string; title?: string; slug?: string | null; updated_at?: string | null; }
+interface Tutorial { slug?: string | null; updated_at?: string | null; published_at?: string | null; }
 
 // Vercel build sınıri 60s. Backend fetch bazen yavas olur, bu yuzden
 // Supabase REST API'sinden doğrudan minimal veri çekiyoruz (anon key,
@@ -71,7 +71,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // 2. Kategoriler — DB'den unique
   const cats = await fetchSupabaseSafe<Category>("questions", "category", "is_published=eq.true");
   let categorySlugs: string[] = Array.from(
-    new Set(cats.map((c) => c.category).filter(Boolean))
+    new Set(
+      cats
+        .map((c: Category) => c.category)
+        .filter((c): c is string => Boolean(c))
+    )
   );
   if (categorySlugs.length === 0) {
     categorySlugs = ["python-basics", "data-structures", "list-dict", "pandas", "algorithms"];
@@ -89,12 +93,16 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "category,title,slug,updated_at",
     "is_published=eq.true"
   );
-  const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
-    url: `${BASE}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
-    lastModified: q.updated_at || now,
-    changeFrequency: "monthly" as const,
-    priority: 0.7,
-  }));
+  const questionPages: MetadataRoute.Sitemap = questions
+    .filter((q): q is Question & { category: string; title: string } =>
+      Boolean(q.category && q.title)
+    )
+    .map((q) => ({
+      url: `${BASE}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
+      lastModified: q.updated_at || now,
+      changeFrequency: "monthly" as const,
+      priority: 0.7,
+    }));
 
   // 4. Tutorials — DB'den (varsa), yoksa fallback hard-coded liste
   let tutorials: Tutorial[] = await fetchSupabaseSafe<Tutorial>(
@@ -116,12 +124,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
     tutorials = fallbackSlugs.map((slug) => ({ slug }));
   }
-  const tutorialPages: MetadataRoute.Sitemap = tutorials.map((t) => ({
-    url: `${BASE}/guides/${t.slug}`,
-    lastModified: t.updated_at || t.published_at || now,
-    changeFrequency: "monthly" as const,
-    priority: 0.85,
-  }));
+  // Tutorial slug garantisi ver
+  const tutorialPages: MetadataRoute.Sitemap = tutorials
+    .filter((t): t is Required<Tutorial> => Boolean(t.slug))
+    .map((t) => ({
+      url: `${BASE}/guides/${t.slug}`,
+      lastModified: t.updated_at || t.published_at || now,
+      changeFrequency: "monthly" as const,
+      priority: 0.85,
+    }));
 
   return [...staticPages, ...categoryPages, ...questionPages, ...tutorialPages];
 }
