@@ -1,0 +1,878 @@
+[
+  {
+    "id": 1000,
+    "slug": "async-batch-processor",
+    "category": "concurrency",
+    "title": "Async Batch Processor"
+  },
+  {
+    "id": 1001,
+    "slug": "async-batch-processor-v2",
+    "category": "concurrency",
+    "title": "Async Batch Processor (V2)"
+  },
+  {
+    "id": 1002,
+    "slug": "async-batch-processor-v3",
+    "category": "concurrency",
+    "title": "Async Batch Processor (V3)"
+  },
+  {
+    "id": 1003,
+    "slug": "async-batch-processor-v4",
+    "category": "concurrency",
+    "title": "Async Batch Processor (V4)"
+  },
+  {
+    "id": 1004,
+    "slug": "thread-safe-rate-limiter",
+    "category": "concurrency",
+    "title": "Thread-safe Rate Limiter"
+  },
+  {
+    "id": 1005,
+    "slug": "thread-safe-rate-limiter-v2",
+    "category": "concurrency",
+    "title": "Thread-safe Rate Limiter (V2)"
+  },
+  {
+    "id": 1006,
+    "slug": "thread-safe-rate-limiter-v3",
+    "category": "concurrency",
+    "title": "Thread-safe Rate Limiter (V3)"
+  },
+  {
+    "id": 1007,
+    "slug": "thread-safe-rate-limiter-v4",
+    "category": "concurrency",
+    "title": "Thread-safe Rate Limiter (V4)"
+  },
+  {
+    "id": 1008,
+    "slug": "gil-aware-cpu-bound-worker-pool",
+    "category": "concurrency",
+    "title": "GIL-Aware CPU-Bound Worker Pool"
+  },
+  {
+    "id": 1009,
+    "slug": "gil-aware-cpu-bound-worker-pool-v2",
+    "category": "concurrency",
+    "title": "GIL-Aware CPU-Bound Worker Pool (V2)"
+  },
+  {
+    "id": 1010,
+    "slug": "gil-aware-cpu-bound-worker-pool-v3",
+    "category": "concurrency",
+    "title": "GIL-Aware CPU-Bound Worker Pool (V3)"
+  },
+  {
+    "id": 1011,
+    "slug": "gil-aware-cpu-bound-worker-pool-v4",
+    "category": "concurrency",
+    "title": "GIL-Aware CPU-Bound Worker Pool (V4)"
+  },
+  {
+    "id": 1012,
+    "slug": "singleton-via-metaclass",
+    "category": "oop-advanced",
+    "title": "Singleton via Metaclass"
+  },
+  {
+    "id": 1013,
+    "slug": "singleton-via-metaclass-v2",
+    "category": "oop-advanced",
+    "title": "Singleton via Metaclass (V2)"
+  },
+  {
+    "id": 1014,
+    "slug": "singleton-via-metaclass-v3",
+    "category": "oop-advanced",
+    "title": "Singleton via Metaclass (V3)"
+  },
+  {
+    "id": 1015,
+    "slug": "singleton-via-metaclass-v4",
+    "category": "oop-advanced",
+    "title": "Singleton via Metaclass (V4)"
+  },
+  {
+    "id": 1016,
+    "slug": "descriptor-with-validation",
+    "category": "oop-advanced",
+    "title": "Descriptor with Validation"
+  },
+  {
+    "id": 1017,
+    "slug": "descriptor-with-validation-v2",
+    "category": "oop-advanced",
+    "title": "Descriptor with Validation (V2)"
+  },
+  {
+    "id": 1018,
+    "slug": "descriptor-with-validation-v3",
+    "category": "oop-advanced",
+    "title": "Descriptor with Validation (V3)"
+  },
+  {
+    "id": 1019,
+    "slug": "descriptor-with-validation-v4",
+    "category": "oop-advanced",
+    "title": "Descriptor with Validation (V4)"
+  },
+  {
+    "id": 1020,
+    "slug": "cached-property-with-ttl",
+    "category": "oop-advanced",
+    "title": "Cached Property with TTL"
+  },
+  {
+    "id": 1021,
+    "slug": "cached-property-with-ttl-v2",
+    "category": "oop-advanced",
+    "title": "Cached Property with TTL (V2)"
+  },
+  {
+    "id": 1022,
+    "slug": "cached-property-with-ttl-v3",
+    "category": "oop-advanced",
+    "title": "Cached Property with TTL (V3)"
+  },
+  {
+    "id": 1023,
+    "slug": "cached-property-with-ttl-v4",
+    "category": "oop-advanced",
+    "title": "Cached Property with TTL (V4)"
+  },
+  {
+    "id": 1024,
+    "slug": "coin-change-min-coins",
+    "category": "algorithms-dp",
+    "title": "Coin Change (Min Coins)"
+  },
+  {
+    "id": 1025,
+    "slug": "coin-change-min-coins-v2",
+    "category": "algorithms-dp",
+    "title": "Coin Change (Min Coins) (V2)"
+  },
+  {
+    "id": 1026,
+    "slug": "coin-change-min-coins-v3",
+    "category": "algorithms-dp",
+    "title": "Coin Change (Min Coins) (V3)"
+  },
+  {
+    "id": 1027,
+    "slug": "coin-change-min-coins-v4",
+    "category": "algorithms-dp",
+    "title": "Coin Change (Min Coins) (V4)"
+  },
+  {
+    "id": 1028,
+    "slug": "longest-common-subsequence",
+    "category": "algorithms-dp",
+    "title": "Longest Common Subsequence"
+  },
+  {
+    "id": 1029,
+    "slug": "longest-common-subsequence-v2",
+    "category": "algorithms-dp",
+    "title": "Longest Common Subsequence (V2)"
+  },
+  {
+    "id": 1030,
+    "slug": "longest-common-subsequence-v3",
+    "category": "algorithms-dp",
+    "title": "Longest Common Subsequence (V3)"
+  },
+  {
+    "id": 1031,
+    "slug": "longest-common-subsequence-v4",
+    "category": "algorithms-dp",
+    "title": "Longest Common Subsequence (V4)"
+  },
+  {
+    "id": 1032,
+    "slug": "01-knapsack",
+    "category": "algorithms-dp",
+    "title": "0/1 Knapsack"
+  },
+  {
+    "id": 1033,
+    "slug": "01-knapsack-v2",
+    "category": "algorithms-dp",
+    "title": "0/1 Knapsack (V2)"
+  },
+  {
+    "id": 1034,
+    "slug": "01-knapsack-v3",
+    "category": "algorithms-dp",
+    "title": "0/1 Knapsack (V3)"
+  },
+  {
+    "id": 1035,
+    "slug": "01-knapsack-v4",
+    "category": "algorithms-dp",
+    "title": "0/1 Knapsack (V4)"
+  },
+  {
+    "id": 1036,
+    "slug": "bfs-shortest-path",
+    "category": "algorithms-graph",
+    "title": "BFS Shortest Path"
+  },
+  {
+    "id": 1037,
+    "slug": "bfs-shortest-path-v2",
+    "category": "algorithms-graph",
+    "title": "BFS Shortest Path (V2)"
+  },
+  {
+    "id": 1038,
+    "slug": "bfs-shortest-path-v3",
+    "category": "algorithms-graph",
+    "title": "BFS Shortest Path (V3)"
+  },
+  {
+    "id": 1039,
+    "slug": "bfs-shortest-path-v4",
+    "category": "algorithms-graph",
+    "title": "BFS Shortest Path (V4)"
+  },
+  {
+    "id": 1040,
+    "slug": "bfs-shortest-path-v5",
+    "category": "algorithms-graph",
+    "title": "BFS Shortest Path (V5)"
+  },
+  {
+    "id": 1041,
+    "slug": "bfs-shortest-path-v6",
+    "category": "algorithms-graph",
+    "title": "BFS Shortest Path (V6)"
+  },
+  {
+    "id": 1042,
+    "slug": "bfs-shortest-path-v7",
+    "category": "algorithms-graph",
+    "title": "BFS Shortest Path (V7)"
+  },
+  {
+    "id": 1043,
+    "slug": "dfs-cycle-detection",
+    "category": "algorithms-graph",
+    "title": "DFS Cycle Detection"
+  },
+  {
+    "id": 1044,
+    "slug": "dfs-cycle-detection-v2",
+    "category": "algorithms-graph",
+    "title": "DFS Cycle Detection (V2)"
+  },
+  {
+    "id": 1045,
+    "slug": "dfs-cycle-detection-v3",
+    "category": "algorithms-graph",
+    "title": "DFS Cycle Detection (V3)"
+  },
+  {
+    "id": 1046,
+    "slug": "dfs-cycle-detection-v4",
+    "category": "algorithms-graph",
+    "title": "DFS Cycle Detection (V4)"
+  },
+  {
+    "id": 1047,
+    "slug": "dfs-cycle-detection-v5",
+    "category": "algorithms-graph",
+    "title": "DFS Cycle Detection (V5)"
+  },
+  {
+    "id": 1048,
+    "slug": "dfs-cycle-detection-v6",
+    "category": "algorithms-graph",
+    "title": "DFS Cycle Detection (V6)"
+  },
+  {
+    "id": 1049,
+    "slug": "dfs-cycle-detection-v7",
+    "category": "algorithms-graph",
+    "title": "DFS Cycle Detection (V7)"
+  },
+  {
+    "id": 1050,
+    "slug": "tree-traversals-preinpost",
+    "category": "algorithms-recursion",
+    "title": "Tree Traversals (Pre/In/Post)"
+  },
+  {
+    "id": 1051,
+    "slug": "tree-traversals-preinpost-v2",
+    "category": "algorithms-recursion",
+    "title": "Tree Traversals (Pre/In/Post) (V2)"
+  },
+  {
+    "id": 1052,
+    "slug": "tree-traversals-preinpost-v3",
+    "category": "algorithms-recursion",
+    "title": "Tree Traversals (Pre/In/Post) (V3)"
+  },
+  {
+    "id": 1053,
+    "slug": "tree-traversals-preinpost-v4",
+    "category": "algorithms-recursion",
+    "title": "Tree Traversals (Pre/In/Post) (V4)"
+  },
+  {
+    "id": 1054,
+    "slug": "n-queens-solver",
+    "category": "algorithms-recursion",
+    "title": "N-Queens Solver"
+  },
+  {
+    "id": 1055,
+    "slug": "n-queens-solver-v2",
+    "category": "algorithms-recursion",
+    "title": "N-Queens Solver (V2)"
+  },
+  {
+    "id": 1056,
+    "slug": "n-queens-solver-v3",
+    "category": "algorithms-recursion",
+    "title": "N-Queens Solver (V3)"
+  },
+  {
+    "id": 1057,
+    "slug": "n-queens-solver-v4",
+    "category": "algorithms-recursion",
+    "title": "N-Queens Solver (V4)"
+  },
+  {
+    "id": 1058,
+    "slug": "flatten-nested-list-iterator",
+    "category": "algorithms-recursion",
+    "title": "Flatten Nested List Iterator"
+  },
+  {
+    "id": 1059,
+    "slug": "flatten-nested-list-iterator-v2",
+    "category": "algorithms-recursion",
+    "title": "Flatten Nested List Iterator (V2)"
+  },
+  {
+    "id": 1060,
+    "slug": "flatten-nested-list-iterator-v3",
+    "category": "algorithms-recursion",
+    "title": "Flatten Nested List Iterator (V3)"
+  },
+  {
+    "id": 1061,
+    "slug": "flatten-nested-list-iterator-v4",
+    "category": "algorithms-recursion",
+    "title": "Flatten Nested List Iterator (V4)"
+  },
+  {
+    "id": 1062,
+    "slug": "group-by-with-itertools",
+    "category": "standard-library",
+    "title": "Group By with itertools"
+  },
+  {
+    "id": 1063,
+    "slug": "group-by-with-itertools-v2",
+    "category": "standard-library",
+    "title": "Group By with itertools (V2)"
+  },
+  {
+    "id": 1064,
+    "slug": "group-by-with-itertools-v3",
+    "category": "standard-library",
+    "title": "Group By with itertools (V3)"
+  },
+  {
+    "id": 1065,
+    "slug": "group-by-with-itertools-v4",
+    "category": "standard-library",
+    "title": "Group By with itertools (V4)"
+  },
+  {
+    "id": 1066,
+    "slug": "lru-cache-ordereddict",
+    "category": "standard-library",
+    "title": "LRU Cache (OrderedDict)"
+  },
+  {
+    "id": 1067,
+    "slug": "lru-cache-ordereddict-v2",
+    "category": "standard-library",
+    "title": "LRU Cache (OrderedDict) (V2)"
+  },
+  {
+    "id": 1068,
+    "slug": "lru-cache-ordereddict-v3",
+    "category": "standard-library",
+    "title": "LRU Cache (OrderedDict) (V3)"
+  },
+  {
+    "id": 1069,
+    "slug": "lru-cache-ordereddict-v4",
+    "category": "standard-library",
+    "title": "LRU Cache (OrderedDict) (V4)"
+  },
+  {
+    "id": 1070,
+    "slug": "csv-to-dict-with-csv-module",
+    "category": "standard-library",
+    "title": "CSV to Dict with csv Module"
+  },
+  {
+    "id": 1071,
+    "slug": "csv-to-dict-with-csv-module-v2",
+    "category": "standard-library",
+    "title": "CSV to Dict with csv Module (V2)"
+  },
+  {
+    "id": 1072,
+    "slug": "csv-to-dict-with-csv-module-v3",
+    "category": "standard-library",
+    "title": "CSV to Dict with csv Module (V3)"
+  },
+  {
+    "id": 1073,
+    "slug": "csv-to-dict-with-csv-module-v4",
+    "category": "standard-library",
+    "title": "CSV to Dict with csv Module (V4)"
+  },
+  {
+    "id": 1074,
+    "slug": "pipe-function",
+    "category": "functional",
+    "title": "Pipe Function"
+  },
+  {
+    "id": 1075,
+    "slug": "pipe-function-v2",
+    "category": "functional",
+    "title": "Pipe Function (V2)"
+  },
+  {
+    "id": 1076,
+    "slug": "pipe-function-v3",
+    "category": "functional",
+    "title": "Pipe Function (V3)"
+  },
+  {
+    "id": 1077,
+    "slug": "pipe-function-v4",
+    "category": "functional",
+    "title": "Pipe Function (V4)"
+  },
+  {
+    "id": 1078,
+    "slug": "compose-right-to-left",
+    "category": "functional",
+    "title": "Compose (Right-to-Left)"
+  },
+  {
+    "id": 1079,
+    "slug": "compose-right-to-left-v2",
+    "category": "functional",
+    "title": "Compose (Right-to-Left) (V2)"
+  },
+  {
+    "id": 1080,
+    "slug": "compose-right-to-left-v3",
+    "category": "functional",
+    "title": "Compose (Right-to-Left) (V3)"
+  },
+  {
+    "id": 1081,
+    "slug": "compose-right-to-left-v4",
+    "category": "functional",
+    "title": "Compose (Right-to-Left) (V4)"
+  },
+  {
+    "id": 1082,
+    "slug": "curry-function",
+    "category": "functional",
+    "title": "Curry Function"
+  },
+  {
+    "id": 1083,
+    "slug": "curry-function-v2",
+    "category": "functional",
+    "title": "Curry Function (V2)"
+  },
+  {
+    "id": 1084,
+    "slug": "curry-function-v3",
+    "category": "functional",
+    "title": "Curry Function (V3)"
+  },
+  {
+    "id": 1085,
+    "slug": "curry-function-v4",
+    "category": "functional",
+    "title": "Curry Function (V4)"
+  },
+  {
+    "id": 1086,
+    "slug": "repository-pattern-in-memory",
+    "category": "design-patterns",
+    "title": "Repository Pattern (in-memory)"
+  },
+  {
+    "id": 1087,
+    "slug": "repository-pattern-in-memory-v2",
+    "category": "design-patterns",
+    "title": "Repository Pattern (in-memory) (V2)"
+  },
+  {
+    "id": 1088,
+    "slug": "repository-pattern-in-memory-v3",
+    "category": "design-patterns",
+    "title": "Repository Pattern (in-memory) (V3)"
+  },
+  {
+    "id": 1089,
+    "slug": "repository-pattern-in-memory-v4",
+    "category": "design-patterns",
+    "title": "Repository Pattern (in-memory) (V4)"
+  },
+  {
+    "id": 1090,
+    "slug": "observer-pattern-event-emitter",
+    "category": "design-patterns",
+    "title": "Observer Pattern (Event Emitter)"
+  },
+  {
+    "id": 1091,
+    "slug": "observer-pattern-event-emitter-v2",
+    "category": "design-patterns",
+    "title": "Observer Pattern (Event Emitter) (V2)"
+  },
+  {
+    "id": 1092,
+    "slug": "observer-pattern-event-emitter-v3",
+    "category": "design-patterns",
+    "title": "Observer Pattern (Event Emitter) (V3)"
+  },
+  {
+    "id": 1093,
+    "slug": "observer-pattern-event-emitter-v4",
+    "category": "design-patterns",
+    "title": "Observer Pattern (Event Emitter) (V4)"
+  },
+  {
+    "id": 1094,
+    "slug": "strategy-pattern-with-callable",
+    "category": "design-patterns",
+    "title": "Strategy Pattern with Callable"
+  },
+  {
+    "id": 1095,
+    "slug": "strategy-pattern-with-callable-v2",
+    "category": "design-patterns",
+    "title": "Strategy Pattern with Callable (V2)"
+  },
+  {
+    "id": 1096,
+    "slug": "strategy-pattern-with-callable-v3",
+    "category": "design-patterns",
+    "title": "Strategy Pattern with Callable (V3)"
+  },
+  {
+    "id": 1097,
+    "slug": "strategy-pattern-with-callable-v4",
+    "category": "design-patterns",
+    "title": "Strategy Pattern with Callable (V4)"
+  },
+  {
+    "id": 1098,
+    "slug": "memoize-with-functoolslrucache",
+    "category": "performance",
+    "title": "Memoize with functools.lru_cache"
+  },
+  {
+    "id": 1099,
+    "slug": "memoize-with-functoolslrucache-v2",
+    "category": "performance",
+    "title": "Memoize with functools.lru_cache (V2)"
+  },
+  {
+    "id": 1100,
+    "slug": "memoize-with-functoolslrucache-v3",
+    "category": "performance",
+    "title": "Memoize with functools.lru_cache (V3)"
+  },
+  {
+    "id": 1101,
+    "slug": "memoize-with-functoolslrucache-v4",
+    "category": "performance",
+    "title": "Memoize with functools.lru_cache (V4)"
+  },
+  {
+    "id": 1102,
+    "slug": "sorted-list-maintenance-bisect",
+    "category": "performance",
+    "title": "Sorted List Maintenance (bisect)"
+  },
+  {
+    "id": 1103,
+    "slug": "sorted-list-maintenance-bisect-v2",
+    "category": "performance",
+    "title": "Sorted List Maintenance (bisect) (V2)"
+  },
+  {
+    "id": 1104,
+    "slug": "sorted-list-maintenance-bisect-v3",
+    "category": "performance",
+    "title": "Sorted List Maintenance (bisect) (V3)"
+  },
+  {
+    "id": 1105,
+    "slug": "sorted-list-maintenance-bisect-v4",
+    "category": "performance",
+    "title": "Sorted List Maintenance (bisect) (V4)"
+  },
+  {
+    "id": 1106,
+    "slug": "string-builder-iostringio",
+    "category": "performance",
+    "title": "String Builder (io.StringIO)"
+  },
+  {
+    "id": 1107,
+    "slug": "string-builder-iostringio-v2",
+    "category": "performance",
+    "title": "String Builder (io.StringIO) (V2)"
+  },
+  {
+    "id": 1108,
+    "slug": "string-builder-iostringio-v3",
+    "category": "performance",
+    "title": "String Builder (io.StringIO) (V3)"
+  },
+  {
+    "id": 1109,
+    "slug": "string-builder-iostringio-v4",
+    "category": "performance",
+    "title": "String Builder (io.StringIO) (V4)"
+  },
+  {
+    "id": 1110,
+    "slug": "pytest-parametrize-pattern",
+    "category": "testing",
+    "title": "Pytest Parametrize Pattern"
+  },
+  {
+    "id": 1111,
+    "slug": "pytest-parametrize-pattern-v2",
+    "category": "testing",
+    "title": "Pytest Parametrize Pattern (V2)"
+  },
+  {
+    "id": 1112,
+    "slug": "pytest-parametrize-pattern-v3",
+    "category": "testing",
+    "title": "Pytest Parametrize Pattern (V3)"
+  },
+  {
+    "id": 1113,
+    "slug": "pytest-parametrize-pattern-v4",
+    "category": "testing",
+    "title": "Pytest Parametrize Pattern (V4)"
+  },
+  {
+    "id": 1114,
+    "slug": "mock-external-api-with-unittestmock",
+    "category": "testing",
+    "title": "Mock External API with unittest.mock"
+  },
+  {
+    "id": 1115,
+    "slug": "mock-external-api-with-unittestmock-v2",
+    "category": "testing",
+    "title": "Mock External API with unittest.mock (V2)"
+  },
+  {
+    "id": 1116,
+    "slug": "mock-external-api-with-unittestmock-v3",
+    "category": "testing",
+    "title": "Mock External API with unittest.mock (V3)"
+  },
+  {
+    "id": 1117,
+    "slug": "mock-external-api-with-unittestmock-v4",
+    "category": "testing",
+    "title": "Mock External API with unittest.mock (V4)"
+  },
+  {
+    "id": 1118,
+    "slug": "coverage-driven-test-suite",
+    "category": "testing",
+    "title": "Coverage-Driven Test Suite"
+  },
+  {
+    "id": 1119,
+    "slug": "coverage-driven-test-suite-v2",
+    "category": "testing",
+    "title": "Coverage-Driven Test Suite (V2)"
+  },
+  {
+    "id": 1120,
+    "slug": "coverage-driven-test-suite-v3",
+    "category": "testing",
+    "title": "Coverage-Driven Test Suite (V3)"
+  },
+  {
+    "id": 1121,
+    "slug": "coverage-driven-test-suite-v4",
+    "category": "testing",
+    "title": "Coverage-Driven Test Suite (V4)"
+  },
+  {
+    "id": 1122,
+    "slug": "trendyol-sliding-window-recommendation",
+    "category": "real-world",
+    "title": "Trendyol Sliding Window Recommendation"
+  },
+  {
+    "id": 1123,
+    "slug": "trendyol-sliding-window-recommendation-v2",
+    "category": "real-world",
+    "title": "Trendyol Sliding Window Recommendation (V2)"
+  },
+  {
+    "id": 1124,
+    "slug": "trendyol-sliding-window-recommendation-v3",
+    "category": "real-world",
+    "title": "Trendyol Sliding Window Recommendation (V3)"
+  },
+  {
+    "id": 1125,
+    "slug": "trendyol-sliding-window-recommendation-v4",
+    "category": "real-world",
+    "title": "Trendyol Sliding Window Recommendation (V4)"
+  },
+  {
+    "id": 1126,
+    "slug": "tc-kimlik-no-dogrulama",
+    "category": "real-world",
+    "title": "TC Kimlik No Doğrulama"
+  },
+  {
+    "id": 1127,
+    "slug": "tc-kimlik-no-dogrulama-v2",
+    "category": "real-world",
+    "title": "TC Kimlik No Doğrulama (V2)"
+  },
+  {
+    "id": 1128,
+    "slug": "tc-kimlik-no-dogrulama-v3",
+    "category": "real-world",
+    "title": "TC Kimlik No Doğrulama (V3)"
+  },
+  {
+    "id": 1129,
+    "slug": "tc-kimlik-no-dogrulama-v4",
+    "category": "real-world",
+    "title": "TC Kimlik No Doğrulama (V4)"
+  },
+  {
+    "id": 1130,
+    "slug": "iban-dogrulama-tr",
+    "category": "real-world",
+    "title": "İBAN Doğrulama (TR)"
+  },
+  {
+    "id": 1131,
+    "slug": "iban-dogrulama-tr-v2",
+    "category": "real-world",
+    "title": "İBAN Doğrulama (TR) (V2)"
+  },
+  {
+    "id": 1132,
+    "slug": "iban-dogrulama-tr-v3",
+    "category": "real-world",
+    "title": "İBAN Doğrulama (TR) (V3)"
+  },
+  {
+    "id": 1133,
+    "slug": "iban-dogrulama-tr-v4",
+    "category": "real-world",
+    "title": "İBAN Doğrulama (TR) (V4)"
+  },
+  {
+    "id": 1134,
+    "slug": "pattern-matching-matchcase",
+    "category": "python-3-12",
+    "title": "Pattern Matching (match/case)"
+  },
+  {
+    "id": 1135,
+    "slug": "pattern-matching-matchcase-v2",
+    "category": "python-3-12",
+    "title": "Pattern Matching (match/case) (V2)"
+  },
+  {
+    "id": 1136,
+    "slug": "pattern-matching-matchcase-v3",
+    "category": "python-3-12",
+    "title": "Pattern Matching (match/case) (V3)"
+  },
+  {
+    "id": 1137,
+    "slug": "pattern-matching-matchcase-v4",
+    "category": "python-3-12",
+    "title": "Pattern Matching (match/case) (V4)"
+  },
+  {
+    "id": 1138,
+    "slug": "exception-groups-python-311",
+    "category": "python-3-12",
+    "title": "Exception Groups (Python 3.11+)"
+  },
+  {
+    "id": 1139,
+    "slug": "exception-groups-python-311-v2",
+    "category": "python-3-12",
+    "title": "Exception Groups (Python 3.11+) (V2)"
+  },
+  {
+    "id": 1140,
+    "slug": "exception-groups-python-311-v3",
+    "category": "python-3-12",
+    "title": "Exception Groups (Python 3.11+) (V3)"
+  },
+  {
+    "id": 1141,
+    "slug": "exception-groups-python-311-v4",
+    "category": "python-3-12",
+    "title": "Exception Groups (Python 3.11+) (V4)"
+  },
+  {
+    "id": 1142,
+    "slug": "type-hints-self-paramspec",
+    "category": "python-3-12",
+    "title": "Type Hints: Self & ParamSpec"
+  },
+  {
+    "id": 1143,
+    "slug": "type-hints-self-paramspec-v2",
+    "category": "python-3-12",
+    "title": "Type Hints: Self & ParamSpec (V2)"
+  },
+  {
+    "id": 1144,
+    "slug": "type-hints-self-paramspec-v3",
+    "category": "python-3-12",
+    "title": "Type Hints: Self & ParamSpec (V3)"
+  },
+  {
+    "id": 1145,
+    "slug": "type-hints-self-paramspec-v4",
+    "category": "python-3-12",
+    "title": "Type Hints: Self & ParamSpec (V4)"
+  }
+]
