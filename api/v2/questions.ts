@@ -2,7 +2,7 @@
 // v2 API Client — FIXED VERSION — tek dosya, hem browser hem server'da çalışır
 
 const BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
 export interface TestCase {
   input: any[];

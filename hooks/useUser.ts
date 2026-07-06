@@ -28,7 +28,7 @@ export function notifyAuthChange() {
 
 // ═══════════════════════════════════════════════════════════════
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
 /**
  * Supabase'in kullandığı storage key'leri dahil tüm olası konumlardan access_token çıkar.

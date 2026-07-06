@@ -1,7 +1,7 @@
 // frontend/api/v2/tutorials.ts
 // Tutorial API client — uzun form rehber yazıları için
 
-const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
 export interface Tutorial {
   id: number;

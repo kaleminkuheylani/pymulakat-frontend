@@ -14,7 +14,7 @@ import { createClient } from "@supabase/supabase-js";
 // ═══════════════════════════════════════════════════════════════
 
 const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
 interface LoginResponse {
   access_token: string;

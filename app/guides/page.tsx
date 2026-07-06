@@ -143,7 +143,7 @@ const FALLBACK_TUTORIALS: Tutorial[] = [
 
 async function fetchTutorials(): Promise<Tutorial[]> {
   try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
     const res = await fetch(`${apiUrl}/api/v2/tutorials`, {
       next: { revalidate: 3600 },
     });

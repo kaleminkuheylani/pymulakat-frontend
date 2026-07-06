@@ -7,6 +7,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
+// Backend URL — env tanımlıysa onu kullan, yoksa default Railway
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+
 interface Category {
   slug: string;
   label: string;
@@ -57,10 +60,9 @@ export default function InterviewsPage() {
       setLoading(true);
       setError(null);
 
-      const apiUrl = process.env.NEXT_PUBLIC_API_URL || window.location.origin;
       const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-      fetch(`${apiUrl}/api/v2/categories`, {
+      fetch(`${API_BASE}/api/v2/categories`, {
         cache: "no-store",
         signal: controller.signal,
       })
