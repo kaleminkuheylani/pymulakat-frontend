@@ -7,28 +7,53 @@ interface Category { slug: string; question_count?: number; }
 interface Question { id: number; category: string; title: string; slug?: string; updated_at?: string; }
 interface Tutorial { slug: string; updated_at?: string; published_at?: string; }
 
-interface ListResponse<T> { items: T[]; data?: T[]; total: number; }
-interface CategoryEnvelope { data: Category[]; }
+// Vercel build sınıri 60s. Backend fetch bazen yavas olur, bu yuzden
+// Supabase REST API'sinden doğrudan minimal veri çekiyoruz (anon key,
+// service_role degil). Timeout 10s ile korunuyoruz.
 
-async function fetchJsonSafe<T>(url: string): Promise<T | null> {
-  try {
-    const res = await fetch(url, { next: { revalidate: 3600 } });
-    if (!res.ok) return null;
-    return (await res.json()) as T;
-  } catch {
-    return null;
-  }
+const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lhuhfgpjbnngjxzlvywp.supabase.co";
+const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+
+// Build sırasında çalışır, env yoksa boş liste döndür (Vercel fail olmaz)
+function hasSupabaseEnv(): boolean {
+  return Boolean(SUPABASE_ANON_KEY && SUPABASE_URL);
 }
 
-function getApiBase(): string {
-  return process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+async function fetchSupabaseSafe<T>(
+  table: string,
+  select: string,
+  filter?: string,
+): Promise<T[]> {
+  if (!hasSupabaseEnv()) return [];
+  const url = new URL(`${SUPABASE_URL}/rest/v1/${table}`);
+  url.searchParams.set("select", select);
+  if (filter) url.searchParams.set(filter, "true");
+  url.searchParams.set("limit", "500");
+
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);  // 8s timeout
+
+    const res = await fetch(url.toString(), {
+      headers: {
+        "apikey": SUPABASE_ANON_KEY,
+        "Authorization": `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+      signal: controller.signal,
+      next: { revalidate: 3600 },
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return [];
+    return (await res.json()) as T[];
+  } catch {
+    return [];
+  }
 }
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const now = new Date().toISOString();
-  const apiBase = getApiBase();
 
-  // 1. Statik sayfalar
+  // 1. Statik sayfalar (her zaman)
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE}/interviews`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
@@ -43,19 +68,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/dashboard/recommendations`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
-  // 2. Kategoriler (boş olmayanlar)
-  let categorySlugs: string[] = [];
-  const catData = await fetchJsonSafe<CategoryEnvelope>(`${apiBase}/api/v2/categories`);
-  if (catData?.data) {
-    categorySlugs = catData.data
-      .filter((c) => (c.question_count || 0) > 0)
-      .map((c) => c.slug)
-      .filter(Boolean);
-  } else {
-    // Fallback
+  // 2. Kategoriler — DB'den unique
+  const cats = await fetchSupabaseSafe<Category>("questions", "category", "is_published=eq.true");
+  let categorySlugs: string[] = Array.from(
+    new Set(cats.map((c) => c.category).filter(Boolean))
+  );
+  if (categorySlugs.length === 0) {
     categorySlugs = ["python-basics", "data-structures", "list-dict", "pandas", "algorithms"];
   }
-
   const categoryPages: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
     url: `${BASE}/interviews/${slug}`,
     lastModified: now,
@@ -63,13 +83,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 3. Sorular
-  let questions: Question[] = [];
-  const qData = await fetchJsonSafe<ListResponse<Question>>(`${apiBase}/api/v2/questions/all?limit=500`);
-  if (qData) {
-    questions = qData.items || qData.data || [];
-  }
-
+  // 3. Sorular — slug + category
+  const questions = await fetchSupabaseSafe<Question>(
+    "questions",
+    "category,title,slug,updated_at",
+    "is_published=eq.true"
+  );
   const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
     url: `${BASE}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
     lastModified: q.updated_at || now,
@@ -77,14 +96,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // 4. 🆕 Tutorials (DB'den) — yüksek SEO değeri
-  let tutorials: Tutorial[] = [];
-  // Backend'de tutorials endpoint yoksa fallback hard-coded liste
-  const tData = await fetchJsonSafe<{ data: Tutorial[] } | Tutorial[]>(`${apiBase}/api/v2/tutorials`);
-  if (tData) {
-    tutorials = Array.isArray(tData) ? tData : tData.data || [];
-  } else {
-    // Fallback: SEO_CONTENT.py'deki tutorial_slug'lardan üret (unique)
+  // 4. Tutorials — DB'den (varsa), yoksa fallback hard-coded liste
+  let tutorials: Tutorial[] = await fetchSupabaseSafe<Tutorial>(
+    "tutorials",
+    "slug,updated_at,published_at",
+    "is_published=eq.true"
+  );
+  if (tutorials.length === 0) {
     const fallbackSlugs = [
       "python-palindrome-cozum",
       "python-fizzbuzz-algoritma",
@@ -98,12 +116,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     ];
     tutorials = fallbackSlugs.map((slug) => ({ slug }));
   }
-
   const tutorialPages: MetadataRoute.Sitemap = tutorials.map((t) => ({
     url: `${BASE}/guides/${t.slug}`,
     lastModified: t.updated_at || t.published_at || now,
     changeFrequency: "monthly" as const,
-    priority: 0.85, // Yüksek öncelik — uzun form içerik
+    priority: 0.85,
   }));
 
   return [...staticPages, ...categoryPages, ...questionPages, ...tutorialPages];
