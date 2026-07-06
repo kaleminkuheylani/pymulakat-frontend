@@ -5,7 +5,18 @@ export default function robots(): MetadataRoute.Robots {
     rules: [
       {
         userAgent: "*",
-        allow: ["/", "/login", "/register", "/interviews", "/guides", "/dashboard", "/terms", "/profile"],
+        // Wildcard (*) ile prefix match: /interviews/* → /interviews/python-basics dahil
+        allow: [
+          "/",
+          "/login",
+          "/register",
+          "/interviews/*",
+          "/guides/*",
+          "/dashboard",
+          "/dashboard/*",
+          "/terms",
+          "/profile",
+        ],
         disallow: ["/_next/", "/api/", "/admin/", "/auth/callback", "/auth/reset-password"],
       },
     ],

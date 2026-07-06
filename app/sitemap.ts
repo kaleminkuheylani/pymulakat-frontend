@@ -1,11 +1,17 @@
 import type { MetadataRoute } from "next";
 import { slugifyTitle } from "../lib/questionMeta";
+import questionsData from "../lib/questions.json";
 
 const BASE = "https://pythonmulakat.com";
 
 interface Category { category?: string | null; question_count?: number; }
 interface Question { id: number; category?: string; title?: string; slug?: string | null; updated_at?: string | null; }
 interface Tutorial { slug?: string | null; updated_at?: string | null; published_at?: string | null; }
+
+// Soru listesi: DB source of truth (QUESTIONS-v3.py → Supabase seed → backend).
+// Build sirasinda prebuild script (scripts/fetch-questions.mjs) backend'den cekip
+// lib/questions.json'a yazar. Buradan import ediyoruz — her build DB'nin en guncel hali.
+const QUESTIONS_MANIFEST: Array<{ category: string; slug: string }> = questionsData;
 
 // Vercel build sınıri 60s. Backend fetch bazen yavas olur, bu yuzden
 // Supabase REST API'sinden doğrudan minimal veri çekiyoruz (anon key,
@@ -87,22 +93,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.8,
   }));
 
-  // 3. Sorular — slug + category
-  const questions = await fetchSupabaseSafe<Question>(
-    "questions",
-    "category,title,slug,updated_at",
-    "is_published=eq.true"
-  );
-  const questionPages: MetadataRoute.Sitemap = questions
-    .filter((q): q is Question & { category: string; title: string } =>
-      Boolean(q.category && q.title)
-    )
-    .map((q) => ({
-      url: `${BASE}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
-      lastModified: q.updated_at || now,
-      changeFrequency: "monthly" as const,
-      priority: 0.7,
-    }));
+  // 3. Sorular — DB source of truth (prebuild QUESTIONS_MANIFEST)
+  // QUESTIONS-v3.py → Supabase seed → backend /api/v2/questions/all → lib/questions.json
+  const questionPages: MetadataRoute.Sitemap = QUESTIONS_MANIFEST.map((q) => ({
+    url: `${BASE}/interviews/${q.category}/${q.slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
 
   // 4. Tutorials — DB'den (varsa), yoksa fallback hard-coded liste
   let tutorials: Tutorial[] = await fetchSupabaseSafe<Tutorial>(

@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "prebuild": "node scripts/fetch-questions.mjs",
     "dev": "next dev",
     "build": "next build --webpack",
     "start": "node .next/standalone/server.js",
