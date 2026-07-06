@@ -46,8 +46,4 @@ screenshot-readonly.mjs
 screenshot-landing.mjs
 screenshot-alternatives.mjs
 
-# Build artifact (prebuild script tarafından üretilir)
-lib/questions.json
-# Q-V4 dosyaları repo'da commit edilir (Vercel build için gerekli)
-# lib/questions-v4-static.json
-# lib/questions-v4-full.json
+# Frontend'de soru verisi artık YOK — backend DB source of truth

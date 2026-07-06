@@ -6,7 +6,7 @@
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { Question, QuestionTests } from "../../../../../api/v2/questions";
-import { getQuestionMeta } from "../../../../../lib/questionMeta";
+import { toQuestionMetaView } from "../../../../../lib/questionMeta";
 import MarkdownLite from "./MarkdownLite";
 
 interface Props {
@@ -41,29 +41,19 @@ export default function QuestionDescriptionContent({
   revealedHints,
   onRevealHint,
 }: Props) {
-  const questionMeta = getQuestionMeta(interview.id);
+  const questionMeta = toQuestionMetaView(interview);
 
-  // Related — DB öncelikli, fallback QuestionMeta
-  const dbRelated =
-    interview.related_questions && interview.related_questions.length > 0
-      ? interview.related_questions
-      : null;
+  // Related — sadece DB (interview.related_question_ids)
+  const relatedIds = interview.related_question_ids || [];
+  const metaRelated = relatedIds.map((rid) => ({
+    id: rid,
+    title: `Soru #${rid}`, // Title DB'den linked fetch ile gelir (ileride batch)
+    category: interview.category || "python-basics",
+    level: interview.level || "beginner",
+    slug: String(rid),
+  }));
 
-  const metaRelated =
-    questionMeta.related_questions && questionMeta.related_questions.length > 0
-      ? questionMeta.related_questions.map((rid) => {
-          const m = getQuestionMeta(rid);
-          return {
-            id: rid,
-            title: m.title,
-            category: m.topic || "python-basics",
-            level: "beginner",
-            slug: m.slug,
-          };
-        })
-      : [];
-
-  const relatedToShow = dbRelated || metaRelated;
+  const relatedToShow = metaRelated.length > 0 ? metaRelated : null;
 
   return (
     <div className="space-y-5">
@@ -257,7 +247,7 @@ export default function QuestionDescriptionContent({
             {relatedToShow.map((rq) => (
               <Link
                 key={rq.id}
-                href={`/interviews/${slugifyCategory(rq.category || "python-basics")}/${rq.slug || getQuestionMeta(rq.id)?.slug || String(rq.id)}`}
+                href={`/interviews/${slugifyCategory(rq.category || "python-basics")}/${rq.slug || String(rq.id)}`}
                 className="flex items-center gap-2.5 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
               >
                 <span className="flex-1 text-sm text-white/80 group-hover:text-white line-clamp-2">

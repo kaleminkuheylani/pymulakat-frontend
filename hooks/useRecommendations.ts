@@ -5,7 +5,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "./useUser";
-import { QUESTION_META, getQuestionMeta } from "../lib/questionMeta";
+
 import {
   scoreQuestion,
   scoreTutorial,
@@ -44,12 +44,14 @@ export function useRecommendations(limit: number = 10) {
         return;
       }
 
-      // Fallback: local scoring
-      setItems(computeLocalRecommendations(user, limit));
+      // Fallback: local scoring (async DB fetch)
+      const local = await computeLocalRecommendations(user, limit);
+      setItems(local);
       setContext({ is_authenticated: !!user, top_categories: [] });
     } catch (err: any) {
       setError(err.message);
-      setItems(computeLocalRecommendations(user, limit));
+      const local = await computeLocalRecommendations(user, limit);
+      setItems(local);
     } finally {
       setLoading(false);
     }
@@ -62,7 +64,7 @@ export function useRecommendations(limit: number = 10) {
   return { items, context, loading, error, refresh: fetchRecommendations };
 }
 
-function computeLocalRecommendations(user: any, limit: number): ScoredItem[] {
+async function computeLocalRecommendations(user: any, limit: number): Promise<ScoredItem[]> {
   const ctx: UserContext = {
     top_categories: ["python-basics", "strings"],
     weak_categories: [],
@@ -71,17 +73,27 @@ function computeLocalRecommendations(user: any, limit: number): ScoredItem[] {
     user_id: user?.id,
   };
 
-  const all = Object.values(QUESTION_META).filter((q) => q && q.slug);
+  // DB'den soru listesi çek (fallback — backend recommendations başarısız olursa)
+  let all: Array<{ id: number; title: string; category: string; level: string; slug: string }> = [];
+  try {
+    const res = await fetch(`${API_BASE}/api/v2/questions/all?limit=200`, { cache: "no-store" });
+    if (res.ok) {
+      const data = await res.json();
+      all = (data?.data || []).filter((q: any) => q && q.slug);
+    }
+  } catch {
+    // empty
+  }
 
   const questionItems: ScoredItem[] = all
     .map((q) => ({
       type: "question" as const,
       id: q.id,
       title: q.title,
-      category: q.topic,
+      category: q.category,
       slug: q.slug,
-      score: scoreQuestion({ id: q.id, category: q.topic, level: q.difficulty_note.includes("intermediate") ? "intermediate" : "beginner" }, ctx),
-      reason: explainQuestion(q.topic, q.difficulty_note.includes("intermediate") ? "intermediate" : "beginner", ctx),
+      score: scoreQuestion({ id: q.id, category: q.category, level: q.level }, ctx),
+      reason: explainQuestion(q.category, q.level, ctx),
     }))
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);

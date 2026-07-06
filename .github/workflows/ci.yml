@@ -31,10 +31,6 @@ jobs:
           node-version: "22"
           cache: npm
       - run: npm ci --no-audit --no-fund
-      - name: Prebuild
-        run: node scripts/fetch-questions.mjs
-        env:
-          NEXT_PUBLIC_API_URL: https://pymulakat-backend-production.up.railway.app
       - run: npm run build
         env:
           NEXT_PUBLIC_SUPABASE_URL: https://placeholder.supabase.co

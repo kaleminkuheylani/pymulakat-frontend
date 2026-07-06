@@ -2,7 +2,7 @@
 
 import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
-import { getQuestionMeta, slugifyTitle } from "../lib/questionMeta";
+import { slugifyTitle } from "../lib/questionMeta";
 import { useUser } from "../hooks/useUser";
 
 interface QuestionItem {
@@ -109,9 +109,8 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
         const s = searchQuery.toLowerCase().trim();
         const inTitle = q.title?.toLowerCase().includes(s);
         const inDesc = q.description?.toLowerCase().includes(s);
-        // Topic artık QuestionMeta'dan geliyor (DB'de yok)
-        const meta = getQuestionMeta(typeof q.id === "number" ? q.id : parseInt(String(q.id), 10));
-        const inTopic = meta.topic?.toLowerCase().includes(s);
+        // Topic artık QuestionMeta'dan geliyor (DB'de yok), 10));
+        const inTopic = (q as any).topic?.toLowerCase().includes(s);
         const inTags = q.tags?.some((t) => t.toLowerCase().includes(s));
         if (!inTitle && !inDesc && !inTopic && !inTags) return false;
       }
@@ -294,7 +293,7 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
 
                     <td className="px-4 py-3">
                       <Link
-                        href={`/interviews/${q.category || currentCategory}/${(q as any).slug || (() => { const m = getQuestionMeta(typeof q.id === "number" ? q.id : parseInt(String(q.id), 10)); return m?.slug || slugifyTitle(q.title || m?.title || String(q.id)); })()}`}
+                        href={`/interviews/${q.category || currentCategory}/${(q as any).slug || slugifyTitle(q.title || String(q.id))}`}
                         className="block group/title"
                       >
                         <div className="text-sm font-medium text-white/90 group-hover/title:text-amber-400 transition-colors">
@@ -332,7 +331,7 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
 
                     <td className="px-4 py-3 align-top text-right">
                       <Link
-                        href={`/interviews/${q.category || currentCategory}/${(q as any).slug || (() => { const m = getQuestionMeta(typeof q.id === "number" ? q.id : parseInt(String(q.id), 10)); return m?.slug || slugifyTitle(q.title || m?.title || String(q.id)); })()}`}
+                        href={`/interviews/${q.category || currentCategory}/${(q as any).slug || slugifyTitle(q.title || String(q.id))}`}
                         className="inline-flex items-center justify-center w-6 h-6 rounded text-white/30 hover:text-amber-400 hover:bg-amber-500/10 transition-all"
                         aria-label="Çöz"
                       >

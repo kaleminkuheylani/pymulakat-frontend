@@ -1,6 +1,5 @@
 import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
-import { QUESTION_META } from "./lib/questionMeta";
 
 // ═════════════════════════════════════════════════════════
 // MIDDLEWARE — Host + Canonical URL routing
@@ -8,9 +7,51 @@ import { QUESTION_META } from "./lib/questionMeta";
 // www.pythonmulakat.com -> 308 pythonmulakat.com (apex)
 // /interviews/{category}/{id}   -> 308 /interviews/{category}/{slug}
 // /interviews/{category}/{slug} -> render (canonical, indexlenir)
+//
+// DB source of truth: build time'da backend /api/v2/questions/all'dan map çekilir.
+// Vercel Edge runtime'da çalışır (10s timeout).
 // ═════════════════════════════════════════════════════════
 
-export function middleware(request: NextRequest) {
+const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+
+// Build time'da ve runtime'da idToSlug map'i lazy yükle.
+// 1 saatlik revalidate — DB'de yeni soru eklenirse max 1 saat gecikmeyle canonical URL'ler güncellenir.
+let idToSlugCache: Map<number, string> | null = null;
+let cacheTs = 0;
+const CACHE_TTL = 3600 * 1000; // 1 saat
+
+async function getIdToSlug(): Promise<Map<number, string>> {
+  if (idToSlugCache && Date.now() - cacheTs < CACHE_TTL) {
+    return idToSlugCache;
+  }
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${API}/api/v2/questions/all?limit=500`, {
+      signal: controller.signal,
+      next: { revalidate: 3600 },
+    });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const data = await res.json();
+      const map = new Map<number, string>();
+      for (const q of data?.data || []) {
+        if (typeof q.id === "number" && q.slug) {
+          map.set(q.id, q.slug);
+        }
+      }
+      idToSlugCache = map;
+      cacheTs = Date.now();
+      return map;
+    }
+  } catch {
+    // Fallback: boş map → legacy ID URL'leri middleware'den geçer,
+    // page.tsx 404 verir
+  }
+  return new Map();
+}
+
+export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get("host") || "";
 
@@ -29,30 +70,22 @@ export function middleware(request: NextRequest) {
   }
 
   const [, category, idOrSlug] = match;
-
-  // Eğer slug ise (parseInt NaN dönerse) — canonical, geç
   const asNumber = parseInt(idOrSlug, 10);
   if (isNaN(asNumber)) {
+    // Slug ise — canonical, geç
     return NextResponse.next();
   }
 
-  // ID geldi — QuestionMeta'dan slug al
-  const meta = QUESTION_META[asNumber];
-  if (!meta || !meta.slug) {
-    return NextFound();
+  // ID geldi — DB'den slug al
+  const map = await getIdToSlug();
+  const slug = map.get(asNumber);
+  if (!slug) {
+    return new NextResponse(null, { status: 404 });
   }
 
-  // 308 Permanent Redirect (canonical, tarayıcı cache'ler)
-  // ✅ Slug'ı URL-encode et (Türkçe karakterler dahil)
-  const slugEncoded = encodeURIComponent(meta.slug);
   const url = request.nextUrl.clone();
-  url.pathname = `/interviews/${category}/${slugEncoded}`;
+  url.pathname = `/interviews/${category}/${encodeURIComponent(slug)}`;
   return NextResponse.redirect(url, 308);
-}
-
-// Yardımcı: sayfa render'a düşsün, page.tsx 404 versin
-function NextFound() {
-  return new NextResponse(null, { status: 404 });
 }
 
 export const config = {

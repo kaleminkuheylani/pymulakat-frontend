@@ -9,25 +9,8 @@ import type { Metadata } from "next";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
 import { getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
-import questionsV4Full from "../../../../lib/questions-v4-full.json";
 
-interface V4FullQuestion {
-  id: number;
-  slug: string;
-  category: string;
-  title: string;
-  description: string;
-  starter_code: string;
-  hints: string[];
-  complexity: string;
-  level: string;
-  explanation: string;
-  tags: string[];
-}
-
-function getV4FromBuild(slug: string): V4FullQuestion | null {
-  return (questionsV4Full as V4FullQuestion[]).find((q) => q.slug === slug) || null;
-}
+// Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
 
 export const dynamic = "force-dynamic";
 
@@ -60,31 +43,13 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
     const protocol = host.includes("localhost") ? "http" : "https";
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
 
-    // ✅ Slug'ı ID'ye çevir (canonical URL routing)
+    // ✅ Slug veya ID'yi kabul et → backend by-slug API veya ID fetch
     let actualId = id;
     const asNum = parseInt(id, 10);
 
-    // 🆕 Önce build-time Q-V4 data (backend bagimsiz, Railway 502 workaround)
     if (isNaN(asNum)) {
+      // Slug → backend by-slug
       const slug = id;
-      // Q-V4: build-time data var mi?
-      const v4 = getV4FromBuild(slug);
-      if (v4) {
-        return {
-          id: v4.id,
-          title: v4.title,
-          description: v4.description,
-          explanation: v4.explanation,
-          complexity: v4.complexity,
-          level: v4.level,
-          category: v4.category,
-          hints: v4.hints,
-          slug: v4.slug,
-          related_concepts: [],
-          tags: v4.tags,
-        };
-      }
-      // Q-V3: backend by-slug API
       try {
         const bySlugRes = await fetch(
           `${apiUrl}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,
@@ -97,7 +62,7 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
       } catch {
         // Fallback: slug -> ID resolver
       }
-      const resolvedId = getIdFromSlug(slug);
+      const resolvedId = await getIdFromSlug(slug, apiUrl);
       if (resolvedId) {
         actualId = String(resolvedId);
       }
@@ -236,8 +201,8 @@ export default async function Page({ params, searchParams }: PageProps) {
     resolvedId = _asNum;  // Eski ID URL (legacy /interviews/python-basics/3 gibi)
   } else {
     // Slug → ID cozumleme:
-    // 1) Oncelikle QUESTION_META (build-time, hizli, eski 1-88 slug'lar)
-    resolvedId = getIdFromSlug(resolvedParams.id);
+    // 1) Backend by-slug API (runtime)
+    resolvedId = await getIdFromSlug(resolvedParams.id);
     // 2) Q-v4 (89+) icin DB uzerinden by-slug API dene (runtime fetch)
     if (!resolvedId) {
       try {

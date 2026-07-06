@@ -1,17 +1,32 @@
 import type { MetadataRoute } from "next";
-import { slugifyTitle } from "../lib/questionMeta";
-import questionsData from "../lib/questions.json";
 
 const BASE = "https://pythonmulakat.com";
+const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
-interface Category { category?: string | null; question_count?: number; }
-interface Question { id: number; category?: string; title?: string; slug?: string | null; updated_at?: string | null; }
+interface Category { category?: string | null; }
 interface Tutorial { slug?: string | null; updated_at?: string | null; published_at?: string | null; }
 
-// Soru listesi: DB source of truth (QUESTIONS-v3.py → Supabase seed → backend).
-// Build sirasinda prebuild script (scripts/fetch-questions.mjs) backend'den cekip
-// lib/questions.json'a yazar. Buradan import ediyoruz — her build DB'nin en guncel hali.
-const QUESTIONS_MANIFEST: Array<{ category: string; slug: string }> = questionsData;
+// Soru listesi: build sırasında backend /api/v2/questions/all'dan çekilir (DB source of truth)
+// Kod-içi veri YOK. Timeout 8s — Vercel 60s build limit'ine uy.
+async function fetchQuestionsFromBackend(): Promise<Array<{ category: string; slug: string }>> {
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${API}/api/v2/questions/all`, {
+      signal: controller.signal,
+      next: { revalidate: 3600 },
+    });
+    clearTimeout(timeout);
+    if (!res.ok) return [];
+    const data = await res.json();
+    const items: Array<{ category?: string; slug?: string }> = data?.data || [];
+    return items
+      .filter((q) => q.category && q.slug)
+      .map((q) => ({ category: q.category!, slug: q.slug! }));
+  } catch {
+    return [];
+  }
+}
 
 // Vercel build sınıri 60s. Backend fetch bazen yavas olur, bu yuzden
 // Supabase REST API'sinden doğrudan minimal veri çekiyoruz (anon key,
@@ -74,40 +89,39 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/dashboard/recommendations`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
-  // 2. Kategoriler — DB'den unique
-  const cats = await fetchSupabaseSafe<Category>("questions", "category", "is_published=eq.true");
-  let categorySlugs: string[] = Array.from(
-    new Set(
-      cats
-        .map((c: Category) => c.category)
-        .filter((c): c is string => Boolean(c))
-    )
-  );
-  if (categorySlugs.length === 0) {
-    categorySlugs = ["python-basics", "data-structures", "list-dict", "pandas", "algorithms"];
-  }
+  // 2. Soru + kategori listesi — backend'den (tek fetch, hem kategori hem slug döner)
+  const questions = await fetchQuestionsFromBackend();
+  const categorySlugs = Array.from(new Set(questions.map((q) => q.category)));
   const categoryPages: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
     url: `${BASE}/interviews/${slug}`,
     lastModified: now,
     changeFrequency: "weekly" as const,
     priority: 0.8,
   }));
-
-  // 3. Sorular — DB source of truth (prebuild QUESTIONS_MANIFEST)
-  // QUESTIONS-v3.py → Supabase seed → backend /api/v2/questions/all → lib/questions.json
-  const questionPages: MetadataRoute.Sitemap = QUESTIONS_MANIFEST.map((q) => ({
+  const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
     url: `${BASE}/interviews/${q.category}/${q.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  // 4. Tutorials — DB'den (varsa), yoksa fallback hard-coded liste
-  let tutorials: Tutorial[] = await fetchSupabaseSafe<Tutorial>(
-    "tutorials",
-    "slug,updated_at,published_at",
-    "is_published=eq.true"
-  );
+  // 4. Tutorials — backend'den (DB source of truth)
+  let tutorials: Tutorial[] = [];
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(`${API}/api/v2/tutorials?limit=500`, {
+      signal: controller.signal,
+      next: { revalidate: 3600 },
+    });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const data = await res.json();
+      tutorials = data?.data || [];
+    }
+  } catch {
+    // empty
+  }
   if (tutorials.length === 0) {
     const fallbackSlugs = [
       "python-palindrome-cozum",

@@ -58,73 +58,83 @@ interface FlowResponse {
     total_attempts?: number;
     total_items?: number;
   };
+  items?: FlowItem[];
+  next_cursor?: string | null;
+  source?: string;
 }
 
 const API = () => process.env.NEXT_PUBLIC_API_URL || "";
 
 // 📌 Local fallback: backend /flow endpoint'i yoksa veya timeout olursa
-// QUESTION_META + lib'ten client-side akis uretir. ML yok, sadece siralama.
-import { QUESTION_META, getQuestionMeta } from "../../lib/questionMeta";
+// Soru listesini backend'den çeker (DB source of truth).
+const EMPTY: FlowResponse = {
+  sections: { personal: [], recent: [], popular: [], next_level: [] },
+  context: { is_authenticated: false, solved_categories: [], success_rate: 0, target_level: "beginner" },
+  items: [],
+  next_cursor: null,
+  source: "empty",
+};
 
-function buildLocalFallback(isAuthed: boolean = false): FlowResponse {
-  // Tum sorulari QUESTION_META'dan al, siraya gore
-  const allIds = Object.keys(QUESTION_META)
-    .map(Number)
-    .filter((id) => !isNaN(id) && QUESTION_META[id]?.slug)
-    .sort((a, b) => a - b);
+async function buildLocalFallback(isAuthed: boolean = false): Promise<FlowResponse> {
+  const api = API();
+  if (!api) return { ...EMPTY, context: { ...EMPTY.context, is_authenticated: isAuthed } };
 
-  const now = Date.now();
-  const maxId = Math.max(...allIds, 88);
+  try {
+    const res = await fetch(`${api}/api/v2/questions/all`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return { ...EMPTY, context: { ...EMPTY.context, is_authenticated: isAuthed } };
+    const data = await res.json();
+    const all: Array<any> = data?.data || [];
 
-  // ID-bazli tarih (DB created_at'e guvenmiyoruz)
-  // maxId = bugun, dusuk id = eski (gun sayisi = maxId - id)
-  const items: FlowItem[] = allIds.map((id) => {
-    const q = QUESTION_META[id];
-    const daysAgo = maxId - id;
+    const now = Date.now();
+    const items: FlowItem[] = all
+      .filter((q) => q.slug)
+      .map((q) => ({
+        type: "question" as const,
+        id: q.id,
+        title: q.title,
+        category: q.category,
+        level: q.level || "beginner",
+        slug: q.slug,
+        score: 100 - q.id,
+        reason: "📌 Öneri",
+        created_at: new Date(now - q.id * 86400000).toISOString(),
+        view_count: 0,
+        attempt_count: 0,
+      }));
+
+    // recent: en yüksek ID = en yeni eklenen
+    const recent = items.slice().sort((a, b) => b.id - a.id).slice(0, 5);
+    // personal: ilk 5 ID (temel sorular)
+    const personal = items.slice(0, 5);
+    // popular: klasik 1-15
+    const popular = items.filter((i) => i.id >= 1 && i.id <= 15).slice(0, 5);
+    // recommended: 6-25
+    const recommended = items.filter((i) => i.id >= 6 && i.id <= 25).slice(0, 5);
+
+    for (const p of popular) p.reason = "🔥 Klasik — mülakatlarda sıkça çıkıyor";
+    for (const r of recent) r.reason = `🆕 #${r.id} — yakın zamanda eklendi`;
     return {
-      type: "question" as const,
-      id: q.id,
-      title: q.title,
-      category: q.topic,
-      level: q.difficulty_note?.includes("intermediate") ? "intermediate" : "beginner",
-      slug: q.slug,
-      score: 100 - id,
-      reason: "📌 Öneri",
-      created_at: new Date(now - daysAgo * 86400000).toISOString(),
-      view_count: 0,
-      attempt_count: 0,
+      sections: { personal, recent, popular, next_level: recommended, recommended },
+      context: {
+        is_authenticated: isAuthed,
+        solved_categories: [],
+        top_categories: [],
+        weak_categories: [],
+        success_rate: 0,
+        target_level: "beginner",
+        current_level: "beginner",
+        total_attempts: 0,
+        total_items: items.length,
+      },
+      items: [...personal, ...popular, ...recent, ...recommended],
+      next_cursor: null,
+      source: "local-fallback",
     };
-  });
-
-  // 📌 Backend ile ayni mantik (id-bazli tarih fallback)
-  // recent: maxId'ye en yakin = en yeni (id buyuk = yeni)
-  const recent = items
-    .slice()
-    .sort((a, b) => b.id - a.id)
-    .slice(0, 5);
-  // personal: ilk 5 ID sirasi (temel sorular)
-  const personal = items.slice(0, 5);
-  // popular: ID 1-15 klasikler (gercek DB view yoksa fallback)
-  const popular = items.filter((i) => i.id >= 1 && i.id <= 15).slice(0, 5);
-  // recommended: ID 6-25 (baslangic-oncesi tavsiye)
-  const recommended = items.filter((i) => i.id >= 6 && i.id <= 25).slice(0, 5);
-
-  for (const p of popular) p.reason = "🔥 Klasik — mülakatlarda sıkça çıkıyor";
-  for (const r of recent) r.reason = `🆕 #${r.id} — yakın zamanda eklendi`;
-
-  return {
-    sections: { personal, recent, popular, next_level: recommended },
-    context: {
-      is_authenticated: isAuthed,
-      solved_categories: [],
-      top_categories: [],
-      success_rate: 0,
-      current_level: "beginner",
-      target_level: "beginner",
-      total_attempts: 0,
-      total_items: personal.length + recent.length + popular.length + recommended.length,
-    },
-  };
+  } catch {
+    return { ...EMPTY, context: { ...EMPTY.context, is_authenticated: isAuthed } };
+  }
 }
 
 export default function DashboardHome() {
@@ -271,7 +281,7 @@ export default function DashboardHome() {
 
           {/* 2 TAB */}
           <div className="flex gap-1 border-b border-white/10">
-            <TabButton active={tab === "personal"} onClick={() => setTab("personal")} label="✨ Sana Özel" count={flow ? ((flow.sections.personal?.length || 0) + (flow.sections.recent?.length || 0) + (flow.sections.popular?.length || 0) + (flow.sections.next_level?.length || flow.sections.recommended?.length || 0)) : 0} />
+            <TabButton active={tab === "personal"} onClick={() => setTab("personal")} label="✨ Sana Özel" count={flow ? ((flow.sections?.personal?.length || 0) + (flow.sections?.recent?.length || 0) + (flow.sections?.popular?.length || 0) + (flow.sections?.next_level?.length || 0)) : 0} />
             <TabButton active={tab === "community"} onClick={() => setTab("community")} label="💬 Topluluk" count={community.length} />
           </div>
 

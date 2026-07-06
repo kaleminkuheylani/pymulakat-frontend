@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { interviewsAPI, AttemptResponse } from "../../api/v2/questions";
-import { getQuestionMeta, slugifyTitle } from "../../lib/questionMeta";
+import { slugifyTitle } from "../../lib/questionMeta";
 
 // 🔹 Yardımcı: Relative Time
 function timeAgo(dateStr: string): string {
@@ -116,7 +116,7 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
         const isOrphaned = attempt.is_orphaned === true;
         const targetHref = `/interviews/${attempt.category || "python-basics"}/${
           attempt.question_slug ||
-          getQuestionMeta(attempt.question_id)?.slug ||
+          (attempt.question_id as any)?.slug ||
           (attempt.question_title ? slugifyTitle(attempt.question_title) : String(attempt.question_id))
         }`;
         return (

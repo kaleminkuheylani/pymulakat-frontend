@@ -12,7 +12,7 @@ import { useUser } from "../../../../hooks/useUser";
 import { usePyodide } from "../../../../hooks/usePyodide";
 import { parseFunctionSignature, parseUserInput, formatValue } from "../../../../components/parsePython";
 import { questionsAPI, Question, QuestionTests, TestCase } from "../../../../api/v2/questions";
-import { getQuestionMeta, getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
+import { slugifyTitle } from "../../../../lib/questionMeta";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
 
 
@@ -85,16 +85,9 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   // Slug → ID donusumu
   let questionId = parseInt(id, 10);
   if (isNaN(questionId)) {
-    const resolvedId = getIdFromSlug(id);
-    if (resolvedId) {
-      questionId = resolvedId;
-    } else {
-      return (
-        <div className="h-screen bg-[#050816] flex items-center justify-center">
-          <p className="text-red-400 text-sm">Geçersiz soru ID</p>
-        </div>
-      );
-    }
+    // Slug ise: server page.tsx zaten ID'ye resolve etmiş olmalı (middleware de yapar)
+    // Backend by-slug API zaten slug destekliyor, ID gerekmiyor
+    questionId = NaN;
   }
 
   // ─── Effects ──
@@ -228,7 +221,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     if (!category || !interview) return;
     const nextId = (interview.id || 0) + 1;
     const qSlug = (interview as any).slug
-      || getQuestionMeta(nextId)?.slug
+      || (nextId as any)?.slug
       || (interview.title ? slugifyTitle(interview.title) : String(nextId));
     router.push(`/interviews/${category}/${qSlug}`);
   }, [router, category, interview]);
@@ -403,7 +396,7 @@ function ShareModal({
   category: string;
   onClose: () => void;
 }) {
-  const slug = getQuestionMeta(questionId)?.slug || slugifyTitle(title);
+  const slug = (questionId as any)?.slug || slugifyTitle(title);
   const shareUrl = `https://pythonmulakat.com/interviews/${category}/${slug}`;
 
   const tweetText = `✅ ${title} çözdüm!\n\n${code.split("\n").slice(0, 6).join("\n")}\n\n${shareUrl} #python #mülakat`;
