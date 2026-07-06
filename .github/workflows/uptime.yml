@@ -1,0 +1,65 @@
+name: Uptime Monitor
+
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+
+jobs:
+  check:
+    name: Frontend + Critical Paths
+    runs-on: ubuntu-latest
+    steps:
+      - name: Root
+        run: |
+          status=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 https://pythonmulakat.com/ || echo "000")
+          [ "$status" = "200" ] || { echo "❌ Root unhealthy: $status"; exit 1; }
+          echo "✅ Root OK"
+
+      - name: Sample soru
+        run: |
+          status=$(curl -sS -o /dev/null -w "%{http_code}" --max-time 10 https://pythonmulakat.com/interviews/python-basics/palindrome-checker || echo "000")
+          [ "$status" = "200" ] || { echo "❌ Question page unhealthy: $status"; exit 1; }
+          echo "✅ Question page OK"
+
+      - name: Security headers
+        run: |
+          headers=$(curl -sSI --max-time 10 https://pythonmulakat.com/)
+          echo "$headers" | grep -qi "strict-transport-security" || { echo "❌ HSTS missing"; exit 1; }
+          echo "$headers" | grep -qi "content-security-policy" || { echo "❌ CSP missing"; exit 1; }
+          echo "$headers" | grep -qi "x-frame-options" || { echo "❌ X-Frame-Options missing"; exit 1; }
+          echo "✅ Security headers OK"
+
+      - name: Sitemap.xml
+        run: |
+          count=$(curl -sS --max-time 10 https://pythonmulakat.com/sitemap.xml | grep -c "<loc>" || echo 0)
+          [ "$count" -gt 50 ] || { echo "❌ Sitemap has only $count URLs"; exit 1; }
+          echo "✅ Sitemap OK ($count URLs)"
+
+      - name: GitHub Issue on failure
+        if: failure()
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const issues = await github.rest.issues.listForRepo({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'open',
+              labels: 'outage',
+            });
+            if (issues.data.length > 0) {
+              await github.rest.issues.createComment({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issues.data[0].number,
+                body: `Frontend uptime check failed: ${new Date().toISOString()}`,
+              });
+            } else {
+              await github.rest.issues.create({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                title: `🚨 Frontend outage — ${new Date().toISOString()}`,
+                body: 'GitHub Actions uptime check failed. Detaylar run log\'unda.',
+                labels: ['outage', 'automated'],
+              });
+            }
