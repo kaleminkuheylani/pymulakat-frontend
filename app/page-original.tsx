@@ -414,6 +414,57 @@ export default function HomePage() {
         </div>
       </section>
 
+      {/* ─── Ek İçerikler — Eğitim + Kod Örnekleri (logged-in user için) ── */}
+      <section className="relative z-10 px-6 py-12 max-w-6xl mx-auto">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          <Link
+            href="/python-egitimi"
+            className="group relative p-6 md:p-8 rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/8 to-transparent hover:border-amber-500/40 transition-all duration-300"
+          >
+            <div className="flex items-start gap-4">
+              <div className="text-4xl flex-shrink-0">🎓</div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-amber-300 transition-colors">
+                  Sıfırdan Eğitim Formatı
+                </h3>
+                <p className="text-sm md:text-base text-white/65 leading-relaxed mb-3">
+                  Altı dersten oluşan, sıralı, kapsamlı bir Python yol haritası. Temel kavramlardan generator, dekoratör, async/await gibi ileri konulara kadar — her ders çalıştırılabilir örnek, kısa açıklama ve pratik ödev içerir. Dağınık YouTube tutorial'ları arasında kaybolmak yerine baştan sona planlı bir eğitim takibi.
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-amber-300 text-sm font-semibold group-hover:gap-3 transition-all">
+                  Derslere göz at →
+                </span>
+              </div>
+            </div>
+            <div className="absolute top-3 right-3 text-[10px] px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/20 font-bold">
+              ÜYE
+            </div>
+          </Link>
+
+          <Link
+            href="/python-kodlari"
+            className="group relative p-6 md:p-8 rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/8 to-transparent hover:border-purple-500/40 transition-all duration-300"
+          >
+            <div className="flex items-start gap-4">
+              <div className="text-4xl flex-shrink-0">📚</div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-xl md:text-2xl font-bold text-white mb-2 group-hover:text-purple-300 transition-colors">
+                  17 Kod Örneği Kataloğu
+                </h3>
+                <p className="text-sm md:text-base text-white/65 leading-relaxed mb-3">
+                  Kategorize edilmiş, başlangıçta dost, seviye etiketli Python kodları: algoritmalar, veri yapıları, dosya işlemleri, regex, dekoratör, dataclass, async. Kendi başına “ne yazacağım?” diye düşünmeden önce bu kütüphaneden başla. Tarayıcıda aç, üzerinde oyna, kendi projelerine taşı.
+                </p>
+                <span className="inline-flex items-center gap-1.5 text-purple-300 text-sm font-semibold group-hover:gap-3 transition-all">
+                  Kod örneklerini gör →
+                </span>
+              </div>
+            </div>
+            <div className="absolute top-3 right-3 text-[10px] px-2 py-0.5 rounded-md bg-purple-500/15 text-purple-300 border border-purple-500/20 font-bold">
+              ÜYE
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* Highlight band — AI Koç farkı */}
       <section className="relative z-10 px-6 py-20">
         <div className="max-w-5xl mx-auto">

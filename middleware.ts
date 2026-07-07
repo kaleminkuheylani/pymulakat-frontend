@@ -74,6 +74,27 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  // 1.5) Auth-gated sayfalar: misafirler → /login (returnUrl ile geri döner)
+  // Python Online PUBLIC — sadece eğitim ve kodlar üye gerektirir.
+  const AUTH_GATED_PREFIXES = ["/python-egitimi", "/python-kodlari"];
+  const isGated = AUTH_GATED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
+
+  if (isGated) {
+    // Supabase SSR cookie ismi: sb-<project-ref>-auth-token
+    // project-ref: lhuhfgpjbnngjxzlvywp
+    const hasSession =
+      request.cookies.get("sb-lhuhfgpjbnngjxzlvywp-auth-token")?.value ||
+      request.cookies.get("sb-lhuhfgpjbnngjxzlvywp-auth-token-code-verifier")?.value ||
+      request.cookies.get("token")?.value;
+
+    if (!hasSession) {
+      const url = request.nextUrl.clone();
+      url.pathname = "/login";
+      url.searchParams.set("returnUrl", pathname);
+      return NextResponse.redirect(url, 302);
+    }
+  }
+
   // 2) /interviews/{category}/{id} -> slug (308 Permanent)
   const match = pathname.match(/^\/interviews\/([a-z0-9-]+)\/([a-z0-9-]+)$/i);
   if (!match) {

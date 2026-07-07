@@ -73,6 +73,31 @@ export default function PythonKodlariPage() {
           </div>
         </header>
 
+        {/* ═══════════════════════════════════════════════════════
+            YENİ BAŞLAYANLAR İÇİN — neden bu sayfa önemli? (uzun paragraf)
+           ═══════════════════════════════════════════════════════ */}
+        <section className="max-w-4xl mx-auto px-4 -mt-4 mb-12">
+          <article className="p-6 md:p-8 rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/8 via-indigo-500/3 to-transparent">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-2xl">📚</span>
+              <h2 className="text-xl md:text-2xl font-bold text-white">
+                Yeni başlıyorsan bu sayfa neden önemli?
+              </h2>
+            </div>
+            <div className="space-y-4 text-sm md:text-base text-white/75 leading-relaxed">
+              <p>
+                Python öğrenmeye yeni başlayan birinin en büyük sorunu şudur: “<strong className="text-purple-300">Kendi başıma ne yazacağımı bilemiyorum.</strong>” Bir tutorial’ı okuyup bitiriyorsun, ekranın başına geçiyorsun, ama ne yapacağını bilmiyorsun — çünkü tutorial sana <em>başkasının</em> yazdığı kodu gösterdi, <em>sen yazmayı</em> öğretmedi. Bu sayfa o boşluğu kapatmak için hazırlandı: altı kategoride düzenlenmiş, derlenmiş, üzerinde uzun uzun düşünülmüş <strong className="text-purple-300">kısa ve net 17 snippet</strong> burada. Başlangıç kategorisinden başlayıp string ters çevirme, palindrom kontrolü, EBOB hesaplama, listedeki tekrar eden elemanları kaldırma gibi <em>günlük hayatta gerçekten işine yarayacak</em> küçük kodlarla başlıyorsun. Bunlar sırf “akademik egzersiz” değil, gerçek bir veri yapısı, gerçek bir problem: yani bunları bir yarışma çözümünde, bir otomasyon betiğinde, bir web projesinde <em>kopyala-yapıştır</em> ile değil, gerçek bir ihtiyaç karşısında yazacak hâle geliyorsun.
+              </p>
+              <p>
+                İkinci adımda Algoritmalar kategorisinde binary search, quick sort, fibonacci’nin memoization’lı versiyonu, “iki sayının toplamı” klasikleri var. Bu snippetler <strong className="text-purple-300">mülakatlarda ve teknik görüşmelerde</strong> sürekli sorulan problemler — burada görmüş olmak, ileride bu algoritmaları duyduğunda “onu nereden biliyorum” diye düşünmeni sağlıyor. Veri Yapıları kategorisinde stack, queue ve linked list var; bu kodlar soyut veri yapısının <em>gerçek Python’da nasıl göründüğünü</em> gözüne sokuyor — üniversitede gördüğün “kavramsal” bilgi yerine, “ben şu sınıfı yazıp push/pop yaptığımda arka planda gerçekten şu oluyor” diye somut karşılığını alıyorsun. Dosya İşlemleri, Web/API ve OOP & Patterns kategorileri de <em>iş dünyasında her gün kullandığın araçları</em> gösteriyor: JSON okuma/yazma, CSV ayrıştırma, URL parametreleri ile çalışma, regex ile email doğrulama, dekoratörle fonksiyon zamanlama, dataclass ile veri modeli, context manager ile kaynak yönetimi. Bunların <em>her biri</em> çalışan projede karşına çıkacak pratik bilgiler.
+              </p>
+              <p>
+                Bu kütüphanenin en büyük avantajı <strong className="text-purple-300">okumaya teşvik etmesi</strong>: her snippetin üstünde bir <em>seviye etiketi</em> var (Başlangıç / Orta / İleri), kısa bir açıklama var, kodu görmek için “Kodu görüntüle”ye tıklamak gerekiyor — yani önce kodu kendin yazmayı deniyorsun, sonra tıklayıp doğru cevabı inceliyorsun. Bir adım daha ileri gitmek istersen snippetin altındaki <em>“Online editörde çalıştır”</em> butonuna basıp kodu tarayıcıda açıp üzerinde oynayarak davranışını gözlemliyorsun. Bu da <strong className="text-purple-300">referans defterin</strong> olmuş oluyor: bir algoritmayı, bir kalıbı, bir standart kütüphane kullanımını unuttuğunda buraya dönüp 30 saniyede doğru yazılışını bulabiliyorsun. Yeni başlayan biri olarak en kritik şey yalıtılmış syntax bilgisi değil, <em>“bu kalıbı şurada kullanacağım”</em> içgüdüsü — ve bu içgüdü, başkalarının yazdığı temiz ve çalışan kodu art arda okumaktan geçiyor.
+              </p>
+            </div>
+          </article>
+        </section>
+
         <main className="max-w-5xl mx-auto px-4 py-10 space-y-12">
           {CATEGORIES.map((cat) => {
             const items = CODE_SAMPLES.filter((s) => s.category === cat.slug);

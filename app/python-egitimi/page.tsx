@@ -96,6 +96,31 @@ export default function PythonEgitimiPage() {
           </div>
         </header>
 
+        {/* ═══════════════════════════════════════════════════════
+            YENİ BAŞLAYANLAR İÇİN — neden bu sayfa önemli? (uzun paragraf)
+           ═══════════════════════════════════════════════════════ */}
+        <section className="max-w-4xl mx-auto px-4 -mt-4 mb-12">
+          <article className="p-6 md:p-8 rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/8 via-amber-500/3 to-transparent">
+            <div className="flex items-center gap-2 mb-4">
+              <span className="text-2xl">🎯</span>
+              <h2 className="text-xl md:text-2xl font-bold text-white">
+                Yeni başlıyorsan bu sayfa neden önemli?
+              </h2>
+            </div>
+            <div className="space-y-4 text-sm md:text-base text-white/75 leading-relaxed">
+              <p>
+                İnternetteki Python derslerinin çoğu ya çok kuramsal kalıp “şu kavramı öğren” deyip geçiyor, ya da tam tersine parça parça YouTube videolarına dağılmış olduğu için başlangıçtan ileri seviyeye <strong className="text-amber-300">düzenli bir yol</strong> çizemiyorsun. Bu sayfa o iki uç arasındaki boşluğu doldurmak için tasarlandı: altı dersten oluşan, sıralı, kapsamlı bir yol haritası. <em>Temel Kavramlar</em>’dan başlayıp değişkenleri, kontrol yapılarını, fonksiyonları, veri yapılarını, nesne yönelimli programlamayı öğreniyor; son olarak <em>İleri Konular</em>’da generator, dekoratör, context manager ve async/await gibi profesyonel Python araçlarıyla tanışıyorsun. Yani bir yerde “öğrendim” diyebileceğin somut bir çerçeve sunuyoruz — büyük resmi kafanda kurmadan tek tek StackOverflow cevaplarında boğulmak zorunda kalmıyorsun.
+              </p>
+              <p>
+                Her dersin sonunda sadece okumakla yetinmemen için bir <strong className="text-amber-300">pratik ödevi</strong> var ve o ödevin çözümünü tarayıcıda, kurulum yapmadan, Pyodide ile anında yazıp çalıştırabilirsin. “Merhaba Dünya” örneğinin aksine burada her örnek <em>gerçek bir sorunu çözen kısa bir betik</em>: bir string ters çevirme, palindrom kontrolü, GCD hesaplama, binary search, fibonacci’nin memoization versiyonu, dekoratörle fonksiyon zamanlama, dataclass ile model tanımı, async görev çalıştırma. Bu yüzden dersleri okurken bir yandan kendi çözümünü yazıyor, hata aldığında neden hata aldığını anlıyor, sonra da doğru cevabı görüp <em>o anki kavramı gerçekten sindirmiş</em> oluyorsun. Görsel okuyucu değil, ellerini klavyeye atmış bir geliştirici olarak ilerliyorsun — bu da öğrendiğin her şeyin ertesi gün hâlâ aklında kalmasını sağlıyor.
+              </p>
+              <p>
+                Mülakata hazırlanan bir adaysan, kendi başına Python öğrenen bir öğrenciysen veya bootcamp sonrası “boşlukları doldurayım” diyorsan: bu eğitim formatı, dağınık kaynaklarla tek başına uğraşırken harcadığın saatleri sana geri veriyor. Her dersin üstünde <em>Başlangıç / Orta / İleri</em> etiketi var, böylece zamanın azsa doğrudan kendi seviyenden başlıyorsun; eğer temelin varsa ileri konulara atlayıp o konuyu oradan takip edebiliyorsun. Üstelik her dersten sonra pratik alıştırmanın çözümünü ilgili mülakat sorusu sayfasında gösteriyoruz, yani öğrendiğin teori <strong className="text-amber-300">gerçek mülakat bağlamında</strong> test ediliyor — bu sayede “öğrendim sandığım şeyi gerçekten yapabiliyor muyum?” sorusunun cevabını eğitimin içinde alıyorsun.
+              </p>
+            </div>
+          </article>
+        </section>
+
         <main className="max-w-5xl mx-auto px-4 py-10">
           <section className="mb-10">
             <h2 className="text-2xl font-bold mb-5">Dersler</h2>
