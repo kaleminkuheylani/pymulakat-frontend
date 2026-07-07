@@ -27,12 +27,12 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "Python Mülakat Soruları ve Online Pratik | Ücretsiz",
+      "Python Mülakat Soruları ve Online Pratik",
     template: "%s | Python Mülakat",
   },
 
   description:
-    "Python online mülakat hazırlığı için Türkçe interaktif platform. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas ve algoritmik düşünme sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al. Ücretsiz, kurulum gerektirmez.",
+    "Python online mülakat hazırlığı için Türkçe interaktif platform. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas ve algoritmik düşünme sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al.",
 
   keywords: [
     // Temel / Yeni başlayan
@@ -102,7 +102,7 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     url: "https://pythonmulakat.com",
     siteName: "Python Mülakat",
-    title: "Python Mülakat Hazırlığı | Yeni Başlayanlar İçin Ücretsiz Pratik",
+    title: "Python Mülakat Hazırlığı | Yeni Başlayanlar İçin",
     description:
       "Sıfırdan Python öğrenenler için Türkçe interaktif mülakat soruları. OOP, SQLite, Pandas, sandbox ve anlık AI geri bildirimi.",
     images: [

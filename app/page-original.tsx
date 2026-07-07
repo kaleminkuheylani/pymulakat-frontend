@@ -146,18 +146,10 @@ function Hero({ user: _ }: { user: any }) {
               whileTap={{ scale: 0.97 }}
               className="relative group bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
             >
-              <span className="relative z-10">Ücretsiz Başla — 60 Saniyede</span>
+              <span className="relative z-10">Sorulara Başla</span>
             </motion.button>
           </Link>
-          <Link href="/interviews/strings/51">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
-            >
-              👀 Kayıt Olmadan Dene
-            </motion.button>
-          </Link>
+          {/* 📌 "Kayıt Olmadan Dene" CTA kaldırıldı — proje tutarlılığı için. */}
           <Link href="/python-online">
             <motion.button
               whileHover={{ scale: 1.03 }}
@@ -508,7 +500,7 @@ export default function HomePage() {
                   whileTap={{ scale: 0.97 }}
                   className="bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
                 >
-                  Ücretsiz Başla — Kayıt Ol
+                  Hesap Oluştur
                 </motion.button>
               </Link>
               <Link href="/interviews/strings/51">

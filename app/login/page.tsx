@@ -566,7 +566,7 @@ function LoginFormInner() {
               href="/register"
               className="text-amber-400 hover:text-amber-300 font-semibold transition-colors"
             >
-              Ücretsiz Kayıt Ol
+              Kayıt Ol
             </Link>
           </motion.p>
         </div>
