@@ -244,25 +244,6 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       // Focus
       editor.focus();
 
-      // 📌 automaticLayout kapalı — vh bazlı parent'ta her URL bar açılıp kapanışında
-      // Monaco re-layout tetikleyip cursor titremesi yapıyordu. Bunun yerine kendi
-      // ResizeObserver'ımızla debounce'lı layout çağırıyoruz.
-      try {
-        const dom = editor.getDomNode();
-        if (dom && typeof ResizeObserver !== "undefined") {
-          let raf = 0;
-          const ro = new ResizeObserver(() => {
-            if (raf) cancelAnimationFrame(raf);
-            raf = requestAnimationFrame(() => {
-              try { editor.layout(); } catch {}
-            });
-          });
-          ro.observe(dom);
-          // Cleanup için domNode'a referans bağla
-          (dom as any).__ro = ro;
-        }
-      } catch {}
-
       setIsReady(true);
     };
 
@@ -273,10 +254,7 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       lineHeight: 1.55,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
-      // 📌 Kapalı — resize'lar bizim ResizeObserver'ımız tarafından yönetiliyor.
-      //    iOS Safari vh değişimlerinde Monaco'nun her tick re-layout yapıp
-      //    cursor titretmesini engeller.
-      automaticLayout: false,
+      automaticLayout: true,
       tabSize: 2,
       insertSpaces: true,
       wordWrap: "off" as const,
@@ -296,13 +274,14 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       lineNumbersMinChars: 2,
       foldingStrategy: "indentation" as const,
       readOnly,
-      // 📌 Copy/paste engelliyken DOM seviyesinde de koruma (text selection)
-      domReadOnly: readOnly || disableCopyPaste,
+      // 📌 domReadOnly SADCE readOnly için true — disableCopyPaste için değil.
+      //    disableCopyPaste (anti-cheat) sadece context menu + keyboard shortcut
+      //    blocker'larla yönetiliyor; domReadOnly=true yapmak cursor placement'i
+      //    bozuyor (logged-in kullanıcının tıklayıp imleç koyamamasına yol açıyordu).
+      domReadOnly: readOnly,
       cursorBlinking: "smooth" as const,
       cursorSmoothCaretAnimation: "on" as const,
-      // 📌 Smooth scroll kapalı — container resize'larında
-      //    cursor'un zıplamasını azaltır (layout shift daha az hissedilir).
-      smoothScrolling: false,
+      smoothScrolling: true,
       contextmenu: !disableCopyPaste,
       mouseWheelZoom: false,
       formatOnPaste: false,
