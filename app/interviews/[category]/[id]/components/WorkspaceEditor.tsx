@@ -1,7 +1,7 @@
 // WorkspaceEditor — sağ panel: Monaco editor + test results
 
 import { useState } from "react";
-import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../components/Monaco";
+import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../components/CodeEditor";
 import { TestRunResult } from "../../../../../hooks/usePyodide";
 import { QuestionTests } from "../../../../../api/v2/questions";
 import { getErrorLabel } from "../../../../../lib/errorClassifier";

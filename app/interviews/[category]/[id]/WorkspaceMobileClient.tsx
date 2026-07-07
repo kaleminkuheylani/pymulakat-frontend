@@ -18,8 +18,9 @@ import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
 
 
 // Code editor sadece client-side
+import type { CodeEditorRef } from "../../../../components/CodeEditor";
 const CodeEditor = dynamic(
-  () => import("../../../../components/Monaco").then((m) => m.CodeEditorMonaco),
+  () => import("../../../../components/CodeEditor").then((m) => m.CodeEditorMonaco),
   { ssr: false }
 );
 
@@ -40,8 +41,12 @@ export default function WorkspaceMobileClient({
   const router = useRouter();
   const { user } = useUser();
   const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
-  const editorRef = useRef<any>(null);
+  // 📌 Ref pattern — Monaco.tsx'teki stabil versiyonla uyumlu.
+  // CodeEditorRef typed ref + son bilinen kodu tutan fallback ref.
+  // Imperative API çağrıları (layout/focus) için stabil referans.
+  const editorRef = useRef<CodeEditorRef | null>(null);
   const editorContainerRef = useRef<HTMLDivElement | null>(null);
+  const lastExternalCodeRef = useRef<string>(initialInterview?.starter_code || "");
 
   // ─── State ──
   const [code, setCode] = useState<string>(initialInterview?.starter_code || "");
@@ -66,6 +71,11 @@ export default function WorkspaceMobileClient({
       if (playCountTimerRef.current) clearTimeout(playCountTimerRef.current);
     };
   }, []);
+  // 📌 lastExternalCodeRef'i code state ile senkronla — imperative API fallback.
+  useEffect(() => {
+    lastExternalCodeRef.current = code;
+  }, [code]);
+
   const [interview, setInterview] = useState<Question | null>(initialInterview);
   const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCases);
   const [running, setRunning] = useState(false);
