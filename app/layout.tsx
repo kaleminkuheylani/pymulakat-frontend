@@ -5,6 +5,7 @@ import "./global.css";
 import Script from "next/script";
 import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
+import MaintenanceNotice from "../components/MaintenanceNotice";
 import ClientOnly from "../components/ClientOnly";
 import CookieConsent from "../components/CookieConsent";
 
@@ -368,6 +369,9 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased min-h-screen`}
         suppressHydrationWarning
       >
+        <ClientOnly>
+          <MaintenanceNotice />
+        </ClientOnly>
         <ClientOnly fallback={<div style={{ height: 64 }} />}>
         <GlobalNav />
       </ClientOnly>
