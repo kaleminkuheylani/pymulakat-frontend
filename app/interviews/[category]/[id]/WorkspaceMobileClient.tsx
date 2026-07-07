@@ -81,14 +81,10 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   }
 
   const { category, id } = initialParams;
-
-  // Slug → ID donusumu
-  let questionId = parseInt(id, 10);
-  if (isNaN(questionId)) {
-    // Slug ise: server page.tsx zaten ID'ye resolve etmiş olmalı (middleware de yapar)
-    // Backend by-slug API zaten slug destekliyor, ID gerekmiyor
-    questionId = NaN;
-  }
+  // Slug veya ID — slug ise by-slug API, ID ise by-id API kullan
+  const isNumericId = /^\d+$/.test(id);
+  const questionSlugOrId = isNumericId ? null : id;
+  let questionId = isNumericId ? parseInt(id, 10) : 0;
 
   // ─── Effects ──
   // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi)
@@ -101,18 +97,26 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
     let cancelled = false;
     (async () => {
       try {
-        const q = await questionsAPI.getById(questionId, { includeStarter: true });
+        // Slug ise by-slug API, ID ise by-id API kullan
+        const q = questionSlugOrId
+          ? await questionsAPI.getBySlug(category, questionSlugOrId, { includeStarter: true })
+          : await questionsAPI.getById(questionId, { includeStarter: true });
         if (cancelled) return;
+        if (!q) {
+          toast.error("Soru bulunamadı");
+          return;
+        }
         setInterview(q);
         setCode(q.starter_code || "");
+        if (q.id) questionId = q.id;
       } catch (e: any) {
-        toast.error("Soru yüklenemedi", { description: "Bağlantını kontrol et." });
+        if (!cancelled) toast.error("Soru yüklenemedi", { description: "Bağlantını kontrol et." });
       }
     })();
     return () => {
       cancelled = true;
     };
-  }, [questionId]);
+  }, [questionId, category, questionSlugOrId]);
 
   useEffect(() => {
     if (!questionId || isNaN(questionId)) return;
