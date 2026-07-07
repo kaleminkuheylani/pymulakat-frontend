@@ -40,6 +40,7 @@ export default function WorkspaceMobileClient({
   const { user } = useUser();
   const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
   const editorRef = useRef<any>(null);
+  const editorContainerRef = useRef<HTMLDivElement | null>(null);
 
   // ─── State ──
   const [code, setCode] = useState<string>(initialInterview?.starter_code || "");
@@ -105,6 +106,38 @@ export default function WorkspaceMobileClient({
       window.scrollTo(0, 0);
     }
   }, []);
+
+  // 📌 Monaco cursor/tıklama konumu fix: container boyutu her değiştiğinde
+  //    (klavye aç/kapa, tab değişimi, orientation change) editor.layout()
+  //    çağırarak Monaco'nun iç hit-test tablosunu güncel tut. layout()
+  //    çağrılmazsa Monaco eski boyutlara göre koordinat hesaplayıp cursor'ı
+  //    kullanıcının dokunduğu yerden farklı bir satır/sütuna koyabiliyor.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const container = editorContainerRef.current;
+    if (!container) return;
+
+    const relayout = () => {
+      try {
+        if (editorRef.current && typeof editorRef.current.layout === "function") {
+          editorRef.current.layout();
+        }
+      } catch {
+        // Monaco henüz mount olmamış olabilir — sessizce yut
+      }
+    };
+
+    const ro = new ResizeObserver(() => relayout());
+    ro.observe(container);
+    window.addEventListener("orientationchange", relayout);
+    window.visualViewport?.addEventListener("resize", relayout);
+
+    return () => {
+      ro.disconnect();
+      window.removeEventListener("orientationchange", relayout);
+      window.visualViewport?.removeEventListener("resize", relayout);
+    };
+  }, [tab]);
 
   useEffect(() => {
     let cancelled = false;
@@ -275,6 +308,18 @@ export default function WorkspaceMobileClient({
     //    küçülüyor ama container aynı kalıyor; Monaco hit-test'i yanlış
     //    koordinata düşüp cursor'ü istenmeyen yere koyuyordu.
     <div className="h-[100dvh] min-h-screen flex flex-col bg-[#050816]">
+      {/* 📌 Gerçek SSR içerik bloğu — crawler/SEO için ilk HTML'de mevcut,
+          hydration sonrası yukarıdaki useEffect tarafından kaldırılır.
+          initialInterview server prop'undan geldiği için client state'e
+          (interview) bağımlı değil, ilk paint'te doğru içerik garanti. */}
+      {initialInterview && (
+        <div data-ssr-question className="sr-only" aria-hidden="true">
+          <h1>{initialInterview.title}</h1>
+          {(initialInterview as any).description && (
+            <p>{(initialInterview as any).description}</p>
+          )}
+        </div>
+      )}
       {/* Top bar */}
       <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[#0a0e1a]">
         <button onClick={handleBackToList} className="text-[10px] text-white/60 hover:text-white">
@@ -358,20 +403,19 @@ export default function WorkspaceMobileClient({
                 + console sabit 180px. Bu kombinasyon önceki 40vh'den ~%50 daha
                 geniş alan (~320px iPhone SE). */}
             <div
+              ref={editorContainerRef}
               className="flex-1 min-h-[320px] flex-shrink min-w-0 overflow-hidden"
-              // 📌 Android fix: Container'a tap handler'ı bağla. Monaco'nun
-              //    kendi tap handler'ı bazı Android Chrome build'lerinde
-              //    ilk tıklamayı "kaçırıyor" — focus kazanamıyor. Bu fallback
-              //    sayesinde kullanıcının parmağı Monaco'ya ulaşmadan önce
-              //    editöre focus veriyoruz, cursor yerleşimi garantili.
+              // 📌 Android/iOS cursor fix (gerçek neden): tıklama koordinatı
+              //    yanlış satıra düşüyordu çünkü container boyutu değiştiğinde
+              //    (klavye aç/kapa, tab geçişi, orientation change) Monaco'nun
+              //    kendi hit-test tablosu güncellenmiyordu. Eski kod her
+              //    pointerdown'da editor.focus() çağırıyordu — bu, Monaco'nun
+              //    kendi touch handler'ından ÖNCE cursor'ı son bilinen konuma
+              //    taşıyıp gerçek tıklama noktasıyla çakışıyordu.
+              //    Çözüm: focus() çağırmak yerine, container boyutu her
+              //    değiştiğinde editor.layout() tetikleyip Monaco'nun hit-test
+              //    tablosunu güncel tut. Bkz. aşağıdaki useEffect.
               style={{ touchAction: "manipulation" }}
-              onPointerDown={() => {
-                try {
-                  if (editorRef.current && typeof editorRef.current.focus === "function") {
-                    editorRef.current.focus();
-                  }
-                } catch {}
-              }}
             >
               <CodeEditor
                 ref={editorRef}
@@ -658,13 +702,13 @@ function ResultModal({
                   <div>
                     <div className="text-[9px] text-emerald-300/70 font-bold uppercase">Beklenen</div>
                     <pre className="text-emerald-300 bg-emerald-500/5 p-1.5 rounded overflow-x-auto font-mono">
-                      {JSON.stringify(r.expected)}
+                      {formatValue(r.expected)}
                     </pre>
                   </div>
                   <div>
                     <div className="text-[9px] text-rose-300/70 font-bold uppercase">Çıktın</div>
                     <pre className="text-rose-300 bg-rose-500/10 p-1.5 rounded overflow-x-auto font-mono">
-                      {r.error || JSON.stringify(r.actual) || "(boş)"}
+                      {r.error || (r.actual === undefined ? "(boş)" : formatValue(r.actual))}
                     </pre>
                   </div>
                 </div>
