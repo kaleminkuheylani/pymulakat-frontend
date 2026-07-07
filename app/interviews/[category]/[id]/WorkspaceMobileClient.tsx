@@ -321,7 +321,9 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
 
         {tab === "workspace" && (
           <div className="h-full pb-20">
-            <CodeEditor ref={editorRef} value={code} onChange={handleCodeChange} height="100%" language="python" readOnly={readonly || isGuest} />
+            <div className="h-[60vh] min-h-[280px]">
+              <CodeEditor ref={editorRef} value={code} onChange={handleCodeChange} height="100%" language="python" readOnly={readonly || isGuest} />
+            </div>
           </div>
         )}
 
