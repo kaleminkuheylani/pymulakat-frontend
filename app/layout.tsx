@@ -27,12 +27,12 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "Python Mülakat Hazırlığı | Yeni Başlayanlar İçin Ücretsiz Pratik",
+      "Python Online Mülakat Hazırlığı | Eğitimi ve Kodları | Ücretsiz Pratik",
     template: "%s | Python Mülakat",
   },
 
   description:
-    "Sıfırdan Python öğrenenler için Türkçe interaktif mülakat platformu. Veri tipleri, OOP, SQLite, Pandas ve algoritmik düşünme sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al. Ücretsiz, kurulum gerektirmez.",
+    "Python online mülakat hazırlığı için Türkçe interaktif platform. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas ve algoritmik düşünme sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al. Ücretsiz, kurulum gerektirmez.",
 
   keywords: [
     // Temel / Yeni başlayan
@@ -43,6 +43,8 @@ export const metadata: Metadata = {
     "python başlangıç seviye",
     "python kolay öğren",
     "python dersleri türkçe",
+    "python eğitimi",                   // 📌 Ubersuggest: 1.3K vol, SEO 18, ₺61 CPC
+    "python kodları",                   // 📌 Ubersuggest: 1.3K vol, SEO 17, ₺28 CPC
 
     // Veri tipleri
     "python veri tipleri sorular",
@@ -62,6 +64,7 @@ export const metadata: Metadata = {
     "python beyin fırtınası soruları",
     "python kodlama mülakatı",
     "junior python developer mülakat soruları",
+    "python online",                    // 📌 Ubersuggest: 9.9K vol, SEO 27, ₺53 CPC
 
     // Veritabanı / Kütüphaneler
     "python sqlite3 soruları",
@@ -324,6 +327,33 @@ const siteJsonLd = {
           acceptedAnswer: {
             "@type": "Answer",
             text: "Hayır. pythonmulakat.com tamamen tarayıcı tabanlıdır. Python, Pyodide veya herhangi bir kütüphane kurmanıza gerek yoktur. Hesap açıp hemen kodlamaya başlayabilirsiniz.",
+          },
+        },
+        {
+          // 📌 Ubersuggest 9.9K vol — python online
+          "@type": "Question",
+          name: "Python online olarak nasıl pratik yapılır?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Python online pratik için pythonmulakat.com'u kullanabilirsiniz: tarayıcı tabanlı editörde Python kodu yazarsınız, kodu çalıştırır, test case'lerini geçerek interaktif şekilde öğrenirsiniz. Kurulum gerekmez, hesabınızla her cihazdan erişebilirsiniz.",
+          },
+        },
+        {
+          // 📌 Ubersuggest 1.3K vol — python eğitimi
+          "@type": "Question",
+          name: "Python eğitimi için en iyi kaynak hangisidir?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Python eğitimi için interaktif pratik en etkili yöntemdir. pythonmulakat.com sıfırdan ileri seviyeye kadar tüm konularda (veri tipleri, OOP, SQLite, Pandas, algoritma) hazır sorular, otomatik test ve yapay zekâ destekli geri bildirim sunar.",
+          },
+        },
+        {
+          // 📌 Ubersuggest 1.3K vol — python kodları
+          "@type": "Question",
+          name: "Python kodları örnekleri nereden bulunur?",
+          acceptedAnswer: {
+            "@type": "Answer",
+            text: "Python kodları örnekleri için platformumuzdaki soru bankasını kullanabilirsiniz. Her soruda başlangıç kodu (starter_code) ile birlikte örnek input/expected çıktılar yer alır; kodunuzu yazıp doğrudan test edebilirsiniz.",
           },
         },
       ],
