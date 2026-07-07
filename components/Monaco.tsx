@@ -297,9 +297,16 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       //    blocker'larla yönetiliyor; domReadOnly=true yapmak cursor placement'i
       //    bozuyor (logged-in kullanıcının tıklayıp imleç koyamamasına yol açıyordu).
       domReadOnly: readOnly,
-      cursorBlinking: "smooth" as const,
-      cursorSmoothCaretAnimation: "on" as const,
-      smoothScrolling: true,
+      // 📌 Android fix: Cursor görünürlüğü.
+      //    Default cursor 1px line — touch ekranda parmak altında kayboluyor.
+      //    Width=2 line + smoothCaret off (smoothCaret bazı Android tarayıcılarda
+      //    cursor'u "kayıyormuş" gibi gösteriyordu, scroll-into-view animasyonu
+      //    cursor'un gözüktüğü satırı kaydırıyordu).
+      cursorWidth: 2,
+      cursorStyle: "line" as const,
+      cursorBlinking: "blink" as const,
+      cursorSmoothCaretAnimation: "off" as const,
+      smoothScrolling: false,
       contextmenu: !disableCopyPaste,
       mouseWheelZoom: false,
       formatOnPaste: false,

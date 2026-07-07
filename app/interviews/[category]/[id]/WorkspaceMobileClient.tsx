@@ -94,10 +94,16 @@ export default function WorkspaceMobileClient({
   let questionId = isNumericId ? parseInt(id, 10) : 0;
 
   // ─── Effects ──
-  // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi)
+  // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi).
+  // 📌 Android cursor fix: SSR block sayfanın başında yer aldığı için scroll
+  //    konumu eski yerinde kalabiliyor — kullanıcı farklı yere tıklıyor.
+  //    Scroll'u sıfırla, editör konumuyla tıklama koordinatı eşleşsin.
   useEffect(() => {
     const els = document.querySelectorAll('[data-ssr-question]');
     els.forEach((el) => el.remove());
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   useEffect(() => {

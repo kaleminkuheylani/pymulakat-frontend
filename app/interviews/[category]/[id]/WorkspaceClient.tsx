@@ -134,10 +134,15 @@ export default function WorkspaceClient({
     return () => clearInterval(interval);
   }, []);
 
-  // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi)
+  // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi).
+  // 📌 Scroll sıfırla: SSR block başta yer aldığı için kullanıcı scroll konumu
+  //    editörün koordinatlarıyla eşleşmeyebiliyor; cursor yerleşimi kayıyordu.
   useEffect(() => {
     const els = document.querySelectorAll('[data-ssr-question]');
     els.forEach((el) => el.remove());
+    if (typeof window !== "undefined") {
+      window.scrollTo(0, 0);
+    }
   }, []);
 
   // Cleanup share modal timer on unmount (React strict mode + route change)
