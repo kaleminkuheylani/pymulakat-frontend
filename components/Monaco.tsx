@@ -57,6 +57,13 @@ export interface CodeEditorRef {
   getValue: () => string;
   setValue: (v: string) => void;
   focus: () => void;
+  /**
+   * Monaco'nun internal layout() metodu.
+   * Container boyutu değiştiğinde (resize, orientationchange, soft keyboard)
+   * hit-test tablosunu güncellemek için dışarıdan çağrılır.
+   * Not: automaticLayout: false modunda GEREKLİ.
+   */
+  layout: () => void;
 }
 
 interface Props {
@@ -89,7 +96,7 @@ function defineMonacoTheme(monaco: any) {
       "editorLineNumber.activeForeground": "#a1a1aa",
       "editor.selectionBackground": "#fbbf2440",
       "editor.lineHighlightBackground": "#1e293b40",
-      "editorCursor.foreground": "#fbbf24",
+      "editorCursor.foreground": "#ffffff",  // saf beyaz — mobilde cursor net görünsün
       "editorIndentGuide.background": "#1e293b",
     },
   });
@@ -132,6 +139,15 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
           }
         },
         focus: () => editorRef.current?.focus(),
+        layout: () => {
+          try {
+            editorRef.current?.layout();
+          } catch {
+            // Mount tamamlanmadan önce çağrılırsa sessizce yut.
+            // WorkspaceMobileClient'taki ResizeObserver bir sonraki tick'te
+            // yeniden çağıracak.
+          }
+        },
       }),
       []
     );
@@ -296,10 +312,13 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       // domReadOnly SADECE readOnly için true. Misafir/özel mod için
       // Monaco iç DOM read-only (yazma yok) ama tıklama + cursor OK.
       domReadOnly: readOnly,
-      // 📌 Android fix: Cursor görünürlüğü + mobile touch uyumu.
-      cursorWidth: 2,
+      // 📌 Cursor görünürlüğü — mobilde nokta gibi davranması için width 3 + line.
+      // Önceki width:2 + amber (#fbbf24) Android Chrome'da "satır gibi" algılanıyordu
+      // (ince çizgi ile metin satırı karışıyordu). Width:3 saf-beyaz tonu cursor'ü
+      // net bir nokta gibi gösteriyor.
+      cursorWidth: 3,
       cursorStyle: "line" as const,
-      cursorBlinking: "blink" as const,
+      cursorBlinking: "smooth" as const,
       cursorSmoothCaretAnimation: "off" as const,
       smoothScrolling: false,
       contextmenu: true,  // sağ tık menüsü açık (anti-cheat kaldırıldı)
