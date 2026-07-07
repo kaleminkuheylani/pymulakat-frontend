@@ -1,6 +1,7 @@
 "use client";
 
 // /test-question/[id] — Soru detay sayfası için diagnostics
+import React from "react";
 // pythonmulakat.com/test-question/matris-carpimi
 // Hangi katmanda ne hata aldığını gösterir.
 
@@ -37,8 +38,10 @@ function StatusDot({ status }: { status: TestResult["status"] }) {
   return <span className={`inline-block w-3 h-3 rounded-full ${color}`} />;
 }
 
-export default function TestQuestionPage({ params }: { params: { id: string } }) {
-  const idOrSlug = params.id;
+export default function TestQuestionPage({ params }: { params: Promise<{ id: string }> }) {
+  // Next.js 15+ async params — React.use() ile unwrap et
+  const resolved = React.use(params);
+  const idOrSlug = resolved.id;
   const [results, setResults] = useState<TestResult[]>([]);
   const [running, setRunning] = useState(false);
 
