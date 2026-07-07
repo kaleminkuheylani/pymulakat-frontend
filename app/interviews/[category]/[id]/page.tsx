@@ -233,7 +233,18 @@ export default async function Page({ params, searchParams }: PageProps) {
   ]);
 
   // Workspace client kendi fetch'ini yapıyor; burada sadece SEO schema'ları için kullanıyoruz.
+  // 📌 SSR: initial data'yı server'da geçiriyoruz — client'ta loading state atlanıyor.
   const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
+  const initialInterview = seoQ ? {
+    id: seoQ.id,
+    title: seoQ.title,
+    description: seoQ.description,
+    level: seoQ.level,
+    category: seoQ.category,
+    starter_code: (seoQ as any).starter_code || "",
+    tags: seoQ.tags || [],
+    hints: seoQ.hints || [],
+  } : null;
   const baseUrl = "https://pythonmulakat.com";
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
@@ -311,7 +322,12 @@ export default async function Page({ params, searchParams }: PageProps) {
       </div>
 
       <div data-client-workspace>
-        <Component initialParams={resolvedParams} readonly={readonly} />
+        <Component
+          initialParams={resolvedParams}
+          readonly={readonly}
+          initialInterview={mobile ? initialInterview : undefined}
+          initialTestCases={mobile ? ((seoQ as any)?.test_cases || null) : undefined}
+        />
       </div>
 
       {/* 📌 JS yoksa: üstteki description paneli zaten SSR ile geliyor.

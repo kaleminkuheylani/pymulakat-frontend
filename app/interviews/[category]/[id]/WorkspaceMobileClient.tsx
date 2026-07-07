@@ -27,15 +27,22 @@ export const dynamic_ = "force-dynamic";
 interface Props {
   initialParams?: { category: string; id: string };
   readonly?: boolean;
+  initialInterview?: Question | null;
+  initialTestCases?: QuestionTests | null;
 }
-export default function WorkspaceMobileClient({ initialParams, readonly = false }: Props) {
+export default function WorkspaceMobileClient({
+  initialParams,
+  readonly = false,
+  initialInterview = null,
+  initialTestCases = null,
+}: Props) {
   const router = useRouter();
   const { user } = useUser();
   const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
   const editorRef = useRef<any>(null);
 
   // ─── State ──
-  const [code, setCode] = useState<string>("");
+  const [code, setCode] = useState<string>(initialInterview?.starter_code || "");
 
   // 📌 Her kod değişikliğinde backend'e play_count increment gönder (debounced 2s)
   const playCountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -57,8 +64,8 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
       if (playCountTimerRef.current) clearTimeout(playCountTimerRef.current);
     };
   }, []);
-  const [interview, setInterview] = useState<Question | null>(null);
-  const [testCases, setTestCases] = useState<QuestionTests | null>(null);
+  const [interview, setInterview] = useState<Question | null>(initialInterview);
+  const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCases);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   
