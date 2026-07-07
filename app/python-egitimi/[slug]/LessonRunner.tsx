@@ -45,7 +45,7 @@ export default function LessonRunner({ code: initialCode, label = "kod.py" }: { 
       });
       const w = window as any;
       if (typeof w.loadPyodide !== "function") throw new Error("loadPyodide yüklenemedi");
-      const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: false });
+      const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: true });
       pyRef.current = py;
       setLoading(false);
       return py;

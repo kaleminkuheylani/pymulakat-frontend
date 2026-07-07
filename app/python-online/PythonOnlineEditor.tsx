@@ -44,7 +44,7 @@ export default function PythonOnlineEditor() {
       if (typeof w.loadPyodide !== "function") {
         throw new Error("loadPyodide yüklenemedi");
       }
-      const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: false });
+      const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: true });
       pyodideRef.current = py;
       setPyStatus("ready");
       return py;
