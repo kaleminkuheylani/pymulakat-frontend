@@ -158,8 +158,11 @@ export default function GlobalNav() {
                     <button
                       onClick={async () => {
                         setOpen(false);
+                        // 📌 Bulletproof logout: önce tüm cookie + storage'i sil
                         await logout();
-                        router.push("/");
+                        // router.push yerine hard reload → middleware fresh cookies'i
+                        // okusun, stale state'le yarış kaybedilmesin
+                        window.location.assign("/");
                       }}
                       className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                     >

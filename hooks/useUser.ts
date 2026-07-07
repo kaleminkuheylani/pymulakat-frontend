@@ -1,7 +1,7 @@
 // hooks/useUser.ts — Supabase SSR tabanlı, çoklu kaynaklardan token çıkarımı + auto-refresh.
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getSupabaseBrowser } from "./useSupabaseBrowser";
+import { getSupabaseBrowser, clearAuthSentinel } from "./useSupabaseBrowser";
 
 const AUTH_EVENT = "auth-state-changed";
 
@@ -337,7 +337,18 @@ export function useUser() {
 
   const refresh = useCallback(() => fetchUser(), [fetchUser]);
 
+  /**
+   * 📌 Bulletproof logout — tek tıklamada TÜM auth izlerini temizler:
+   * 1) Supabase official signOut (server-side session invalidate + kendi cookie temizliği)
+   * 2) TÜM auth cookie'leri: sentinel + Supabase ana cookie + chunked cookie'ler
+   * 3) TÜM localStorage auth keyleri
+   * 4) React state + onAuthChange event
+   * (Cagrilan yerde 5) window.location.assign("/") ile hard reload
+   */
   const logout = useCallback(async () => {
+    // (1) ÖNCE Supabase official signOut — kendi localStorage + cookie
+    //     temizliğini yapar (setAll(cookie max-age=0) cagirir). Bu sayede
+    //     logout yarışında Supabase state'i temizlenmIS kalmiyor.
     const supabase = getSupabaseBrowser();
     if (supabase) {
       try {
@@ -346,13 +357,58 @@ export function useUser() {
         console.warn("Supabase signOut error:", err);
       }
     }
-    localStorage.removeItem("sb-pymulakat-auth-token");
-    localStorage.removeItem("sb-pymulakat-auth-token-code-verifier");
-    localStorage.removeItem("token");
-    localStorage.removeItem("user");
-    localStorage.removeItem("refresh_token");
+
+    // (2) Belt-and-suspenders: belt = cookie'ler (Supabase bazen sessiz
+    //     birakabilir, özellikle custom setAll wrapper'i ile), suspenders =
+    //     localStorage. İkisi de elle nuke edilir.
+    if (typeof document !== "undefined") {
+      const cookieNamesToDelete = [
+        "pymulakat_auth",
+        "sb-pymulakat-auth-token",
+        "sb-pymulakat-auth-token-code-verifier",
+        "token",
+      ];
+      for (const name of cookieNamesToDelete) {
+        // Tüm olası path/domain varyantlarında sil
+        document.cookie = `${name}=; path=/; max-age=0; SameSite=Lax`;
+        document.cookie = `${name}=; path=/; max-age=0`;
+        document.cookie = `${name}=; path=/; domain=${window.location.hostname}; max-age=0`;
+      }
+      // Supabase'in yazmış olabileceği chunked cookie'leri de temizle
+      const allCookies = document.cookie.split(";");
+      for (const c of allCookies) {
+        const name = c.split("=")[0].trim();
+        if (
+          name.startsWith("sb-pymulakat-auth-token-chunk-") ||
+          name === "sb-pymulakat-auth-token-refresh-token" ||
+          name.startsWith("sb-") && name.includes("-auth")
+        ) {
+          document.cookie = `${name}=; path=/; max-age=0`;
+        }
+      }
+    }
+
+    // (3) TÜM localStorage auth keyleri — wildcard sweep + bilinen isimler
+    try {
+      const keysToRemove = new Set<string>();
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i);
+        if (k) keysToRemove.add(k);
+      }
+      keysToRemove.add("token");
+      keysToRemove.add("refresh_token");
+      keysToRemove.add("user");
+      keysToRemove.add("logout");
+      keysToRemove.add("sb-pymulakat-auth-token");
+      keysToRemove.add("sb-pymulakat-auth-token-code-verifier");
+      for (const k of keysToRemove) localStorage.removeItem(k);
+    } catch { /* ignore */ }
+
+    // (4) React state + broadcast (storage event'i dinleyen diger tab'lara da)
     setUser(null);
     notifyAuthChange();
+
+    try { clearAuthSentinel(); } catch { /* ignore */ }
   }, []);
 
   return { user, loading, error, refresh, logout };
