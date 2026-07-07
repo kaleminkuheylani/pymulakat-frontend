@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import "./global.css";
 import Script from "next/script";
@@ -17,6 +17,13 @@ const geistSans = Geist({
 const geistMono = Geist_Mono({
   variable: "--font-geist-mono",
   subsets: ["latin"],
+});
+
+// 📌 CodeMirror editörü için JetBrains Mono — kod için optimize ligatürler
+const jetbrainsMono = JetBrains_Mono({
+  variable: "--font-jetbrains-mono",
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
 });
 
 // ────────────────────────────────────────────────────────────
@@ -396,7 +403,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} bg-slate-950 text-white antialiased min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} bg-slate-950 text-white antialiased min-h-screen`}
         suppressHydrationWarning
       >
         <ClientOnly>

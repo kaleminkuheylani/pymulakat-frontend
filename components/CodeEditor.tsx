@@ -47,14 +47,14 @@ async function loadCodeMirror() {
     import("@codemirror/view"),
     import("@codemirror/commands"),
     import("@codemirror/lang-python"),
+    import("@codemirror/language"), // HighlightStyle + syntaxHighlighting
     import("@codemirror/autocomplete"),
-    import("@codemirror/theme-one-dark"),
+    import("@lezer/highlight"),     // tags
   ]).then((mods) => {
-    const [state, view, commands, langPython, autocomplete, themeOneDark] = mods;
+    const [state, view, commands, langPython, language, autocomplete, lezer] = mods;
     return {
       EditorState: state.EditorState,
       EditorView: view.EditorView,
-      // keymap @codemirror/view'dan geliyor (Command/KeyBinding orada)
       keymap: (view as any).keymap,
       defaultKeymap: (commands as any).defaultKeymap,
       history: commands.history,
@@ -64,7 +64,10 @@ async function loadCodeMirror() {
       autocompletion: autocomplete.autocompletion,
       closeBrackets: (autocomplete as any).closeBrackets,
       closeBracketsKeymap: (autocomplete as any).closeBracketsKeymap,
-      oneDark: themeOneDark.oneDark,
+      // Syntax highlight altyapısı
+      syntaxHighlighting: (language as any).syntaxHighlighting,
+      HighlightStyle: (language as any).HighlightStyle,
+      tags: (lezer as any).tags,
     };
   });
   return cmModulesPromise;
@@ -198,7 +201,6 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
           if (cancelled || !hostRef.current) return;
 
           const extensions = [
-            cm.oneDark, // tema
             cm.history(),
             cm.keymap.of([
               ...cm.closeBracketsKeymap,
@@ -218,39 +220,40 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
                 onChangeRef.current(newVal);
               }
             }),
+            // 📌 Custom dark tema — oneDark kullanmıyoruz, böylece override
+            // yarışı olmuyor. Arka plan / ana sayfa ile aynı tonda.
             cm.EditorView.theme(
               {
                 "&": {
-                  backgroundColor: "#0a0e1a",
+                  backgroundColor: "#050816",
                   color: "#e4e4e7",
                   height: "100%",
                 },
                 ".cm-content": {
                   caretColor: "#ffffff", // saf beyaz cursor
                   fontFamily:
-                    "'JetBrains Mono', 'Fira Code', 'Consolas', monospace",
-                  fontSize: "16px",
-                  lineHeight: "1.55",
-                  padding: "12px 0",
+                    "var(--font-jetbrains-mono, 'JetBrains Mono'), 'Fira Code', 'Menlo', monospace",
+                  fontSize: "15px",
+                  lineHeight: "1.6",
+                  padding: "14px 0",
                 },
                 // 📌 Block cursor — vim tarzı dolu kutu
                 ".cm-cursor, .cm-dropCursor": {
                   borderLeft: "3px solid #ffffff",
                   borderRight: "none",
                   backgroundColor: "transparent",
-                  // Block cursor yerine line-thin alternatif:
-                  // borderLeft: "3px solid #fbbf24",
                 },
                 "&.cm-focused .cm-cursor": {
                   borderLeftColor: "#ffffff",
                 },
                 ".cm-gutters": {
-                  backgroundColor: "#0a0e1a",
+                  backgroundColor: "#050816",
                   color: "#3f3f46",
                   border: "none",
+                  paddingRight: "8px",
                 },
                 ".cm-activeLineGutter": {
-                  backgroundColor: "rgba(99,102,241,0.08)",
+                  backgroundColor: "rgba(99,102,241,0.12)",
                   color: "#a1a1aa",
                 },
                 ".cm-activeLine": {
@@ -259,12 +262,47 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
                 ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
                   backgroundColor: "rgba(251,191,36,0.25)",
                 },
+                // Python syntax highlight
+                ".tok-keyword": { color: "#c084fc" },       // mor
+                ".tok-string": { color: "#fbbf24" },          // amber
+                ".tok-number": { color: "#60a5fa" },          // mavi
+                ".tok-comment": { color: "#52525b", fontStyle: "italic" },
+                ".tok-operator": { color: "#a1a1aa" },
+                ".tok-builtin": { color: "#34d399" },         // yeşil
+                ".tok-functionName": { color: "#f472b6" },    // pembe
                 ".cm-scroller": {
                   fontFamily: "inherit",
+                  // 📌 Mobile fix: CodeMirror scroller'ı touch ile kaydırılabilsin
+                  // ama pinch-zoom yapmasın. overscroll-behavior: contain
+                  // parent container'a scroll zincirini taşırmasını engeller.
+                  touchAction: "pan-y",
+                  overscrollBehavior: "contain",
+                  WebkitOverflowScrolling: "touch",
+                },
+                ".cm-tooltip": {
+                  backgroundColor: "#0a0e1a",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "8px",
+                },
+                ".cm-tooltip-autocomplete > ul > li[aria-selected]": {
+                  backgroundColor: "rgba(99,102,241,0.25)",
+                  color: "#ffffff",
                 },
               },
               { dark: true }
             ),
+            cm.syntaxHighlighting(cm.HighlightStyle.define([
+              { tag: cm.tags.keyword, color: "#c084fc", fontWeight: "600" },
+              { tag: cm.tags.string, color: "#fbbf24" },
+              { tag: cm.tags.number, color: "#60a5fa" },
+              { tag: cm.tags.comment, color: "#52525b", fontStyle: "italic" },
+              { tag: cm.tags.operator, color: "#a1a1aa" },
+              { tag: cm.tags.builtin, color: "#34d399" },
+              { tag: cm.tags.function(cm.tags.variableName), color: "#f472b6" },
+              { tag: cm.tags.atom, color: "#f87171" },
+              { tag: cm.tags.propertyName, color: "#7dd3fc" },
+              { tag: cm.tags.typeName, color: "#fbbf24" },
+            ])),
             cm.EditorView.lineWrapping,
             cm.EditorState.readOnly.of(readOnly),
             cm.EditorView.editable.of(!readOnly),
@@ -345,8 +383,12 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
           width: "100%",
           border: "1px solid rgba(255,255,255,0.06)",
           borderRadius: 10,
-          overflow: "auto",
-          background: "#0a0e1a",
+          overflow: "hidden",
+          background: "#050816",
+          // 📌 Mobile fix: Android double-tap zoom'u engelle.
+          // CodeMirror kendi scroller'ı içeride scroll eder; 'manipulation'
+          // tarayıcıya "synthetic double-tap zoom yapma, her tap'i JS'e ver" der.
+          touchAction: "manipulation",
         }}
       >
         {!ready && !error && (
