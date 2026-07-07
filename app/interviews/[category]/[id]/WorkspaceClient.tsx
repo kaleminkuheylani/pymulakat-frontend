@@ -294,7 +294,20 @@ export default function WorkspaceClient({
     );
   }
 
-  // ─── Normal Render ─────────────────────────────────────
+  // ─── Normal Render ─────────────────────────────────
+  // 📌 Crash guard: interview henüz yüklenmediyse spinner göster.
+  // WorkspaceHeader ve QuestionDescriptionContent, interview undefined/null
+  // durumunda .id/.level/.title erişiminde crashliyordu.
+  if (!interview) {
+    return (
+      <div className="h-screen bg-[#050816] text-white flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3 text-white/60">
+          <div className="w-8 h-8 border-[3px] border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+          <p className="text-sm">Soru yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
   const levelCfg = LEVEL_CONFIG[(interview.level || "").toLowerCase()] || LEVEL_CONFIG.beginner;
   const passedCount = testResults.filter((r) => r.passed).length;
   const totalCount = testResults.length;

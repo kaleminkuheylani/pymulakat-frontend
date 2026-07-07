@@ -30,6 +30,13 @@ export default function WorkspaceHeader({
   user,
   onBack,
 }: HeaderProps) {
+  // 📌 interview undefined/null ise boş render et. SSR'da initial data
+  // gelmediğinde burası crashlemesin.
+  if (!interview) {
+    return (
+      <header className="h-14 bg-[#0a0e1a]/80 backdrop-blur-md flex items-center justify-between px-5 flex-shrink-0" />
+    );
+  }
   return (
     <header className="h-14 bg-[#0a0e1a]/80 backdrop-blur-md flex items-center justify-between px-5 flex-shrink-0">
       <div className="flex items-center gap-3">
