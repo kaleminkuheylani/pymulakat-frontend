@@ -314,11 +314,14 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       domReadOnly: readOnly,
       // 📌 Vim tarzı cursor — kullanıcı isteği.
       // cursorStyle: "block" → karakterin tamamını kaplayan blok cursor
-      // (vim'in normal mode'u gibi). line-thin ya da underline ile karışma riski yok.
-      // cursorBlinking: "phase" → vim'in ağır fade animasyonu, smooth ve net.
+      // (vim'in normal mode'u gibi).
+      // cursorBlinking: "solid" → ASLA sönmez, sürekli görünür. 'phase'/'smooth'
+      // bazı Android Chrome build'lerinde cursor'u fade-out sırasında tamamen
+      // görünmez yapıyordu — kullanıcı hareketi göremiyordu. Solid ile cursor
+      // her zaman net, hareket ettiğinde eski/yeni pozisyon arasında geçiş gözle görülür.
       // Color saf beyaz — her zemin üzerinde görünür.
       cursorStyle: "block" as const,
-      cursorBlinking: "phase" as const,
+      cursorBlinking: "solid" as const,
       cursorSmoothCaretAnimation: "off" as const,
       smoothScrolling: false,
       contextmenu: true,  // sağ tık menüsü açık (anti-cheat kaldırıldı)
