@@ -332,15 +332,20 @@ export default function WorkspaceMobileClient({
       </div>
 
       {/* Tab content */}
-      <div className="flex-1 overflow-y-auto">
+      <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         {tab === "question" && (
-          <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} testCases={testCases} />
+          <div className="flex-1 overflow-y-auto">
+            <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} testCases={testCases} />
+          </div>
         )}
 
         {tab === "workspace" && (
-          <div className="h-full flex flex-col">
-            {/* 📌 Mobilde editör 150% boyutlandı (40vh → 60vh). Küçük ekranda daha rahat kod okuma/yazma. */}
-            <div className="h-[60vh] min-h-[320px] flex-shrink-0">
+          <>
+            {/* 📌 Mobilde editör 150% boyutlandı (40vh → 60vh).
+                Layout zinciri: h-screen > flex-1 (overflow-hidden + flex-col) > editor (flex-shrink-0)
+                + console (flex-1 min-h-0 scroll). Monaco automaticLayout bu sayede
+                container size'ı doğru okur, "denge bozulması" yaşanmaz. */}
+            <div className="h-[60vh] min-h-[320px] max-h-[65vh] flex-shrink-0">
               <CodeEditor
                 ref={editorRef}
                 value={code}
@@ -351,8 +356,8 @@ export default function WorkspaceMobileClient({
                 disableCopyPaste={isGuest}
               />
             </div>
-            {/* Mobil: Custom Input + Run workspace tab'ın altında — sabit görünür */}
-            <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0e1a] p-2 max-h-[35vh] overflow-y-auto pb-16">
+            {/* Mobil: Custom Input + Run workspace tab'ın altında — kalan alanı doldurur */}
+            <div className="flex-1 min-h-0 overflow-y-auto border-t border-white/10 bg-[#0a0e1a] p-2 pb-16">
               <ConsoleTabMobile
                 errorLines={errorLines}
                 starterCode={interview?.starter_code || undefined}
@@ -361,27 +366,31 @@ export default function WorkspaceMobileClient({
                 onCustomRun={handleCustomRun}
               />
             </div>
-          </div>
+          </>
         )}
 
         {tab === "console" && (
-          <ConsoleTabMobile
-            errorLines={errorLines}
-            starterCode={interview?.starter_code || undefined}
-            functionName={testCases?.function_name || undefined}
-            isRunning={running}
-            onCustomRun={handleCustomRun}
-          />
+          <div className="flex-1 overflow-y-auto">
+            <ConsoleTabMobile
+              errorLines={errorLines}
+              starterCode={interview?.starter_code || undefined}
+              functionName={testCases?.function_name || undefined}
+              isRunning={running}
+              onCustomRun={handleCustomRun}
+            />
+          </div>
         )}
 
         {tab === "examples" && (
-          <ExamplesTabMobile
-            testCases={testCases}
-            results={results}
-            isGuest={isGuest}
-            category={category}
-            id={id}
-          />
+          <div className="flex-1 overflow-y-auto">
+            <ExamplesTabMobile
+              testCases={testCases}
+              results={results}
+              isGuest={isGuest}
+              category={category}
+              id={id}
+            />
+          </div>
         )}
       </div>
 
