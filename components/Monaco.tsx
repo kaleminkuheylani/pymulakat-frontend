@@ -1,4 +1,5 @@
 "use client";
+
 // Build trigger
 
 import {
@@ -64,7 +65,7 @@ interface Props {
   language?: "python" | "javascript" | "typescript";
   height?: string | number;
   readOnly?: boolean;
-  theme?: "vs-dark" | "hc-black";
+  theme?: "vs-dark" | "hc-black" | "pythonDark";
 }
 
 // ─── Monaco Python Tema Tanımı ────────────────────────────────
@@ -111,23 +112,34 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
   ) {
     const editorRef = useRef<any>(null);
     const monacoRef = useRef<any>(null);
-    const [isReady, setIsReady] = useState(false);
+    // Kullanıcı yazarken value prop'u ile içerik çakışmasın diye son bilinen
+    // dış değeri burada tutuyoruz; ref üzerinden programatik setValue ile
+    // senkron dışı state okumalarında doğru kaynağı kullanırız.
+    const lastExternalValueRef = useRef<string>(value);
+    // onChange ref tut — mount'tan sonra deps değişmesin diye.
+    const onChangeRef = useRef<typeof onChange>(onChange);
 
     // ── Imperative API (Editor.tsx ile uyumlu) ────────────────
     useImperativeHandle(
       ref,
       () => ({
-        getValue: () => editorRef.current?.getValue() ?? value,
+        getValue: () => editorRef.current?.getValue() ?? lastExternalValueRef.current,
         setValue: (v: string) => {
-          if (editorRef.current && editorRef.current.getValue() !== v) {
-            editorRef.current.setValue(v);
+          const editor = editorRef.current;
+          if (editor) {
+            const current = editor.getValue();
+            if (current !== v) editor.setValue(v);
           }
-          onChange(v);
         },
         focus: () => editorRef.current?.focus(),
       }),
-      [value, onChange]
+      []
     );
+
+    // onChange güncellemesini ref ile tut, gereksiz re-render/rebind yok
+    useEffect(() => {
+      onChangeRef.current = onChange;
+    }, [onChange]);
 
     // ── Editor mount handler ──────────────────────────────────
     const handleEditorDidMount = (editor: any, monaco: any) => {
@@ -136,7 +148,10 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
 
       // Dark theme tanımla
       defineMonacoTheme(monaco);
-      monaco.editor.setTheme("pythonDark");
+      // Theme: prop'tan gelen değeri uygula, default'ta pythonDark kullan.
+      // "vs-dark" gelirse doğrudan onu da set edebiliriz; pythonDark için
+      // setTheme("pythonDark") diyoruz.
+      monaco.editor.setTheme(theme === "vs-dark" || theme === "hc-black" ? theme : "pythonDark");
 
       // Python LSP özellikleri (opsiyonel)
       monaco.languages.registerCompletionItemProvider("python", {
@@ -170,11 +185,82 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       // layout race condition cursor placement'i bozuyordu.
       // Mount sonrası ilk layout: container DOM'a oturmuşken bir kez çağır.
       requestAnimationFrame(() => {
-        try { editor.layout(); } catch {}
+        try {
+          editor.layout();
+        } catch (err) {
+          // sessiz geç — layout hatası mount anında konteyner hazır değilse olur,
+          // sonraki observer tick'inde yeniden çağrılacak
+        }
       });
-
-      setIsReady(true);
     };
+
+    // ── Theme değişimi reaktif izleme ────────────────────────
+    useEffect(() => {
+      const monaco = monacoRef.current;
+      if (!monaco) return;
+      const target =
+        theme === "vs-dark" || theme === "hc-black" ? theme : "pythonDark";
+      try {
+        monaco.editor.setTheme(target);
+      } catch {
+        // ignore
+      }
+    }, [theme]);
+
+    // ── Dışarıdan gelen value değişimini editöre yansıt ────────
+    // Kullanıcı yazıyorsa bu effect tetiklendiğinde editor içeriği ile
+    // dış değer eşit değilse biz yazmışızdır; bu case'i skip ediyoruz.
+    useEffect(() => {
+      const editor = editorRef.current;
+      if (!editor) {
+        lastExternalValueRef.current = value;
+        return;
+      }
+      const current = editor.getValue();
+      if (current !== value) {
+        // Eğer son bilinen dış değer ile mevcut farklıysa bu dışarıdan bir
+        // güncelleme; editor'a yaz ve cursor'ı en başa taşıma — sadece text'i
+        // senkronla. Kullanıcı içeride yazıyorsa current === value olur
+        // (onChange ile parent state güncellenmiş olur).
+        const preservedSelection = editor.getSelection();
+        editor.setValue(value);
+        if (preservedSelection) {
+          try {
+            editor.setSelection(preservedSelection);
+          } catch {
+            // yoksa hiçbir şey yapma
+          }
+        }
+      }
+      lastExternalValueRef.current = value;
+    }, [value]);
+
+    // ── readOnly değişimi reaktif ─────────────────────────────
+    useEffect(() => {
+      const editor = editorRef.current;
+      if (!editor) return;
+      try {
+        editor.updateOptions({ readOnly, domReadOnly: readOnly });
+      } catch {
+        // ignore
+      }
+    }, [readOnly]);
+
+    // ── Component unmount: model dispose ──────────────────────
+    useEffect(() => {
+      return () => {
+        const editor = editorRef.current;
+        if (editor && typeof editor.dispose === "function") {
+          try {
+            editor.dispose();
+          } catch {
+            // ignore
+          }
+        }
+        editorRef.current = null;
+        monacoRef.current = null;
+      };
+    }, []);
 
     // ── Options ───────────────────────────────────────────────
     const options = {
@@ -207,7 +293,7 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       lineNumbersMinChars: 2,
       foldingStrategy: "indentation" as const,
       readOnly,
-      // domReadOnly SADCE readOnly için true. Misafir/özel mod için
+      // domReadOnly SADECE readOnly için true. Misafir/özel mod için
       // Monaco iç DOM read-only (yazma yok) ama tıklama + cursor OK.
       domReadOnly: readOnly,
       // 📌 Android fix: Cursor görünürlüğü + mobile touch uyumu.
@@ -240,25 +326,13 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
           height="100%"
           language={language}
           value={value}
-          theme={theme}
+          theme={theme === "pythonDark" ? "vs-dark" : theme}
           options={options}
-          onChange={(v: string | undefined) => onChange(v ?? "")}
+          onChange={(v: string | undefined) => {
+            const next = v ?? "";
+            onChangeRef.current(next);
+          }}
           onMount={handleEditorDidMount}
-          loading={
-            <div
-              style={{
-                height: "100%",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                background: "#0a0e1a",
-                color: "rgba(255,255,255,0.4)",
-                fontSize: 12,
-              }}
-            >
-              Monaco yükleniyor...
-            </div>
-          }
         />
       </div>
     );
