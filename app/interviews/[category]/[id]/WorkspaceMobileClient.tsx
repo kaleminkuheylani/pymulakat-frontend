@@ -320,12 +320,12 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         )}
 
         {tab === "workspace" && (
-          <div className="h-full pb-20 flex flex-col">
-            <div className="h-[60vh] min-h-[280px] flex-shrink-0">
+          <div className="h-full flex flex-col">
+            <div className="h-[40vh] min-h-[200px] flex-shrink-0">
               <CodeEditor ref={editorRef} value={code} onChange={handleCodeChange} height="100%" language="python" readOnly={readonly || isGuest} />
             </div>
-            {/* Mobil: Custom Input + Run workspace tab'ın altında */}
-            <div className="flex-1 mt-3 min-h-[180px] overflow-y-auto">
+            {/* Mobil: Custom Input + Run workspace tab'ın altında — sabit görünür */}
+            <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0e1a] p-2 max-h-[35vh] overflow-y-auto pb-16">
               <ConsoleTabMobile
                 errorLines={errorLines}
                 starterCode={interview?.starter_code || undefined}
