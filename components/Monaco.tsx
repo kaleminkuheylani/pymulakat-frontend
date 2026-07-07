@@ -268,7 +268,10 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
         verticalScrollbarSize: 8,
         horizontalScrollbarSize: 8,
       },
-      padding: { top: 12, bottom: 12 },
+      padding: { top: 12, bottom: 12, left: 0 },
+      lineDecorationsWidth: 4,
+      lineNumbersMinChars: 2,
+      foldingStrategy: "indentation" as const,
       readOnly,
       // 📌 Copy/paste engelliyken DOM seviyesinde de koruma (text selection)
       domReadOnly: readOnly || disableCopyPaste,
