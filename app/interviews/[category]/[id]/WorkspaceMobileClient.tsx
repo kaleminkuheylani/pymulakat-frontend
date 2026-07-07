@@ -357,7 +357,22 @@ export default function WorkspaceMobileClient({
                 Bunun yerine stable flex zinciri: dış flex-1 + editor flex-1 min-h,
                 + console sabit 180px. Bu kombinasyon önceki 40vh'den ~%50 daha
                 geniş alan (~320px iPhone SE). */}
-            <div className="flex-1 min-h-[320px] flex-shrink min-w-0 overflow-hidden">
+            <div
+              className="flex-1 min-h-[320px] flex-shrink min-w-0 overflow-hidden"
+              // 📌 Android fix: Container'a tap handler'ı bağla. Monaco'nun
+              //    kendi tap handler'ı bazı Android Chrome build'lerinde
+              //    ilk tıklamayı "kaçırıyor" — focus kazanamıyor. Bu fallback
+              //    sayesinde kullanıcının parmağı Monaco'ya ulaşmadan önce
+              //    editöre focus veriyoruz, cursor yerleşimi garantili.
+              style={{ touchAction: "manipulation" }}
+              onPointerDown={() => {
+                try {
+                  if (editorRef.current && typeof editorRef.current.focus === "function") {
+                    editorRef.current.focus();
+                  }
+                } catch {}
+              }}
+            >
               <CodeEditor
                 ref={editorRef}
                 value={code}
