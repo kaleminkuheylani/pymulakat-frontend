@@ -165,23 +165,13 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       // Focus
       editor.focus();
 
-      // 📌 Android soft-keyboard fix: visualViewport resize'larında Monaco'yu
-      //    yeniden layout et. Yalnızca görsel viewport değişince tetiklenir
-      //    (klavye açılıp kapanması), tıklama sırasını bozmaz. Cleanup:
-      //    editor dispose olunca listener kaldırılır.
-      if (typeof window !== "undefined" && window.visualViewport) {
-        let rafId = 0;
-        const onVVResize = () => {
-          if (rafId) cancelAnimationFrame(rafId);
-          rafId = requestAnimationFrame(() => {
-            try { editor.layout(); } catch {}
-          });
-        };
-        window.visualViewport.addEventListener("resize", onVVResize);
-        editor.onDidDispose(() => {
-          window.visualViewport?.removeEventListener("resize", onVVResize);
-        });
-      }
+      // 📌 Layout yönetimi WorkspaceMobileClient'in ResizeObserver'ına bırakıldı.
+      // automaticLayout: false + tek noktadan layout() çağrısı — çift/triple
+      // layout race condition cursor placement'i bozuyordu.
+      // Mount sonrası ilk layout: container DOM'a oturmuşken bir kez çağır.
+      requestAnimationFrame(() => {
+        try { editor.layout(); } catch {}
+      });
 
       setIsReady(true);
     };
@@ -193,7 +183,11 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       lineHeight: 1.55,
       minimap: { enabled: false },
       scrollBeyondLastLine: false,
-      automaticLayout: true,
+      // 📌 automaticLayout: false — Monaco kendi ResizeObserver'ını kurmasın,
+      // WorkspaceMobileClient kendi observer'ıyla tek noktadan editor.layout()
+      // çağırıyor. automaticLayout=true iken Monaco + bizim observer aynı anda
+      // layout tetikleyip cursor placement'ta race condition oluşturuyordu.
+      automaticLayout: false,
       tabSize: 2,
       insertSpaces: true,
       wordWrap: "off" as const,

@@ -118,14 +118,18 @@ export default function WorkspaceMobileClient({
     const container = editorContainerRef.current;
     if (!container) return;
 
+    let rafId = 0;
     const relayout = () => {
-      try {
-        if (editorRef.current && typeof editorRef.current.layout === "function") {
-          editorRef.current.layout();
+      if (rafId) cancelAnimationFrame(rafId);
+      rafId = requestAnimationFrame(() => {
+        try {
+          if (editorRef.current && typeof editorRef.current.layout === "function") {
+            editorRef.current.layout();
+          }
+        } catch {
+          // Monaco henüz mount olmamış olabilir — sessizce yut
         }
-      } catch {
-        // Monaco henüz mount olmamış olabilir — sessizce yut
-      }
+      });
     };
 
     const ro = new ResizeObserver(() => relayout());
@@ -134,6 +138,7 @@ export default function WorkspaceMobileClient({
     window.visualViewport?.addEventListener("resize", relayout);
 
     return () => {
+      if (rafId) cancelAnimationFrame(rafId);
       ro.disconnect();
       window.removeEventListener("orientationchange", relayout);
       window.visualViewport?.removeEventListener("resize", relayout);
