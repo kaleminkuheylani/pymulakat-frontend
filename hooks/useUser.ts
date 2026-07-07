@@ -143,6 +143,9 @@ async function tryRefreshToken(): Promise<boolean> {
       ? Math.floor(new Date(json.expires_at).getTime() / 1000)
       : Math.floor(Date.now() / 1000) + 3600;
 
+    // 📌 Canonical depolama: Supabase yönettiği JSON. Plain 'token' ve
+    // 'refresh_token' artık yazılmıyor — extractAccessToken fallback olarak
+    // okumaya devam ediyor (eski session'lardan gelen plain token'lar için)
     const updated = {
       ...parsed,
       access_token: newAccess,
@@ -150,8 +153,6 @@ async function tryRefreshToken(): Promise<boolean> {
       expires_at: expiresAt,
     };
     localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(updated));
-    localStorage.setItem("token", newAccess);
-    if (newRefresh) localStorage.setItem("refresh_token", newRefresh);
 
     return true;
   } catch {
@@ -277,12 +278,9 @@ export function useUser() {
     let sub: { unsubscribe: () => void } | null = null;
     if (supabase) {
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        if (session?.access_token) {
-          localStorage.setItem("token", session.access_token);
-          if (session.refresh_token) {
-            localStorage.setItem("refresh_token", session.refresh_token);
-          }
-        }
+        // 📌 Supabase kendi storage'ini (sb-pymulakat-auth-token) zaten
+        // guncelliyor. Eski plain 'token'/'refresh_token' duplicate write'ina
+        // gerek yok — extractAccessToken fallback olarak okuyor.
         fetchUser();
       });
       sub = data.subscription;
