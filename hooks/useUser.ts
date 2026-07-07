@@ -271,6 +271,18 @@ export function useUser() {
   }, []);
 
   useEffect(() => {
+    // 📌 Mount sirasinda mevcut session varsa middleware cookie'yi
+    // hemen set et. Bu sayede login olan kullanici sayfayi kapatsa
+    // bile cookie TTL boyunca (24 saat) auth-gated sayfalara erisebilir.
+    try {
+      const token = extractAccessToken();
+      if (token) {
+        document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
+      }
+    } catch {
+      // ignore
+    }
+
     fetchUser();
 
     // Supabase tab'lar arası session değişikliğini dinle
@@ -278,9 +290,21 @@ export function useUser() {
     let sub: { unsubscribe: () => void } | null = null;
     if (supabase) {
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        // 📌 Supabase kendi storage'ini (sb-pymulakat-auth-token) zaten
-        // guncelliyor. Eski plain 'token'/'refresh_token' duplicate write'ina
-        // gerek yok — extractAccessToken fallback olarak okuyor.
+        // 📌 Middleware'in (Edge runtime) görebileceği server-readable cookie.
+        // Supabase kendi storage'ini yazar (sb-pymulakat-auth-token) ama
+        // chunked/base64url encoding, cookie name varyasyonlari gibi nedenlerle
+        // middleware her zaman bulamiyor. Bu yüzden bizzat bir 'pymulakat_auth'
+        // sentinel cookie set ediyoruz — middleware bunu ilk sirada kontrol eder.
+        try {
+          if (session?.access_token) {
+            // 1 gün TTL, path=/, SameSite=Lax (CSRF korumasi + middleware erişimi)
+            document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
+          } else {
+            document.cookie = "pymulakat_auth=; path=/; max-age=0; SameSite=Lax";
+          }
+        } catch {
+          // ignore (SSR veya cookie disable)
+        }
         fetchUser();
       });
       sub = data.subscription;

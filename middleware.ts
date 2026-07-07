@@ -81,31 +81,42 @@ export async function middleware(request: NextRequest) {
 
   if (isGated) {
     // 📌 Çok kaynaklı oturum kontrolü:
-    // 1) Bilinen spesifik cookie isimleri (Supabase SSR storageKey override
-    //    + default project-ref + legacy backend token)
-    // 2) Tüm cookie'lerde auth-token/-access-token pattern'i (esnek)
-    // Edge runtime'da localStorage'a erişemiyoruz; cookie'ye güvenmek zorundayız.
-    // Eğer kullanıcı localStorage-only session açmışsa, onu da ekarte etmemek
-    // için referrer path içinde bu kontrolü client-side de yapıyoruz (page.tsx).
-    const KNOWN_NAMES = [
-      "sb-pymulakat-auth-token",
-      "sb-pymulakat-auth-token-code-verifier",
-      "sb-lhuhfgpjbnngjxzlvywp-auth-token",
-      "sb-lhuhfgpjbnngjxzlvywp-auth-token-code-verifier",
-      "token",
-    ];
+    // 1) Sentinel cookie 'pymulakat_auth' — useUser.ts mount + onAuthStateChange
+    //    sırasında yazılır, 24 saat TTL. En güvenilir yöntem.
+    // 2) Bilinen spesifik Supabase cookie isimleri
+    // 3) Pattern fallback: tüm cookie'lerde auth pattern taranır
+    //
+    // Edge runtime'da localStorage erişilemez; Supabase SSR cookie naming
+    // base64url encoding + chunking ile farklı varyasyonlar yaratıyor.
+    // Bu yüzden sentinel cookie en başta kontrol edilir.
 
     let hasSession = false;
 
-    for (const name of KNOWN_NAMES) {
-      const v = request.cookies.get(name)?.value;
-      if (v && v.length > 0 && v !== "null" && v !== "undefined") {
-        hasSession = true;
-        break;
+    // 1) Sentinel cookie (en güvenilir)
+    const sentinel = request.cookies.get("pymulakat_auth")?.value;
+    if (sentinel === "1") {
+      hasSession = true;
+    }
+
+    // 2) Bilinen Supabase + legacy cookie isimleri
+    if (!hasSession) {
+      const KNOWN_NAMES = [
+        "sb-pymulakat-auth-token",
+        "sb-pymulakat-auth-token-code-verifier",
+        "sb-lhuhfgpjbnngjxzlvywp-auth-token",
+        "sb-lhuhfgpjbnngjxzlvywp-auth-token-code-verifier",
+        "token",
+      ];
+      for (const name of KNOWN_NAMES) {
+        const v = request.cookies.get(name)?.value;
+        if (v && v.length > 0 && v !== "null" && v !== "undefined") {
+          hasSession = true;
+          break;
+        }
       }
     }
 
-    // Fallback: tüm cookie isimlerini tara
+    // 3) Pattern fallback: tüm cookie isimlerini tara
     if (!hasSession) {
       const allCookies = request.cookies.getAll();
       for (const c of allCookies) {
