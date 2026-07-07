@@ -65,7 +65,6 @@ export default function RecommendationsPage() {
 function RecommendationCard({ item }: { item: any }) {
   let href = "";
   if (item.type === "question" && item.slug) href = `/interviews/${item.category}/${item.slug}`;
-  else if (item.type === "tutorial" && item.slug) href = `/guides/${item.slug}`;
   else if (item.type === "form") href = `/dashboard/forms/${item.id}`;
 
   return (

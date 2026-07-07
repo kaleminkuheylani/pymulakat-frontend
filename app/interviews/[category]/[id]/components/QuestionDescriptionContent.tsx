@@ -210,24 +210,8 @@ export default function QuestionDescriptionContent({
         </div>
       )}
 
-      {/* ─── Tutorial cross-link ────────────────────────── */}
-      {interview.tutorial_slug && (
-        <Link
-          href={`/guides/${interview.tutorial_slug}`}
-          className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-indigo-500/10 to-purple-500/10 border border-indigo-500/25 hover:border-indigo-400/50 transition-all group"
-        >
-          <div className="flex items-center gap-2.5">
-            <span className="text-lg">📘</span>
-            <div>
-              <div className="text-sm font-semibold text-white/90 group-hover:text-white">Detaylı Rehber</div>
-              <div className="text-[11px] text-white/50">Bu sorunun uzun form açıklaması</div>
-            </div>
-          </div>
-          <svg className="w-4 h-4 text-indigo-300 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-          </svg>
-        </Link>
-      )}
+      {/* 📌 Rehberler kaldırıldı — tutorial_slug cross-link devre dışı.
+          Bunun yerine explanation ve related_concepts aşağıda gösteriliyor. */}
 
       {/* ─── Toplulukta Sor — question-aware CTA ─────── */}
       <AskCommunityButton

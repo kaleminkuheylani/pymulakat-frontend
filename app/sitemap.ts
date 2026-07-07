@@ -4,7 +4,6 @@ const BASE = "https://pythonmulakat.com";
 const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
 interface Category { category?: string | null; }
-interface Tutorial { slug?: string | null; updated_at?: string | null; published_at?: string | null; }
 
 // Soru listesi: build sırasında backend /api/v2/questions/all'dan çekilir (DB source of truth)
 // Kod-içi veri YOK. Timeout 8s — Vercel 60s build limit'ine uy.
@@ -78,7 +77,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticPages: MetadataRoute.Sitemap = [
     { url: `${BASE}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
     { url: `${BASE}/interviews`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE}/guides`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
+    { url: `${BASE}/python-online`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/python-egitimi`, lastModified: now, changeFrequency: "weekly", priority: 0.9 },
+    { url: `${BASE}/python-kodlari`, lastModified: now, changeFrequency: "weekly", priority: 0.85 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
@@ -105,46 +106,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
-  // 4. Tutorials — backend'den (DB source of truth)
-  let tutorials: Tutorial[] = [];
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(`${API}/api/v2/tutorials?limit=500`, {
-      signal: controller.signal,
-      next: { revalidate: 3600 },
-    });
-    clearTimeout(timeout);
-    if (res.ok) {
-      const data = await res.json();
-      tutorials = data?.data || [];
-    }
-  } catch {
-    // empty
-  }
-  if (tutorials.length === 0) {
-    const fallbackSlugs = [
-      "python-palindrome-cozum",
-      "python-fizzbuzz-algoritma",
-      "python-binary-search",
-      "python-asal-sayi-algoritma",
-      "python-obeb-oklid",
-      "python-two-sum",
-      "python-degisken-nedir",
-      "python-if-else-kosullar",
-      "pandas-groupby-rehberi",
-    ];
-    tutorials = fallbackSlugs.map((slug) => ({ slug }));
-  }
-  // Tutorial slug garantisi ver
-  const tutorialPages: MetadataRoute.Sitemap = tutorials
-    .filter((t): t is Required<Tutorial> => Boolean(t.slug))
-    .map((t) => ({
-      url: `${BASE}/guides/${t.slug}`,
-      lastModified: t.updated_at || t.published_at || now,
-      changeFrequency: "monthly" as const,
-      priority: 0.85,
-    }));
-
-  return [...staticPages, ...categoryPages, ...questionPages, ...tutorialPages];
+  // 📌 Tutorials kaldırıldı — /guides sayfası silindi, sitemap'te yer almıyor.
+  return [...staticPages, ...categoryPages, ...questionPages];
 }

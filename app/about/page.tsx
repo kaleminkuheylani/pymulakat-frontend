@@ -201,10 +201,10 @@ export default function AboutPage() {
               Soruları Çözmeye Başla →
             </Link>
             <Link
-              href="/guides"
+              href="/python-egitimi"
               className="px-5 py-2.5 bg-white/5 border border-white/10 text-white rounded-full font-medium hover:bg-white/10 transition-colors text-sm"
             >
-              Rehberleri Oku
+              Eğitim Yol Haritası
             </Link>
           </div>
         </motion.div>
