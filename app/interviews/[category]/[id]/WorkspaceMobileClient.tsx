@@ -392,8 +392,6 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         </div>
       )}
 
-      </div>
-
       {/* Sonuç Modalı — success/fail + comparison */}
       {resultModal && (
         <ResultModal
