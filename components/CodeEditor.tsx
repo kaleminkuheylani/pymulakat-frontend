@@ -64,7 +64,6 @@ async function loadCodeMirror() {
       autocompletion: autocomplete.autocompletion,
       closeBrackets: (autocomplete as any).closeBrackets,
       closeBracketsKeymap: (autocomplete as any).closeBracketsKeymap,
-      indentOnInput: (langPython as any).indentOnInput,
       oneDark: themeOneDark.oneDark,
     };
   });
@@ -207,8 +206,7 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
               ...cm.historyKeymap,
               cm.indentWithTab,
             ]),
-            cm.python(), // Python syntax + bracket matching
-            cm.indentOnInput(),
+            cm.python(), // Python syntax + bracket matching + indent
             cm.autocompletion(),
             cm.closeBrackets(),
             // 📌 Vim tarzı keymap — hareket + i komutu
