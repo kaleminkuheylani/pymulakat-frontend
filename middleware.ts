@@ -80,12 +80,47 @@ export async function middleware(request: NextRequest) {
   const isGated = AUTH_GATED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   if (isGated) {
-    // Supabase SSR cookie ismi: sb-<project-ref>-auth-token
-    // project-ref: lhuhfgpjbnngjxzlvywp
-    const hasSession =
-      request.cookies.get("sb-lhuhfgpjbnngjxzlvywp-auth-token")?.value ||
-      request.cookies.get("sb-lhuhfgpjbnngjxzlvywp-auth-token-code-verifier")?.value ||
-      request.cookies.get("token")?.value;
+    // 📌 Çok kaynaklı oturum kontrolü:
+    // 1) Bilinen spesifik cookie isimleri (Supabase SSR storageKey override
+    //    + default project-ref + legacy backend token)
+    // 2) Tüm cookie'lerde auth-token/-access-token pattern'i (esnek)
+    // Edge runtime'da localStorage'a erişemiyoruz; cookie'ye güvenmek zorundayız.
+    // Eğer kullanıcı localStorage-only session açmışsa, onu da ekarte etmemek
+    // için referrer path içinde bu kontrolü client-side de yapıyoruz (page.tsx).
+    const KNOWN_NAMES = [
+      "sb-pymulakat-auth-token",
+      "sb-pymulakat-auth-token-code-verifier",
+      "sb-lhuhfgpjbnngjxzlvywp-auth-token",
+      "sb-lhuhfgpjbnngjxzlvywp-auth-token-code-verifier",
+      "token",
+    ];
+
+    let hasSession = false;
+
+    for (const name of KNOWN_NAMES) {
+      const v = request.cookies.get(name)?.value;
+      if (v && v.length > 0 && v !== "null" && v !== "undefined") {
+        hasSession = true;
+        break;
+      }
+    }
+
+    // Fallback: tüm cookie isimlerini tara
+    if (!hasSession) {
+      const allCookies = request.cookies.getAll();
+      for (const c of allCookies) {
+        if (
+          /auth-token|access-token|jwt|sb-.*-auth/i.test(c.name) &&
+          c.value &&
+          c.value.length > 0 &&
+          c.value !== "null" &&
+          c.value !== "undefined"
+        ) {
+          hasSession = true;
+          break;
+        }
+      }
+    }
 
     if (!hasSession) {
       const url = request.nextUrl.clone();
