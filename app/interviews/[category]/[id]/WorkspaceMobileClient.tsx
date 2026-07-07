@@ -264,7 +264,11 @@ export default function WorkspaceMobileClient({
   const isGuest = !user;
 
   return (
-    <div className="h-screen flex flex-col bg-[#050816]">
+    // 📌 Android soft keyboard fix: 100dvh (dynamic viewport height), 100vh fallback.
+    //    100vh layout viewport'a sabit — soft keyboard açılınca görsel alan
+    //    küçülüyor ama container aynı kalıyor; Monaco hit-test'i yanlış
+    //    koordinata düşüp cursor'ü istenmeyen yere koyuyordu.
+    <div className="h-[100dvh] min-h-screen flex flex-col bg-[#050816]">
       {/* Top bar */}
       <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[#0a0e1a]">
         <button onClick={handleBackToList} className="text-[10px] text-white/60 hover:text-white">

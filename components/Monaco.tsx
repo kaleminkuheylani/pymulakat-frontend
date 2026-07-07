@@ -244,6 +244,24 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       // Focus
       editor.focus();
 
+      // 📌 Android soft-keyboard fix: visualViewport resize'larında Monaco'yu
+      //    yeniden layout et. Yalnızca görsel viewport değişince tetiklenir
+      //    (klavye açılıp kapanması), tıklama sırasını bozmaz. Cleanup:
+      //    editor dispose olunca listener kaldırılır.
+      if (typeof window !== "undefined" && window.visualViewport) {
+        let rafId = 0;
+        const onVVResize = () => {
+          if (rafId) cancelAnimationFrame(rafId);
+          rafId = requestAnimationFrame(() => {
+            try { editor.layout(); } catch {}
+          });
+        };
+        window.visualViewport.addEventListener("resize", onVVResize);
+        editor.onDidDispose(() => {
+          window.visualViewport?.removeEventListener("resize", onVVResize);
+        });
+      }
+
       setIsReady(true);
     };
 
