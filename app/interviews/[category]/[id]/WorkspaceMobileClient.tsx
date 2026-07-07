@@ -66,7 +66,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
   const [tab, setTab] = useState<"question" | "workspace" | "examples" | "console">("workspace");
-  const [showShareModal, setShowShareModal] = useState(false);
+  const [resultModal, setResultModal] = useState<{ results: any[]; errorLines: string[]; passed: number; total: number } | null>(null);
 
   // ─── Guards ──
   if (!initialParams || !initialParams.category || !initialParams.id) {
@@ -203,9 +203,8 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
       const total = result.results.length;
       const success = total > 0 && passed === total;
       await submitAttempt(success, passed, total, result.execution_ms);
-      if (success) {
-        setTimeout(() => setShowShareModal(true), 1500);
-      }
+      // Sonuç modal'ı aç (success/fail comparison)
+      setResultModal({ results: result.results, errorLines: result.error_lines || [], passed, total });
     } catch (e: any) {
       // 📌 Raw error sızmaz — sabit hardcoded mesaj
       toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
@@ -302,6 +301,18 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
           <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/40 text-[10px] font-semibold uppercase tracking-wider" title="Salt okunur önizleme">
             👁 Önizleme
           </span>
+        ) : isGuest ? (
+          <button
+            onClick={() => {
+              const qSlug = (interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id);
+              const redirect = encodeURIComponent(`/interviews/${category}/${qSlug}`);
+              router.push(`/login?returnUrl=${redirect}&reason=guest_run_code`);
+            }}
+            className="px-3 py-1.5 rounded-lg bg-indigo-500 text-white text-[11px] font-bold hover:bg-indigo-400 transition-colors"
+            title="Giriş yapıp kodu çalıştır"
+          >
+            🔐 Giriş Yap & Çalıştır
+          </button>
         ) : (
           <button
             onClick={handleRun}
@@ -381,83 +392,21 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
         </div>
       )}
 
-      {/* Share modal placeholder */}
-      {showShareModal && (
-        <ShareModal
-          title={interview.title}
-          code={code}
-          questionId={questionId}
-          category={category}
-          onClose={() => setShowShareModal(false)}
+      </div>
+
+      {/* Sonuç Modalı — success/fail + comparison */}
+      {resultModal && (
+        <ResultModal
+          results={resultModal.results}
+          errorLines={resultModal.errorLines}
+          passed={resultModal.passed}
+          total={resultModal.total}
+          onClose={() => setResultModal(null)}
         />
       )}
-    </div>
   );
 }
 
-// ═══════════════════════════════════════════════════════════
-// Share Modal (basit versiyon)
-// ═══════════════════════════════════════════════════════════
-
-function ShareModal({
-  title,
-  code,
-  questionId,
-  category,
-  onClose,
-}: {
-  title: string;
-  code: string;
-  questionId: number;
-  category: string;
-  onClose: () => void;
-}) {
-  const slug = (questionId as any)?.slug || slugifyTitle(title);
-  const shareUrl = `https://pythonmulakat.com/interviews/${category}/${slug}`;
-
-  const tweetText = `✅ ${title} çözdüm!\n\n${code.split("\n").slice(0, 6).join("\n")}\n\n${shareUrl} #python #mülakat`;
-
-  return (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
-      onClick={onClose}
-    >
-      <motion.div
-        initial={{ scale: 0.9, y: 20 }}
-        animate={{ scale: 1, y: 0 }}
-        className="bg-[#0a0e1a] border border-white/10 rounded-2xl p-6 max-w-md w-full"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <h3 className="text-lg font-bold mb-2">Çözümünü Paylaş!</h3>
-        <p className="text-white/60 text-sm mb-4">{title}</p>
-        <div className="space-y-2">
-          <a
-            href={`https://twitter.com/intent/tweet?text=${encodeURIComponent(tweetText)}`}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="block w-full p-3 rounded-lg bg-[#1DA1F2] text-white text-center font-bold"
-          >
-            Twitter'da Paylaş
-          </a>
-          <button
-            onClick={() => {
-              navigator.clipboard.writeText(shareUrl);
-              toast.success("Link kopyalandı!");
-            }}
-            className="block w-full p-3 rounded-lg bg-white/5 text-white text-center"
-          >
-            Linki Kopyala
-          </button>
-        </div>
-        <button onClick={onClose} className="mt-3 w-full text-white/40 text-sm">
-          Kapat
-        </button>
-      </motion.div>
-    </motion.div>
-  );
-}
 function ConsoleTabMobile({
   errorLines,
   starterCode,
@@ -604,6 +553,94 @@ function ConsoleTabMobile({
           </p>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+
+// ─── Sonuç Modal — success/fail + comparison ────────────────
+function ResultModal({
+  results,
+  errorLines,
+  passed,
+  total,
+  onClose,
+}: {
+  results: any[];
+  errorLines: string[];
+  passed: number;
+  total: number;
+  onClose: () => void;
+}) {
+  const success = total > 0 && passed === total;
+  const failedCases = results.filter((r: any) => !r.passed);
+
+  return (
+    <div
+      className="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 z-50"
+      onClick={onClose}
+    >
+      <div
+        className={`bg-[#0a0e1a] border ${success ? "border-emerald-500/30" : "border-rose-500/30"} rounded-2xl p-5 max-w-md w-full max-h-[85vh] overflow-y-auto`}
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="text-center mb-4">
+          <div className="text-5xl mb-2">{success ? "🎉" : "⚠️"}</div>
+          <h3 className={`text-xl font-bold ${success ? "text-emerald-300" : "text-rose-300"}`}>
+            {success ? "Tebrikler!" : "Testler Başarısız"}
+          </h3>
+          <p className="text-sm text-white/60 mt-1">
+            {passed}/{total} test geçti
+          </p>
+        </div>
+
+        {/* Detaylı karşılaştırma */}
+        {failedCases.length > 0 && (
+          <div className="space-y-2 mb-4">
+            <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
+              Başarısız Testler ({failedCases.length})
+            </div>
+            {failedCases.map((r, idx) => (
+              <div key={idx} className="rounded-lg border border-rose-500/20 bg-rose-500/5 p-3 text-xs space-y-1">
+                <div className="text-white/80 font-mono">{r.description || `Test #${idx + 1}`}</div>
+                <div className="grid grid-cols-2 gap-2 mt-1">
+                  <div>
+                    <div className="text-[9px] text-emerald-300/70 font-bold uppercase">Beklenen</div>
+                    <pre className="text-emerald-300 bg-emerald-500/5 p-1.5 rounded overflow-x-auto font-mono">
+                      {JSON.stringify(r.expected)}
+                    </pre>
+                  </div>
+                  <div>
+                    <div className="text-[9px] text-rose-300/70 font-bold uppercase">Çıktın</div>
+                    <pre className="text-rose-300 bg-rose-500/10 p-1.5 rounded overflow-x-auto font-mono">
+                      {r.error || JSON.stringify(r.actual) || "(boş)"}
+                    </pre>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Hata traceback */}
+        {errorLines.length > 0 && (
+          <div className="space-y-2 mb-4">
+            <div className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+              ⚠ Hata Traceback
+            </div>
+            <pre className="text-[11px] font-mono text-rose-200 bg-rose-500/10 border border-rose-500/30 p-2 rounded overflow-x-auto whitespace-pre-wrap">
+              {errorLines.join("\n")}
+            </pre>
+          </div>
+        )}
+
+        <button
+          onClick={onClose}
+          className={`w-full py-2.5 rounded-lg font-bold text-sm ${success ? "bg-emerald-500 text-slate-950" : "bg-white/10 text-white hover:bg-white/20"}`}
+        >
+          {success ? "Harika, devam et 🚀" : "Tekrar Dene"}
+        </button>
+      </div>
     </div>
   );
 }
