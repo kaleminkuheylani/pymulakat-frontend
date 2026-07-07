@@ -29,6 +29,21 @@ const jetbrainsMono = JetBrains_Mono({
 // ────────────────────────────────────────────────────────────
 // 🌐 GLOBAL SEO METADATA
 // ────────────────────────────────────────────────────────────
+// 📌 Next.js 13+ requires separate viewport export.
+//   Merge: viewport name=theme-color, width=device-width, initial-scale=1.
+//   Bu olmadan mobile rendering bozulur + Google mobile-first index
+//   skorunu düşürür.
+export const viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 5,
+  themeColor: [
+    { media: "(prefers-color-scheme: dark)", color: "#050816" },
+    { media: "(prefers-color-scheme: light)", color: "#0a0e1a" },
+  ],
+  colorScheme: "dark",
+} as const;
+
 export const metadata: Metadata = {
   metadataBase: new URL("https://pythonmulakat.com"),
 
@@ -135,7 +150,12 @@ export const metadata: Metadata = {
   // ── Canonical & Alternates ──────────────────────────────────
   alternates: {
     canonical: "https://pythonmulakat.com",
-    languages: { "tr-TR": "https://pythonmulakat.com" },
+    // 📌 Hreflang: Tek dil (tr-TR) + x-default fallback. Çoklu dil yoksa bile
+    // x-default en iyi pratik — Google botlarına canonical hedefi gösterir.
+    languages: {
+      "tr-TR": "https://pythonmulakat.com",
+      "x-default": "https://pythonmulakat.com",
+    },
   },
 
   icons: {
