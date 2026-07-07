@@ -66,38 +66,11 @@ export default function PythonOnlineEditor() {
         batched: (s: string) =>
           captured.push("[stderr] " + (s.endsWith("\n") ? s.slice(0, -1) : s)),
       });
+      // Sadece kodu çalıştır, son ifadeyi tekrar çalıştırma (Pyodide proxy
+      // bug'larına yol açıyordu — 'Cannot read properties of undefined' gibi
+      // proxy hataları). Kullanıcı print() ile zaten çıktı alıyor.
       await py.runPythonAsync(code);
-      const lines = code.split("\n");
-      let lastExpr = "";
-      for (let i = lines.length - 1; i >= 0; i--) {
-        const l = lines[i].trim();
-        if (
-          l &&
-          !l.startsWith("#") &&
-          !l.startsWith("def ") &&
-          !l.startsWith("class ") &&
-          !l.startsWith("import ") &&
-          !l.startsWith("from ") &&
-          !l.startsWith("print(")
-        ) {
-          lastExpr = l;
-          break;
-        }
-      }
-      const stdout = captured.join("\n");
-      let tail = "";
-      if (lastExpr) {
-        try {
-          const r = await py.runPythonAsync(`(${lastExpr})`);
-          const v = r?.toJs ? r.toJs() : r;
-          if (v !== undefined && v !== null && String(v) !== "") {
-            tail = (stdout ? "\n" : "") + (typeof v === "string" ? v : JSON.stringify(v));
-          }
-        } catch {
-          // ignore
-        }
-      }
-      setOutput(stdout + tail);
+      setOutput(captured.join("\n"));
       setPyStatus("ready");
     } catch (e: any) {
       const raw = String(e?.message || e || "");
