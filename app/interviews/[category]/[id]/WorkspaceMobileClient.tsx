@@ -584,7 +584,18 @@ function ConsoleTabMobile({
       )}
 
       {/* Boş durum (parametre yok + hata yok) */}
-      {params.length === 0 && errorLines.length === 0 && (
+      {params.length === 0 && errorLines.length === 0 ? (
+        <div className="space-y-3">
+          <div className="text-[11px] text-white/40 leading-relaxed p-2 rounded bg-amber-500/5 border border-amber-500/20">
+            <div className="font-bold text-amber-300 mb-1">⚠ Parametre tespit edilemedi</div>
+            Fonksiyon imzası ayrıştırılamadı. <strong>Run Tests</strong> sekmesinden test case'leri incele veya <strong>Examples</strong> sekmesinden hazır inputları kullan.
+          </div>
+          <div className="flex flex-col items-center justify-center gap-2 text-white/30 py-6">
+            <div className="text-3xl">✅</div>
+            <p className="text-sm">Kodun hatasız çalışıyor.</p>
+          </div>
+        </div>
+      ) : params.length === 0 ? (
         <div className="flex flex-col items-center justify-center gap-2 text-white/30 py-12">
           <div className="text-3xl">✅</div>
           <p className="text-sm">Kodun hatasız çalışıyor.</p>
@@ -592,7 +603,7 @@ function ConsoleTabMobile({
             Buraya Custom Input sonuçları veya hata traceback düşer.
           </p>
         </div>
-      )}
+      ) : null}
     </div>
   );
 }
