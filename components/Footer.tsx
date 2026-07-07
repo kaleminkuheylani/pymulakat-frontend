@@ -28,28 +28,13 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-white/50">
               <li>
-                <a href="/interviews" className="hover:text-white transition-colors">
-                  Sorular
-                </a>
-              </li>
-              <li>
                 <a href="/python-online" className="hover:text-white transition-colors">
                   Python Online
                 </a>
               </li>
               <li>
-                <a href="/python-egitimi" className="hover:text-white transition-colors">
-                  Python Eğitimi
-                </a>
-              </li>
-              <li>
-                <a href="/python-kodlari" className="hover:text-white transition-colors">
-                  Python Kodları
-                </a>
-              </li>
-              <li>
                 <a href="/dashboard" className="hover:text-white transition-colors">
-                  Akışım
+                  Akışım (Sorular, Kodlar, Eğitimler)
                 </a>
               </li>
               <li>

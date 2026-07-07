@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import dynamic from "next/dynamic";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
@@ -378,17 +379,16 @@ export default function WorkspaceMobileClient({
           </button>
         </div>
         {readonly ? null : isGuest ? (
-          <button
-            onClick={() => {
-              const qSlug = (interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id);
-              const redirect = encodeURIComponent(`/interviews/${category}/${qSlug}`);
-              router.push(`/login?returnUrl=${redirect}&reason=guest_run_code`);
-            }}
+          // 📌 Misafir için GuestEditorGate zaten CTA'yı gösteriyor. Buradaki
+          // ek butan gereksiz — link ile değiştir, middleware zaten /login'e
+          // /dashboard* üzerinden yönlendiriyor.
+          <Link
+            href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
             className="px-3 py-1.5 rounded-lg bg-indigo-500 text-white text-[11px] font-bold hover:bg-indigo-400 transition-colors"
             title="Giriş yapıp kodu çalıştır"
           >
             🔐 Giriş Yap & Çalıştır
-          </button>
+          </Link>
         ) : (
           <button
             onClick={handleRun}

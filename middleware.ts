@@ -75,8 +75,15 @@ export async function middleware(request: NextRequest) {
   }
 
   // 1.5) Auth-gated sayfalar: misafirler → /login (returnUrl ile geri döner)
-  // Python Online PUBLIC — sadece eğitim ve kodlar üye gerektirir.
-  const AUTH_GATED_PREFIXES = ["/python-egitimi", "/python-kodlari"];
+  // Tüm üyelik-şartlı rotalar tek listede — middleware TEK kapı.
+  // - /dashboard* (tüm dashboard route'ları + layout)
+  // - /python-egitimi, /python-kodlari (üye-only içerik)
+  // Python Online + Interviews PUBLIC (misafir görür, soru çalıştırmaz).
+  const AUTH_GATED_PREFIXES = [
+    "/dashboard",
+    "/python-egitimi",
+    "/python-kodlari",
+  ];
   const isGated = AUTH_GATED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`));
 
   if (isGated) {

@@ -241,6 +241,11 @@ export default function DashboardHome() {
     return () => clearInterval(interval);
   }, [fetchFlow, fetchCommunity]);
 
+  // 📌 Misafir için: layout.tsx auth guard var. Buraya user gelirse üye demektir.
+  // Bu yüzden null yerine bir erken return yok.
+  // ÖNEMLİ: dashboard guest'te layout guard'i sayesinde /login'e yönlendirilir,
+  // buraya ulaşamaz. Kullanici bu component'e eristikte user kesin vardır.
+
   if (!user) return null;
 
   return (
@@ -305,7 +310,6 @@ export default function DashboardHome() {
                 title="Sorular"
                 description="Mülakat sorularını tarayıcıda çöz, otomatik puanlama al."
                 color="indigo"
-                badge="HERKESE AÇIK"
               />
               <FeatureCard
                 href="/python-online"
@@ -313,7 +317,6 @@ export default function DashboardHome() {
                 title="Online Compiler"
                 description="Sorudan bağımsız deneme: tarayıcıda Python yaz ve çalıştır."
                 color="amber"
-                badge="HERKESE AÇIK"
                 highlight
               />
               <FeatureCard
@@ -322,7 +325,6 @@ export default function DashboardHome() {
                 title="Kodlar"
                 description="17 snippet, 6 kategori: algoritma, OOP, veri yapısı."
                 color="purple"
-                badge="ÜYE"
               />
               <FeatureCard
                 href="/python-egitimi"
@@ -330,7 +332,6 @@ export default function DashboardHome() {
                 title="Eğitimler"
                 description="6 derslik sıralı yol haritası, çalıştırılabilir örnekler."
                 color="emerald"
-                badge="ÜYE"
               />
             </div>
           </section>
@@ -404,7 +405,7 @@ interface FeatureCardProps {
   badge?: string;
   highlight?: boolean;
 }
-function FeatureCard({ href, icon, title, description, color, badge, highlight }: FeatureCardProps) {
+function FeatureCard({ href, icon, title, description, color, highlight }: FeatureCardProps) {
   const palette: Record<FeatureCardProps["color"], { border: string; bg: string; icon: string }> = {
     indigo: { border: "border-indigo-500/30", bg: "from-indigo-500/10", icon: "text-indigo-300" },
     amber: { border: "border-amber-500/40", bg: "from-amber-500/15", icon: "text-amber-300" },
@@ -419,15 +420,6 @@ function FeatureCard({ href, icon, title, description, color, badge, highlight }
         highlight ? "ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10" : ""
       }`}
     >
-      {badge && (
-        <span className={`absolute top-2 right-2 text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider ${
-          badge === "HERKESE AÇIK"
-            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-            : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-        }`}>
-          {badge}
-        </span>
-      )}
       <div className={`text-3xl mb-2 ${p.icon}`}>{icon}</div>
       <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-300 transition-colors">
         {title}

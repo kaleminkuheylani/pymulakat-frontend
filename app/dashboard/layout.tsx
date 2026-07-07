@@ -4,8 +4,7 @@
 "use client";
 
 import { useUser } from "../../hooks/useUser";
-import { useRouter, usePathname } from "next/navigation";
-import { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import Link from "next/link";
 
 const NAV = [
@@ -16,15 +15,10 @@ const NAV = [
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
+  // 📌 Middleware tek kapı: /dashboard* için auth kontrolünü zaten yapıyor.
+  // Layout'a user geldiyse authenticated demektir. Client-side redirect yok.
   const { user, loading } = useUser();
-  const router = useRouter();
   const pathname = usePathname();
-
-  useEffect(() => {
-    if (!loading && !user) {
-      router.replace(`/login?returnUrl=${encodeURIComponent(pathname)}`);
-    }
-  }, [user, loading, router, pathname]);
 
   if (loading) {
     return (
