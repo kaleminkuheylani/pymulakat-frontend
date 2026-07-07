@@ -1,9 +1,11 @@
 "use client";
 
 // LessonRunner — Ders sayfasında kod örneklerini çalıştırmak için mini editör + runner.
-
+// Misafir: kod görünür read-only + "Üye ol & çalıştır" CTA.
 import { useState, useRef, useCallback } from "react";
+import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
+import { useUser } from "../../../hooks/useUser";
 
 const CodeEditor = dynamic(
   () => import("../../../components/CodeEditor").then((m) => m.CodeEditorMonaco),
@@ -14,6 +16,9 @@ const PYODIDE_VERSION = "v0.27.7";
 const PYODIDE_BASE = `/pyodide/${PYODIDE_VERSION}/full/`;
 
 export default function LessonRunner({ code: initialCode, label = "kod.py" }: { code: string; label?: string }) {
+  const router = useRouter();
+  const { user, loading: userLoading } = useUser();
+  const isGuest = !user && !userLoading;
   const [code, setCode] = useState(initialCode);
   const [output, setOutput] = useState("");
   const [err, setErr] = useState<string | null>(null);
@@ -54,6 +59,8 @@ export default function LessonRunner({ code: initialCode, label = "kod.py" }: { 
   }, []);
 
   const handleRun = useCallback(async () => {
+    // 📌 Misafire kod çalıştırma yok — sessiz no-op.
+    if (!user) return;
     setRunning(true);
     setOutput("");
     setErr(null);
@@ -71,7 +78,7 @@ export default function LessonRunner({ code: initialCode, label = "kod.py" }: { 
     } finally {
       setRunning(false);
     }
-  }, [code, ensurePyodide]);
+  }, [code, ensurePyodide, user]);
 
   return (
     <div className="rounded-lg border border-white/10 overflow-hidden bg-[#0a0e1a]">
@@ -84,18 +91,51 @@ export default function LessonRunner({ code: initialCode, label = "kod.py" }: { 
           >
             ↻ sıfırla
           </button>
-          <button
-            onClick={handleRun}
-            disabled={running || loading}
-            className="text-[10px] px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-[#050816] font-bold"
-          >
-            {loading ? "..." : running ? "..." : "▶ Çalıştır"}
-          </button>
+          {!isGuest && (
+            <button
+              onClick={handleRun}
+              disabled={running || loading}
+              className="text-[10px] px-2.5 py-1 rounded bg-amber-500 hover:bg-amber-400 disabled:opacity-50 text-[#050816] font-bold"
+            >
+              {loading ? "..." : running ? "..." : "▶ Çalıştır"}
+            </button>
+          )}
         </div>
       </div>
       <div className="h-[200px]">
-        <CodeEditor value={code} onChange={setCode} height="100%" language="python" />
+        <CodeEditor
+          value={code}
+          onChange={setCode}
+          height="100%"
+          language="python"
+          readOnly={isGuest}
+        />
       </div>
+      {/* 📌 Misafir için: kodun altında net CTA. Çalıştırma, save, AI yok. */}
+      {isGuest && (
+        <div className="bg-amber-500/5 border-t border-amber-500/20 px-3 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
+          <span className="text-amber-300 font-bold flex-shrink-0">
+            🔒 Üye ol & çalıştır
+          </span>
+          <span className="text-white/60 flex-1">
+            Tarayıcıda anında çalıştır, AI feedback al, ilerlemeni kaydet.
+          </span>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            <button
+              onClick={() => router.push("/register")}
+              className="px-3 py-1 rounded bg-amber-500 hover:bg-amber-400 text-[#050816] font-bold text-[11px]"
+            >
+              Ücretsiz Üye Ol
+            </button>
+            <button
+              onClick={() => router.push("/login")}
+              className="px-3 py-1 rounded bg-white/10 hover:bg-white/15 text-white text-[11px]"
+            >
+              Giriş Yap
+            </button>
+          </div>
+        </div>
+      )}
       {(output || err) && (
         <div className="border-t border-white/10 p-3 max-h-[180px] overflow-y-auto font-mono text-[11px] leading-relaxed">
           {output && <pre className="whitespace-pre-wrap text-emerald-200">{output}</pre>}
