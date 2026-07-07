@@ -312,13 +312,13 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       // domReadOnly SADECE readOnly için true. Misafir/özel mod için
       // Monaco iç DOM read-only (yazma yok) ama tıklama + cursor OK.
       domReadOnly: readOnly,
-      // 📌 Cursor görünürlüğü — mobilde nokta gibi davranması için width 3 + line.
-      // Önceki width:2 + amber (#fbbf24) Android Chrome'da "satır gibi" algılanıyordu
-      // (ince çizgi ile metin satırı karışıyordu). Width:3 saf-beyaz tonu cursor'ü
-      // net bir nokta gibi gösteriyor.
-      cursorWidth: 3,
-      cursorStyle: "line" as const,
-      cursorBlinking: "smooth" as const,
+      // 📌 Vim tarzı cursor — kullanıcı isteği.
+      // cursorStyle: "block" → karakterin tamamını kaplayan blok cursor
+      // (vim'in normal mode'u gibi). line-thin ya da underline ile karışma riski yok.
+      // cursorBlinking: "phase" → vim'in ağır fade animasyonu, smooth ve net.
+      // Color saf beyaz — her zemin üzerinde görünür.
+      cursorStyle: "block" as const,
+      cursorBlinking: "phase" as const,
       cursorSmoothCaretAnimation: "off" as const,
       smoothScrolling: false,
       contextmenu: true,  // sağ tık menüsü açık (anti-cheat kaldırıldı)
