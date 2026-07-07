@@ -83,10 +83,14 @@ const inlineAuthAPI = {
           user: data.user,
         };
         localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(supabaseSession));
-        localStorage.setItem("token", data.session.access_token);
-        if (data.session.refresh_token) {
-          localStorage.setItem("refresh_token", data.session.refresh_token);
-        }
+        // 📌 Auth gate middleware için sentinel cookie. Login sayfasında
+        // GlobalNav render edilmiyor (isAuthPage → null) bu yüzden useUser
+        // mount olmuyor. Cookie'yi bizzat login sonrası set ediyoruz ki
+        // /python-egitimi veya /python-kodlari'na direkt geçişte middleware
+        // server tarafında session'ı görsün.
+        try {
+          document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
+        } catch { /* ignore */ }
       } catch (e) {
         console.error("[AUTH] Storage yazma hatasi:", e);
       }
