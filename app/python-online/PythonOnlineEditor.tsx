@@ -35,21 +35,29 @@ export default function PythonOnlineEditor() {
   const pyodideReadyRef = useRef<Promise<any> | null>(null);
 
   const ensurePyodide = useCallback(async () => {
-    if (pyodideRef.current) return pyodideRef.current;
-    if (pyodideReadyRef.current) return pyodideReadyRef.current;
-    setPyStatus("loading");
-    pyodideReadyRef.current = (async () => {
-      await loadScript(`${PYODIDE_BASE}pyodide.js`);
-      const w = window as any;
-      if (typeof w.loadPyodide !== "function") {
-        throw new Error("loadPyodide yüklenemedi");
-      }
-      const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: true });
-      pyodideRef.current = py;
-      setPyStatus("ready");
-      return py;
-    })();
-    return pyodideReadyRef.current;
+    try {
+      if (pyodideRef.current) return pyodideRef.current;
+      if (pyodideReadyRef.current) return pyodideReadyRef.current;
+      setPyStatus("loading");
+      pyodideReadyRef.current = (async () => {
+        await loadScript(`${PYODIDE_BASE}pyodide.js`);
+        const w = window as any;
+        if (typeof w.loadPyodide !== "function") {
+          throw new Error("loadPyodide yüklenemedi");
+        }
+        const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: true });
+        if (!py) throw new Error("Pyodide null döndü");
+        pyodideRef.current = py;
+        setPyStatus("ready");
+        return py;
+      })();
+      return pyodideReadyRef.current;
+    } catch (e: any) {
+      console.error("[ensurePyodide]", e);
+      setPyStatus("error");
+      setErrorMsg("Python yüklenemedi. Sayfayı yenile.");
+      throw e;
+    }
   }, []);
 
   const handleRun = useCallback(async () => {
@@ -58,22 +66,43 @@ export default function PythonOnlineEditor() {
     setPyStatus("running");
     try {
       const py = await ensurePyodide();
+      if (!py) throw new Error("Pyodide yüklenemedi");
+
       const captured: string[] = [];
-      py.setStdout({
-        batched: (s: string) => captured.push(s.endsWith("\n") ? s.slice(0, -1) : s),
-      });
-      py.setStderr({
-        batched: (s: string) =>
-          captured.push("[stderr] " + (s.endsWith("\n") ? s.slice(0, -1) : s)),
-      });
-      // Sadece kodu çalıştır, son ifadeyi tekrar çalıştırma (Pyodide proxy
-      // bug'larına yol açıyordu — 'Cannot read properties of undefined' gibi
-      // proxy hataları). Kullanıcı print() ile zaten çıktı alıyor.
+      // Pyodide proxy bazen tanımsız davranıyor — setStdout her zaman
+      // güvenli bir noop stub ile sar.
+      const safeBatched = (prefix: string) => (s: string) => {
+        try {
+          const clean = s.endsWith("\n") ? s.slice(0, -1) : s;
+          captured.push(prefix ? prefix + clean : clean);
+        } catch {
+          /* capture hatasını yut */
+        }
+      };
+
+      try {
+        if (typeof py.setStdout === "function") {
+          py.setStdout({ batched: safeBatched("") });
+        }
+      } catch { /* ignore */ }
+      try {
+        if (typeof py.setStderr === "function") {
+          py.setStderr({ batched: safeBatched("[stderr] ") });
+        }
+      } catch { /* ignore */ }
+
+      // Kullanıcı kodu — exception'ı handleRun catch'i yakalıyor
       await py.runPythonAsync(code);
       setOutput(captured.join("\n"));
       setPyStatus("ready");
     } catch (e: any) {
-      const raw = String(e?.message || e || "");
+      // Tüm hata yolları: Pyodide error, network, parse, vs.
+      let raw: string;
+      try {
+        raw = String(e?.message || e || "");
+      } catch {
+        raw = "Çalıştırma hatası";
+      }
       const lastLine = raw.split("\n").filter(Boolean).pop() || "Çalıştırma hatası";
       setErrorMsg(lastLine);
       setPyStatus("ready");

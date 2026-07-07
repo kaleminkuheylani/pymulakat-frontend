@@ -2,6 +2,7 @@
 // Client logic: PythonOnlineEditor.tsx.
 
 import type { Metadata } from "next";
+import { EditorErrorBoundary } from "../../components/EditorErrorBoundary";
 import PythonOnlineEditor from "./PythonOnlineEditor";
 
 export const metadata: Metadata = {
@@ -73,7 +74,9 @@ export default function PythonOnlinePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }}
       />
-      <PythonOnlineEditor />
+      <EditorErrorBoundary editorName="Python Online">
+        <PythonOnlineEditor />
+      </EditorErrorBoundary>
     </>
   );
 }

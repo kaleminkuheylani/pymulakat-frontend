@@ -4,6 +4,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LESSONS, getLesson } from "../lessons";
+import { EditorErrorBoundary } from "../../../components/EditorErrorBoundary";
 import LessonRunner from "./LessonRunner";
 
 export function generateStaticParams() {
@@ -98,7 +99,11 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
                     {i + 1}. {s.heading}
                   </h3>
                   <p className="text-sm text-white/70 leading-relaxed mb-3 whitespace-pre-line">{s.body}</p>
-                  {s.code && <LessonRunner code={s.code} label={s.codeLabel || `${s.heading}.py`} />}
+                  {s.code && (
+                    <EditorErrorBoundary editorName={`Ders: ${s.heading}`}>
+                      <LessonRunner code={s.code} label={s.codeLabel || `${s.heading}.py`} />
+                    </EditorErrorBoundary>
+                  )}
                 </article>
               ))}
             </div>
@@ -107,7 +112,9 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           <section className="mb-8 p-5 rounded-xl bg-amber-500/5 border border-amber-500/20">
             <h2 className="text-base font-bold text-amber-300 mb-2">📝 Ödev</h2>
             <p className="text-sm text-white/80 leading-relaxed mb-3">{lesson.homework}</p>
-            <LessonRunner code={`# ${lesson.homework}\n# Buraya kendi çözümünü yaz\n`} label="cozum.py" />
+            <EditorErrorBoundary editorName="Ödev">
+              <LessonRunner code={`# ${lesson.homework}\n# Buraya kendi çözümünü yaz\n`} label="cozum.py" />
+            </EditorErrorBoundary>
           </section>
 
           <section className="mb-8 p-5 rounded-xl bg-white/[0.02] border border-white/10">

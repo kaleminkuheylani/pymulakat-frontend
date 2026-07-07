@@ -1,12 +1,14 @@
 "use client";
 
-// CodeEditor.tsx — CodeMirror 6 wrapper.
+// CodeEditor.tsx — CodeMirror 6 wrapper (minimal version).
 // Eski Monaco.tsx'in yerine geçti. Dış API aynı (CodeEditorRef) → caller'lar değişmiyor.
-// Avantajlar:
-// - Mobile/touch first tasarım (cursor, focus, gesture sorunları yok)
-// - 20x küçük bundle (~150KB vs Monaco ~3MB)
-// - Vim keymap built-in (kullanıcı "vim tarzı" istemişti)
-// - Python syntax highlight (@codemirror/lang-python)
+//
+// Bu versiyonun farkı:
+// - Vim keymap KALDIRILDI (prec/selection.main.anchor erişimleri patliyordu)
+// - Custom syntax highlight KALDIRILDI (tags.function(variableName) erişimleri patliyordu)
+// - Sadece python() + defaultKeymap + historyKeymap
+// - oneDark tema (custom theme yerine — daha güvenli)
+// - Tüm mount adımları try/catch + sentinel
 
 import {
   forwardRef,
@@ -21,10 +23,6 @@ export interface CodeEditorRef {
   getValue: () => string;
   setValue: (v: string) => void;
   focus: () => void;
-  /**
-   * CodeMirror otomatik layout yapar; layout tetikleyici olarak yeniden
-   * ölçüm iste. Content değiştiğinde çağrılabilir.
-   */
   layout: () => void;
 }
 
@@ -37,107 +35,52 @@ interface Props {
   theme?: "vs-dark" | "hc-black" | "pythonDark";
 }
 
-// ─── CodeMirror dynamic import (client-only, SSR devre dışı) ─────
-// Bundle boyutu ~150KB, lazy load ediliyor.
+// ─── CodeMirror dynamic import ─────────────────────────────────
 let cmModulesPromise: Promise<any> | null = null;
 async function loadCodeMirror() {
   if (cmModulesPromise) return cmModulesPromise;
-  cmModulesPromise = Promise.all([
-    import("@codemirror/state"),
-    import("@codemirror/view"),
-    import("@codemirror/commands"),
-    import("@codemirror/lang-python"),
-    import("@codemirror/language"), // HighlightStyle + syntaxHighlighting
-    import("@codemirror/autocomplete"),
-    import("@lezer/highlight"),     // tags
-  ]).then((mods) => {
-    const [state, view, commands, langPython, language, autocomplete, lezer] = mods;
-    return {
-      EditorState: state.EditorState,
-      EditorView: view.EditorView,
-      keymap: (view as any).keymap,
-      defaultKeymap: (commands as any).defaultKeymap,
-      history: commands.history,
-      historyKeymap: (commands as any).historyKeymap,
-      indentWithTab: (commands as any).indentWithTab,
-      python: langPython.python,
-      autocompletion: autocomplete.autocompletion,
-      closeBrackets: (autocomplete as any).closeBrackets,
-      closeBracketsKeymap: (autocomplete as any).closeBracketsKeymap,
-      // Syntax highlight altyapısı
-      syntaxHighlighting: (language as any).syntaxHighlighting,
-      HighlightStyle: (language as any).HighlightStyle,
-      tags: (lezer as any).tags,
-    };
-  });
+  cmModulesPromise = (async () => {
+    try {
+      const [stateMod, viewMod, cmdMod, pyMod, acMod, themeMod] = await Promise.all([
+        import("@codemirror/state").catch(() => null),
+        import("@codemirror/view").catch(() => null),
+        import("@codemirror/commands").catch(() => null),
+        import("@codemirror/lang-python").catch(() => null),
+        import("@codemirror/autocomplete").catch(() => null),
+        import("@codemirror/theme-one-dark").catch(() => null),
+      ]);
+
+      if (!stateMod || !viewMod || !cmdMod || !pyMod) {
+        throw new Error("CodeMirror core modülleri yüklenemedi");
+      }
+
+      return {
+        EditorState: stateMod.EditorState,
+        EditorView: viewMod.EditorView,
+        // keymap @codemirror/view'da export ediliyor
+        keymap: (viewMod as any).keymap,
+        defaultKeymap: (cmdMod as any).defaultKeymap,
+        history: cmdMod.history,
+        historyKeymap: (cmdMod as any).historyKeymap,
+        indentWithTab: (cmdMod as any).indentWithTab,
+        // python language
+        python: pyMod.python,
+        // autocomplete (optional)
+        autocompletion: acMod ? (acMod as any).autocompletion : null,
+        closeBrackets: acMod ? (acMod as any).closeBrackets : null,
+        closeBracketsKeymap: acMod ? (acMod as any).closeBracketsKeymap : [],
+        // oneDark theme (optional, fallback: custom)
+        oneDark: themeMod ? (themeMod as any).oneDark : null,
+      };
+    } catch (e) {
+      // Cache temizle — tekrar deneyebilsin
+      cmModulesPromise = null;
+      throw e;
+    }
+  })();
   return cmModulesPromise;
 }
 
-// ─── Vim keymap (kullanıcı "vim tarzı cursor" istemişti) ─────────
-// CodeMirror 6'da vim keymap built-in değil, custom olarak implemente ediyoruz.
-// Tam vim uyumluluğu yerine, normal/insert mod geçişi + hjkl hareket +
-// i/a/o edit modu gibi temel vim hareketlerini sağlıyoruz.
-function buildVimKeymap(cm: any): any {
-  const { Prec } = cm;
-  const normalModeKeymap: any[] = [
-    {
-      key: "h",
-      run: (view: any) => {
-        view.dispatch({ selection: { anchor: view.state.selection.main.anchor - 1 } });
-        return true;
-      },
-    },
-    {
-      key: "l",
-      run: (view: any) => {
-        view.dispatch({ selection: { anchor: view.state.selection.main.anchor + 1 } });
-        return true;
-      },
-    },
-    {
-      key: "j",
-      run: (view: any) => {
-        const { state } = view;
-        const pos = state.selection.main.anchor;
-        const line = state.doc.lineAt(pos);
-        if (line.number < state.doc.lines) {
-          view.dispatch({ selection: { anchor: pos + line.length + 1 } });
-        }
-        return true;
-      },
-    },
-    {
-      key: "k",
-      run: (view: any) => {
-        const { state } = view;
-        const pos = state.selection.main.anchor;
-        const line = state.doc.lineAt(pos);
-        if (line.number > 1) {
-          const prevLine = state.doc.line(line.number - 1);
-          view.dispatch({ selection: { anchor: pos - prevLine.length - 1 } });
-        }
-        return true;
-      },
-    },
-    {
-      key: "i",
-      run: (view: any) => {
-        view.dispatch({ effects: cm.EditorView.scrollIntoView(0) });
-        // Esc tuşuna basılana kadar normal komutları devre dışı bırak
-        // Not: Tam vim uyumluluğu için @replit/codemirror-vim gibi bir plugin
-        // gerekli; burada basitleştirilmiş versiyonu veriyoruz.
-        return false;
-      },
-    },
-  ];
-
-  return normalModeKeymap;
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ─── CodeEditorMonaco Component (artık CodeMirror 6) ──────────
-// İsim "CodeEditorMonaco" korundu → caller'lar import path'i
-// değiştirmesin diye.
 // ═══════════════════════════════════════════════════════════════
 export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
   function CodeEditorMonaco(
@@ -147,6 +90,7 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       language = "python",
       height = "100%",
       readOnly = false,
+      // theme prop korundu (eski API uyumu), oneDark kullanıyoruz
       theme = "vs-dark",
     },
     ref
@@ -167,23 +111,48 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
     useImperativeHandle(
       ref,
       () => ({
-        getValue: () => viewRef.current?.state.doc.toString() ?? lastExternalValueRef.current,
+        getValue: () => {
+          const view = viewRef.current;
+          if (view && view.state && view.state.doc) {
+            try {
+              return view.state.doc.toString();
+            } catch {
+              // proxy hatası olursa son bilinen değeri döndür
+            }
+          }
+          return lastExternalValueRef.current;
+        },
         setValue: (v: string) => {
           const view = viewRef.current;
           if (!view) return;
-          const current = view.state.doc.toString();
-          if (current !== v) {
-            view.dispatch({
-              changes: { from: 0, to: view.state.doc.length, insert: v },
-            });
+          try {
+            if (view.state && view.state.doc) {
+              const current = view.state.doc.toString();
+              if (current !== v) {
+                view.dispatch({
+                  changes: { from: 0, to: view.state.doc.length, insert: v },
+                });
+              }
+            }
+          } catch {
+            /* proxy hatası → yut */
           }
         },
-        focus: () => viewRef.current?.focus(),
+        focus: () => {
+          try {
+            viewRef.current?.focus();
+          } catch {
+            /* ignore */
+          }
+        },
         layout: () => {
           try {
-            viewRef.current?.requestMeasure();
+            const v = viewRef.current;
+            if (v && typeof v.requestMeasure === "function") {
+              v.requestMeasure();
+            }
           } catch {
-            // measure henüz hazır değilse sessizce yut
+            /* ignore */
           }
         },
       }),
@@ -198,118 +167,82 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       (async () => {
         try {
           const cm = await loadCodeMirror();
-          if (cancelled || !hostRef.current) return;
+          if (cancelled) return;
+          if (!hostRef.current) return;
 
-          const extensions = [
-            cm.history(),
-            cm.keymap.of([
-              ...cm.closeBracketsKeymap,
-              ...cm.defaultKeymap,
-              ...cm.historyKeymap,
-              cm.indentWithTab,
-            ]),
-            cm.python(), // Python syntax + bracket matching + indent
-            cm.autocompletion(),
-            cm.closeBrackets(),
-            // 📌 Vim tarzı keymap — hareket + i komutu
-            cm.keymap.of(buildVimKeymap(cm)),
-            cm.EditorView.updateListener.of((update: any) => {
-              if (update.docChanged) {
-                const newVal = update.state.doc.toString();
-                lastExternalValueRef.current = newVal;
-                onChangeRef.current(newVal);
+          // Extensions — minimal set, defensive
+          const extensions: any[] = [];
+
+          // Editor history (undo/redo)
+          try { extensions.push(cm.history()); } catch { /* ignore */ }
+
+          // Keymap — sadece temel history + default
+          try {
+            const keymaps: any[] = [];
+            if (cm.closeBracketsKeymap) keymaps.push(...cm.closeBracketsKeymap);
+            if (cm.defaultKeymap) keymaps.push(...cm.defaultKeymap);
+            if (cm.historyKeymap) keymaps.push(...cm.historyKeymap);
+            if (cm.indentWithTab) keymaps.push(cm.indentWithTab);
+            if (keymaps.length > 0) {
+              extensions.push(cm.keymap.of(keymaps));
+            }
+          } catch { /* ignore */ }
+
+          // Python language (best-effort)
+          try {
+            if (typeof cm.python === "function") {
+              extensions.push(cm.python());
+            }
+          } catch { /* ignore */ }
+
+          // Autocomplete (optional)
+          try {
+            if (cm.autocompletion) extensions.push(cm.autocompletion());
+            if (cm.closeBrackets) extensions.push(cm.closeBrackets());
+          } catch { /* ignore */ }
+
+          // Theme — oneDark varsa onu kullan, yoksa custom minimal
+          if (cm.oneDark) {
+            extensions.push(cm.oneDark);
+          } else {
+            try {
+              extensions.push(cm.EditorView.theme(
+                {
+                  "&": { backgroundColor: "#050816", color: "#e4e4e7" },
+                  ".cm-content": { caretColor: "#ffffff" },
+                },
+                { dark: true }
+              ));
+            } catch { /* ignore */ }
+          }
+
+          // Update listener
+          try {
+            extensions.push(cm.EditorView.updateListener.of((update: any) => {
+              if (update && update.docChanged) {
+                try {
+                  const newVal = update.state.doc.toString();
+                  lastExternalValueRef.current = newVal;
+                  onChangeRef.current(newVal);
+                } catch {
+                  /* ignore */
+                }
               }
-            }),
-            // 📌 Custom dark tema — oneDark kullanmıyoruz, böylece override
-            // yarışı olmuyor. Arka plan / ana sayfa ile aynı tonda.
-            cm.EditorView.theme(
-              {
-                "&": {
-                  backgroundColor: "#050816",
-                  color: "#e4e4e7",
-                  height: "100%",
-                },
-                ".cm-content": {
-                  caretColor: "#ffffff", // saf beyaz cursor
-                  fontFamily:
-                    "var(--font-jetbrains-mono, 'JetBrains Mono'), 'Fira Code', 'Menlo', monospace",
-                  fontSize: "15px",
-                  lineHeight: "1.6",
-                  padding: "14px 0",
-                },
-                // 📌 Block cursor — vim tarzı dolu kutu
-                ".cm-cursor, .cm-dropCursor": {
-                  borderLeft: "3px solid #ffffff",
-                  borderRight: "none",
-                  backgroundColor: "transparent",
-                },
-                "&.cm-focused .cm-cursor": {
-                  borderLeftColor: "#ffffff",
-                },
-                ".cm-gutters": {
-                  backgroundColor: "#050816",
-                  color: "#3f3f46",
-                  border: "none",
-                  paddingRight: "8px",
-                },
-                ".cm-activeLineGutter": {
-                  backgroundColor: "rgba(99,102,241,0.12)",
-                  color: "#a1a1aa",
-                },
-                ".cm-activeLine": {
-                  backgroundColor: "rgba(99,102,241,0.05)",
-                },
-                ".cm-selectionBackground, &.cm-focused .cm-selectionBackground": {
-                  backgroundColor: "rgba(251,191,36,0.25)",
-                },
-                // Python syntax highlight
-                ".tok-keyword": { color: "#c084fc" },       // mor
-                ".tok-string": { color: "#fbbf24" },          // amber
-                ".tok-number": { color: "#60a5fa" },          // mavi
-                ".tok-comment": { color: "#52525b", fontStyle: "italic" },
-                ".tok-operator": { color: "#a1a1aa" },
-                ".tok-builtin": { color: "#34d399" },         // yeşil
-                ".tok-functionName": { color: "#f472b6" },    // pembe
-                ".cm-scroller": {
-                  fontFamily: "inherit",
-                  // 📌 Mobile fix: CodeMirror scroller'ı touch ile kaydırılabilsin
-                  // ama pinch-zoom yapmasın. overscroll-behavior: contain
-                  // parent container'a scroll zincirini taşırmasını engeller.
-                  touchAction: "pan-y",
-                  overscrollBehavior: "contain",
-                  WebkitOverflowScrolling: "touch",
-                },
-                ".cm-tooltip": {
-                  backgroundColor: "#0a0e1a",
-                  border: "1px solid rgba(255,255,255,0.1)",
-                  borderRadius: "8px",
-                },
-                ".cm-tooltip-autocomplete > ul > li[aria-selected]": {
-                  backgroundColor: "rgba(99,102,241,0.25)",
-                  color: "#ffffff",
-                },
-              },
-              { dark: true }
-            ),
-            cm.syntaxHighlighting(cm.HighlightStyle.define([
-              { tag: cm.tags.keyword, color: "#c084fc", fontWeight: "600" },
-              { tag: cm.tags.string, color: "#fbbf24" },
-              { tag: cm.tags.number, color: "#60a5fa" },
-              { tag: cm.tags.comment, color: "#52525b", fontStyle: "italic" },
-              { tag: cm.tags.operator, color: "#a1a1aa" },
-              { tag: cm.tags.builtin, color: "#34d399" },
-              { tag: cm.tags.function(cm.tags.variableName), color: "#f472b6" },
-              { tag: cm.tags.atom, color: "#f87171" },
-              { tag: cm.tags.propertyName, color: "#7dd3fc" },
-              { tag: cm.tags.typeName, color: "#fbbf24" },
-            ])),
-            cm.EditorView.lineWrapping,
-            cm.EditorState.readOnly.of(readOnly),
-            cm.EditorView.editable.of(!readOnly),
-          ];
+            }));
+          } catch { /* ignore */ }
 
+          // Readonly / editable
+          try {
+            extensions.push(cm.EditorState.readOnly.of(!!readOnly));
+            extensions.push(cm.EditorView.editable.of(!readOnly));
+          } catch { /* ignore */ }
+
+          // Line wrapping
+          try { extensions.push(cm.EditorView.lineWrapping); } catch { /* ignore */ }
+
+          // View oluştur
           const state = cm.EditorState.create({
-            doc: value,
+            doc: value || "",
             extensions,
           });
 
@@ -331,15 +264,22 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
             viewRef.current = null;
           };
         } catch (e: any) {
+          // Hata olursa loading state'ten çık, error göster
           if (!cancelled) {
-            setError(e?.message || "Editör yüklenemedi");
+            let msg: string;
+            try {
+              msg = String(e?.message || e || "Editör yüklenemedi");
+            } catch {
+              msg = "Editör yüklenemedi";
+            }
+            setError(msg);
           }
         }
       })();
 
       return () => {
         cancelled = true;
-        cleanup?.();
+        try { cleanup?.(); } catch { /* ignore */ }
       };
       // eslint-disable-next-line react-hooks/exhaustive-deps
     }, []); // Sadece mount'ta bir kez
@@ -351,27 +291,34 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
         lastExternalValueRef.current = value;
         return;
       }
-      const current = view.state.doc.toString();
-      if (current !== value) {
-        // Cursor pozisyonunu koru
-        const sel = view.state.selection.main;
-        view.dispatch({
-          changes: { from: 0, to: view.state.doc.length, insert: value },
-          selection: { anchor: Math.min(sel.anchor, value.length) },
-        });
+      try {
+        if (view.state && view.state.doc) {
+          const current = view.state.doc.toString();
+          if (current !== value) {
+            const sel = view.state.selection?.main;
+            const anchor = sel && typeof sel.anchor === "number" ? sel.anchor : 0;
+            view.dispatch({
+              changes: { from: 0, to: view.state.doc.length, insert: value },
+              selection: { anchor: Math.min(anchor, value.length) },
+            });
+          }
+        }
+      } catch {
+        /* ignore */
       }
       lastExternalValueRef.current = value;
     }, [value]);
 
     // ── readOnly reaktif ──────────────────────────────────────
     useEffect(() => {
-      // CodeMirror'da readOnly değişimi için EditorView.setProps kullanılır.
       const view = viewRef.current;
-      if (!view || typeof view.setProps !== "function") return;
+      if (!view) return;
       try {
-        view.setProps({ editable: !readOnly });
+        if (typeof view.setProps === "function") {
+          view.setProps({ editable: !readOnly });
+        }
       } catch {
-        // ignore
+        /* ignore */
       }
     }, [readOnly]);
 
@@ -385,19 +332,18 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
           borderRadius: 10,
           overflow: "hidden",
           background: "#050816",
-          // 📌 Mobile fix: Android double-tap zoom'u engelle.
-          // CodeMirror kendi scroller'ı içeride scroll eder; 'manipulation'
-          // tarayıcıya "synthetic double-tap zoom yapma, her tap'i JS'e ver" der.
           touchAction: "manipulation",
+          position: "relative",
         }}
       >
         {!ready && !error && (
           <div
             style={{
+              position: "absolute",
+              inset: 0,
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              height: "100%",
               color: "rgba(255,255,255,0.4)",
               fontSize: "13px",
               fontFamily: "monospace",
@@ -423,6 +369,11 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
         {error && (
           <div
             style={{
+              position: "absolute",
+              inset: 0,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               padding: "12px 16px",
               color: "rgba(248,113,113,0.9)",
               fontSize: "13px",
