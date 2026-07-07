@@ -26,7 +26,7 @@ export function GuestBanner({ feature }: GuestBannerProps) {
       <div className="flex items-center gap-2 text-sm">
         <span className="text-amber-400">🎮</span>
         <span className="text-amber-100/90">
-          Misafir modunda soruyu{" "}
+          Misafir modunda soru açıklamasını, test case'leri (input / expected / actual){" "}
           <span className="font-bold text-amber-300">okuyabilir</span> ve kodu{" "}
           <span className="font-bold text-amber-300">inceleyebilirsin</span>.
         </span>

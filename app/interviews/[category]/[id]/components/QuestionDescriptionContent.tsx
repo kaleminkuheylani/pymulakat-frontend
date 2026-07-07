@@ -128,8 +128,10 @@ export default function QuestionDescriptionContent({
             def {testCases.function_name}(...)
           </code>
           <p className="text-[10px] text-white/40 mt-2 leading-relaxed">
-            Test case'ler için{" "}
-            <span className="text-amber-300/80">Testler</span> tab'ına bak.
+            {/* 📌 Misafirler de test case'leri okuyabilsin (Input/Expected/Actual). */}
+            Örnek input / expected çıktılar için{" "}
+            <span className="text-amber-300/80">Testler</span> tab'ına, istediğin input ile denemek için{" "}
+            <span className="text-amber-300/80">Konsol</span> tab'ına bak.
           </p>
         </div>
       )}
@@ -178,9 +180,10 @@ export default function QuestionDescriptionContent({
             👁 Misafir Modu
           </div>
           <p className="text-xs text-indigo-200/80 leading-relaxed">
-            Soru açıklamasını{" "}
-            <span className="font-semibold text-indigo-200">inceleyebilirsin</span>.
-            Test case'ler ve kod çalıştırma için{" "}
+            Soru açıklamasını ve{" "}
+            <span className="font-semibold text-indigo-200">test case'leri (input / expected / actual)</span>{" "}
+            okuyabilirsin. Kodu{" "}
+            <span className="font-semibold text-indigo-200">çalıştırmak</span> için{" "}
             <a
               href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
               className="underline font-semibold text-indigo-300 hover:text-indigo-200"

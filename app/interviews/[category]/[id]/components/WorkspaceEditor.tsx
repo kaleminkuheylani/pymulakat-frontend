@@ -6,9 +6,11 @@ import { TestRunResult } from "../../../../../hooks/usePyodide";
 import { QuestionTests } from "../../../../../api/v2/questions";
 import { getErrorLabel } from "../../../../../lib/errorClassifier";
 
+// 📌 Test case formatı: { input, expected, actual?, description? }
 interface TestCase {
-  input: any[];
+  input: any;
   expected: any;
+  actual?: any;
   description?: string;
 }
 
@@ -276,21 +278,19 @@ function ExamplesTab({
   category: string;
   id: string;
 }) {
+  // 📌 Misafirler test case'leri okuyabilsin (input/expected/actual önizleme),
+  //    sadece çalıştırma auth gerektirir. Test case yoksa empty-state göster.
   if (!testCases || testCases.test_cases.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30">
-        {isGuest ? (
-          <>
-            <p className="text-xs">Test caseleri üyelikle erişilebilir.</p>
-            <a
-              href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
-              className="text-xs px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors"
-            >
-              Giriş Yap
-            </a>
-          </>
-        ) : (
-          <p className="text-xs">Bu soru için örnek test case bulunmuyor.</p>
+      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 p-4 text-center">
+        <p className="text-xs">Bu soru için örnek test case bulunmuyor.</p>
+        {isGuest && (
+          <a
+            href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
+            className="text-[11px] px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors"
+          >
+            Giriş Yap (Kodu çalıştırmak için)
+          </a>
         )}
       </div>
     );
@@ -306,6 +306,8 @@ function ExamplesTab({
         // 3) Pass: tek "actual = expected" gösterimi
         const isError = hasRun && !!result.errorCategory;
         const isLogicFail = hasRun && !result.passed && !isError;
+        // Misafirlere referans çıktıyı (db'de tutulan `actual`) önizleme olarak göster.
+        const referenceActual = tc.actual !== undefined && tc.actual !== null ? tc.actual : null;
         return (
           <div
             key={idx}
@@ -356,6 +358,18 @@ function ExamplesTab({
                   {formatValue(tc.expected)}
                 </pre>
               </div>
+
+              {/* Misafirlere: DB'deki referans çıktı (actual) önizleme */}
+              {!hasRun && referenceActual !== null && (
+                <div>
+                  <div className="text-[10px] uppercase tracking-wider text-cyan-300/70 mb-1 font-bold">
+                    👁 Actual (referans çıktı)
+                  </div>
+                  <pre className="text-xs font-mono text-cyan-200 bg-cyan-500/5 p-2 rounded overflow-x-auto border border-cyan-500/20 min-h-[2.5rem]">
+                    {formatValue(referenceActual)}
+                  </pre>
+                </div>
+              )}
 
               {/* Hata varsa: traceback son satırı (debug için) */}
               {isError && (

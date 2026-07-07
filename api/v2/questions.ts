@@ -4,9 +4,15 @@
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
+// 📌 TestCase format: { input, expected, actual, description }.
+// - `input`       → fonksiyona geçilecek argüman(lar) (array / object / primitive)
+// - `expected`    → fonksiyonun döndürmesi gereken değer
+// - `actual`      → opsiyonel: referans çözüm çıktısı (misafirler için önizleme)
+//                   Koşu sonrası TestRunResult üzerinde dolu olur, pre-run'da null/undefined.
 export interface TestCase {
-  input: any[];
+  input: any;
   expected: any;
+  actual?: any;
   description?: string;
 }
 

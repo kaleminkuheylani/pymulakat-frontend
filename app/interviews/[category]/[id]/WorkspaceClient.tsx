@@ -30,6 +30,8 @@ const LEVEL_CONFIG: Record<string, { label: string; color: string; bg: string; b
 interface Props {
   initialParams: { category: string; id: string };
   readonly?: boolean;
+  initialInterview?: Question | null;
+  initialTestCases?: QuestionTests | null;
 }
 
 interface AttemptPayload {
@@ -44,7 +46,11 @@ interface AttemptPayload {
 }
 
 // ─── Main Component ───────────────────────────────────────
-export default function WorkspaceClient({ initialParams }: Props) {
+export default function WorkspaceClient({
+  initialParams,
+  initialInterview: initialInterviewProp,
+  initialTestCases: initialTestCasesProp,
+}: Props) {
   // ✅ Guard
   if (!initialParams || !initialParams.category || !initialParams.id) {
     return (
@@ -70,9 +76,11 @@ export default function WorkspaceClient({ initialParams }: Props) {
   const editorRef = useRef<CodeEditorRef>(null);
 
   // State
-  const [interview, setInterview] = useState<Question | null>(null);
-  const [testCases, setTestCases] = useState<QuestionTests | null>(null);
-  const [code, setCode] = useState("");
+  // 📌 SSR'dan gelen initial değerlerle başlat — misafirler de test case'leri görsün,
+  //    ilk fetch'te flicker olmasın.
+  const [interview, setInterview] = useState<Question | null>(initialInterviewProp ?? null);
+  const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCasesProp ?? null);
+  const [code, setCode] = useState(initialInterviewProp?.starter_code || "");
 
   // Custom input runner — EditorProps sadece args[] veriyor, code + functionName'i
   // burada kapatıyoruz. code state'inden SONRA tanımlı olmalı.

@@ -33,6 +33,42 @@ interface SEOQuestion {
   related_questions?: Array<{ id: number; title: string; category: string; level: string; slug: string }>;
   tutorial_slug?: string;
   hints?: string[];
+  tags?: string[];
+  starter_code?: string;
+}
+
+// 📌 SSR test case formatı: input / expected / actual / description.
+//    Misafirler de okuyabilsin diye public — auth gerekmez.
+interface SSRTestCase {
+  input: any;
+  expected: any;
+  actual?: any;
+  description?: string;
+}
+interface SSRQuestionTests {
+  question_id: number;
+  function_name: string;
+  test_cases: SSRTestCase[];
+}
+
+// ─── Server-side test cases fetch (SSR: misafirler de okuyabilsin) ─────
+async function fetchQuestionTests(category: string, slugOrId: string): Promise<SSRQuestionTests | null> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+    const asNum = parseInt(slugOrId, 10);
+    const url = isNaN(asNum)
+      ? `${apiUrl}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slugOrId)}/tests`
+      : `${apiUrl}/api/v2/questions/${asNum}/tests`;
+    const res = await fetch(url, {
+      next: { revalidate: 3600 },
+      signal: AbortSignal.timeout(5000),
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.data || data;
+  } catch {
+    return null;
+  }
 }
 
 // ─── Server-side data fetch ────────────────────────────────
@@ -227,9 +263,15 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  const [mobile, seoQ] = await Promise.all([
+  const [mobile, seoQ, ssrTests] = await Promise.all([
     isMobileDevice(),
     fetchQuestionSEO(resolvedParams.category, String(resolvedId)),
+    // SSR: test case'leri server-side çek. Misafirler de Testler tab'ında görebilsin.
+    resolvedId && !isNaN(resolvedId as any)
+      ? fetchQuestionTests(resolvedParams.category, String(resolvedId))
+      : resolvedParams.id && !isNaN(parseInt(resolvedParams.id, 10)) === false
+      ? fetchQuestionTests(resolvedParams.category, resolvedParams.id)
+      : Promise.resolve(null),
   ]);
 
   // Workspace client kendi fetch'ini yapıyor; burada sadece SEO schema'ları için kullanıyoruz.
@@ -245,6 +287,8 @@ export default async function Page({ params, searchParams }: PageProps) {
     tags: seoQ.tags || [],
     hints: seoQ.hints || [],
   } : null;
+  // SSR'dan gelen test case verisi — her iki client da prop olarak alır (misafirler dahil).
+  const initialTests: any = ssrTests;
   const baseUrl = "https://pythonmulakat.com";
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
@@ -258,6 +302,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const ssrHints = seoQ?.hints ?? [];
   const ssrComplexity = seoQ?.complexity ?? "";
   const ssrLevel = seoQ?.level ?? "";
+  const ssrTestCases: SSRTestCase[] = initialTests?.test_cases ?? [];
 
   return (
     <>
@@ -314,6 +359,39 @@ export default async function Page({ params, searchParams }: PageProps) {
             </div>
           </div>
         )}
+        {ssrTestCases.length > 0 && (
+          <div className="mt-8 pt-6 border-t border-white/10">
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 text-cyan-300">Örnek Test Case'ler</h2>
+            <div className="space-y-3">
+              {ssrTestCases.map((tc, i) => (
+                <div key={i} className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs sm:text-sm">
+                  <div className="font-semibold text-white/60 mb-2 uppercase tracking-wider text-[10px]">
+                    Örnek #{i + 1}{tc.description ? ` · ${tc.description}` : ""}
+                  </div>
+                  <div className="space-y-1.5">
+                    <div>
+                      <div className="text-[10px] text-white/40 uppercase tracking-wider font-bold">📥 Input</div>
+                      <pre className="font-mono text-white/80 bg-black/30 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.input)}</pre>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-emerald-400/80 uppercase tracking-wider font-bold">✓ Expected</div>
+                      <pre className="font-mono text-emerald-300 bg-emerald-500/5 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.expected)}</pre>
+                    </div>
+                    {tc.actual !== undefined && tc.actual !== null && (
+                      <div>
+                        <div className="text-[10px] text-cyan-300/70 uppercase tracking-wider font-bold">👁 Actual (referans çıktı)</div>
+                        <pre className="font-mono text-cyan-200 bg-cyan-500/5 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.actual)}</pre>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+            <p className="mt-3 text-[11px] text-white/40 italic">
+              💡 Kodu çalıştırmak ve gerçek çıktılarını görmek için üye girişi yapıp editöre geçebilirsin.
+            </p>
+          </div>
+        )}
         <noscript>
           <p className="mt-6 text-amber-300 text-sm">
             💡 İnteraktif editör için JavaScript gerekiyor. İçerik yine de görünür durumda.
@@ -325,8 +403,8 @@ export default async function Page({ params, searchParams }: PageProps) {
         <Component
           initialParams={resolvedParams}
           readonly={readonly}
-          initialInterview={mobile ? initialInterview : undefined}
-          initialTestCases={mobile ? ((seoQ as any)?.test_cases || null) : undefined}
+          initialInterview={(mobile ? initialInterview : undefined) as any}
+          initialTestCases={initialTests}
         />
       </div>
 

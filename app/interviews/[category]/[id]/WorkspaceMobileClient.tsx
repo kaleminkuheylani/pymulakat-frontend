@@ -339,8 +339,17 @@ export default function WorkspaceMobileClient({
 
         {tab === "workspace" && (
           <div className="h-full flex flex-col">
-            <div className="h-[40vh] min-h-[200px] flex-shrink-0">
-              <CodeEditor ref={editorRef} value={code} onChange={handleCodeChange} height="100%" language="python" readOnly={readonly || isGuest} />
+            {/* 📌 Mobilde editör 150% boyutlandı (40vh → 60vh). Küçük ekranda daha rahat kod okuma/yazma. */}
+            <div className="h-[60vh] min-h-[320px] flex-shrink-0">
+              <CodeEditor
+                ref={editorRef}
+                value={code}
+                onChange={handleCodeChange}
+                height="100%"
+                language="python"
+                readOnly={readonly || isGuest}
+                disableCopyPaste={isGuest}
+              />
             </div>
             {/* Mobil: Custom Input + Run workspace tab'ın altında — sabit görünür */}
             <div className="flex-shrink-0 border-t border-white/10 bg-[#0a0e1a] p-2 max-h-[35vh] overflow-y-auto pb-16">
@@ -409,6 +418,7 @@ export default function WorkspaceMobileClient({
           onClose={() => setResultModal(null)}
         />
       )}
+    </div>
   );
 }
 
@@ -664,21 +674,18 @@ function ExamplesTabMobile({
   category: string;
   id: string;
 }) {
+  // 📌 Misafirler de test case'leri (input/expected/actual) okuyabilsin.
   if (!testCases || testCases.test_cases.length === 0) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12">
-        {isGuest ? (
-          <>
-            <p className="text-xs">Test caseleri üyelikle erişilebilir.</p>
-            <a
-              href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
-              className="text-xs px-4 py-2 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors"
-            >
-              Giriş Yap
-            </a>
-          </>
-        ) : (
-          <p className="text-xs">Bu soru için örnek test case bulunmuyor.</p>
+      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12 text-center">
+        <p className="text-xs">Bu soru için örnek test case bulunmuyor.</p>
+        {isGuest && (
+          <a
+            href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
+            className="text-[11px] px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors"
+          >
+            Giriş Yap (Kodu çalıştırmak için)
+          </a>
         )}
       </div>
     );
@@ -691,6 +698,10 @@ function ExamplesTabMobile({
         const hasRun = result !== undefined;
         const isError = hasRun && !!result.errorCategory;
         const isLogicFail = hasRun && !result.passed && !isError;
+        // Referans çıktı (DB'de tutulan `actual`) misafire/üyeye önizleme olarak gösterilir.
+        const referenceActual = (tc as any).actual !== undefined && (tc as any).actual !== null
+          ? (tc as any).actual
+          : null;
 
         return (
           <div
@@ -754,6 +765,18 @@ function ExamplesTabMobile({
                 {formatValue(tc.expected)}
               </pre>
             </div>
+
+            {/* Misafirlere: DB'deki referans çıktı (actual) önizleme */}
+            {!hasRun && referenceActual !== null && (
+              <div className="mt-2">
+                <div className="text-[10px] uppercase tracking-wider text-cyan-300/70 mb-1 font-bold">
+                  👁 Actual (referans çıktı)
+                </div>
+                <pre className="text-[11px] font-mono text-cyan-200 bg-cyan-500/5 p-2 rounded overflow-x-auto border border-cyan-500/20 min-h-[2rem]">
+                  {formatValue(referenceActual)}
+                </pre>
+              </div>
+            )}
 
             {isLogicFail && (
               <div className="mt-2 space-y-1">
