@@ -15,10 +15,7 @@ interface PageProps {
 // ─── Server-side fetch ────────────────────────────────────
 async function fetchTutorial(slug: string): Promise<Tutorial | null> {
   try {
-    const h = await headers();
-    const host = h.get("host") || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
     const res = await fetch(`${apiUrl}/api/v2/tutorials/${encodeURIComponent(slug)}`, {
       next: { revalidate: 3600 },
       signal: AbortSignal.timeout(5000),

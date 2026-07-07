@@ -38,10 +38,7 @@ interface SEOQuestion {
 // ─── Server-side data fetch ────────────────────────────────
 async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuestion | null> {
   try {
-    const h = await headers();
-    const host = h.get("host") || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
     // ✅ Slug veya ID'yi kabul et → backend by-slug API veya ID fetch
     let actualId = id;
@@ -206,10 +203,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     // 2) Q-v4 (89+) icin DB uzerinden by-slug API dene (runtime fetch)
     if (!resolvedId) {
       try {
-        const h2 = await headers();
-        const host2 = h2.get("host") || "localhost:3000";
-        const protocol2 = host2.includes("localhost") ? "http" : "https";
-        const apiBase2 = process.env.NEXT_PUBLIC_API_URL || `${protocol2}://${host2}`;
+        const apiBase2 = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
         const bySlugRes = await fetch(
           `${apiBase2}/api/v2/questions/by-slug/${encodeURIComponent(resolvedParams.category)}/${encodeURIComponent(resolvedParams.id)}`,
           { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }

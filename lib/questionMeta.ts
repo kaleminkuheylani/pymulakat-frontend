@@ -37,7 +37,7 @@ export function slugifyCategory(cat: string): string {
  */
 export async function getIdFromSlug(
   slug: string,
-  apiUrl: string = process.env.NEXT_PUBLIC_API_URL || "",
+  apiUrl: string = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app",
 ): Promise<number | null> {
   if (!apiUrl) return null;
   try {

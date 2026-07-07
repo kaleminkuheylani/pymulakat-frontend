@@ -42,10 +42,7 @@ interface QuestionItem {
 
 async function fetchQuestions(category: string): Promise<QuestionItem[]> {
   try {
-    const h = await headers();
-    const host = h.get("host") || "localhost:3000";
-    const protocol = host.includes("localhost") ? "http" : "https";
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || `${protocol}://${host}`;
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
     // ✅ v2 API — limit=100 (max 500)
     const res = await fetch(
