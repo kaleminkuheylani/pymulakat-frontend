@@ -65,8 +65,6 @@ interface Props {
   height?: string | number;
   readOnly?: boolean;
   theme?: "vs-dark" | "hc-black";
-  // 📌 Copy/paste/cut engelle (desktop client icin). Mobile etkilenmez.
-  disableCopyPaste?: boolean;
 }
 
 // ─── Monaco Python Tema Tanımı ────────────────────────────────
@@ -108,7 +106,6 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       height = "100%",
       readOnly = false,
       theme = "vs-dark",
-      disableCopyPaste = false,
     },
     ref
   ) {
@@ -159,87 +156,11 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
         },
       });
 
-      // Klavye kısayolları
+      // Klavye kısayolları — Ctrl+S (browser save dialog) engelle.
       editor.addCommand(
         monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyS,
-        (e: any) => e.preventDefault() // Save engelle (browser dialog)
+        (e: any) => e.preventDefault()
       );
-
-      // 📌 Copy/Paste/Cut engelle (desktop client)
-      if (disableCopyPaste) {
-        // Monaco editor komutlarını override et
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyC, () => {
-          // copy engelli
-        });
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyV, () => {
-          // paste engelli
-        });
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyX, () => {
-          // cut engelli
-        });
-        editor.addCommand(monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyA, () => {
-          // select all engelle (selection ile copy yapilamaz)
-        });
-        // Mac kısayolları (Cmd + C/V/X)
-        editor.addCommand(monaco.KeyMod.WinCtrl | monaco.KeyCode.KeyC, () => {});
-        editor.addCommand(monaco.KeyMod.WinCtrl | monaco.KeyCode.KeyV, () => {});
-        editor.addCommand(monaco.KeyMod.WinCtrl | monaco.KeyCode.KeyX, () => {});
-        editor.addCommand(monaco.KeyMod.WinCtrl | monaco.KeyCode.KeyA, () => {});
-      }
-
-      // 📌 DOM seviyesi: tarayici native Ctrl+C/V'yi engelle (Monaco focus dışındayken de)
-      if (disableCopyPaste) {
-        const domNode = editor.getDomNode();
-        if (domNode) {
-          const blockEvent = (e: KeyboardEvent) => {
-            if ((e.ctrlKey || e.metaKey) && ['c', 'v', 'x', 'a', 'C', 'V', 'X', 'A'].includes(e.key)) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-            // F1-F12 (Help), Insert, Print Screen, Menu (Context Menu tuşu)
-            if (['F1', 'F3', 'F11', 'F12', 'Insert', 'PrintScreen', 'ContextMenu'].includes(e.key)) {
-              e.preventDefault();
-              e.stopPropagation();
-            }
-          };
-          domNode.addEventListener('keydown', blockEvent, true);
-
-          // 📌 Sürükle engelle (text drag-drop ile kopyalama)
-          const blockDrag = (e: DragEvent) => {
-            e.preventDefault();
-            e.stopPropagation();
-          };
-          domNode.addEventListener('dragstart', blockDrag, true);
-          domNode.addEventListener('drop', blockDrag, true);
-
-          // 📌 Text selection'i engelle (DOM-level)
-          const blockSelection = (e: Event) => {
-            const target = e.target as HTMLElement;
-            if (target && target.closest('.monaco-editor')) {
-              const selection = window.getSelection();
-              if (selection) selection.removeAllRanges();
-            }
-          };
-          domNode.addEventListener('copy', blockSelection, true);
-          domNode.addEventListener('cut', blockSelection, true);
-
-          // 📌 Tarayici menu Edit > Copy'yi engelle (document-level)
-          const docBlock = (e: ClipboardEvent) => {
-            const sel = window.getSelection();
-            if (sel && sel.toString().length > 0) {
-              // Editör içinden mi kontrol et
-              const anchor = sel.anchorNode;
-              if (anchor && domNode.contains(anchor)) {
-                e.preventDefault();
-                e.stopPropagation();
-                e.clipboardData?.clearData();
-              }
-            }
-          };
-          document.addEventListener('copy', docBlock, true);
-          document.addEventListener('cut', docBlock, true);
-        }
-      }
 
       // Focus
       editor.focus();
@@ -292,22 +213,16 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       lineNumbersMinChars: 2,
       foldingStrategy: "indentation" as const,
       readOnly,
-      // 📌 domReadOnly SADCE readOnly için true — disableCopyPaste için değil.
-      //    disableCopyPaste (anti-cheat) sadece context menu + keyboard shortcut
-      //    blocker'larla yönetiliyor; domReadOnly=true yapmak cursor placement'i
-      //    bozuyor (logged-in kullanıcının tıklayıp imleç koyamamasına yol açıyordu).
+      // domReadOnly SADCE readOnly için true. Misafir/özel mod için
+      // Monaco iç DOM read-only (yazma yok) ama tıklama + cursor OK.
       domReadOnly: readOnly,
-      // 📌 Android fix: Cursor görünürlüğü.
-      //    Default cursor 1px line — touch ekranda parmak altında kayboluyor.
-      //    Width=2 line + smoothCaret off (smoothCaret bazı Android tarayıcılarda
-      //    cursor'u "kayıyormuş" gibi gösteriyordu, scroll-into-view animasyonu
-      //    cursor'un gözüktüğü satırı kaydırıyordu).
+      // 📌 Android fix: Cursor görünürlüğü + mobile touch uyumu.
       cursorWidth: 2,
       cursorStyle: "line" as const,
       cursorBlinking: "blink" as const,
       cursorSmoothCaretAnimation: "off" as const,
       smoothScrolling: false,
-      contextmenu: !disableCopyPaste,
+      contextmenu: true,  // sağ tık menüsü açık (anti-cheat kaldırıldı)
       mouseWheelZoom: false,
       formatOnPaste: false,
       formatOnType: false,

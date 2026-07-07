@@ -13,6 +13,7 @@ import { usePyodide } from "../../../../hooks/usePyodide";
 import { parseFunctionSignature, parseUserInput, formatValue } from "../../../../components/parsePython";
 import { questionsAPI, Question, QuestionTests, TestCase } from "../../../../api/v2/questions";
 import { slugifyTitle } from "../../../../lib/questionMeta";
+import { GuestBanner } from "../../../../components/GuestBanner";
 import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
 
 
@@ -308,6 +309,12 @@ export default function WorkspaceMobileClient({
     //    küçülüyor ama container aynı kalıyor; Monaco hit-test'i yanlış
     //    koordinata düşüp cursor'ü istenmeyen yere koyuyordu.
     <div className="h-[100dvh] min-h-screen flex flex-col bg-[#050816]">
+      {/* 📌 Readonly önizleme modunda eski "👁 Önizleme" pill'i yerine
+          GuestBanner kullan — kullanıcı hangi kısıtlamalar olduğunu net görsün,
+          CTA butonu tek yerden erişilebilir. */}
+      {(readonly || isGuest) && (
+        <GuestBanner feature="kod çalıştırma" />
+      )}
       {/* 📌 Gerçek SSR içerik bloğu — crawler/SEO için ilk HTML'de mevcut,
           hydration sonrası yukarıdaki useEffect tarafından kaldırılır.
           initialInterview server prop'undan geldiği için client state'e
@@ -359,11 +366,7 @@ export default function WorkspaceMobileClient({
             🖨️
           </button>
         </div>
-        {readonly ? (
-          <span className="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-white/40 text-[10px] font-semibold uppercase tracking-wider" title="Salt okunur önizleme">
-            👁 Önizleme
-          </span>
-        ) : isGuest ? (
+        {readonly ? null : isGuest ? (
           <button
             onClick={() => {
               const qSlug = (interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id);
@@ -424,7 +427,6 @@ export default function WorkspaceMobileClient({
                 height="100%"
                 language="python"
                 readOnly={readonly || isGuest}
-                disableCopyPaste={isGuest}
               />
             </div>
             {/* Console: sabit 180px, taşarsa iç scroll, alttan taşma yok */}
