@@ -4,7 +4,7 @@
 export default function Footer() {
   const year = new Date().getFullYear();
   return (
-    <footer className="mt-20 border-t border-white/5 bg-slate-950">
+    <footer className="mt-20 bg-slate-950">
       <div className="max-w-6xl mx-auto px-5 py-10">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 mb-8">
           {/* Marka */}
@@ -106,7 +106,7 @@ export default function Footer() {
         </div>
 
         {/* Alt çizgi */}
-        <div className="pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
+        <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-[11px] text-white/40">
             © {year} PythonMulakat · pythonmulakat.com
           </p>

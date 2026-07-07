@@ -228,5 +228,5 @@ function FlowRow({ item, rank, accent }: { item: FlowItem; rank: number; accent:
 }
 
 function EmptyState({ text }: { text: string }) {
-  return <div className="text-center text-white/40 text-sm py-6 bg-white/[0.02] border border-white/5 rounded-xl">{text}</div>;
+  return <div className="text-center text-white/40 text-sm py-6 bg-white/[0.02] border rounded-xl">{text}</div>;
 }

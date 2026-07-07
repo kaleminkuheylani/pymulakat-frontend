@@ -36,7 +36,7 @@ export default function GlobalNav() {
   const initials = (user?.username || "U").slice(0, 1).toUpperCase();
 
   return (
-    <nav className="sticky top-0 z-40 border-b border-white/5 backdrop-blur-md bg-[#050816]/80">
+    <nav className="sticky top-0 z-40 backdrop-blur-md bg-[#050816]/80">
       <div className="max-w-7xl mx-auto px-4 md:px-6 py-3 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
@@ -93,7 +93,7 @@ export default function GlobalNav() {
                     transition={{ duration: 0.15 }}
                     className="absolute right-0 top-full mt-2 w-56 rounded-xl border border-white/10 bg-[#0a0e1a]/95 backdrop-blur-xl shadow-2xl overflow-hidden"
                   >
-                    <div className="px-4 py-3 border-b border-white/5">
+                    <div className="px-4 py-3">
                       <p className="text-sm font-medium text-white truncate">{user.username}</p>
                       <p className="text-xs text-white/40 truncate">{user.email}</p>
                     </div>
@@ -102,7 +102,7 @@ export default function GlobalNav() {
                     <Link
                       href="/dashboard"
                       onClick={() => setOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500/30 to-purple-500/30 hover:from-indigo-500/40 hover:to-purple-500/40 border-b border-white/5 transition-colors"
+                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500/30 to-purple-500/30 hover:from-indigo-500/40 hover:to-purple-500/40 transition-colors"
                     >
                       <span className="text-base">✨</span>
                       <span>Akışım</span>
@@ -150,7 +150,7 @@ export default function GlobalNav() {
                         await logout();
                         router.push("/");
                       }}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors border-t border-white/5"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-sm text-red-400 hover:bg-red-500/10 transition-colors"
                     >
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />

@@ -140,7 +140,7 @@ function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/5 backdrop-blur-md bg-[#050816]/80"
+      className="relative z-10 flex items-center justify-between px-8 py-4 backdrop-blur-md bg-[#050816]/80"
     >
       <Link href="/" className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-400 flex items-center justify-center">
@@ -528,7 +528,7 @@ function LoginFormInner() {
           {/* Mode Toggle */}
           <div className="relative my-6">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
+              <div className="w-full border-white/10"></div>
             </div>
             <div className="relative flex justify-center text-xs uppercase">
               <span className="bg-[#0a0e1a] px-2 text-white/40">veya</span>

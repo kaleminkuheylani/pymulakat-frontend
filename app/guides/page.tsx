@@ -180,7 +180,7 @@ export default async function GuidesPage() {
   return (
     <div className="min-h-screen bg-[#050816] text-white">
       {/* Header */}
-      <header className="border-b border-white/5 bg-[#0a0e1a]/80 backdrop-blur-md sticky top-0 z-50">
+      <header className="bg-[#0a0e1a]/80 backdrop-blur-md sticky top-0 z-50">
         <div className="max-w-5xl mx-auto px-5 py-4 flex items-center justify-between">
           <Link href="/" className="text-lg font-bold">
             🐍 PythonMulakat

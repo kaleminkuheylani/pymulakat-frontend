@@ -345,7 +345,7 @@ export default function ProfilePage() {
               Performans Dağılımı
             </h2>
            
-            <div className="mt-6 pt-4 border-t border-slate-800 flex justify-between text-sm text-slate-400">
+            <div className="mt-6 pt-4 border-slate-800 flex justify-between text-sm text-slate-400">
               <span>Başarı:</span>
               <span className="font-mono text-green-400">{user.success_count}</span>
               <span>Başarısız:</span>

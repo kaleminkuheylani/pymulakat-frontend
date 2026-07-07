@@ -118,17 +118,7 @@ function MarkdownTutorial({ content }: { content: string }) {
   const html = renderMarkdownToHTML(content);
   return (
     <div
-      className="prose prose-invert prose-indigo max-w-none
-        prose-headings:text-white prose-headings:font-bold
-        prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl
-        prose-p:text-white/80 prose-p:leading-relaxed
-        prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline
-        prose-strong:text-white
-        prose-code:text-emerald-300 prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none
-        prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10
-        prose-li:text-white/80
-        prose-blockquote:border-indigo-500/40 prose-blockquote:text-white/70
-        prose-table:border-collapse prose-th:bg-white/5 prose-td:border-white/10"
+      className="prose prose-invert prose-indigo max-w-none prose-headings:text-white prose-headings:font-bold prose-h1:text-3xl prose-h2:text-2xl prose-h3:text-xl prose-p:text-white/80 prose-p:leading-relaxed prose-a:text-indigo-400 prose-a:no-underline hover:prose-a:underline prose-strong:text-white prose-code:text-emerald-300 prose-code:bg-black/40 prose-code:px-1.5 prose-code:py-0.5 prose-code:rounded prose-code:before:content-none prose-code:after:content-none prose-pre:bg-black/40 prose-pre:border prose-pre:border-white/10 prose-li:text-white/80 prose-blockquote:border-indigo-500/40 prose-blockquote:text-white/70 prose-table:border-collapse prose-th:bg-white/5 prose-td:border-white/10"
       dangerouslySetInnerHTML={{ __html: html }}
     />
   );
@@ -279,7 +269,7 @@ export default async function Page({ params }: PageProps) {
 
       <div className="min-h-screen bg-[#050816] text-white">
         {/* Header */}
-        <header className="border-b border-white/5 bg-[#0a0e1a]/80 backdrop-blur-md sticky top-0 z-50">
+        <header className="bg-[#0a0e1a]/80 backdrop-blur-md sticky top-0 z-50">
           <div className="max-w-4xl mx-auto px-5 py-4 flex items-center justify-between">
             <Link href="/" className="text-lg font-bold">
               🐍 PythonMulakat
@@ -306,7 +296,7 @@ export default async function Page({ params }: PageProps) {
           </nav>
 
           {/* Title + Meta */}
-          <header className="mb-8 pb-8 border-b border-white/10">
+          <header className="mb-8 pb-8 border-white/10">
             {tutorial.category && (
               <div className="text-xs uppercase tracking-wider text-indigo-400 mb-3">
                 {tutorial.category}
@@ -342,7 +332,7 @@ export default async function Page({ params }: PageProps) {
 
           {/* FAQ */}
           {tutorial.faq && tutorial.faq.length > 0 && (
-            <section className="mt-12 pt-8 border-t border-white/10">
+            <section className="mt-12 pt-8 border-white/10">
               <h2 className="text-2xl font-bold mb-6">Sık Sorulan Sorular</h2>
               <div className="space-y-4">
                 {tutorial.faq.map((f, i) => (
@@ -366,7 +356,7 @@ export default async function Page({ params }: PageProps) {
 
           {/* Related Questions (internal linking) */}
           {relatedQuestionLinks.length > 0 && (
-            <section className="mt-12 pt-8 border-t border-white/10">
+            <section className="mt-12 pt-8 border-white/10">
               <h2 className="text-2xl font-bold mb-6">İlgili Mülakat Soruları</h2>
               <p className="text-white/60 mb-4">
                 Bu rehberi okuduktan sonra şu soruları çözerek pratiğinizi pekiştirin:

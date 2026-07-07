@@ -42,7 +42,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
         <div className="grid grid-cols-1 md:grid-cols-[220px_1fr] gap-6">
           {/* Sidebar */}
           <aside className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 h-fit md:sticky md:top-4">
-            <div className="mb-4 pb-4 border-b border-white/10">
+            <div className="mb-4 pb-4 border-white/10">
               <div className="flex items-center gap-3 mb-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-sm font-bold text-white">
                   {(user.username || "U").slice(0, 1).toUpperCase()}

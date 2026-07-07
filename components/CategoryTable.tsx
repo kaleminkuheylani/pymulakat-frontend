@@ -137,7 +137,7 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
 
   return (
     <div className="rounded-2xl border border-white/10 bg-white/[0.02] overflow-hidden">
-      <div className="px-4 py-3 border-b border-white/10 bg-white/[0.02] flex flex-wrap items-center gap-2">
+      <div className="px-4 py-3 border-white/10 bg-white/[0.02] flex flex-wrap items-center gap-2">
         <div className="relative flex-1 min-w-[180px]">
           <svg
             className="absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-white/30"
@@ -237,7 +237,7 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead>
-              <tr className="border-b border-white/5">
+              <tr className="">
                 <th className="text-left px-4 py-2.5 text-[10px] uppercase tracking-wider text-white/30 font-medium w-12">
                   #
                 </th>
@@ -262,7 +262,7 @@ export default function CategoryTable({ questions, currentCategory }: Props) {
                 return (
                   <tr
                     key={q.id}
-                    className="border-b border-white/[0.03] hover:bg-white/[0.03] transition-colors group"
+                    className="border-white/[0.03] hover:bg-white/[0.03] transition-colors group"
                   >
                     <td className="px-4 py-3 align-top">
                       <div className="flex items-center gap-2">

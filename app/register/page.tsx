@@ -124,7 +124,7 @@ function Navbar() {
       initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="relative z-10 flex items-center justify-between px-8 py-4 border-b border-white/5 backdrop-blur-md bg-[#050816]/80"
+      className="relative z-10 flex items-center justify-between px-8 py-4 backdrop-blur-md bg-[#050816]/80"
     >
       <Link href="/" className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-400 flex items-center justify-center">

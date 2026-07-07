@@ -36,7 +36,7 @@ function SectionBlock({ num, title, content }: Section) {
 
 function PartTitle({ num, title, color = "cyan" }: { num: string; title: string; color?: string }) {
   return (
-    <div className="pt-8 pb-2 border-t border-zinc-900 first:pt-0 first:border-t-0">
+    <div className="pt-8 pb-2 border-zinc-900 first:pt-0 first:border-t-0">
       <p className={`font-mono text-[11px] tracking-widest uppercase mb-1 ${
         color === "amber" ? "text-amber-500" : "text-cyan-500"
       }`}>

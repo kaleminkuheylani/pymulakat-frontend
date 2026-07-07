@@ -256,7 +256,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
   return (
     <div className="h-screen flex flex-col bg-[#050816]">
       {/* Top bar */}
-      <div className="flex items-center justify-between gap-2 px-3 py-2 border-b border-white/5 bg-[#0a0e1a]">
+      <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[#0a0e1a]">
         <button onClick={handleBackToList} className="text-[10px] text-white/60 hover:text-white">
           ← Geri
         </button>
@@ -344,7 +344,7 @@ export default function WorkspaceMobileClient({ initialParams, readonly = false 
 
       {/* Bottom tab bar — SADECE workspace tab'indayken gizle (editor tam ekran kullanir) */}
       {tab !== "workspace" && (
-        <div className="flex border-t border-white/5 bg-[#0a0e1a]">
+        <div className="flex bg-[#0a0e1a]">
           {(["question", "workspace", "examples", "console"] as const).map((k) => (
             <button
               key={k}
@@ -486,7 +486,7 @@ function ConsoleTabMobile({
       {/* ── Custom Input paneli (mobil) ── */}
       {params.length > 0 && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between pb-1 border-b border-white/5">
+          <div className="flex items-center justify-between pb-1">
             <span className="text-[10px] uppercase tracking-wider text-white/60 font-bold">
               🧪 Kendi Input'unla Dene
             </span>
@@ -549,7 +549,7 @@ function ConsoleTabMobile({
       {/* ── Run Tests'ten gelen traceback ── */}
       {errorLines.length > 0 && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between pb-1 border-b border-white/5">
+          <div className="flex items-center justify-between pb-1">
             <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
               ⚠ Traceback
             </span>
@@ -659,7 +659,7 @@ function ExamplesTabMobile({
               <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1 font-bold">
                 📥 Input
               </div>
-              <pre className="text-[11px] font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border border-white/5">
+              <pre className="text-[11px] font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border">
                 {formatValue(tc.input)}
               </pre>
             </div>

@@ -21,7 +21,7 @@ export function GuestBanner({ feature }: GuestBannerProps) {
     <motion.div
       initial={{ opacity: 0, y: -10 }}
       animate={{ opacity: 1, y: 0 }}
-      className="border-b border-amber-400/20 bg-gradient-to-r from-amber-500/5 via-amber-400/10 to-amber-500/5 px-4 py-2.5 flex items-center justify-between gap-3"
+      className="border-amber-400/20 bg-gradient-to-r from-amber-500/5 via-amber-400/10 to-amber-500/5 px-4 py-2.5 flex items-center justify-between gap-3"
     >
       <div className="flex items-center gap-2 text-sm">
         <span className="text-amber-400">🎮</span>

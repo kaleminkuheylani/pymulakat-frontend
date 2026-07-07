@@ -280,7 +280,7 @@ export default function DashboardHome() {
           </div>
 
           {/* 2 TAB */}
-          <div className="flex gap-1 border-b border-white/10">
+          <div className="flex gap-1 border-white/10">
             <TabButton active={tab === "personal"} onClick={() => setTab("personal")} label="✨ Sana Özel" count={flow ? ((flow.sections?.personal?.length || 0) + (flow.sections?.recent?.length || 0) + (flow.sections?.popular?.length || 0) + (flow.sections?.next_level?.length || 0)) : 0} />
             <TabButton active={tab === "community"} onClick={() => setTab("community")} label="💬 Topluluk" count={community.length} />
           </div>

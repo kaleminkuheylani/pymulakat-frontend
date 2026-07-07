@@ -31,7 +31,7 @@ export default function WorkspaceHeader({
   onBack,
 }: HeaderProps) {
   return (
-    <header className="h-14 border-b border-white/5 bg-[#0a0e1a]/80 backdrop-blur-md flex items-center justify-between px-5 flex-shrink-0">
+    <header className="h-14 bg-[#0a0e1a]/80 backdrop-blur-md flex items-center justify-between px-5 flex-shrink-0">
       <div className="flex items-center gap-3">
         <button
           onClick={onBack}

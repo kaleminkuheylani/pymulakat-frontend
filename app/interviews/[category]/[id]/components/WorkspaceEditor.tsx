@@ -165,8 +165,8 @@ export default function WorkspaceEditor({
         />
       </div>
 
-      <div className="h-72 border-t border-white/5 bg-[#0a0e1a] flex flex-col flex-shrink-0">
-        <div className="h-10 border-b border-white/5 flex items-center justify-between px-4 flex-shrink-0">
+      <div className="h-72 bg-[#0a0e1a] flex flex-col flex-shrink-0">
+        <div className="h-10 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
             {(["examples", "console"] as const).map((tab) => (
               <button
@@ -342,7 +342,7 @@ function ExamplesTab({
                 <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1 font-bold">
                   📥 Input
                 </div>
-                <pre className="text-xs font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border border-white/5">
+                <pre className="text-xs font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border">
                   {formatValue(tc.input)}
                 </pre>
               </div>
@@ -501,7 +501,7 @@ function ConsoleTab({
       {/* Hata Traceback */}
       {errorLines.length > 0 && (
         <div className="space-y-2">
-          <div className="flex items-center justify-between pb-1 border-b border-white/5">
+          <div className="flex items-center justify-between pb-1">
             <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
               ⚠ Son Çalıştırma Hatası
             </span>

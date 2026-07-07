@@ -83,7 +83,7 @@ function Row({
   value: React.ReactNode;
 }) {
   return (
-    <div className="flex items-center justify-between py-2 border-b border-white/5 last:border-0">
+    <div className="flex items-center justify-between py-2 last:border-0">
       <span className="text-sm text-white/60">{label}</span>
       <span className="text-sm text-white font-medium">{value}</span>
     </div>

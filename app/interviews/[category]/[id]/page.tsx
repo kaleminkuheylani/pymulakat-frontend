@@ -296,7 +296,7 @@ export default async function Page({ params, searchParams }: PageProps) {
           </div>
         )}
         {seoQ?.explanation && (
-          <div className="mt-8 pt-6 border-t border-white/10">
+          <div className="mt-8 pt-6 border-white/10">
             <h2 className="text-lg sm:text-xl font-semibold mb-3 text-indigo-400">Yaklaşım & Açıklama</h2>
             <div className="text-sm sm:text-base text-white/70 leading-relaxed whitespace-pre-wrap">
               {seoQ.explanation}

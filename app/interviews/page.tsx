@@ -102,7 +102,7 @@ export default function InterviewsPage() {
   return (
     <div className="min-h-screen bg-[#050816] text-white">
       {/* ─── HEADER ──────────────────────────────────────── */}
-      <header className="border-b border-white/5 bg-[#0a0e1a]/50 backdrop-blur-sm">
+      <header className="bg-[#0a0e1a]/50 backdrop-blur-sm">
         <div className="max-w-6xl mx-auto px-6 py-6">
           <Link
             href="/"
@@ -217,7 +217,7 @@ export default function InterviewsPage() {
                       </p>
                     )}
 
-                    <div className="flex items-center justify-between text-xs pt-3 border-t border-white/5">
+                    <div className="flex items-center justify-between text-xs pt-3">
                       <span className="text-white/40 font-mono">{cat.slug}</span>
                       <span
                         className="flex items-center gap-1.5 transition-colors group-hover:text-amber-400"
