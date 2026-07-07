@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "Python Online Mülakat Hazırlığı | Eğitimi ve Kodları | Ücretsiz Pratik",
+      "Python Mülakat Soruları ve Online Pratik | Ücretsiz",
     template: "%s | Python Mülakat",
   },
 

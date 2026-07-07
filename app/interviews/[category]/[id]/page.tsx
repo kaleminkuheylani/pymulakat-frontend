@@ -217,6 +217,58 @@ async function isMobileDevice(): Promise<boolean> {
   }
 }
 
+// ─── FAQ schema builder — her soru sayfasında page-specific Q&A ──
+// 📌 Long-tail yakalama: "X sorusu nasıl çözülür?", "X Python'da ne işe yarar?"
+//     gibi sorular için rich result şansı.
+function buildFaqSchema(q: SEOQuestion, baseUrl: string) {
+  const slug = q.slug || slugifyTitle(q.title);
+  const url = `${baseUrl}/interviews/${q.category}/${slug}`;
+  const functionMatch = (q.description || "").match(/def\s+([a-zA-Z_]\w*)\s*\(/);
+  const funcName = functionMatch ? functionMatch[1] : null;
+
+  const mainEntity: Array<{ "@type": string; name: string; acceptedAnswer: { "@type": string; text: string } }> = [
+    {
+      "@type": "Question",
+      name: `${q.title} sorusu Python'da nasıl çözülür?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `${q.title} sorusu için ${q.level || "beginner"} seviye Python bilgisi yeterlidir. ${
+          q.explanation
+            ? "Yaklaşım: " + q.explanation.replace(/[*#`]/g, "").slice(0, 280) + "..."
+            : "Soru açıklamasını ve örnek test case'leri inceleyip tarayıcı tabanlı editörde çözebilirsiniz."
+        } Detaylı çözüm için ${url} adresini ziyaret edin.`,
+      },
+    },
+    {
+      "@type": "Question",
+      name: `${q.title} için hangi Python konuları gerekli?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `Bu soru için şu konular faydalıdır: ${
+          (q.related_concepts || []).join(", ") || "string/liste temelleri, döngüler ve koşullar"
+        }.`,
+      },
+    },
+  ];
+
+  if (funcName) {
+    mainEntity.push({
+      "@type": "Question",
+      name: `Python'da ${funcName} fonksiyonu nasıl yazılır?`,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: `Python'da ${funcName} fonksiyonunu yazmak için ${q.category || "python-basics"} kategorisindeki bu soruyu interaktif editörde çözebilirsiniz. Başlangıç kodu (starter_code) ve beklenen test case'leri sayfada yer alır. Çözüm: ${url}`,
+      },
+    });
+  }
+
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity,
+  };
+}
+
 // ─── Page ─────────────────────────────────────────────────
 export default async function Page({ params, searchParams }: PageProps) {
   const [resolvedParams, resolvedSearch] = await Promise.all([params, searchParams]);
@@ -318,6 +370,15 @@ export default async function Page({ params, searchParams }: PageProps) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+        />
+      )}
+      {/* 📌 SEO: FAQ schema — page-specific Q&A, Google rich results + long-tail capture.
+          Her soru sayfasında "Bu Python sorusu hangi konuları kapsar?" / "Hangi
+          fonksiyon imzası bekleniyor?" gibi doğal sorularla hedefliyoruz. */}
+      {seoQ && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(buildFaqSchema(seoQ, baseUrl)) }}
         />
       )}
 

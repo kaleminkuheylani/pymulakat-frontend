@@ -127,6 +127,26 @@ export default function InterviewsPage() {
                 <span className="text-white font-semibold">{totalQuestions}</span>
               </div>
             </div>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Link
+                href="/python-online"
+                className="px-3 py-1.5 rounded-lg bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25 text-xs font-semibold transition-colors"
+              >
+                🧪 Online Editör
+              </Link>
+              <Link
+                href="/python-egitimi"
+                className="px-3 py-1.5 rounded-lg bg-indigo-500/15 border border-indigo-500/30 text-indigo-300 hover:bg-indigo-500/25 text-xs font-semibold transition-colors"
+              >
+                🎓 Eğitim
+              </Link>
+              <Link
+                href="/python-kodlari"
+                className="px-3 py-1.5 rounded-lg bg-purple-500/15 border border-purple-500/30 text-purple-300 hover:bg-purple-500/25 text-xs font-semibold transition-colors"
+              >
+                💻 Kodlar
+              </Link>
+            </div>
           </div>
         </div>
       </header>

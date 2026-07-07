@@ -158,6 +158,15 @@ function Hero({ user: _ }: { user: any }) {
               👀 Kayıt Olmadan Dene
             </motion.button>
           </Link>
+          <Link href="/python-online">
+            <motion.button
+              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              className="border border-emerald-400/30 text-emerald-300 font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:bg-emerald-500/10 transition-all"
+            >
+              🧪 Python Online Editör
+            </motion.button>
+          </Link>
         </>
       </motion.div>
 
