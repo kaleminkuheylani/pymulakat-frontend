@@ -233,10 +233,9 @@ export default function WorkspaceClient({
 
   // Run tests
   const handleRun = useCallback(async () => {
-    if (!user) {
-      router.push(`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`);
-      return;
-    }
+    // 📌 Misafire kod çalıştırma yok — GuestEditorGate zaten editor'i gizliyor;
+    // burasi son savunma. Return-ile sessizce cik, redirect yapma (state tutarliligi).
+    if (!user) return;
     if (isRunning || (pyStatus !== "ready" && pyStatus !== "idle") || !testCases) return;
     setIsRunning(true);
     setTestResults([]);
@@ -260,7 +259,7 @@ export default function WorkspaceClient({
     } finally {
       setIsRunning(false);
     }
-  }, [user, isRunning, pyStatus, testCases, code, runTests, submitAttempt, router, category, id]);
+  }, [user, isRunning, pyStatus, testCases, code, runTests, submitAttempt, category, id]);
 
   const handleBackToList = () => {
     router.push(`/interviews/${category}`);

@@ -5,6 +5,7 @@ import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../co
 import { TestRunResult } from "../../../../../hooks/usePyodide";
 import { QuestionTests } from "../../../../../api/v2/questions";
 import { getErrorLabel } from "../../../../../lib/errorClassifier";
+import GuestEditorGate from "./GuestEditorGate";
 
 // 📌 Test case formatı: { input, expected, actual?, description? }
 interface TestCase {
@@ -154,14 +155,25 @@ export default function WorkspaceEditor({
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
       <div className="flex-1 relative">
-        <CodeEditor
-          ref={editorRef}
-          value={code}
-          onChange={onCodeChange}
-          height="100%"
-          language="python"
-          readOnly={isGuest}
-        />
+        {/* 📌 Misafir için editor gizle, yerine net CTA. readonly bir
+            editör göstermek yanıltıcı — kullanıcı yazıp gönderince
+            "test çalıştır" akışı login'e düşüyor (handleRun guard).
+            Burada net: editöre erişim yok, kod çalıştırmak yok. */}
+        {isGuest ? (
+          <GuestEditorGate
+            category={category ?? ""}
+            id={id ?? ""}
+            starterCode={starterCode}
+          />
+        ) : (
+          <CodeEditor
+            ref={editorRef}
+            value={code}
+            onChange={onCodeChange}
+            height="100%"
+            language="python"
+          />
+        )}
       </div>
 
       <div className="h-72 bg-[#0a0e1a] flex flex-col flex-shrink-0">

@@ -247,12 +247,8 @@ export default function WorkspaceMobileClient({
 
   const handleRun = useCallback(async () => {
     if (readonly) return; // Salt okunur önizleme — çalıştırma yok
-    if (!user) {
-      const qSlug = (interview as any)?.slug || (interview?.title ? slugifyTitle(interview.title) : id);
-      const redirect = encodeURIComponent(`/interviews/${category}/${qSlug}`);
-      router.push(`/login?returnUrl=${redirect}&reason=guest_run_code`);
-      return;
-    }
+    // 📌 Misafire kod çalıştırma yok — GuestEditorGate zaten editor'i gizliyor.
+    if (!user) return;  // hard stop (UI'da misafir Run butonunu bile görmez)
     if (!testCases || running || (pyStatus !== "ready" && pyStatus !== "idle")) return;
     setRunning(true);
     setResults([]);
@@ -273,7 +269,7 @@ export default function WorkspaceMobileClient({
     } finally {
       setRunning(false);
     }
-  }, [readonly, user, testCases, running, pyStatus, runTests, code, submitAttempt, router, category, interview, id]);
+  }, [readonly, user, testCases, running, pyStatus, runTests, code, submitAttempt, category, interview, id]);
 
   // Custom input runner — code + functionName'i kapatır, sadece args[] alır
   const handleCustomRun = useCallback(

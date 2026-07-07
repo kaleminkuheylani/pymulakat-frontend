@@ -285,6 +285,56 @@ export default function DashboardHome() {
             <TabButton active={tab === "community"} onClick={() => setTab("community")} label="💬 Topluluk" count={community.length} />
           </div>
 
+          {/* 📌 Quick Access Hub — dashboard merkeziyet burada.
+              4 özellik tek bakışta: Sorular (misafir public),
+              Online Compiler (misafir public, deneme amaçli),
+              Kodlar (üye), Eğitimler (üye). Tek başlangıç noktası. */}
+          <section>
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-sm font-bold text-white/70 uppercase tracking-wider">
+                🚀 Hızlı Erişim
+              </h2>
+              <span className="text-[10px] text-white/40">
+                Tüm özellikler tek merkezden
+              </span>
+            </div>
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <FeatureCard
+                href="/interviews"
+                icon="💻"
+                title="Sorular"
+                description="Mülakat sorularını tarayıcıda çöz, otomatik puanlama al."
+                color="indigo"
+                badge="HERKESE AÇIK"
+              />
+              <FeatureCard
+                href="/python-online"
+                icon="⚡"
+                title="Online Compiler"
+                description="Sorudan bağımsız deneme: tarayıcıda Python yaz ve çalıştır."
+                color="amber"
+                badge="HERKESE AÇIK"
+                highlight
+              />
+              <FeatureCard
+                href="/python-kodlari"
+                icon="📚"
+                title="Kodlar"
+                description="17 snippet, 6 kategori: algoritma, OOP, veri yapısı."
+                color="purple"
+                badge="ÜYE"
+              />
+              <FeatureCard
+                href="/python-egitimi"
+                icon="🎓"
+                title="Eğitimler"
+                description="6 derslik sıralı yol haritası, çalıştırılabilir örnekler."
+                color="emerald"
+                badge="ÜYE"
+              />
+            </div>
+          </section>
+
           {/* Content */}
           {loading ? (
             <div className="flex items-center justify-center py-20">
@@ -339,5 +389,53 @@ function MiniStat({ icon, value, label, color }: { icon: string; value: any; lab
       <div className="text-sm font-bold text-white">{value}</div>
       <div className="text-[10px] text-white/40">{label}</div>
     </div>
+  );
+}
+
+// ─── Feature Card (Quick Access Hub) ──────────────
+// Dashboard'ın merkezde olduğunu vurgulayan 4 hızlı erişim kartı.
+// Online Compiler HERKESE AÇIK (misafir dahil), diğer 3 üye gerektirir.
+interface FeatureCardProps {
+  href: string;
+  icon: string;
+  title: string;
+  description: string;
+  color: "indigo" | "amber" | "purple" | "emerald";
+  badge?: string;
+  highlight?: boolean;
+}
+function FeatureCard({ href, icon, title, description, color, badge, highlight }: FeatureCardProps) {
+  const palette: Record<FeatureCardProps["color"], { border: string; bg: string; icon: string }> = {
+    indigo: { border: "border-indigo-500/30", bg: "from-indigo-500/10", icon: "text-indigo-300" },
+    amber: { border: "border-amber-500/40", bg: "from-amber-500/15", icon: "text-amber-300" },
+    purple: { border: "border-purple-500/30", bg: "from-purple-500/10", icon: "text-purple-300" },
+    emerald: { border: "border-emerald-500/30", bg: "from-emerald-500/10", icon: "text-emerald-300" },
+  };
+  const p = palette[color];
+  return (
+    <Link
+      href={href}
+      className={`group relative block p-4 rounded-2xl border ${p.border} bg-gradient-to-br ${p.bg} to-transparent hover:scale-[1.02] hover:border-current transition-all duration-300 ${
+        highlight ? "ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10" : ""
+      }`}
+    >
+      {badge && (
+        <span className={`absolute top-2 right-2 text-[9px] px-1.5 py-0.5 rounded-md font-bold uppercase tracking-wider ${
+          badge === "HERKESE AÇIK"
+            ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
+            : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+        }`}>
+          {badge}
+        </span>
+      )}
+      <div className={`text-3xl mb-2 ${p.icon}`}>{icon}</div>
+      <h3 className="text-base font-bold text-white mb-1 group-hover:text-amber-300 transition-colors">
+        {title}
+      </h3>
+      <p className="text-xs text-white/60 leading-relaxed">{description}</p>
+      <span className="inline-flex items-center gap-1 text-[11px] mt-2 text-white/40 group-hover:text-amber-300 group-hover:gap-2 transition-all">
+        {highlight ? "Hemen Dene" : "Git"} →
+      </span>
+    </Link>
   );
 }
