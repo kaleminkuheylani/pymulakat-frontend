@@ -341,11 +341,13 @@ export default function WorkspaceMobileClient({
 
         {tab === "workspace" && (
           <>
-            {/* 📌 Mobilde editör 150% boyutlandı (40vh → 60vh).
-                Layout zinciri: h-screen > flex-1 (overflow-hidden + flex-col) > editor (flex-shrink-0)
-                + console (flex-1 min-h-0 scroll). Monaco automaticLayout bu sayede
-                container size'ı doğru okur, "denge bozulması" yaşanmaz. */}
-            <div className="h-[60vh] min-h-[320px] max-h-[65vh] flex-shrink-0">
+            {/* 📌 Mobilde editör 150% boyutlandı.
+                vh kullanmıyoruz (iOS Safari URL bar açılıp kapanınca vh değişiyor,
+                Monaco re-layout tetikleyip cursor titremesi yapıyordu).
+                Bunun yerine stable flex zinciri: dış flex-1 + editor flex-1 min-h,
+                + console sabit 180px. Bu kombinasyon önceki 40vh'den ~%50 daha
+                geniş alan (~320px iPhone SE). */}
+            <div className="flex-1 min-h-[320px] flex-shrink min-w-0 overflow-hidden">
               <CodeEditor
                 ref={editorRef}
                 value={code}
@@ -356,8 +358,8 @@ export default function WorkspaceMobileClient({
                 disableCopyPaste={isGuest}
               />
             </div>
-            {/* Mobil: Custom Input + Run workspace tab'ın altında — kalan alanı doldurur */}
-            <div className="flex-1 min-h-0 overflow-y-auto border-t border-white/10 bg-[#0a0e1a] p-2 pb-16">
+            {/* Console: sabit 180px, taşarsa iç scroll, alttan taşma yok */}
+            <div className="h-[180px] flex-shrink-0 overflow-y-auto border-t border-white/10 bg-[#0a0e1a] p-2">
               <ConsoleTabMobile
                 errorLines={errorLines}
                 starterCode={interview?.starter_code || undefined}
