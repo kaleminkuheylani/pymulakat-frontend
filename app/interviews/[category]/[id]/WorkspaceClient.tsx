@@ -160,8 +160,13 @@ export default function WorkspaceClient({ initialParams }: Props) {
         // ID'yi sonradan set et ki submitAttempt'ta kullanabilelim
         if (q.id) questionId = q.id;
 
-        const tc = await questionsAPI.getTests(questionId);
-        if (!cancelled && tc) setTestCases(tc);
+        // Test case'leri arka planda yükle (crash etmesin, soru zaten geldi)
+        try {
+          const tc = await questionsAPI.getTests(questionId);
+          if (!cancelled && tc) setTestCases(tc);
+        } catch (tcErr) {
+          console.warn("[Workspace] test cases yüklenemedi:", tcErr);
+        }
       } catch (e: any) {
         if (!cancelled) setError("Soru yüklenemedi — bağlantını kontrol et.");
       } finally {
