@@ -33,13 +33,18 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/guides" className="hover:text-white transition-colors">
-                  Rehberler
+                <a href="/interviews/python-basics" className="hover:text-white transition-colors">
+                  Python Temelleri
+                </a>
+              </li>
+              <li>
+                <a href="/interviews/algorithms" className="hover:text-white transition-colors">
+                  Algoritmalar
                 </a>
               </li>
               <li>
                 <a href="/dashboard" className="hover:text-white transition-colors">
-                  Dashboard
+                  Akışım
                 </a>
               </li>
               <li>
