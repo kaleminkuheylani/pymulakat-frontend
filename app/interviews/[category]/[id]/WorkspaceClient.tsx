@@ -58,10 +58,10 @@ export default function WorkspaceClient({ initialParams }: Props) {
   }
 
   const { category, id } = initialParams;
-  // Slug → ID donusumu (sayfa slug ile gelebilir)
-  let questionId = parseInt(id, 10);
-  if (isNaN(questionId)) {
-  }
+  // Slug veya ID — slug ise önce by-slug API ile soruyu çek (ID'yi oradan al)
+  const isNumericId = /^\d+$/.test(id);
+  const questionSlugOrId = isNumericId ? null : id;
+  let questionId = isNumericId ? parseInt(id, 10) : 0;
 
   // Hooks
   const router = useRouter();
@@ -145,7 +145,10 @@ export default function WorkspaceClient({ initialParams }: Props) {
     (async () => {
       try {
         setLoading(true);
-        const q = await questionsAPI.getById(questionId, { includeStarter: true });
+        // Slug ise by-slug API, ID ise by-id API kullan
+        const q = questionSlugOrId
+          ? await questionsAPI.getBySlug(category, questionSlugOrId, { includeStarter: true })
+          : await questionsAPI.getById(questionId, { includeStarter: true });
         if (cancelled) return;
 
         if (!q) {
@@ -154,6 +157,8 @@ export default function WorkspaceClient({ initialParams }: Props) {
         }
         setInterview(q);
         if (q.starter_code) setCode(q.starter_code);
+        // ID'yi sonradan set et ki submitAttempt'ta kullanabilelim
+        if (q.id) questionId = q.id;
 
         const tc = await questionsAPI.getTests(questionId);
         if (!cancelled && tc) setTestCases(tc);
@@ -166,7 +171,7 @@ export default function WorkspaceClient({ initialParams }: Props) {
     return () => {
       cancelled = true;
     };
-  }, [questionId, category]);
+  }, [questionId, category, questionSlugOrId]);
 
   // Submit attempt when all tests pass
   const submitAttempt = useCallback(

@@ -220,7 +220,10 @@ export default async function Page({ params, searchParams }: PageProps) {
       }
     }
   }
-  if (!resolvedId) {
+  // Slug ile geldiyse resolvedId null olabilir — bu durumda WorkspaceClient
+  // kendi fetch'iyle soruyu çekecek. notFound() sadece gerçekten bulunamadıysa çağrılır.
+  const isSlugRequest = isNaN(_asNum);
+  if (!resolvedId && !isSlugRequest) {
     notFound();
   }
 
