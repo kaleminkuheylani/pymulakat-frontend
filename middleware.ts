@@ -55,6 +55,17 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get("host") || "";
 
+  // 0) Bakım modu — tüm sayfalar ana sayfaya yönlendir
+  // NEXT_PUBLIC_MAINTENANCE_MODE=1 ise aktif (production'da kaldırıp canlıya al)
+  if (process.env.NEXT_PUBLIC_MAINTENANCE_MODE === "1") {
+    if (pathname !== "/") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/";
+      return NextResponse.redirect(url, 302);
+    }
+    return NextResponse.next();
+  }
+
   // 1) www -> apex (308 Permanent)
   if (host.startsWith("www.")) {
     const url = request.nextUrl.clone();
