@@ -4,6 +4,7 @@
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { classifyError, type ErrorCategory } from "../lib/errorClassifier";
+import { installSandboxPolicy } from "../lib/sandboxPolicy";
 
 // ─── Traceback helper: sadece son satırı döner (File "..." line X kısmı atılır) ───
 // Örn. tam metin:
@@ -172,6 +173,13 @@ export function usePyodide(): UsePyodideReturn {
           indexURL: PYODIDE_CDN,
           fullStdLib: false,
         });
+        // Sandbox policy — dış dünyaya erişim modülleri (requests, os, sys,
+        // urllib, socket, subprocess, vs.) import edilemez hale getirilir.
+        try {
+          await installSandboxPolicy(py);
+        } catch (policyErr) {
+          console.error("[usePyodide] sandbox policy yüklenemedi:", policyErr);
+        }
         pyodideRef.current = py;
         setStatus("ready");
       } catch (err: any) {

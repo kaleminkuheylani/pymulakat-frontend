@@ -6,6 +6,7 @@ import { useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import dynamic from "next/dynamic";
 import { useUser } from "../../../hooks/useUser";
+import { installSandboxPolicy } from "../../../lib/sandboxPolicy";
 
 const CodeEditor = dynamic(
   () => import("../../../components/CodeEditor").then((m) => m.CodeEditorMonaco),
@@ -51,6 +52,12 @@ export default function LessonRunner({ code: initialCode, label = "kod.py" }: { 
       const w = window as any;
       if (typeof w.loadPyodide !== "function") throw new Error("loadPyodide yüklenemedi");
       const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: true });
+      // Sandbox policy — dış dünyaya erişim modülleri kilitlenir
+      try {
+        await installSandboxPolicy(py);
+      } catch (policyErr) {
+        console.error("[LessonRunner] sandbox policy yüklenemedi:", policyErr);
+      }
       pyRef.current = py;
       setLoading(false);
       return py;

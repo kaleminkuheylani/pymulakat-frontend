@@ -5,6 +5,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { installSandboxPolicy } from "../../lib/sandboxPolicy";
 
 // CodeMirror client-only
 const CodeEditor = dynamic(
@@ -47,6 +48,14 @@ export default function PythonOnlineEditor() {
         }
         const py = await w.loadPyodide({ indexURL: PYODIDE_BASE, fullStdLib: true });
         if (!py) throw new Error("Pyodide null döndü");
+        // Sandbox policy — requests/os/sys/urllib/socket gibi dış dünyaya
+        // erişim modülleri import edilemez hale getirilir.
+        try {
+          await installSandboxPolicy(py);
+        } catch (policyErr) {
+          console.error("[PythonOnline] sandbox policy yüklenemedi:", policyErr);
+          // Kullanıcıyı bloklamadan devam et (degraded mode); hata konsola düşer
+        }
         pyodideRef.current = py;
         setPyStatus("ready");
         return py;
