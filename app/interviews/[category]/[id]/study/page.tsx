@@ -30,9 +30,9 @@ interface Guide {
 }
 
 // ─── Server-side fetch ─────────────────────────────────────
-async function fetchGuide(id: string): Promise<Guide | null> {
+async function fetchGuideBySlug(studySlug: string): Promise<Guide | null> {
   try {
-    const r = await fetch(`${API}/api/v2/guides/by-question-id/${id}`, {
+    const r = await fetch(`${API}/api/v2/guides/by-slug/${studySlug}`, {
       next: { revalidate: 3600 },
     });
     if (!r.ok) return null;
@@ -43,13 +43,36 @@ async function fetchGuide(id: string): Promise<Guide | null> {
   }
 }
 
-async function fetchQuestionMeta(id: string) {
+async function fetchGuide(idOrSlug: string): Promise<Guide | null> {
+  // Önce id integer mı dene, yoksa slug olarak kullan
+  if (/^\d+$/.test(idOrSlug)) {
+    try {
+      const r = await fetch(`${API}/api/v2/guides/by-question-id/${idOrSlug}`, {
+        next: { revalidate: 3600 },
+      });
+      if (!r.ok) return null;
+      const data = await r.json();
+      return data?.data || data || null;
+    } catch {
+      return null;
+    }
+  }
+  return fetchGuideBySlug(idOrSlug);
+}
+
+async function fetchQuestionMeta(category: string, slug: string) {
   try {
-    const r = await fetch(`${API}/api/v2/questions/all`);
-    if (!r.ok) return null;
-    const data = await r.json();
-    const items: any[] = data?.data || [];
-    return items.find((q) => String(q.id) === String(id)) || null;
+    // by-slug ile önce id al
+    const r = await fetch(`${API}/api/v2/questions/by-slug/${category}/${slug}`);
+    if (!r.ok) {
+      // Slug bazlı değilse id olarak tüm soruları tara
+      const allR = await fetch(`${API}/api/v2/questions/all`);
+      if (!allR.ok) return null;
+      const allData = await allR.json();
+      const items: any[] = allData?.data || [];
+      return items.find((q) => String(q.id) === String(slug)) || null;
+    }
+    return await r.json();
   } catch {
     return null;
   }
@@ -61,9 +84,9 @@ export async function generateMetadata({
 }: {
   params: Promise<{ category: string; id: string }>;
 }): Promise<Metadata> {
-  const { id } = await params;
+  const { category, id } = await params;
   const guide = await fetchGuide(id);
-  const q = await fetchQuestionMeta(id);
+  const q = await fetchQuestionMeta(category, id);
   if (!guide) {
     return { title: "Etüt bulunamadı" };
   }
