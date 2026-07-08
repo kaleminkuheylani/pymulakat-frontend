@@ -132,34 +132,25 @@ function Hero({ user: _ }: { user: any }) {
         </span>
       </motion.h1>
 
-      {/* CTAs */}
+      {/* CTAs — Sorulara Başla misafiri doğrudan /interviews'a götürür
+          (kategori listesi public). Üye olmadan da tüm soru açıklamaları
+          ve test case'leri görünür; sadece çalıştırma AI/kaydet üyeye özel. */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.9, duration: 0.6 }}
         className="flex flex-col sm:flex-row items-center gap-4 mt-8"
       >
-        <>
-          <Link href="/register">
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.97 }}
-              className="relative group bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
-            >
-              <span className="relative z-10">Sorulara Başla</span>
-            </motion.button>
-          </Link>
-          {/* 📌 "Kayıt Olmadan Dene" CTA kaldırıldı — proje tutarlılığı için. */}
-          <Link href="/python-online">
-            <motion.button
-              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              className="border border-emerald-400/30 text-emerald-300 font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:bg-emerald-500/10 transition-all"
-            >
-              🧪 Python Online Editör
-            </motion.button>
-          </Link>
-        </>
+        <Link href="/interviews">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.97 }}
+            className="relative group bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] font-bold text-lg px-10 py-4 rounded-2xl shadow-lg shadow-amber-400/20 hover:shadow-amber-400/40 transition-all"
+          >
+            <span className="relative z-10">Sorulara Göz At</span>
+          </motion.button>
+        </Link>
+        {/* 📌 Diğer CTA'lar kaldırıldı — sunduklarımız bölümünde link'siz tanıtım. */}
       </motion.div>
 
       {/* Trust signals */}
@@ -506,13 +497,13 @@ export default function HomePage() {
                   Hesap Oluştur
                 </motion.button>
               </Link>
-              <Link href="/interviews/strings/51">
+              <Link href="/interviews">
                 <motion.button
                   whileHover={{ scale: 1.03 }}
                   whileTap={{ scale: 0.97 }}
                   className="border border-white/20 text-white font-semibold text-base md:text-lg px-6 md:px-8 py-3.5 md:py-4 rounded-2xl hover:border-indigo-400/50 hover:bg-indigo-500/10 transition-all"
                 >
-                  👀 Önce Dene
+                  👀 Önce Sorulara Bak
                 </motion.button>
               </Link>
             </div>

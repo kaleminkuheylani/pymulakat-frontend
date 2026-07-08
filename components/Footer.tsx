@@ -21,25 +21,16 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Ürün */}
+          {/* Ürün — misafir için: Sorular (kategoriler listesi, public).
+              Python Online + Akışım linkleri kaldırıldı (Navbar ile tutarlı). */}
           <div>
             <h4 className="text-xs font-bold text-white/70 uppercase tracking-wider mb-3">
               Ürün
             </h4>
             <ul className="space-y-2 text-xs text-white/50">
               <li>
-                <a href="/python-online" className="hover:text-white transition-colors">
-                  Python Online
-                </a>
-              </li>
-              <li>
-                <a href="/dashboard" className="hover:text-white transition-colors">
-                  Akışım (Sorular, Kodlar, Eğitimler)
-                </a>
-              </li>
-              <li>
-                <a href="/dashboard/forms" className="hover:text-white transition-colors">
-                  Topluluk
+                <a href="/interviews" className="hover:text-white transition-colors">
+                  Sorular
                 </a>
               </li>
             </ul>

@@ -46,17 +46,9 @@ export default function GlobalNav() {
           <span className="text-white font-bold text-base hidden sm:block">PythonMulakat</span>
         </Link>
 
-        {/* Right side */}
-        <div className="flex items-center gap-2 md:gap-3">
-          <Link
-            href="/python-online"
-            className="text-amber-300 hover:text-amber-200 text-xs sm:text-sm font-bold transition-colors whitespace-nowrap"
-          >
-            Online
-          </Link>
-          {/* 📌 Sorular, Kodlar, Eğitimler — hepsi SADECE dashboard'dan erişilebilir.
-              Merkeziyet: navbar sadece Online (standalone public). */}
-        </div>
+        {/* Right side — online + dashboard nav kaldırıldı. Misafir /interviews'a
+            footer'dan, üye ise dashboard'a doğrudan /dashboard URL ile erişir. */}
+        <div className="flex items-center gap-2 md:gap-3" />
 
         {loading ? (
             <div className="w-8 h-8 rounded-full bg-white/5 animate-pulse" />
@@ -92,19 +84,9 @@ export default function GlobalNav() {
                       <p className="text-xs text-white/40 truncate">{user.email}</p>
                     </div>
 
-                    {/* 📌 Dashboard linki — belirgin gradient CTA, dropdown'un ilk öğesi */}
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm font-semibold text-white bg-gradient-to-r from-indigo-500/30 to-purple-500/30 hover:from-indigo-500/40 hover:to-purple-500/40 transition-colors"
-                    >
-                      <span className="text-base">✨</span>
-                      <span>Akışım</span>
-                      <span className="ml-auto text-[10px] px-1.5 py-0.5 rounded-full bg-amber-500 text-slate-950 font-bold">
-                        YENİ
-                      </span>
-                    </Link>
-
+                    {/* 📌 Dashboard / Sorular / Eğitimler linkleri kaldırıldı — merkeziyet
+                        yerine sadelik tercih edildi. Dashboard'a doğrudan URL ile erişilir
+                        veya oturum açma sonrası auto-redirect ile gelir. */}
                     <Link
                       href="/profile"
                       onClick={() => setOpen(false)}
@@ -114,20 +96,6 @@ export default function GlobalNav() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                       </svg>
                       Profilim
-                    </Link>
-
-                    {/* 📌 Sorular SADECE dashboard'dan. Mobile dropdown'da da link yok. */}
-
-                    {/* 📌 /python-egitimi SADECE dashboard'dan erişilebilir (merkeziyet) */}
-                    <Link
-                      href="/dashboard"
-                      onClick={() => setOpen(false)}
-                      className="flex items-center gap-2 px-4 py-2.5 text-sm text-white/80 hover:bg-white/5 transition-colors"
-                    >
-                      <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-                      </svg>
-                      Eğitimler (Dashboard)
                     </Link>
 
                     <button
