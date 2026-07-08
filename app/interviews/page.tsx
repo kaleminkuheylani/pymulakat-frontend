@@ -22,32 +22,11 @@ interface CategoriesResponse {
   data: Category[];
 }
 
-// Kategori renkleri (gradient) — backend ile aynı
-const CATEGORY_STYLES: Record<string, { from: string; to: string; accent: string }> = {
-  "python-basics": { from: "#3b82f6", to: "#1e40af", accent: "#60a5fa" },
-  strings: { from: "#a855f7", to: "#7e22ce", accent: "#c084fc" },
-  "list-dict": { from: "#f59e0b", to: "#b45309", accent: "#fbbf24" },
-  pandas: { from: "#10b981", to: "#047857", accent: "#34d399" },
-  algorithms: { from: "#ef4444", to: "#b91c1c", accent: "#f87171" },
-  oop: { from: "#8b5cf6", to: "#6d28d9", accent: "#a78bfa" },
-  "data-types": { from: "#06b6d4", to: "#0e7490", accent: "#22d3ee" },
-  "simple-apps": { from: "#84cc16", to: "#4d7c0f", accent: "#a3e635" },
-  "beyin-firtinasi": { from: "#eab308", to: "#a16207", accent: "#facc15" },
-  sqlite3: { from: "#64748b", to: "#334155", accent: "#94a3b8" },
-  numpy: { from: "#0ea5e9", to: "#0369a1", accent: "#38bdf8" },
-  sklearn: { from: "#ec4899", to: "#9d174d", accent: "#f472b6" },
-  scipy: { from: "#14b8a6", to: "#0f766e", accent: "#2dd4bf" },
-  matplotlib: { from: "#f43f5e", to: "#9f1239", accent: "#fb7185" },
-  seaborn: { from: "#22c55e", to: "#15803d", accent: "#4ade80" },
-  statsmodels: { from: "#6366f1", to: "#3730a3", accent: "#818cf8" },
-  nltk: { from: "#d946ef", to: "#86198f", accent: "#e879f9" },
-  dask: { from: "#facc15", to: "#ca8a04", accent: "#fde047" },
-  pytorch: { from: "#fb923c", to: "#c2410c", accent: "#fdba74" },
-};
-
-function getCategoryStyle(slug: string) {
-  return CATEGORY_STYLES[slug] || { from: "#6366f1", to: "#4338ca", accent: "#818cf8" };
-}
+// 📌 Renk/ikon hardcoded yok — backend'ten gelen icon emoji kullanılıyor.
+// Tek ortak gradient (indigo → amber) tüm kategorilerde tutarlı görünüm sağlar.
+const DEFAULT_GRADIENT_FROM = "#6366f1";
+const DEFAULT_GRADIENT_TO = "#f59e0b";
+const DEFAULT_ACCENT = "#fbbf24";
 
 export default function InterviewsPage() {
   const [categories, setCategories] = useState<Category[]>([]);
@@ -167,7 +146,6 @@ export default function InterviewsPage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {categories.map((cat) => {
-              const style = getCategoryStyle(cat.slug);
               const count = cat.question_count || 0;
               return (
                 <Link
@@ -178,13 +156,13 @@ export default function InterviewsPage() {
                   <div
                     className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity"
                     style={{
-                      background: `linear-gradient(135deg, ${style.from}, ${style.to})`,
+                      background: `linear-gradient(135deg, ${DEFAULT_GRADIENT_FROM}, ${DEFAULT_GRADIENT_TO})`,
                     }}
                   />
                   <div
                     className="absolute top-0 left-0 right-0 h-0.5 opacity-50 group-hover:opacity-100 transition-opacity"
                     style={{
-                      background: `linear-gradient(90deg, ${style.from}, ${style.to})`,
+                      background: `linear-gradient(90deg, ${DEFAULT_GRADIENT_FROM}, ${DEFAULT_GRADIENT_TO})`,
                     }}
                   />
 
@@ -193,8 +171,8 @@ export default function InterviewsPage() {
                       <div
                         className="w-14 h-14 rounded-xl flex items-center justify-center text-3xl"
                         style={{
-                          background: `linear-gradient(135deg, ${style.from}30, ${style.to}30)`,
-                          border: `1px solid ${style.accent}50`,
+                          background: `linear-gradient(135deg, ${DEFAULT_GRADIENT_FROM}30, ${DEFAULT_GRADIENT_TO}30)`,
+                          border: `1px solid ${DEFAULT_ACCENT}50`,
                         }}
                       >
                         {cat.icon || "📘"}
@@ -221,7 +199,7 @@ export default function InterviewsPage() {
                       <span className="text-white/40 font-mono">{cat.slug}</span>
                       <span
                         className="flex items-center gap-1.5 transition-colors group-hover:text-amber-400"
-                        style={{ color: style.accent }}
+                        style={{ color: DEFAULT_ACCENT }}
                       >
                         <span>Keşfet</span>
                         <svg

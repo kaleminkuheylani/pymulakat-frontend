@@ -1,5 +1,9 @@
 // app/interviews/[category]/page.tsx
 // Kategori listeleme + TABLO + v2 API
+//
+// 📌 Metadata KAYNAĞI: Backend `/api/v2/categories`
+//    Hardcoded CATEGORY_LABELS / CATEGORY_DESCRIPTIONS kaldırıldı.
+//    Yeni kategori eklenince frontend değişikliği gerekmez.
 
 import { headers } from "next/headers";
 import Link from "next/link";
@@ -9,25 +13,30 @@ import type { Metadata } from "next";
 // ✅ Build sırasında prerender deneme — her istekte fresh fetch
 export const dynamic = "force-dynamic";
 
-// ─── Sadece QUESTIONS.py'de gerçekten olan kategoriler ─────
-const CATEGORY_LABELS: Record<string, string> = {
-  "python-basics": "🐍 Python Temelleri",
-  "data-structures": "🗂️ Veri Yapıları",
-  "list-dict": "📋 Liste & Sözlük",
-  pandas: "🐼 Pandas",
-  algorithms: "🧮 Algoritmalar",
-};
-
-const CATEGORY_DESCRIPTIONS: Record<string, string> = {
-  "python-basics": "Döngüler, koşullar, fonksiyonlar ve temel syntax alıştırmaları.",
-  "data-structures": "List, dict, set, tuple, deque, heapq gibi veri yapıları — mulakat prensibi: hangi yapi kullanilacagina SEN karar verirsin!",
-  "list-dict": "Liste, sözlük ve temel veri yapısı işlemleri.",
-  pandas: "Veri temizleme, groupby, merge ve zaman serisi.",
-  algorithms: "Algoritmik düşünme ve optimizasyon.",
-};
-
 interface PageProps {
   params: Promise<{ category: string }>;
+}
+
+// Backend'ten kategori metadata'sını çek (label, description, icon).
+// Yoksa fallback: slug'ı label olarak kullan.
+async function fetchCategoryInfo(slug: string): Promise<{ label: string; description: string; icon: string }> {
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+    const res = await fetch(`${apiUrl}/api/v2/categories`, {
+      next: { revalidate: 3600 }, // 1 saat cache
+    });
+    if (!res.ok) return { label: slug, description: "", icon: "📘" };
+    const data = await res.json();
+    const cats: Array<{ slug: string; label: string; description?: string; icon?: string }> = data?.data || [];
+    const found = cats.find((c) => c.slug === slug);
+    return {
+      label: found?.label || slug,
+      description: found?.description || "",
+      icon: found?.icon || "📘",
+    };
+  } catch {
+    return { label: slug, description: "", icon: "📘" };
+  }
 }
 
 interface QuestionItem {
@@ -73,8 +82,8 @@ async function fetchQuestions(category: string): Promise<QuestionItem[]> {
 
 export default async function CategoryPage({ params }: PageProps) {
   const { category } = await params;
-  const label = CATEGORY_LABELS[category] ?? category;
-  const description = CATEGORY_DESCRIPTIONS[category] ?? "";
+  // Backend'ten kategori metadata'sını çek (label, description, icon)
+  const { label, description, icon } = await fetchCategoryInfo(category);
 
   const questions = await fetchQuestions(category);
   const safeQuestions: QuestionItem[] = Array.isArray(questions) ? questions : [];
@@ -108,7 +117,10 @@ export default async function CategoryPage({ params }: PageProps) {
 
         <div className="mb-8">
           <div className="flex items-center justify-between flex-wrap gap-4 mb-2">
-            <h1 className="text-4xl font-bold">{label}</h1>
+            <h1 className="text-4xl font-bold flex items-center gap-3">
+              {icon && icon !== "📘" && <span className="text-3xl">{icon}</span>}
+              <span>{label}</span>
+            </h1>
             <span className="px-3 py-1 rounded-lg bg-white/5 border border-white/10 text-xs font-mono text-white/60">
               {category}
             </span>
@@ -135,18 +147,17 @@ export default async function CategoryPage({ params }: PageProps) {
 export async function generateMetadata({ params }: PageProps) {
   try {
     const { category } = await params;
-    const label = CATEGORY_LABELS[category] ?? category;
-    const description = CATEGORY_DESCRIPTIONS[category] ?? "Python mülakat soruları.";
+    const { label, description } = await fetchCategoryInfo(category);
     return {
       title: `${label} — Python Mülakat Soruları | PythonMulakat`,
-      description: `${label} kategorisindeki Python mülakat soruları. ${description} Interaktif editörde tarayıcıda çöz.`,
+      description: `${label} kategorisindeki Python mülakat soruları. ${description || 'Tarayıcı tabanlı interaktif editörde çöz.'} `,
       keywords: `python ${category}, ${category} soruları, python mülakat ${category}`,
       alternates: {
         canonical: `https://pythonmulakat.com/interviews/${category}`,
       },
       openGraph: {
         title: `${label} — Python Mülakat Soruları`,
-        description: `${description}`,
+        description: description || `Python mülakat soruları — ${label} kategorisi`,
         url: `https://pythonmulakat.com/interviews/${category}`,
         siteName: "PythonMulakat",
         locale: "tr_TR",

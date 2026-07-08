@@ -17,21 +17,15 @@ interface Props {
   onChange: (slug: string | null) => void;
 }
 
-const FALLBACK: Category[] = [
-  { slug: "feedback", label: "Geri Bildirim", description: "Platform hakkında öneri", icon: "💬", color: "amber" },
-  { slug: "question_help", label: "Soru Yardımı", description: "Soruda takıldığın yer", icon: "❓", color: "indigo" },
-  { slug: "code_help", label: "Kod Yardımı", description: "Kod review, refactoring", icon: "🐛", color: "rose" },
-  { slug: "share", label: "Yazılım Paylaşımı", description: "Proje, kaynak, deneyim", icon: "🚀", color: "emerald" },
-];
-
 export default function FormCategoryTabs({ active, onChange }: Props) {
-  const [cats, setCats] = useState<Category[]>(FALLBACK);
+  // 📌 Metadata KAYNAĞI: Backend `/api/v2/forms/categories` (hardcoded fallback yok)
+  const [cats, setCats] = useState<Category[]>([]);
 
   useEffect(() => {
     fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms/categories`)
       .then((r) => r.json())
       .then((d) => d?.data && setCats(d.data))
-      .catch(() => {});
+      .catch(() => setCats([]));
   }, []);
 
   return (

@@ -19,6 +19,21 @@ export default function FormsPage() {
   const [forms, setForms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
+  const [categories, setCategories] = useState<Record<string, { label: string; icon: string; color: string }>>({});
+
+  // 📌 Backend'ten forms kategori metadata'sı (tek seferlik fetch)
+  useEffect(() => {
+    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms/categories`)
+      .then((r) => r.json())
+      .then((d) => {
+        const map: Record<string, { label: string; icon: string; color: string }> = {};
+        (d.data || []).forEach((c: any) => {
+          map[c.slug] = { label: c.label, icon: c.icon, color: c.color };
+        });
+        setCategories(map);
+      })
+      .catch(() => setCategories({}));
+  }, []);
 
   // 📌 question-aware: ?question_id=7&title=... ile gelindiyse auto-open modal
   useEffect(() => {
@@ -70,7 +85,11 @@ export default function FormsPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {forms.map((f) => (
-            <FormCard key={f.id} form={f} />
+            <FormCard
+              key={f.id}
+              form={f}
+              category={categories[f.category] || { label: f.category, icon: "📌", color: "amber" }}
+            />
           ))}
         </div>
       )}

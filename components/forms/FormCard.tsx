@@ -15,12 +15,12 @@ interface Form {
   replies?: Array<{ count: number }>;
 }
 
-const CATEGORY_LABELS: Record<string, { label: string; icon: string; color: string }> = {
-  feedback: { label: "Geri Bildirim", icon: "💬", color: "amber" },
-  question_help: { label: "Soru Yardımı", icon: "❓", color: "indigo" },
-  code_help: { label: "Kod Yardımı", icon: "🐛", color: "rose" },
-  share: { label: "Yazılım Paylaşımı", icon: "🚀", color: "emerald" },
-};
+// 📌 Kategori bilgisi parent'tan geliyor (backend'ten fetch edildi)
+interface CategoryInfo {
+  label: string;
+  icon: string;
+  color: string;
+}
 
 function timeAgo(dateStr: string): string {
   const date = new Date(dateStr);
@@ -34,8 +34,7 @@ function timeAgo(dateStr: string): string {
 }
 function saat(h: number) { return `${h}saat`; }
 
-export default function FormCard({ form }: { form: Form }) {
-  const cat = CATEGORY_LABELS[form.category] || CATEGORY_LABELS.feedback;
+export default function FormCard({ form, category }: { form: Form; category: CategoryInfo }) {
   const replyCount = form.replies?.[0]?.count || 0;
 
   return (
@@ -45,8 +44,8 @@ export default function FormCard({ form }: { form: Form }) {
     >
       <div className="flex items-start justify-between gap-3 mb-2">
         <div className="flex items-center gap-2">
-          <span className="text-base">{cat.icon}</span>
-          <span className="text-xs text-white/40 uppercase tracking-wide">{cat.label}</span>
+          <span className="text-base">{category.icon}</span>
+          <span className="text-xs text-white/40 uppercase tracking-wide">{category.label}</span>
         </div>
         <span className="text-xs text-white/30">{timeAgo(form.created_at)}</span>
       </div>
