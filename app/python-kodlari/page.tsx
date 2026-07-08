@@ -17,8 +17,23 @@ export const metadata: Metadata = {
     "python snippets",
     "python algoritmaları",
     "python şablonları",
+    "python veri yapıları",
+    "python string işlemleri",
+    "python liste örnekleri",
+    "python dosya işlemleri",
+    "python api çağrısı",
+    "python regex örnekleri",
   ],
-  alternates: { canonical: "https://pythonmulakat.com/python-kodlari" },
+  authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
+  creator: "Python Mülakat",
+  publisher: "Python Mülakat",
+  alternates: {
+    canonical: "https://pythonmulakat.com/python-kodlari",
+    languages: {
+      "tr-TR": "https://pythonmulakat.com/python-kodlari",
+      "x-default": "https://pythonmulakat.com/python-kodlari",
+    },
+  },
   openGraph: {
     title: "Python Kodları — Hazır Örnekler ve Şablonlar",
     description: "Sık kullanılan Python kodları, kategorize, çalıştırılabilir.",
@@ -26,6 +41,21 @@ export const metadata: Metadata = {
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
+    images: [
+      {
+        url: "https://pythonmulakat.com/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "Python Kodları — Hazır Örnekler ve Şablonlar",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Python Kodları — Hazır Örnekler ve Şablonlar",
+    description: "Algoritmalar, veri yapıları, dosya işlemleri, API çağrıları. Kopyala, çalıştır.",
+    images: ["https://pythonmulakat.com/og-default.png"],
+    creator: "@pythonmulakat",
   },
 };
 
@@ -38,11 +68,111 @@ const breadcrumbJsonLd = {
   ],
 };
 
+// ItemList — 6 kategori × toplam 17 snippet için arama sonuçlarında liste çıksın
+const itemListJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "@id": "https://pythonmulakat.com/python-kodlari#snippets",
+  name: "Python Kodları Kataloğu",
+  description: "Sık kullanılan Python kod örnekleri ve şablonları — 6 kategoride 17 snippet.",
+  numberOfItems: CODE_SAMPLES.length,
+  itemListElement: CATEGORIES.map((cat, catIdx) => {
+    const items = CODE_SAMPLES.filter((s) => s.category === cat.slug);
+    return {
+      "@type": "ListItem",
+      position: catIdx + 1,
+      name: cat.name,
+      description: cat.description,
+      numberOfItems: items.length,
+      itemListElement: items.map((s, idx) => ({
+        "@type": "ListItem",
+        position: idx + 1,
+        url: `https://pythonmulakat.com/python-kodlari#${s.slug}`,
+        name: s.title,
+        description: s.description,
+      })),
+    };
+  }),
+};
+
+// Code Snippets için HowTo + FAQPage
+const howtoJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "HowTo",
+  "@id": "https://pythonmulakat.com/python-kodlari#how-to",
+  name: "Python Kodlarını Tarayıcıda Çalıştırma",
+  description: "Bu kütüphaneden aldığın Python kodlarını kurulum yapmadan nasıl çalıştırırsın?",
+  totalTime: "PT2M",
+  step: [
+    {
+      "@type": "HowToStep",
+      position: 1,
+      name: "İstediğin snippeti seç",
+      text: "6 kategoriden birini seç (Başlangıç, Algoritmalar, Veri Yapıları, Dosya İşlemleri, Web/API, OOP & Patterns). Seviye etiketinden zorluk görünür.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 2,
+      name: "Kodu görüntüle",
+      text: "Her snippet kartında 'Kodu görüntüle' yazısına tıkla. Kod inline açılır, kopyalayabilir veya inceleyebilirsin.",
+    },
+    {
+      "@type": "HowToStep",
+      position: 3,
+      name: "Online editörde çalıştır",
+      text: "Kart içindeki 'Online editörde çalıştır' butonuna bas. Kod yeni sekmede /python-online sayfasına snippet parametresiyle açılır ve Pyodide üzerinden tarayıcıda doğrudan çalışır. Kurulum gerekmez.",
+    },
+  ],
+};
+
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://pythonmulakat.com/python-kodlari#faq",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Bu Python kodlarını çalıştırmak için kurulum yapmam gerekiyor mu?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Hayır. /python-online sayfasındaki editörde Pyodide üzerinden tarayıcıda direkt çalışır. Python kurmana gerek yok. İstediğin snippeti seçip 'Online editörde çalıştır' butonuna bas, kod otomatik yüklenir.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Kodları kendi projeme kopyalayıp kullanabilir miyim?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Evet. Tüm snippetler eğitim amaçlı paylaşılmıştır, kendi projelerinde özgürce kullanabilirsin. Her snippetin yanındaki 'Kopyala' butonu tek tıkla kodu panoya alır.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Hangi seviyeden başlamalıyım?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Her snippetin sağ üstünde seviye etiketi var (Başlangıç / Orta / İleri). Programlamaya yeniysen Başlangıç kategorisinden başla; temelin varsa doğrudan Algoritmalar veya OOP & Patterns'a geçebilirsin.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Mülakat hazırlığında bu snippetler yeterli mi?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Bu snippetler referans ve pratik başlangıcıdır. Kapsamlı mülakat hazırlığı için /interviews sayfasındaki 100+ gerçek dünya sorusunu çözmeni, her birinde test case'leri geçmeni öneriyoruz.",
+      },
+    },
+  ],
+};
+
 export default function PythonKodlariPage() {
   const total = CODE_SAMPLES.length;
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(howtoJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
       <div className="min-h-screen bg-[#050816] text-white">
         <header className="border-b border-white/10 bg-[#0a0e1a]/80 backdrop-blur">
@@ -113,7 +243,7 @@ export default function PythonKodlariPage() {
                 </div>
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
                   {items.map((s) => (
-                    <article key={s.slug} className="p-5 rounded-xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition-colors">
+                    <article key={s.slug} id={s.slug} className="p-5 rounded-xl bg-white/[0.03] border border-white/10 hover:border-amber-500/30 transition-colors scroll-mt-20">
                       <div className="flex items-start justify-between gap-3 mb-2">
                         <h3 className="text-lg font-bold text-white">{s.title}</h3>
                         <span className={`text-[10px] px-2 py-0.5 rounded-md font-bold flex-shrink-0 ${

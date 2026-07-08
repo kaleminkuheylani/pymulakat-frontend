@@ -18,8 +18,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   return {
     title: `${lesson.title} — Python Eğitimi`,
     description: lesson.description,
-    keywords: ["python eğitimi", lesson.title.toLowerCase(), "python dersleri", ...lesson.topics.map(t => t.toLowerCase())],
-    alternates: { canonical: `https://pythonmulakat.com/python-egitimi/${lesson.slug}` },
+    keywords: [
+      "python eğitimi",
+      lesson.title.toLowerCase(),
+      "python dersleri",
+      "türkçe python",
+      ...lesson.topics.map(t => t.toLowerCase()),
+    ],
+    authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
+    alternates: {
+      canonical: `https://pythonmulakat.com/python-egitimi/${lesson.slug}`,
+      languages: {
+        "tr-TR": `https://pythonmulakat.com/python-egitimi/${lesson.slug}`,
+        "x-default": `https://pythonmulakat.com/python-egitimi/${lesson.slug}`,
+      },
+    },
     openGraph: {
       title: `${lesson.title} — Python Eğitimi`,
       description: lesson.description,
@@ -27,6 +40,21 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       siteName: "PythonMulakat",
       locale: "tr_TR",
       type: "article",
+      images: [
+        {
+          url: "https://pythonmulakat.com/og-default.png",
+          width: 1200,
+          height: 630,
+          alt: `${lesson.title} — Python Eğitimi`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${lesson.title} — Python Eğitimi`,
+      description: lesson.description,
+      images: ["https://pythonmulakat.com/og-default.png"],
+      creator: "@pythonmulakat",
     },
   };
 }
@@ -41,6 +69,31 @@ const breadcrumbJsonLd = (title: string, slug: string) => ({
   ],
 });
 
+// LearningResource — tek bir dersi schema.org'a kayıt
+const learningResourceJsonLd = (
+  title: string,
+  description: string,
+  slug: string,
+  level: string,
+  topics: string[],
+  position: number,
+) => ({
+  "@context": "https://schema.org",
+  "@type": "LearningResource",
+  "@id": `https://pythonmulakat.com/python-egitimi/${slug}#lesson`,
+  name: title,
+  description,
+  url: `https://pythonmulakat.com/python-egitimi/${slug}`,
+  educationalLevel: level === "Başlangıç" ? "Beginner" : level === "Orta" ? "Intermediate" : "Advanced",
+  learningResourceType: "lesson",
+  isAccessibleForFree: true,
+  inLanguage: "tr-TR",
+  position,
+  teaches: topics,
+  isPartOf: { "@id": "https://pythonmulakat.com/python-egitimi#course" },
+  provider: { "@id": "https://pythonmulakat.com/#organization" },
+});
+
 export default async function LessonPage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const lesson = getLesson(slug);
@@ -53,6 +106,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(lesson.title, lesson.slug)) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(learningResourceJsonLd(lesson.title, lesson.description, lesson.slug, lesson.level, lesson.topics, idx + 1)) }} />
 
       <div className="min-h-screen bg-[#050816] text-white">
         <header className="border-b border-white/10 bg-[#0a0e1a]/80 backdrop-blur">

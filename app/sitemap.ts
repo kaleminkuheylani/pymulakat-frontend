@@ -27,10 +27,6 @@ async function fetchQuestionsFromBackend(): Promise<Array<{ category: string; sl
   }
 }
 
-// Vercel build sınıri 60s. Backend fetch bazen yavas olur, bu yuzden
-// Supabase REST API'sinden doğrudan minimal veri çekiyoruz (anon key,
-// service_role degil). Timeout 10s ile korunuyoruz.
-
 const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://lhuhfgpjbnngjxzlvywp.supabase.co";
 const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 
@@ -38,6 +34,16 @@ const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
 function hasSupabaseEnv(): boolean {
   return Boolean(SUPABASE_ANON_KEY && SUPABASE_URL);
 }
+
+// Python eğitim dersleri (6 ders — statik)
+const LESSON_SLUGS = [
+  "temel-kavramlar",
+  "kontrol-yapilari",
+  "fonksiyonlar",
+  "veri-yapilari",
+  "oop",
+  "ileri-konular",
+];
 
 async function fetchSupabaseSafe<T>(
   table: string,
@@ -106,6 +112,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     priority: 0.7,
   }));
 
+  // 3. Python eğitim dersleri (statik 6 ders)
+  const lessonPages: MetadataRoute.Sitemap = LESSON_SLUGS.map((slug) => ({
+    url: `${BASE}/python-egitimi/${slug}`,
+    lastModified: now,
+    changeFrequency: "monthly" as const,
+    priority: 0.7,
+  }));
+
   // 📌 Tutorials kaldırıldı — /guides sayfası silindi, sitemap'te yer almıyor.
-  return [...staticPages, ...categoryPages, ...questionPages];
+  return [...staticPages, ...categoryPages, ...questionPages, ...lessonPages];
 }

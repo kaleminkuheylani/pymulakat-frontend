@@ -17,8 +17,22 @@ export const metadata: Metadata = {
     "python başlangıç",
     "python oop",
     "python async",
+    "python veri yapıları",
+    "python generator",
+    "python dekoratör",
+    "sıfırdan python",
+    "python dersleri türkçe",
   ],
-  alternates: { canonical: "https://pythonmulakat.com/python-egitimi" },
+  authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
+  creator: "Python Mülakat",
+  publisher: "Python Mülakat",
+  alternates: {
+    canonical: "https://pythonmulakat.com/python-egitimi",
+    languages: {
+      "tr-TR": "https://pythonmulakat.com/python-egitimi",
+      "x-default": "https://pythonmulakat.com/python-egitimi",
+    },
+  },
   openGraph: {
     title: "Python Eğitimi — Türkçe, Ücretsiz, Kapsamlı",
     description: "Başlangıçtan ileri seviyeye Python öğren. Her ders kod örnekleriyle.",
@@ -26,11 +40,21 @@ export const metadata: Metadata = {
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
+    images: [
+      {
+        url: "https://pythonmulakat.com/og-default.png",
+        width: 1200,
+        height: 630,
+        alt: "Python Eğitimi — Türkçe Rehber",
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "Python Eğitimi — Türkçe, Ücretsiz",
-    description: "Türkçe Python dersleri: başlangıç, orta, ileri.",
+    description: "Türkçe Python dersleri: başlangıç, orta, ileri. 6 ders, kod örnekleri, online editör.",
+    images: ["https://pythonmulakat.com/og-default.png"],
+    creator: "@pythonmulakat",
   },
 };
 
@@ -46,16 +70,87 @@ const breadcrumbJsonLd = {
 const courseJsonLd = {
   "@context": "https://schema.org",
   "@type": "Course",
+  "@id": "https://pythonmulakat.com/python-egitimi#course",
   name: "Python Eğitimi — Başlangıçtan İleri Seviye",
-  description: "Türkçe Python dersleri. Ücretsiz, kapsamlı, kod örnekleriyle.",
-  provider: { "@type": "Organization", name: "PythonMulakat", url: "https://pythonmulakat.com" },
-  inLanguage: "tr",
+  description: "Türkçe, ücretsiz, kapsamlı Python dersleri. Değişkenlerden async/await'a kadar 6 dersten oluşan sıralı yol haritası. Her ders çalıştırılabilir kod örneği ve pratik ödev içerir.",
+  url: "https://pythonmulakat.com/python-egitimi",
+  provider: {
+    "@type": "Organization",
+    "@id": "https://pythonmulakat.com/#organization",
+    name: "Python Mülakat",
+    url: "https://pythonmulakat.com",
+  },
+  inLanguage: "tr-TR",
   isAccessibleForFree: true,
+  educationalLevel: "Beginner",
+  teaches: [
+    "Python temel kavramlar (değişkenler, tipler, operatörler)",
+    "Kontrol yapıları (if/elif/else, for, while)",
+    "Fonksiyonlar (def, parametreler, return, lambda)",
+    "Veri yapıları (list, dict, tuple, set, comprehension)",
+    "Nesne yönelimli programlama (class, inheritance, polymorphism)",
+    "İleri konular (generator, decorator, context manager, async/await)",
+  ],
+  audience: {
+    "@type": "EducationalAudience",
+    educationalRole: "student",
+  },
   hasCourseInstance: {
     "@type": "CourseInstance",
     courseMode: "online",
     courseWorkload: "PT10H",
+    location: {
+      "@type": "VirtualLocation",
+      url: "https://pythonmulakat.com/python-egitimi",
+    },
   },
+  hasPart: LESSONS.map((l, i) => ({
+    "@type": "LearningResource",
+    "@id": `https://pythonmulakat.com/python-egitimi/${l.slug}#lesson`,
+    name: l.title,
+    description: l.description,
+    url: `https://pythonmulakat.com/python-egitimi/${l.slug}`,
+    educationalLevel: l.level,
+    learningResourceType: "lesson",
+    position: i + 1,
+    timeRequired: l.duration,
+    teaches: l.topics.join(", "),
+    inLanguage: "tr-TR",
+    isAccessibleForFree: true,
+  })),
+};
+
+// 📌 FAQPage JSON-LD — sayfada render edilen 3 FAQ'yu zengin sonuç için sema ile eşle
+const faqJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://pythonmulakat.com/python-egitimi#faq",
+  mainEntity: [
+    {
+      "@type": "Question",
+      name: "Python öğrenmek için önceden programlama bilmem gerekiyor mu?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Hayır. İlk dersler hiç programlama deneyimi olmayanlar için tasarlandı. Sırayla ilerleyerek başlangıçtan ileri seviyeye ulaşabilirsin.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Bu eğitim sertifika veriyor mu?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Hayır, sertifika programımız yok. Odak noktası pratik yapabilme ve gerçek Python kodu yazabilme.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Hangi Python sürümünü kullanıyorsunuz?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Tüm örnekler Python 3.12 ile test edilmiştir ve tarayıcıda Pyodide üzerinden doğrudan çalışır.",
+      },
+    },
+  ],
 };
 
 export default function PythonEgitimiPage() {
@@ -63,6 +158,7 @@ export default function PythonEgitimiPage() {
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(courseJsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
       <div className="min-h-screen bg-[#050816] text-white">
         <header className="border-b border-white/10 bg-[#0a0e1a]/80 backdrop-blur">
