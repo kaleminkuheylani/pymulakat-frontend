@@ -16,6 +16,8 @@ interface SidebarProps {
   hintsList: string[];
   revealedHints: number;
   onRevealHint: () => void;
+
+  hasStudy?: boolean;
 }
 
 export default function WorkspaceSidebar({
@@ -27,6 +29,7 @@ export default function WorkspaceSidebar({
   hintsList,
   revealedHints,
   onRevealHint,
+  hasStudy = false,
 }: SidebarProps) {
   return (
     <aside className="w-[420px] flex-shrink-0 bg-[#0a0e1a] h-full overflow-y-auto relative">
@@ -40,6 +43,7 @@ export default function WorkspaceSidebar({
             hintsList={hintsList}
             revealedHints={revealedHints}
             onRevealHint={onRevealHint}
+            hasStudy={hasStudy}
           />
         </div>
     </aside>

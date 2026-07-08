@@ -18,6 +18,7 @@ interface Props {
   hintsList: string[];
   revealedHints: number;
   onRevealHint: () => void;
+  hasStudy?: boolean;
 }
 
 const slugifyCategory = (cat: string): string => {
@@ -40,6 +41,7 @@ export default function QuestionDescriptionContent({
   hintsList,
   revealedHints,
   onRevealHint,
+  hasStudy = false,
 }: Props) {
   const questionMeta = toQuestionMetaView(interview);
 
@@ -86,7 +88,8 @@ export default function QuestionDescriptionContent({
         {interview.description}
       </p>
 
-      {/* ─── 📖 Detaylı Etüt CTA — description altında link ─── */}
+      {/* ─── 📖 Detaylı Etüt CTA — sadece guide (DB analiz) varsa ─── */}
+      {hasStudy && (
       <Link
         href={`/interviews/${category}/${id}/study`}
         className="group block p-3.5 rounded-xl bg-gradient-to-br from-purple-500/10 via-indigo-500/5 to-transparent border border-purple-500/25 hover:border-purple-400/50 transition-all"
@@ -114,6 +117,7 @@ export default function QuestionDescriptionContent({
           </div>
         </div>
       </Link>
+      )}
 
       {/* ─── Complexity + Tags + related_concepts ──────── */}
       {(interview.complexity ||

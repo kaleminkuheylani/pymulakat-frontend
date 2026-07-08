@@ -32,6 +32,7 @@ interface Props {
   readonly?: boolean;
   initialInterview?: Question | null;
   initialTestCases?: QuestionTests | null;
+  hasStudy?: boolean;
 }
 
 interface AttemptPayload {
@@ -50,6 +51,7 @@ export default function WorkspaceClient({
   initialParams,
   initialInterview: initialInterviewProp,
   initialTestCases: initialTestCasesProp,
+  hasStudy = false,
 }: Props) {
   // ✅ Guard
   if (!initialParams || !initialParams.category || !initialParams.id) {
@@ -350,6 +352,7 @@ export default function WorkspaceClient({
             hintsList={hintsList}
             revealedHints={revealedHints}
             onRevealHint={onRevealHint}
+            hasStudy={hasStudy}
           />
         </div>
 

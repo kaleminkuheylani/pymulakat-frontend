@@ -113,6 +113,24 @@ async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuesti
   }
 }
 
+async function fetchHasStudy(questionId: number): Promise<boolean> {
+  // Mevcut sorunun guide (study) DB'de var mı? (CSV metadata fallback sayılmaz)
+  try {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+    const res = await fetch(
+      `${apiUrl}/api/v2/guides/by-question-id/${questionId}`,
+      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
+    );
+    if (!res.ok) return false;
+    const data = await res.json();
+    // DB'den geliyorsa (source="db") gerçek analiz var.
+    // CSV fallback'te içerik alanları boş → hasStudy=false say.
+    return data?.source === "db";
+  } catch {
+    return false;
+  }
+}
+
 // ─── Related questions fetch (batch) ─────────────────────
 // (Kaldırıldı: Workspace client kendi fetch'ini yapıyor, SSR enrichment gereksiz.)
 
@@ -326,6 +344,10 @@ export default async function Page({ params, searchParams }: PageProps) {
       : Promise.resolve(null),
   ]);
 
+  // 📌 Guide (DB-backed analiz) var mı? Sadece DB'den gelirse CTA göster,
+  // CSV metadata fallback yetersiz.
+  const initialHasStudy = seoQ?.id ? await fetchHasStudy(seoQ.id) : false;
+
   // Workspace client kendi fetch'ini yapıyor; burada sadece SEO schema'ları için kullanıyoruz.
   // 📌 SSR: initial data'yı server'da geçiriyoruz — client'ta loading state atlanıyor.
   const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
@@ -466,6 +488,7 @@ export default async function Page({ params, searchParams }: PageProps) {
           readonly={readonly}
           initialInterview={(mobile ? initialInterview : undefined) as any}
           initialTestCases={initialTests}
+          hasStudy={initialHasStudy}
         />
       </div>
 

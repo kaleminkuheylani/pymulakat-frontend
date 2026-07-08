@@ -9,6 +9,7 @@ interface WorkspaceSidebarMobileProps {
   isGuest: boolean;
   onLogin: () => void;
   testCases?: QuestionTests | null;
+  hasStudy?: boolean;
 }
 
 // ═══════════════════════════════════════════════════════════
@@ -22,6 +23,7 @@ export function WorkspaceSidebarMobile({
   interview,
   isGuest,
   testCases,
+  hasStudy = false,
 }: WorkspaceSidebarMobileProps) {
   const { hintsList, revealedHints, onRevealHint } = useHints(interview);
 
@@ -36,6 +38,7 @@ export function WorkspaceSidebarMobile({
         hintsList={hintsList}
         revealedHints={revealedHints}
         onRevealHint={onRevealHint}
+        hasStudy={hasStudy}
       />
     </div>
   );

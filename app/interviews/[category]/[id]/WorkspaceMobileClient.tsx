@@ -32,12 +32,14 @@ interface Props {
   readonly?: boolean;
   initialInterview?: Question | null;
   initialTestCases?: QuestionTests | null;
+  hasStudy?: boolean;
 }
 export default function WorkspaceMobileClient({
   initialParams,
   readonly = false,
   initialInterview = null,
   initialTestCases = null,
+  hasStudy = false,
 }: Props) {
   const router = useRouter();
   const { user } = useUser();
@@ -404,7 +406,7 @@ export default function WorkspaceMobileClient({
       <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         {tab === "question" && (
           <div className="flex-1 overflow-y-auto">
-            <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} testCases={testCases} />
+            <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} testCases={testCases} hasStudy={hasStudy} />
           </div>
         )}
 
