@@ -86,6 +86,35 @@ export default function QuestionDescriptionContent({
         {interview.description}
       </p>
 
+      {/* ─── 📖 Detaylı Etüt CTA — description altında link ─── */}
+      <Link
+        href={`/interviews/${category}/${id}/study`}
+        className="group block p-3.5 rounded-xl bg-gradient-to-br from-purple-500/10 via-indigo-500/5 to-transparent border border-purple-500/25 hover:border-purple-400/50 transition-all"
+      >
+        <div className="flex items-start gap-3">
+          <div className="w-9 h-9 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-500 flex items-center justify-center flex-shrink-0 shadow-lg shadow-purple-500/20">
+            <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+            </svg>
+          </div>
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2 mb-0.5">
+              <h4 className="text-sm font-bold text-white">Detaylı Etüt</h4>
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-500/20 border border-purple-500/30 text-purple-200 font-semibold">
+                DERİN ANALİZ
+              </span>
+            </div>
+            <p className="text-[11px] text-white/65 leading-relaxed">
+              Bu sorunun 3 farklı çözüm yaklaşımını (brute force → optimize → optimal) ve karşılaşılan edge case'leri öğren.
+            </p>
+            <div className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-purple-300 group-hover:text-purple-200 font-semibold">
+              <span>Etüdü Oku</span>
+              <span className="group-hover:translate-x-1 transition-transform">→</span>
+            </div>
+          </div>
+        </div>
+      </Link>
+
       {/* ─── Complexity + Tags + related_concepts ──────── */}
       {(interview.complexity ||
         interview.related_concepts?.length ||
