@@ -43,12 +43,24 @@ type ParamInfo = {
 
 function parseFunctionSignature(starterCode: string, functionName: string): ParamInfo[] {
   if (!starterCode || !functionName) return [];
-  // def name(p1: t1, p2: t2 = None, *args, **kwargs) -> ret:
+
+  // 1) Tam imza: def name(p1, p2, ...) -> ret:
   const m = starterCode.match(
     new RegExp(`def\\s+${functionName}\\s*\\(([^)]*)\\)`, "m")
   );
-  if (!m) return [];
-  const raw = m[1].trim();
+
+  // 2) Kesik imza fallback: "def name(p1: t1" — parantez kapanmamis olabilir
+  //    CSV'den gelen bazi sorularda starter_code sadece ilk satira kadar
+  //    kaydedilmis. Bu durumda parantez ici bitmemis olur.
+  let raw = m ? m[1].trim() : "";
+
+  if (!m || !raw) {
+    const m2 = starterCode.match(
+      new RegExp(`def\\s+${functionName}\\s*\\(([^,)]+)?`, "m")
+    );
+    if (m2) raw = (m2[1] || "").trim();
+  }
+
   if (!raw) return [];
 
   const paramStrs = raw
