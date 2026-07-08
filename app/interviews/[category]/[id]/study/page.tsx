@@ -115,7 +115,7 @@ export default async function StudyPage({
   params: Promise<{ category: string; id: string }>;
 }) {
   const { category, id } = await params;
-  const [guide, q] = await Promise.all([fetchGuide(id), fetchQuestionMeta(id)]);
+  const [guide, q] = await Promise.all([fetchGuide(id), fetchQuestionMeta(category, id)]);
   if (!guide) notFound();
 
   const slug = q?.slug || id;
