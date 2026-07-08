@@ -46,9 +46,16 @@ export default function GlobalNav() {
           <span className="text-white font-bold text-base hidden sm:block">PythonMulakat</span>
         </Link>
 
-        {/* Right side — online + dashboard nav kaldırıldı. Misafir /interviews'a
-            footer'dan, üye ise dashboard'a doğrudan /dashboard URL ile erişir. */}
-        <div className="flex items-center gap-2 md:gap-3" />
+        {/* Right side — /interviews her zaman görünür (misafir + üye).
+            Internal SEO: ana sayfa → kategori listesi direkt nav'dan. */}
+        <div className="flex items-center gap-2 md:gap-3">
+          <Link
+            href="/interviews"
+            className="hidden sm:flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
+          >
+            <span>Sorular</span>
+          </Link>
+        </div>
 
         {loading ? (
             <div className="w-8 h-8 rounded-full bg-white/5 animate-pulse" />

@@ -172,23 +172,18 @@ function Hero({ user: _ }: { user: any }) {
 
 // ─── Feature Card ─────────────────────────────────────────
 function FeatureCard({
-  icon, title, description, highlight, index,
+  icon, title, description, highlight, index, href,
 }: {
   icon: string
   title: string
   description: string
   highlight?: string
   index: number
+  href?: string
 }) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 40 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ delay: index * 0.1, duration: 0.6 }}
-      whileHover={{ y: -6 }}
-      className="relative group border border-white/10 bg-white/[0.03] backdrop-blur-sm rounded-2xl p-6 hover:border-indigo-500/30 transition-all duration-300 overflow-hidden"
-    >
+  // href varsa Link ile sarma — internal SEO (PageRank dagilimi)
+  const content = (
+    <>
       <div className="absolute inset-0 rounded-2xl bg-gradient-to-b from-indigo-500/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
       <div className="relative">
         <div className="flex items-start justify-between mb-4">
@@ -199,9 +194,43 @@ function FeatureCard({
             </span>
           )}
         </div>
-        <h3 className="text-white font-bold text-lg mb-2">{title}</h3>
+        <h3 className="text-white font-bold text-lg mb-2 group-hover:text-amber-400 transition-colors">
+          {title}
+          {href && <span className="ml-2 text-amber-400/70 group-hover:translate-x-1 transition-transform inline-block">→</span>}
+        </h3>
         <p className="text-white/55 text-sm leading-relaxed">{description}</p>
       </div>
+    </>
+  )
+
+  const baseClass = "relative group border border-white/10 bg-white/[0.03] backdrop-blur-sm rounded-2xl p-6 hover:border-indigo-500/30 transition-all duration-300 overflow-hidden block"
+
+  if (href) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: index * 0.1, duration: 0.6 }}
+        whileHover={{ y: -6 }}
+      >
+        <Link href={href} className={baseClass}>
+          {content}
+        </Link>
+      </motion.div>
+    )
+  }
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 40 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ delay: index * 0.1, duration: 0.6 }}
+      whileHover={{ y: -6 }}
+      className={baseClass}
+    >
+      {content}
     </motion.div>
   )
 }
@@ -401,6 +430,31 @@ export default function HomePage() {
             title="Sıfır Kurulum"
             description="Python, pip, virtualenv yok. Sadece tarayıcıyı aç, hesap oluştur, hemen kodlamaya başla. 60 saniyede ilk soruyu çöz."
             index={7}
+          />
+          {/* 📌 Internal SEO: 3 yeni landing page'e link — internal PageRank dagilimi */}
+          <FeatureCard
+            icon="🖥️"
+            title="Python Online Editör"
+            description="Kurulum yok, hesap yok. Tarayıcıda Python kodu yaz, çalıştır. CTA + FAQ + 17 snippet hazır kod örneği."
+            highlight="Ücretsiz"
+            index={8}
+            href="/python-online"
+          />
+          <FeatureCard
+            icon="🎓"
+            title="Python Eğitimi"
+            description="Sıfırdan ileri seviyeye, 6 ders + 6 rehber. Interaktif editörde pratik yaparak öğren."
+            highlight="6 ders"
+            index={9}
+            href="/python-egitimi"
+          />
+          <FeatureCard
+            icon="📚"
+            title="Python Kodları"
+            description="6 kategoride 19 hazır Python kodu. Kopyala, çalıştır, öğren. Liste, dict, OOP, Pandas, Algoritmalar."
+            highlight="19 snippet"
+            index={10}
+            href="/python-kodlari"
           />
         </div>
       </section>
