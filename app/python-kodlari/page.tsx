@@ -163,6 +163,38 @@ const faqJsonLd = {
         text: "Bu snippetler referans ve pratik başlangıcıdır. Kapsamlı mülakat hazırlığı için /interviews sayfasındaki 100+ gerçek dünya sorusunu çözmeni, her birinde test case'leri geçmeni öneriyoruz.",
       },
     },
+    {
+      "@type": "Question",
+      name: "Python'da en sık yapılan hatalar nelerdir?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Yeni başlayanların en sık yaptığı hatalar: mutable default argüman kullanmak (def f(x=[])), == ile is karıştırmak, list.pop(0) ile kuyruk simülasyonu yapmak (O(n) maliyet), dosyayı kapatmayı unutmak, encoding belirtmemek. Her snippet'te 'Yaygın Hatalar' bölümünde detay var.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Snippet'leri sırayla mı öğrenmeliyim?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Hayır, sırayla gitmek zorunda değilsin. Ama 'Temel' kategorisinden başlamanı öneriyoruz (string, liste, sözlük işlemleri). Sonra 'Algoritmalar' ve 'Veri Yapıları'na geç. 'Dosya İşlemleri' ve 'Web/API' daha çok gerçek projeye yakın oldukları için orta seviyede öğrenilmeli.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Bu kodlar Python 2 ile uyumlu mu?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Hayır. Tüm snippetler Python 3.10+ (ideal 3.12) ile yazıldı. type hint kullanıyoruz, dataclass, f-string, contextlib gibi modern özellikler içeriyor. Python 2 Ocak 2020'de emekli oldu, artık desteklenmiyor.",
+      },
+    },
+    {
+      "@type": "Question",
+      name: "Snippetler gerçek projelerde nasıl kullanılır?",
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: "Her snippet altındaki 'Ne Zaman Kullanılır' bölümünde pratik senaryolar listeleniyor. Örneğin 'Stack' snippet'i tarayıcı undo/redo, editör undo/redo, derleyici call stack gibi yerlerde kullanılır. 'İki Sayının Toplamı' bankacılık transaction eşleştirmede, envanter kontrolde. Tüm snippetler gerçek dünya kullanım senaryoları taşır.",
+      },
+    },
   ],
 };
 
@@ -256,6 +288,31 @@ export default function PythonKodlariPage() {
                         </span>
                       </div>
                       <p className="text-sm text-white/60 mb-3 leading-relaxed">{s.description}</p>
+
+                      {/* 📌 SEO alanları — Ne Zaman / Gerçek Dünya / Yaygın Hatalar */}
+                      {(s.useCase || s.realWorld || s.commonMistakes) && (
+                        <div className="mb-3 space-y-2 text-[11px] text-white/55">
+                          {s.useCase && (
+                            <div className="flex gap-2">
+                              <span className="text-amber-300 flex-shrink-0">🎯 Ne Zaman Kullanılır:</span>
+                              <span>{s.useCase}</span>
+                            </div>
+                          )}
+                          {s.realWorld && (
+                            <div className="flex gap-2">
+                              <span className="text-indigo-300 flex-shrink-0">🌍 Gerçek Dünya:</span>
+                              <span>{s.realWorld}</span>
+                            </div>
+                          )}
+                          {s.commonMistakes && (
+                            <div className="flex gap-2">
+                              <span className="text-rose-300 flex-shrink-0">⚠️ Yaygın Hatalar:</span>
+                              <span>{s.commonMistakes}</span>
+                            </div>
+                          )}
+                        </div>
+                      )}
+
                       <details className="group">
                         <summary className="cursor-pointer text-xs text-amber-300 hover:text-amber-200 list-none flex items-center gap-1.5">
                           <span className="group-open:rotate-90 transition-transform">▶</span>
@@ -287,6 +344,31 @@ export default function PythonKodlariPage() {
               Kapsamlı öğrenmek istiyorsan <Link href="/python-egitimi" className="text-amber-300 hover:underline">Python eğitimi</Link>ne,
               gerçek problemlerle pratik için <Link href="/interviews" className="text-amber-300 hover:underline">mülakat soruları</Link>na bak.
             </p>
+          </section>
+
+          {/* 📌 Ilgili Konular — internal SEO cross-link blogu */}
+          <section className="p-6 rounded-2xl border border-white/10 bg-white/[0.02]">
+            <h2 className="text-xl font-bold mb-4 text-white">📚 İlgili Konular</h2>
+            <p className="text-sm text-white/60 mb-5">
+              Snippet'lerden sonra bu kaynaklarla devam et: sıfırdan Python öğren, gerçek mülakat soruları çöz, online dene.
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Link href="/python-egitimi" className="block p-4 rounded-xl bg-gradient-to-br from-emerald-500/10 to-teal-500/5 border border-emerald-500/20 hover:border-emerald-500/50 transition-colors">
+                <div className="text-2xl mb-2">🎓</div>
+                <h3 className="font-bold text-white mb-1">Python Eğitimi</h3>
+                <p className="text-xs text-white/60">6 dersten oluşan sıralı yol haritası. Başlangıçtan ileri seviyeye, rehber + pratik editör.</p>
+              </Link>
+              <Link href="/interviews" className="block p-4 rounded-xl bg-gradient-to-br from-amber-500/10 to-rose-500/5 border border-amber-500/20 hover:border-amber-500/50 transition-colors">
+                <div className="text-2xl mb-2">🧪</div>
+                <h3 className="font-bold text-white mb-1">Mülakat Soruları</h3>
+                <p className="text-xs text-white/60">132 gerçek dünya sorusu, 9 kategori. Otomatik test, AI koç, ilerleme takibi.</p>
+              </Link>
+              <Link href="/python-online" className="block p-4 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/5 border border-indigo-500/20 hover:border-indigo-500/50 transition-colors">
+                <div className="text-2xl mb-2">🖥️</div>
+                <h3 className="font-bold text-white mb-1">Python Online</h3>
+                <p className="text-xs text-white/60">Tarayıcıda kurulum sız Python editörü. Pyodide WASM ile 100ms'de başlar.</p>
+              </Link>
+            </div>
           </section>
         </main>
       </div>

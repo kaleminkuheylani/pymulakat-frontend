@@ -25,6 +25,10 @@ export interface CodeSample {
   description: string;
   level: CodeLevel;
   code: string;
+  // SEO alanlari (Ne Zaman Kullanilir / Gercek Dunya Ornegi / Yaygin Hatalar)
+  useCase?: string;
+  realWorld?: string;
+  commonMistakes?: string;
 }
 
 export const CODE_SAMPLES: CodeSample[] = [
@@ -47,6 +51,9 @@ print(t)                # 'nohtyP'
 
 # 3) join + reversed
 print(''.join(reversed(s)))  # 'nohtyP'`,
+    useCase: "URL slug üretirken, log dosyalarını tersine çevirirken, palindrome kontrolünde.",
+    realWorld: "GitHub repo'da dosya yolunu ters çevirme, biyoinformatikte DNA reverse-complement hesabı.",
+    commonMistakes: "s[::1] yerine s[::-1] yazmak (off-by-one), reversed()'ı doğrudan print etmeye çalışmak (iterator döner).",
   },
   {
     slug: "palindrom-kontrol",
@@ -61,6 +68,9 @@ print(''.join(reversed(s)))  # 'nohtyP'`,
 print(is_palindrome("kek"))         # True
 print(is_palindrome("A man a plan a canal Panama"))  # True
 print(is_palindrome("python"))      # False`,
+    useCase: "Form validasyonu, kelime oyunları, kullanıcı adı kontrolü.",
+    realWorld: "Biyoinformatikte DNA palindrome tespiti, kod yarışmalarında klasik soru.",
+    commonMistakes: "Büyük/küçük harf duyarlılığını unutmak, boşluk ve noktalamayı filtrelememek.",
   },
   {
     slug: "iki-sayinin-ebobu",
@@ -80,6 +90,9 @@ print(ebob(48, 18))      # 6
 
 # Üç sayının EBOB'u:
 print(math.gcd(math.gcd(12, 18), 24))  # 6`,
+    useCase: "Kesir sadeleştirme, RSA şifreleme, asal çarpan bulmada yardımcı.",
+    realWorld: "Kriptografi (RSA), müzik teorisi (ritim analizi), grafik renk paleti hesabı.",
+    commonMistakes: "Negatif sayılarla çalışırken işaret unutmak, çok büyük sayılarda recursion derinliği.",
   },
   {
     slug: "liste-tekil-sirali",
@@ -97,6 +110,9 @@ print(math.gcd(math.gcd(12, 18), 24))  # 6`,
     return out
 
 print(uniq([1, 3, 2, 3, 1, 4]))  # [1, 3, 2, 4]`,
+    useCase: "Veri temizleme, log ayrıştırma, e-posta listelerini sadeleştirme.",
+    realWorld: "E-ticaret'te sepet verisi, CRM'de müşteri tekrarları temizleme, ETL pipeline preprocessing.",
+    commonMistakes: "set() kullanıp sırayı kaybetmek, O(n²) kontrol ile performans kaybı.",
   },
 
   // ── ALGORİTMALAR ──
@@ -119,6 +135,9 @@ print(uniq([1, 3, 2, 3, 1, 4]))  # [1, 3, 2, 4]`,
     return -1
 
 print(binary_search([1, 3, 5, 7, 9, 11], 7))  # 3`,
+    useCase: "Sıralı veri üzerinde hızlı arama, sözlük implementasyonu, oyun motorlarında hit detection.",
+    realWorld: "Veritabanı index aramaları, dosya sistemi binary search tree, telefon rehberi araması.",
+    commonMistakes: "Sıralanmamış dizide kullanmak, off-by-one hatası (left <= right vs <), mid hesabında overflow (C++'ta)."
   },
   {
     slug: "quick-sort",
@@ -136,6 +155,9 @@ print(binary_search([1, 3, 5, 7, 9, 11], 7))  # 3`,
     return quick_sort(left) + middle + quick_sort(right)
 
 print(quick_sort([3, 6, 8, 10, 1, 2, 1, 9, 5]))  # [1, 1, 2, 3, 5, 6, 8, 9, 10]`,
+    useCase: "Genel amaçlı sıralama, veritabanı ORDER BY, leaderboard sıralaması.",
+    realWorld: "Excel sıralama, e-ticaret ürün listesi (fiyata göre), harita servislerinde rota optimizasyonu.",
+    commonMistakes: "Pivot elemanı kötü seçmek (worst-case O(n²)), recursion stack overflow büyük dizilerde."
   },
   {
     slug: "fibonacci-memoization",
@@ -154,6 +176,9 @@ def fib(n: int) -> int:
 # İlk 10 sayı:
 print([fib(i) for i in range(10)])
 # [0, 1, 1, 2, 3, 5, 8, 13, 21, 34]`,
+    useCase: "Özyinelemeli hesaplama optimizasyonu, dinamik programlama temeli.",
+    realWorld: "Finansal modelleme, populasyon büyüme simülasyonu, Fibonacci retracement (teknik analiz).",
+    commonMistakes: "Base case'leri eksik bırakmak (fib(0)=0, fib(1)=1), memoization'sız O(2^n) patlaması.",
   },
   {
     slug: "iki-toplam",
@@ -171,6 +196,9 @@ print([fib(i) for i in range(10)])
     return []
 
 print(two_sum([2, 7, 11, 15], 9))  # [0, 1]`,
+    useCase: "Mülakat klasiği, pair/target problemleri, indeks haritalama.",
+    realWorld: "Ödeme eşleştirme (banka transaction), envanterde toplam fiyat kontrolü, sudoku gibi oyunlar.",
+    commonMistakes: "Aynı elemanı iki kez kullanmak (nums[i] + nums[i] == target), indeksleri karıştırmak."
   },
 
   // ── VERİ YAPILARI ──
@@ -193,6 +221,9 @@ s = Stack()
 s.push(1); s.push(2); s.push(3)
 print(s.pop(), s.pop(), s.pop())  # 3 2 1
 print(s.is_empty())              # True`,
+    useCase: "Geri alma (undo), DFS, parantez eşleme, fonksiyon çağrı yığını.",
+    realWorld: "Tarayıcı geri-ileri navigasyonu, editör undo/redo, derleyici call stack, infix → postfix dönüşümü.",
+    commonMistakes: "Boş stack'te pop() yapmak, LIFO yerine FIFO kullanmak, list.pop(0) ile kuyruk simülasyonu (yavaş)."
   },
   {
     slug: "queue-deque",
@@ -213,6 +244,9 @@ class Queue:
 q = Queue()
 q.enqueue('a'); q.enqueue('b'); q.enqueue('c')
 print(q.dequeue(), q.dequeue(), q.dequeue())  # a b c`,
+    useCase: "BFS, iş kuyruğu (task scheduling), mesaj kuyruğu (RabbitMQ benzeri).",
+    realWorld: "Yazıcı kuyruğu, çağrı merkezi IVR, gerçek zamanlı chat sunucuları, sliding window algoritmaları.",
+    commonMistakes: "list.pop(0) O(n) maliyet — deque kullan, threading olmadan thread-safe varsaymak.",
   },
   {
     slug: "linked-list",
@@ -233,6 +267,9 @@ def to_list(head):
 # 1 -> 2 -> 3 -> None
 head = Node(1, Node(2, Node(3)))
 print(to_list(head))  # [1, 2, 3]`,
+    useCase: "Dinamik veri yapısı, hash tablo zincirleme, LRU cache implementasyonu.",
+    realWorld: "Müzik çalar önceki/sonraki, geri alma geçmişi, bellek ayırıcı (allocator) free list.",
+    commonMistakes: "Döngüsel referans oluşturmak (memory leak), head/tail pointer'ı karıştırmak, traversal'da None kontrolü."
   },
 
   // ── DOSYA İŞLEMLERİ ──
@@ -250,6 +287,9 @@ with open("notlar.txt", "w", encoding="utf-8") as f:
 with open("notlar.txt", "r", encoding="utf-8") as f:
     for line in f:
         print(line.rstrip())`,
+    useCase: "Log dosyaları, konfigürasyon, veri dışa aktarma, batch processing.",
+    realWorld: "CSV raporları, log rotasyonu, JSON dump, pickle ile model kaydetme.",
+    commonMistakes: "Dosyayı kapatmayı unutmak (with kullan), encoding belirtmemek (Türkçe karakter bozulur), mode='w' ile yanlışlıkla silmek.",
   },
   {
     slug: "json-okuma-yazma",
@@ -272,6 +312,9 @@ print(s)
 # JSON string → dict:
 parsed = json.loads(s)
 print(parsed["ad"])`,
+    useCase: "API yanıtları, konfigürasyon dosyaları, veri serileştirme, cache.",
+    realWorld: "REST API yanıtları, .env yerine JSON config, microservice arası mesajlaşma, settings persistence.",
+    commonMistakes: "Datetime gibi özel tipleri serialize edememek, JSON içine fonksiyon/reference koymak (güvenlik riski), indent olmadan dev dosya üretmek.",
   },
   {
     slug: "csv-okuma",
@@ -292,6 +335,9 @@ from io import StringIO
 reader = csv.DictReader(StringIO(csv_text))
 for row in reader:
     print(row)`,
+    useCase: "Veri analizi, ETL, raporlama, e-ticaret ürün listesi.",
+    realWorld: "Banka ekstreleri (CSV), müşteri verisi içe aktarma, anket sonuçları, Pandas öncesi hızlı okuma.",
+    commonMistakes: "Delimiter'ı yanlış tahmin etmek (noktalı virgül), header=None unutmak, büyük dosyada csv.reader yerine DictReader performansı.",
   },
 
   // ── WEB & API ──
@@ -313,6 +359,9 @@ print("Query:", parse_qs(p.query))
 # Yeni URL oluştur:
 params = urlencode({"q": "django", "page": 1})
 print(f"{p.scheme}://{p.netloc}{p.path}?{params}")`,
+    useCase: "API entegrasyonları, web scraping, query string işleme, OAuth callback.",
+    realWorld: "URL shortener (bit.ly), affiliate link takibi, REST API parametre yönetimi, e-ticaret filtre URL'leri.",
+    commonMistakes: "Query string'de aynı anahtardan birden fazla olabilir (list dön!), URL encoding/decoding karıştırmak."
   },
   {
     slug: "email-kontrol",
@@ -329,6 +378,9 @@ def is_valid_email(s: str) -> bool:
 
 print(is_valid_email("ali@test.com"))   # True
 print(is_valid_email("ali.test@com"))  # False`,
+    useCase: "Form validasyonu, kayıt formları, kullanıcı girişi, toplu e-posta temizliği.",
+    realWorld: "Newsletter kayıtları, e-ticaret checkout, kurumsal e-posta format kontrolü, GDPR uyum veri temizleme.",
+    commonMistakes: "Çok basit regex (@ olsun yeter) → RFC 5321 standartlarını kaçırmak, server-side validation'ı atlamak."
   },
 
   // ── OOP & PATTERNS ──
@@ -356,6 +408,9 @@ def yavas():
     sum(range(1_000_00))
 
 yavas()  # 'yavas ~1.5 ms'`,
+    useCase: "Performans ölçümü, loglama, caching, yetkilendirme, retry logic.",
+    realWorld: "Flask/Django view dekoratörleri (@login_required), retry decorator'lar, cache (@lru_cache), auth middleware.",
+    commonMistakes: "functools.wraps kullanmamak (orijinal fonksiyon metadata'sı kaybolur), *args/**kwargs unutmak."
   },
   {
     slug: "dataclass-kullanimi",
@@ -378,6 +433,9 @@ class Ogrenci:
 o = Ogrenci("Ali", 20, [80, 90, 75])
 print(o)                # Ogrenci(ad='Ali', yas=20, notlar=[80, 90, 75])
 print(o.ortalama())     # 81.6666...`,
+    useCase: "Veri modeli tanımı, DTO, config objesi, ORM alternatifi basit kayıtlar.",
+    realWorld: "API request/response modelleri, ETL row temsili, test fixture'ları, fonfig objeleri.",
+    commonMistakes: "Mutable default alanlarda field(default_factory=list) kullanmamak, post_init'te mutasyon, hashable olmadığını unutmak.",
   },
   {
     slug: "context-manager",
@@ -399,6 +457,9 @@ def zamanlayici(label="block"):
 
 with zamanlayici("islem"):
     sum(range(100_000))`,
+    useCase: "Kaynak yönetimi (dosya, bağlantı), transaction yönetimi, lock/timer, test setup/teardown.",
+    realWorld: "Database transaction (with conn.begin()), dosya işlemleri, profil/debug context, thread lock.",
+    commonMistakes: "__enter__'de exception fırlatmak, __exit__'te hata yutmak (return True), generator-based CM'de yield'i unutmak."
   },
 ];
 
