@@ -176,7 +176,7 @@ export default function WorkspaceEditor({
         )}
       </div>
 
-      <div className="h-72 bg-[#0a0e1a] flex flex-col flex-shrink-0">
+      <div className="h-[28rem] bg-[#0a0e1a] flex flex-col flex-shrink-0">
         <div className="h-10 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
             {(["examples", "console"] as const).map((tab) => (
