@@ -5,6 +5,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { CODE_SAMPLES, CATEGORIES, getCategory } from "./samples";
 import CopyButton from "./CopyButton";
+import PlayButton from "../../components/PlayButton";
 
 export const metadata: Metadata = {
   title: "Python Kodları — Hazır Örnekler ve Şablonlar",
@@ -264,12 +265,8 @@ export default function PythonKodlariPage() {
                           <code>{s.code}</code>
                         </pre>
                         <div className="mt-2 flex items-center gap-2 text-[10px] text-white/40">
-                          <a
-                            href={`/python-online?snippet=${encodeURIComponent(s.slug)}`}
-                            className="px-2 py-1 rounded bg-amber-500/15 border border-amber-500/30 text-amber-300 hover:bg-amber-500/25"
-                          >
-                            ▶ Online editörde çalıştır
-                          </a>
+                          {/* 📌 Koşullu: user varsa direkt /python-online, yoksa /login?returnUrl=... */}
+                          <PlayButton snippetSlug={s.slug} />
                           <CopyButton code={s.code} />
                         </div>
                       </details>
