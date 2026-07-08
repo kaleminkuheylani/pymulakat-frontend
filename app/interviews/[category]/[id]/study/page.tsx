@@ -361,4 +361,4 @@ function ApproachCard({ idx, approach }: { idx: number; approach: Guide["approac
       )}
     </div>
   );
-}
+}// last rebuilt: Wed Jul  8 16:16:13 UTC 2026
