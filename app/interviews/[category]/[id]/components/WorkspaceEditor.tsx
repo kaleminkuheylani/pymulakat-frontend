@@ -1,6 +1,6 @@
 // WorkspaceEditor — sağ panel: Monaco editor + test results
 
-import { useState } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../components/CodeEditor";
 import { TestRunResult } from "../../../../../hooks/usePyodide";
 import { QuestionTests } from "../../../../../api/v2/questions";
@@ -145,6 +145,12 @@ function formatValue(v: any): string {
   }
 }
 
+// 📌 Konsol/Örnekler panel yüksekliği — localStorage'da saklanır (tercih hatırlanır)
+const PANEL_HEIGHT_KEY = "pymulakat_console_height";
+const DEFAULT_PANEL_HEIGHT = 448; // h-[28rem]
+const MIN_PANEL_HEIGHT = 160;
+const MAX_PANEL_HEIGHT_RATIO = 0.7; // viewport'un %70'i
+
 export default function WorkspaceEditor({
   editorRef,
   code,
@@ -162,7 +168,47 @@ export default function WorkspaceEditor({
   onCustomRun,
 }: EditorProps) {
   const [activeTab, setActiveTab] = useState<Tab>("examples");
-  
+
+  // 📌 Konsol/Örnekler panel — resizable (Pointer Events, bundle 0KB)
+  const [panelHeight, setPanelHeight] = useState<number>(() => {
+    if (typeof window === "undefined") return DEFAULT_PANEL_HEIGHT;
+    try {
+      const saved = localStorage.getItem(PANEL_HEIGHT_KEY);
+      const n = saved ? parseInt(saved, 10) : NaN;
+      return Number.isFinite(n) && n >= MIN_PANEL_HEIGHT ? n : DEFAULT_PANEL_HEIGHT;
+    } catch {
+      return DEFAULT_PANEL_HEIGHT;
+    }
+  });
+
+  const dragStateRef = useRef<{ startY: number; startHeight: number; pointerId: number } | null>(null);
+
+  const onResizeStart = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    dragStateRef.current = { startY: e.clientY, startHeight: panelHeight, pointerId: e.pointerId };
+    (e.target as HTMLElement).setPointerCapture(e.pointerId);
+  }, [panelHeight]);
+
+  const onResizeMove = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStateRef.current || e.pointerId !== dragStateRef.current.pointerId) return;
+    const delta = dragStateRef.current.startY - e.clientY; // yukarı = pozitif = büyütme
+    const maxH = Math.floor(window.innerHeight * MAX_PANEL_HEIGHT_RATIO);
+    const next = Math.max(MIN_PANEL_HEIGHT, Math.min(maxH, dragStateRef.current.startHeight + delta));
+    setPanelHeight(next);
+  }, []);
+
+  const onResizeEnd = useCallback((e: React.PointerEvent<HTMLDivElement>) => {
+    if (!dragStateRef.current) return;
+    (e.target as HTMLElement).releasePointerCapture(dragStateRef.current.pointerId);
+    try { localStorage.setItem(PANEL_HEIGHT_KEY, String(panelHeight)); } catch { /* ignore */ }
+    dragStateRef.current = null;
+  }, [panelHeight]);
+
+  // Reset to default shortcut (Double-click)
+  const onResizeReset = useCallback(() => {
+    setPanelHeight(DEFAULT_PANEL_HEIGHT);
+    try { localStorage.setItem(PANEL_HEIGHT_KEY, String(DEFAULT_PANEL_HEIGHT)); } catch { /* ignore */ }
+  }, []);
 
   return (
     <main className="flex-1 flex flex-col overflow-hidden">
@@ -188,7 +234,28 @@ export default function WorkspaceEditor({
         )}
       </div>
 
-      <div className="h-[28rem] bg-[#0a0e1a] flex flex-col flex-shrink-0">
+      {/* 📌 Resize handle — yukarı sürüklemek paneli büyütür, double-click reset */}
+      <div
+        className="h-1.5 -mt-1 bg-white/5 hover:bg-indigo-500/40 active:bg-indigo-500/70 cursor-row-resize flex-shrink-0 transition-colors relative group"
+        onPointerDown={onResizeStart}
+        onPointerMove={onResizeMove}
+        onPointerUp={onResizeEnd}
+        onPointerCancel={onResizeEnd}
+        onDoubleClick={onResizeReset}
+        title="Sürükle: panel yüksekliğini ayarla · Çift tık: varsayılana dön"
+        role="separator"
+        aria-orientation="horizontal"
+        aria-valuenow={panelHeight}
+        aria-valuemin={MIN_PANEL_HEIGHT}
+      >
+        <div className="absolute inset-x-0 -top-1 -bottom-1" /> {/* dokunmatik için geniş hit alanı */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-12 h-0.5 rounded-full bg-white/30 group-hover:bg-indigo-300 transition-colors pointer-events-none" />
+      </div>
+
+      <div
+        className="bg-[#0a0e1a] flex flex-col flex-shrink-0"
+        style={{ height: panelHeight }}
+      >
         <div className="h-10 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
             {(["examples", "console"] as const).map((tab) => (
