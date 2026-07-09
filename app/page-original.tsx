@@ -452,7 +452,7 @@ export default function HomePage() {
             icon="📚"
             title="Python Kodları"
             description="6 kategoride 19 hazır Python kodu. Kopyala, çalıştır, öğren. Liste, dict, OOP, Pandas, Algoritmalar."
-            highlight="19 snippet"
+            highlight="21 snippet"
             index={10}
             href="/python-kodlari"
           />

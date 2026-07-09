@@ -187,7 +187,7 @@ const faqJsonLd = {
       name: "Eğitimden sonra ne yapmalıyım?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Üç adım: 1) /interviews sayfasındaki 132 sorudan kendi seviyene uygun olanları çöz (başlangıç: python-basics). 2) Bir mini proje yap (örn: hava durumu CLI, todo API, basit web scraper). 3) GitHub'da paylaş ve açık kaynak projelere katkıda bulunmaya başla. Junior pozisyonu için 3-6 aylık pratik yeterli olabilir.",
+        text: "Üç adım: 1) /interviews sayfasındaki 132 sorudan kendi seviyene uygun olanları çöz (başlangıç: python-basics). 2) Bir mini proje yap (örn: hava durumu CLI, todo API, basit web scraper). 3) GitHub'da paylaş ve açık kaynak projelere katkıda bulunmaya başla. Junior pozisyonu için 3-6 aylık pratik yeterli olabilir. Tam plan için /junior-python-mulakat sayfasına bak.",
       },
     },
   ],

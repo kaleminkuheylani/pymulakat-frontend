@@ -69,13 +69,13 @@ const breadcrumbJsonLd = {
   ],
 };
 
-// ItemList — 6 kategori × toplam 17 snippet için arama sonuçlarında liste çıksın
+// ItemList — 6 kategori × toplam 21 snippet için arama sonuçlarında liste çıksın
 const itemListJsonLd = {
   "@context": "https://schema.org",
   "@type": "ItemList",
   "@id": "https://pythonmulakat.com/python-kodlari#snippets",
   name: "Python Kodları Kataloğu",
-  description: "Sık kullanılan Python kod örnekleri ve şablonları — 6 kategoride 17 snippet.",
+  description: "Sık kullanılan Python kod örnekleri ve şablonları — 6 kategoride 21 snippet.",
   numberOfItems: CODE_SAMPLES.length,
   itemListElement: CATEGORIES.map((cat, catIdx) => {
     const items = CODE_SAMPLES.filter((s) => s.category === cat.slug);
@@ -249,7 +249,7 @@ export default function PythonKodlariPage() {
             </div>
             <div className="space-y-4 text-sm md:text-base text-white/75 leading-relaxed">
               <p>
-                Python öğrenmeye yeni başlayan birinin en büyük sorunu şudur: “<strong className="text-purple-300">Kendi başıma ne yazacağımı bilemiyorum.</strong>” Bir tutorial’ı okuyup bitiriyorsun, ekranın başına geçiyorsun, ama ne yapacağını bilmiyorsun — çünkü tutorial sana <em>başkasının</em> yazdığı kodu gösterdi, <em>sen yazmayı</em> öğretmedi. Bu sayfa o boşluğu kapatmak için hazırlandı: altı kategoride düzenlenmiş, derlenmiş, üzerinde uzun uzun düşünülmüş <strong className="text-purple-300">kısa ve net 17 snippet</strong> burada. Başlangıç kategorisinden başlayıp string ters çevirme, palindrom kontrolü, EBOB hesaplama, listedeki tekrar eden elemanları kaldırma gibi <em>günlük hayatta gerçekten işine yarayacak</em> küçük kodlarla başlıyorsun. Bunlar sırf “akademik egzersiz” değil, gerçek bir veri yapısı, gerçek bir problem: yani bunları bir yarışma çözümünde, bir otomasyon betiğinde, bir web projesinde <em>kopyala-yapıştır</em> ile değil, gerçek bir ihtiyaç karşısında yazacak hâle geliyorsun.
+                Python öğrenmeye yeni başlayan birinin en büyük sorunu şudur: “<strong className="text-purple-300">Kendi başıma ne yazacağımı bilemiyorum.</strong>” Bir tutorial’ı okuyup bitiriyorsun, ekranın başına geçiyorsun, ama ne yapacağını bilmiyorsun — çünkü tutorial sana <em>başkasının</em> yazdığı kodu gösterdi, <em>sen yazmayı</em> öğretmedi. Bu sayfa o boşluğu kapatmak için hazırlandı: altı kategoride düzenlenmiş, derlenmiş, üzerinde uzun uzun düşünülmüş <strong className="text-purple-300">kısa ve net 21 snippet</strong> burada. Başlangıç kategorisinden başlayıp string ters çevirme, palindrom kontrolü, EBOB hesaplama, listedeki tekrar eden elemanları kaldırma gibi <em>günlük hayatta gerçekten işine yarayacak</em> küçük kodlarla başlıyorsun. Bunlar sırf “akademik egzersiz” değil, gerçek bir veri yapısı, gerçek bir problem: yani bunları bir yarışma çözümünde, bir otomasyon betiğinde, bir web projesinde <em>kopyala-yapıştır</em> ile değil, gerçek bir ihtiyaç karşısında yazacak hâle geliyorsun.
               </p>
               <p>
                 İkinci adımda Algoritmalar kategorisinde binary search, quick sort, fibonacci’nin memoization’lı versiyonu, “iki sayının toplamı” klasikleri var. Bu snippetler <strong className="text-purple-300">mülakatlarda ve teknik görüşmelerde</strong> sürekli sorulan problemler — burada görmüş olmak, ileride bu algoritmaları duyduğunda “onu nereden biliyorum” diye düşünmeni sağlıyor. Veri Yapıları kategorisinde stack, queue ve linked list var; bu kodlar soyut veri yapısının <em>gerçek Python’da nasıl göründüğünü</em> gözüne sokuyor — üniversitede gördüğün “kavramsal” bilgi yerine, “ben şu sınıfı yazıp push/pop yaptığımda arka planda gerçekten şu oluyor” diye somut karşılığını alıyorsun. Dosya İşlemleri, Web/API ve OOP & Patterns kategorileri de <em>iş dünyasında her gün kullandığın araçları</em> gösteriyor: JSON okuma/yazma, CSV ayrıştırma, URL parametreleri ile çalışma, regex ile email doğrulama, dekoratörle fonksiyon zamanlama, dataclass ile veri modeli, context manager ile kaynak yönetimi. Bunların <em>her biri</em> çalışan projede karşına çıkacak pratik bilgiler.

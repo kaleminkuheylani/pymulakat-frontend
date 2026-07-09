@@ -86,6 +86,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/python-online`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/python-egitimi`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/python-kodlari`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${BASE}/junior-python-mulakat`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },

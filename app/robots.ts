@@ -15,6 +15,7 @@ export default function robots(): MetadataRoute.Robots {
           "/python-egitimi",
           "/python-egitimi/*",
           "/python-kodlari",
+          "/junior-python-mulakat",
           "/dashboard",
           "/dashboard/*",
           "/terms",
