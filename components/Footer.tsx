@@ -48,11 +48,6 @@ export default function Footer() {
                   Hazır Kodlar
                 </a>
               </li>
-              <li>
-                <a href="/junior-python-mulakat" className="hover:text-white transition-colors">
-                  Junior Hazırlık
-                </a>
-              </li>
             </ul>
           </div>
 
