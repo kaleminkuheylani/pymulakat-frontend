@@ -97,6 +97,7 @@ const itemListJsonLd = {
 };
 
 // Code Snippets için HowTo + FAQPage
+// DEPRECATED Google rich result (May 2026 itibarıyla SERP'te gösterilmiyor). Schema.org tipi valid; sayfada bırakılıyor (Bing/Perplexity/LLM crawler için). Yeni geliştirmede Article/TechArticle + LearningResource + Course + BreadcrumbList kullan.
 const howtoJsonLd = {
   "@context": "https://schema.org",
   "@type": "HowTo",
@@ -128,6 +129,7 @@ const howtoJsonLd = {
 
 const faqJsonLd = {
   "@context": "https://schema.org",
+  // DEPRECATED Google rich result (May 2026 itibarıyla SERP'te gösterilmiyor). Schema.org tipi valid; sayfada bırakılıyor (Bing/Perplexity/LLM crawler için). Yeni geliştirmede Article/TechArticle + LearningResource + Course + BreadcrumbList kullan.
   "@type": "FAQPage",
   "@id": "https://pythonmulakat.com/python-kodlari#faq",
   mainEntity: [

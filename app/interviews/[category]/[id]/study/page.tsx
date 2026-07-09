@@ -147,6 +147,14 @@ export default async function StudyPage({
     learningResourceType: "Study Guide",
     educationalLevel: guide.level,
     timeRequired: `PT${guide.estimated_read_time_min}M`,
+    // 📌 Topical authority: study page, ilgili sorunun LearningResource'ına bağlı.
+    //    Google'ın küme sinyali için açık @id bağlantısı (detail layout'taki #resource ile eşleşir).
+    isPartOf: {
+      "@type": "LearningResource",
+      "@id": `https://pythonmulakat.com${questionUrl}#resource`,
+      url: `https://pythonmulakat.com${questionUrl}`,
+      name: q?.title || guide.seo_title,
+    },
   };
 
   const breadcrumbJsonLd = {

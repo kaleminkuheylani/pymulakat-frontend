@@ -20,7 +20,7 @@ export default function robots(): MetadataRoute.Robots {
           "/terms",
           "/profile",
         ],
-        disallow: ["/_next/", "/api/", "/admin/", "/auth/callback", "/auth/reset-password"],
+        disallow: ["/_next/", "/api/", "/admin/", "/auth/callback", "/auth/reset-password", "/test-question/"],
       },
     ],
     sitemap: "https://pythonmulakat.com/sitemap.xml",

@@ -95,13 +95,17 @@ export default async function CategoryPage({ params }: PageProps) {
   }));
 
   // 📌 BreadcrumbList + FAQPage JSON-LD — Google rich results
-  const schemas = buildCategorySchema(category, label, safeQuestions.length);
+  const schemas = buildCategorySchema(category, label, safeQuestions.length, safeQuestions);
 
   return (
     <div className="min-h-screen bg-[#050816] text-white">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.breadcrumb) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemas.collection) }}
       />
       <script
         type="application/ld+json"
@@ -172,10 +176,18 @@ export async function generateMetadata({ params }: PageProps) {
   }
 }
 
-// 📌 Category sayfasına BreadcrumbList + FAQPage JSON-LD — Google rich results.
-// Sayfa eklemeden schema ile SEO artışı: SERP'te breadcrumb görünümü + FAQ kartı.
-function buildCategorySchema(category: string, label: string, count: number) {
+// 📌 Category sayfasına BreadcrumbList + FAQPage + CollectionPage JSON-LD.
+// Sayfa eklemeden schema ile SEO artışı: SERP'te breadcrumb görünümü + küme sinyali.
+function buildCategorySchema(
+  category: string,
+  label: string,
+  count: number,
+  questionItems: Array<{ slug?: string; id?: number | string; title: string }> = [],
+) {
   const baseUrl = "https://pythonmulakat.com";
+  // 📌 Topical cluster: category CollectionPage'in hasPart olarak soru LearningResource id'leri.
+  //    Performans için ilk 30 soru ile sınırla — sayfa JSON-LD boyutu şişmesin.
+  const hasPartLimit = questionItems.slice(0, 30);
   return {
     breadcrumb: {
       "@context": "https://schema.org",
@@ -186,8 +198,26 @@ function buildCategorySchema(category: string, label: string, count: number) {
         { "@type": "ListItem", position: 3, name: label, item: `${baseUrl}/interviews/${category}` },
       ],
     },
+    // 📌 Topical authority için category → sorular bağlantısı
+    collection: {
+      "@context": "https://schema.org",
+      "@type": "CollectionPage",
+      "@id": `${baseUrl}/interviews/${category}#collection`,
+      url: `${baseUrl}/interviews/${category}`,
+      name: `${label} Soruları`,
+      hasPart: hasPartLimit.map((q) => {
+        const partSlug = q.slug || String(q.id || "");
+        return {
+          "@type": "LearningResource",
+          "@id": `${baseUrl}/interviews/${category}/${partSlug}#resource`,
+          url: `${baseUrl}/interviews/${category}/${partSlug}`,
+          name: q.title,
+        };
+      }),
+    },
     faq: {
       "@context": "https://schema.org",
+      // DEPRECATED Google rich result (May 2026 itibarıyla SERP'te gösterilmiyor). Schema.org tipi valid; sayfada bırakılıyor (Bing/Perplexity/LLM crawler için). Yeni geliştirmede Article/TechArticle + LearningResource + Course + BreadcrumbList kullan.
       "@type": "FAQPage",
       mainEntity: [
         {

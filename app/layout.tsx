@@ -304,6 +304,7 @@ const siteJsonLd = {
     },
 
     // ── FAQPage ───────────────────────────────────────────────
+    // DEPRECATED Google rich result (May 2026 itibarıyla SERP'te gösterilmiyor). Schema.org tipi valid; sayfada bırakılıyor (Bing/Perplexity/LLM crawler için). Yeni geliştirmede Article/TechArticle + LearningResource + Course + BreadcrumbList kullan.
     {
       "@type": "FAQPage",
       "@id": "https://pythonmulakat.com/#faq",

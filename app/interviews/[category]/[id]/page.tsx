@@ -194,7 +194,8 @@ function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
 
   return {
     "@context": "https://schema.org",
-    "@type": "HowTo",
+// DEPRECATED Google rich result (May 2026 itibarıyla SERP'te gösterilmiyor). Schema.org tipi valid; sayfada bırakılıyor (Bing/Perplexity/LLM crawler için). Yeni geliştirmede Article/TechArticle + LearningResource + Course + BreadcrumbList kullan.
+        "@type": "HowTo",
     name: `Python ${q.title} Çözümü`,
     description: q.explanation?.slice(0, 200) || q.description,
     totalTime: `PT${q.complexity?.includes("log") ? "10M" : "5M"}`,
@@ -282,6 +283,7 @@ function buildFaqSchema(q: SEOQuestion, baseUrl: string) {
 
   return {
     "@context": "https://schema.org",
+    // DEPRECATED Google rich result (May 2026 itibarıyla SERP'te gösterilmiyor). Schema.org tipi valid; sayfada bırakılıyor (Bing/Perplexity/LLM crawler için). Yeni geliştirmede Article/TechArticle + LearningResource + Course + BreadcrumbList kullan.
     "@type": "FAQPage",
     mainEntity,
   };
