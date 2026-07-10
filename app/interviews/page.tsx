@@ -29,6 +29,124 @@ interface CategoriesResponse {
   data: Category[];
 }
 
+// 📌 CSV-FIRST: backend deploy gecikse bile GitHub'daki CSV'den okuyoruz.
+// jsDelivr CDN cache'lenebilir, hızlı. Backend'e sadece fallback olarak düşer.
+const CSV_PRIMARY = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
+const CSV_FALLBACK = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+
+// Kategori label ve icon mapping (backend bu alanları DB'de tutuyordu;
+// CSV'de olmadığı için burada static tanımlı)
+const CATEGORY_META: Record<string, { label: string; icon: string; description: string }> = {
+  "python-basics": {
+    label: "Python Temelleri",
+    icon: "🐍",
+    description: "Değişkenler, veri tipleri, string, döngüler, fonksiyonlar.",
+  },
+  "data-structures": {
+    label: "Veri Yapıları",
+    icon: "🗂️",
+    description: "Stack, queue, linked list, tree, graph, hash table.",
+  },
+  "pandas": {
+    label: "Pandas",
+    icon: "🐼",
+    description: "DataFrame, Series, groupby, merge, filter, agg.",
+  },
+  "list-dict": {
+    label: "Liste & Sözlük",
+    icon: "📋",
+    description: "List, dict, tuple, set, comprehension, sorting.",
+  },
+  "heap": {
+    label: "Heap / Priority Queue",
+    icon: "⛰️",
+    description: "heapq modülü, min-heap, max-heap, priority queue.",
+  },
+  "stack": {
+    label: "Stack",
+    icon: "📚",
+    description: "LIFO, push/pop, parantez dengesi, undo/redo, DFS.",
+  },
+  "queue": {
+    label: "Queue",
+    icon: "🚶",
+    description: "FIFO, enqueue/dequeue, BFS, deque, circular queue.",
+  },
+  "algorithms": {
+    label: "Algoritmalar",
+    icon: "⚡",
+    description: "Sıralama, arama, graf, string algoritmaları.",
+  },
+  "dynamic-programming": {
+    label: "Dinamik Programlama",
+    icon: "🧠",
+    description: "Memoization, tabulation, fibonacci, knapsack, edit distance.",
+  },
+};
+
+// CSV parser (QuestionListClient ile aynı logic)
+function parseCSV(text: string): { id: number; category: string; title: string }[] {
+  const rows: string[][] = [];
+  let current: string[] = [];
+  let cell = "";
+  let inQuote = false;
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuote) {
+      if (c === '"') {
+        if (text[i + 1] === '"') { cell += '"'; i++; } else inQuote = false;
+      } else cell += c;
+    } else {
+      if (c === '"') inQuote = true;
+      else if (c === ",") { current.push(cell); cell = ""; }
+      else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        current.push(cell); cell = "";
+        if (current.length > 1 || current[0] !== "") rows.push(current);
+        current = [];
+      } else cell += c;
+    }
+  }
+  if (cell || current.length) { current.push(cell); rows.push(current); }
+  if (rows.length < 2) return [];
+  const h = rows[0];
+  const get = (k: string) => {
+    const i = h.indexOf(k);
+    return i >= 0 ? cols[i] || "" : "";
+  };
+  return rows.slice(1).map((cols) => ({
+    id: parseInt(get("id"), 10) || 0,
+    category: get("category"),
+    title: get("title"),
+  })).filter((q) => q.id > 0);
+}
+
+async function fetchCategoriesFromCSV(): Promise<Category[]> {
+  // 1) jsDelivr → 2) raw GitHub → 3) backend fallback
+  let csvText = "";
+  for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
+    try {
+      const r = await fetch(url, { cache: "no-store" });
+      if (r.ok) { csvText = await r.text(); break; }
+    } catch {}
+  }
+  if (!csvText) throw new Error("CSV alınamadı");
+
+  const rows = parseCSV(csvText);
+  // Kategori bazında sayım + meta birleştirme
+  const byCat: Record<string, number> = {};
+  for (const r of rows) {
+    byCat[r.category] = (byCat[r.category] || 0) + 1;
+  }
+  return Object.entries(byCat).map(([slug, count]) => ({
+    slug,
+    label: CATEGORY_META[slug]?.label || slug,
+    icon: CATEGORY_META[slug]?.icon || "📘",
+    description: CATEGORY_META[slug]?.description || "",
+    question_count: count,
+  }));
+}
+
 // DP sayfasındaki QuestionListClient ile aynı gradient paleti (görsel eşitlik)
 const DEFAULT_GRADIENT_FROM = "#6366f1";
 const DEFAULT_GRADIENT_TO = "#f59e0b";
@@ -75,27 +193,33 @@ export default function InterviewsPage() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    fetch(`${API_BASE}/api/v2/categories`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
+    // Önce CSV'den dene (yayın push ile anında güncellenir)
+    fetchCategoriesFromCSV()
+      .then((list) => {
+        if (controller.signal.aborted) return;
+        setCategories(list);
       })
-      .then((data: CategoriesResponse | Category[]) => {
-        if (Array.isArray(data)) {
-          setCategories(data);
-        } else if (data && Array.isArray(data.data)) {
-          setCategories(data.data);
-        } else {
-          setCategories([]);
-        }
+      .catch((csvErr) => {
+        // CSV başarısızsa backend fallback
+        console.warn("[InterviewsPage] CSV failed, trying backend:", csvErr);
+        return fetch(`${API_BASE}/api/v2/categories`, {
+          cache: "no-store",
+          signal: controller.signal,
+        })
+          .then((res) => {
+            if (!res.ok) throw new Error(`HTTP ${res.status}`);
+            return res.json();
+          })
+          .then((data: CategoriesResponse | Category[]) => {
+            if (Array.isArray(data)) setCategories(data);
+            else if (data && Array.isArray(data.data)) setCategories(data.data);
+            else setCategories([]);
+          });
       })
       .catch((err) => {
-        if (err.name !== "AbortError") {
+        if (err?.name !== "AbortError") {
           console.warn("[InterviewsPage] fetch error:", err);
-          setError(err.message || "Kategoriler yüklenemedi");
+          setError(err?.message || "Kategoriler yüklenemedi");
         }
       })
       .finally(() => {

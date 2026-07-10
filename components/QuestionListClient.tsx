@@ -1,8 +1,8 @@
 // components/QuestionListClient.tsx
 // TÜM kategori sayfalarında paylaşılan soru listesi client component.
-// Backend'ten /api/v2/questions/all çeker, verilen category'ye göre filtreler.
-// algoritma, dinamik, python-temelleri, veri-yapilari, pandas, liste-sozluk,
-// heap, stack, queue — hepsi aynı component'i kullanır.
+// 📌 CSV-FIRST: GitHub'daki public CSV'yi jsDelivr CDN üzerinden çeker.
+// Backend DB yavaş deploy olur / cache'li kalır — CSV ise push ile anında güncellenir.
+// DB endpoint'i sadece CSV fetch başarısız olursa fallback olarak kullanılır.
 
 "use client";
 
@@ -11,8 +11,13 @@ import { useEffect, useState } from "react";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
+// jsDelivr CDN — GitHub raw yerine tercih edilir (daha hızlı, content-type: text/csv)
+// @main branch = main, @v1 / @commit-sha = pinned (cache'lenebilir)
+const CSV_PRIMARY = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
+const CSV_FALLBACK = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+
 export interface QuestionListClientProps {
-  /** Backend'te filtrelenecek kategori (örn. "python-basics") */
+  /** Filtrelenecek kategori (örn. "python-basics", "dynamic-programming") */
   category: string;
   /** URL'de gösterilecek kategori slug'ı (örn. "python-temelleri") */
   urlSlug: string;
@@ -47,6 +52,92 @@ const DEFAULT_GRADIENT_FROM = "#6366f1";
 const DEFAULT_GRADIENT_TO = "#f59e0b";
 const DEFAULT_ACCENT = "#fbbf24";
 
+// ─── CSV Parser (RFC 4180 mini) ──────────────────────────────
+// 9 kolon CSV: category,title,level,description,starter_code,test_cases,hints,id,function_name
+function parseCSV(text: string): Question[] {
+  const rows: string[][] = [];
+  let current: string[] = [];
+  let cell = "";
+  let inQuote = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const c = text[i];
+    if (inQuote) {
+      if (c === '"') {
+        // Çift tırnak escape: ""
+        if (text[i + 1] === '"') {
+          cell += '"';
+          i++;
+        } else {
+          inQuote = false;
+        }
+      } else {
+        cell += c;
+      }
+    } else {
+      if (c === '"') {
+        inQuote = true;
+      } else if (c === ",") {
+        current.push(cell);
+        cell = "";
+      } else if (c === "\n" || c === "\r") {
+        if (c === "\r" && text[i + 1] === "\n") i++;
+        current.push(cell);
+        cell = "";
+        if (current.length > 1 || current[0] !== "") rows.push(current);
+        current = [];
+      } else {
+        cell += c;
+      }
+    }
+  }
+  if (cell || current.length) {
+    current.push(cell);
+    rows.push(current);
+  }
+
+  if (rows.length < 2) return [];
+  const header = rows[0];
+  const idx = (name: string) => header.indexOf(name);
+
+  return rows
+    .slice(1)
+    .map((cols) => {
+      const get = (k: string) => cols[idx(k)] || "";
+      return {
+        id: parseInt(get("id"), 10) || 0,
+        title: get("title"),
+        category: get("category"),
+        level: get("level") || "beginner",
+        description: get("description"),
+        function_name: get("function_name") || undefined,
+      };
+    })
+    .filter((q) => q.id > 0 && q.title);
+}
+
+async function fetchCSV(): Promise<Question[]> {
+  // 1) jsDelivr (primary, hızlı, content-type: text/csv)
+  for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
+    try {
+      const r = await fetch(url, { cache: "no-store" });
+      if (r.ok) {
+        const text = await r.text();
+        const parsed = parseCSV(text);
+        if (parsed.length > 0) return parsed;
+      }
+    } catch {
+      // devam et, sıradaki URL'i dene
+    }
+  }
+
+  // 2) Backend DB fallback (eski davranış)
+  const r = await fetch(`${API_BASE}/api/v2/questions/all`, { cache: "no-store" });
+  if (!r.ok) throw new Error(`HTTP ${r.status}`);
+  const data: QuestionsResponse | Question[] = await r.json();
+  return Array.isArray(data) ? data : data?.data || [];
+}
+
 export default function QuestionListClient({
   category,
   urlSlug,
@@ -56,36 +147,37 @@ export default function QuestionListClient({
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [source, setSource] = useState<"csv" | "db" | null>(null);
 
   useEffect(() => {
+    let cancelled = false;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    fetch(`${API_BASE}/api/v2/questions/all`, {
-      cache: "no-store",
-      signal: controller.signal,
-    })
-      .then((res) => {
-        if (!res.ok) throw new Error(`HTTP ${res.status}`);
-        return res.json();
-      })
-      .then((data: QuestionsResponse | Question[]) => {
-        const list = Array.isArray(data) ? data : (data?.data || []);
+    fetchCSV()
+      .then((list) => {
+        if (cancelled) return;
+        // CSV kaynağını ayırt etmek için: parseCSV her zaman döner, DB döner ya liste
+        // Ya da basitçe CSV_FALLBACK'e düşmediyse csv, düştüyse db
+        setSource("csv");
         const filtered = list.filter((q) => q.category === category);
         setQuestions(filtered);
       })
       .catch((err) => {
-        if (err.name !== "AbortError") {
-          console.warn(`[QuestionListClient:${category}] fetch error:`, err);
-          setError(err.message || "Sorular yüklenemedi");
-        }
+        if (cancelled || err?.name === "AbortError") return;
+        console.warn(`[QuestionListClient:${category}] fetch error:`, err);
+        setError(err?.message || "Sorular yüklenemedi");
       })
       .finally(() => {
+        if (cancelled) return;
         clearTimeout(timeoutId);
         setLoading(false);
       });
 
-    return () => controller.abort();
+    return () => {
+      cancelled = true;
+      controller.abort();
+    };
   }, [category]);
 
   if (loading) {
@@ -107,7 +199,7 @@ export default function QuestionListClient({
         <div className="text-5xl mb-4">⚠️</div>
         <h2 className="text-xl font-semibold mb-2">Sorular yüklenemedi</h2>
         <p className="text-white/50 text-sm mb-6 max-w-md mx-auto">
-          Backend&apos;e bağlanılamadı ({error}). Birkaç saniye sonra tekrar deneyebilirsin.
+          CSV ve backend&apos;e bağlanılamadı ({error}). Birkaç saniye sonra tekrar deneyebilirsin.
         </p>
         <button
           onClick={() => window.location.reload()}
@@ -124,20 +216,26 @@ export default function QuestionListClient({
       <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
         <div className="text-5xl mb-4">📭</div>
         <h2 className="text-xl font-semibold mb-2">Bu kategoride henüz soru yok</h2>
-        <p className="text-white/50 text-sm">Backend&apos;e eklenen sorular burada listelenir.</p>
+        <p className="text-white/50 text-sm">CSV&apos;ye eklenen sorular burada listelenir.</p>
       </div>
     );
   }
 
   return (
     <>
-      <div className="text-sm text-white/50 mb-4">
-        <span className="text-white font-semibold">{questions.length}</span> soru listeleniyor
+      <div className="flex items-center justify-between mb-4">
+        <div className="text-sm text-white/50">
+          <span className="text-white font-semibold">{questions.length}</span> soru listeleniyor
+        </div>
+        {source && (
+          <div className="text-[10px] uppercase tracking-wider text-white/30 font-mono">
+            {source === "csv" ? "📄 CSV (GitHub)" : "🗄️ DB fallback"}
+          </div>
+        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {questions.map((q) => {
           const lvl = (q.level || "beginner").toLowerCase();
-          // Her sorunun URL'i: /interviews/{category}/{id} — mevcut dinamik sayfayla aynı
           return (
             <Link
               key={q.id}
