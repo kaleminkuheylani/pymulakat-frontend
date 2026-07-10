@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
 import { slugifyTitle } from "../../../../lib/questionMeta";
-import { findQuestion, slugifyTitle as csvSlugify, type CSVQuestion } from "../../../../lib/csvSource";
+import { findQuestion, fetchCSVQuestions, slugifyTitle as csvSlugify, type CSVQuestion } from "../../../../lib/csvSource";
 
 // Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
 
@@ -312,13 +312,35 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  const [mobile, seoQ, ssrTests] = await Promise.all([
+  // CSV-only mimari: CSV'yi bir kez çek, seoQ + ssrTests paralel parse et
+  // (Promise.all içinde iki kez fetchCSVQuestions çağırmak race condition yaratıyor)
+  const [mobile, csvRows] = await Promise.all([
     isMobileDevice(),
-    // fetchQuestionSEO slug/ID kabul eder (CSV-only mimari)
-    fetchQuestionSEO(resolvedParams.category, resolvedParams.id),
-    // SSR: test case'leri server-side çek. Misafirler de Testler tab'ında görebilsin.
-    fetchQuestionTests(resolvedParams.category, resolvedParams.id),
+    fetchCSVQuestions(),
   ]);
+  // Resolve seoQ + ssrTests aynı rows'tan (cache + tutarlı)
+  const idOrSlug = resolvedParams.id;
+  const _isPureId2 = /^\d+$/.test(idOrSlug);
+  const asNum2 = _isPureId2 ? parseInt(idOrSlug, 10) : NaN;
+  const slugKey2 = idOrSlug.toLowerCase();
+  const csvQ = csvRows.find((q) =>
+    q.category === resolvedParams.category &&
+    (q.id === asNum2 || csvSlugify(q.title) === slugKey2)
+  );
+  const seoQ = csvQ ? csvToSEOQuestion(csvQ, csvQ.id, csvSlugify(csvQ.title)) : null;
+  const ssrTests = csvQ ? (() => {
+    let cases: SSRTestCase[] = [];
+    try { cases = JSON.parse(csvQ.test_cases || "[]"); } catch { cases = []; }
+    return {
+      question_id: csvQ.id,
+      function_name: csvQ.function_name,
+      test_cases: cases.map((c) => ({
+        input: c.input,
+        expected: c.expected,
+        ...(c.description ? { description: c.description } : {}),
+      })),
+    };
+  })() : null;
 
   // 📌 Guide (DB-backed analiz) var mı? Sadece DB'den gelirse CTA göster,
   // CSV metadata fallback yetersiz.
