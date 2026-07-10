@@ -94,7 +94,8 @@ async function fetchQuestionTests(category: string, slugOrId: string): Promise<S
       test_cases: cases.map((c) => ({
         input: c.input,
         expected: c.expected,
-        description: c.description,
+        // CSV'de description olmayabilir — boş string fallback (undefined HTML'de $undefined yazıyor)
+        description: c.description || "",
       })),
     };
   } catch {
