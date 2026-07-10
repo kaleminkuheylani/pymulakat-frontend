@@ -86,6 +86,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/python-online`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/python-egitimi`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
     { url: `${BASE}/python-kodlari`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    // 📌 YENİ: 7 pillar kategori sayfası (ACİL #5)
+    { url: `${BASE}/python-temelleri`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${BASE}/python-veri-yapilari`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${BASE}/python-pandas`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
+    { url: `${BASE}/python-liste-sozluk`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${BASE}/python-heap`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${BASE}/python-stack`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
+    { url: `${BASE}/python-queue`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
     { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
     { url: `${BASE}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
     { url: `${BASE}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
@@ -96,15 +104,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/dashboard/recommendations`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
-  // 2. Soru + kategori listesi — backend'den (tek fetch, hem kategori hem slug döner)
+  // 2. Soru listesi — backend'den. /interviews/[category] artık redirect olduğu için
+  //    kategori sayfaları sitemap'e EKLENMIYOR (sadece yeni pillar URL'leri yukarıda).
+  //    Soru detay URL'leri hâlâ /interviews/[category]/[id] üzerinden çalışıyor.
   const questions = await fetchQuestionsFromBackend();
-  const categorySlugs = Array.from(new Set(questions.map((q) => q.category)));
-  const categoryPages: MetadataRoute.Sitemap = categorySlugs.map((slug) => ({
-    url: `${BASE}/interviews/${slug}`,
-    lastModified: now,
-    changeFrequency: "weekly" as const,
-    priority: 0.8,
-  }));
   const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
     url: `${BASE}/interviews/${q.category}/${q.slug}`,
     lastModified: now,
