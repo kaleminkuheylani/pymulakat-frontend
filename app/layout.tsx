@@ -240,33 +240,6 @@ const siteJsonLd = {
       },
     },
 
-    // ── Course (Yeni: Eğitim içeriği olarak işaretle) ─────────
-    {
-      "@type": "Course",
-      "@id": "https://pythonmulakat.com/#course",
-      name: "Yeni Başlayanlar İçin Python Mülakat Hazırlığı",
-      description:
-        "Python'a yeni başlayanlar için veri tipleri, OOP, SQLite, Pandas ve algoritmik düşünme konularını kapsayan interaktif mülakat hazırlık kursu.",
-      provider: { "@id": "https://pythonmulakat.com/#organization" },
-      url: "https://pythonmulakat.com",
-      inLanguage: "tr-TR",
-      educationalLevel: "Beginner",
-      teaches:
-        "Python temel konular, nesne yönelimli programlama, SQLite, Pandas, algoritmik düşünme",
-      audience: {
-        "@type": "EducationalAudience",
-        educationalRole: "student",
-      },
-      hasCourseInstance: {
-        "@type": "CourseInstance",
-        courseMode: "online",
-        location: {
-          "@type": "VirtualLocation",
-          url: "https://pythonmulakat.com",
-        },
-      },
-    },
-
     // ── LearningResource (Yeni: Öğrenme kaynağı) ──────────────
     {
       "@type": "LearningResource",

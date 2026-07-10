@@ -90,7 +90,7 @@ const learningResourceJsonLd = (
   inLanguage: "tr-TR",
   position,
   teaches: topics,
-  isPartOf: { "@id": "https://pythonmulakat.com/python-egitimi#course" },
+  isPartOf: { "@id": "https://pythonmulakat.com/python-egitimi#learning-resource" },
   provider: { "@id": "https://pythonmulakat.com/#organization" },
 });
 

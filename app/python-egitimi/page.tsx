@@ -70,8 +70,10 @@ const breadcrumbJsonLd = {
 
 const courseJsonLd = {
   "@context": "https://schema.org",
-  "@type": "Course",
-  "@id": "https://pythonmulakat.com/python-egitimi#course",
+  // Course şeması Google tarafından May 2026'da deprecated edildi.
+  // LearningResource kullanıyoruz — schema.org standardı + Google geçerli.
+  "@type": "LearningResource",
+  "@id": "https://pythonmulakat.com/python-egitimi#learning-resource",
   name: "Python Eğitimi — Başlangıçtan İleri Seviye",
   description: "Türkçe, ücretsiz, kapsamlı Python dersleri. Değişkenlerden async/await'a kadar 6 dersten oluşan sıralı yol haritası. Her ders çalıştırılabilir kod örneği ve pratik ödev içerir.",
   url: "https://pythonmulakat.com/python-egitimi",
@@ -84,6 +86,7 @@ const courseJsonLd = {
   inLanguage: "tr-TR",
   isAccessibleForFree: true,
   educationalLevel: "Beginner",
+  learningResourceType: "course",
   teaches: [
     "Python temel kavramlar (değişkenler, tipler, operatörler)",
     "Kontrol yapıları (if/elif/else, for, while)",
@@ -95,15 +98,6 @@ const courseJsonLd = {
   audience: {
     "@type": "EducationalAudience",
     educationalRole: "student",
-  },
-  hasCourseInstance: {
-    "@type": "CourseInstance",
-    courseMode: "online",
-    courseWorkload: "PT10H",
-    location: {
-      "@type": "VirtualLocation",
-      url: "https://pythonmulakat.com/python-egitimi",
-    },
   },
   hasPart: LESSONS.map((l, i) => ({
     "@type": "LearningResource",

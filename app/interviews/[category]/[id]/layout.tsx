@@ -211,8 +211,8 @@ async function WorkspaceLayout({
     inLanguage: "tr-TR",
     dateModified: new Date().toISOString().split("T")[0],
     isPartOf: {
-      "@type": "Course",
-      name: `${libLabel} Python Kursu`,
+      "@type": "LearningResource",
+      name: `${libLabel} Python Konusu`,
       description: `${libLabel} için Türkçe interaktif alıştırma soruları. Seviye: ${level}.`,
       provider: {
         "@type": "Organization",
