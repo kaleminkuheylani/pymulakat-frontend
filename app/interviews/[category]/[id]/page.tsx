@@ -2,6 +2,11 @@
 // SEO-optimized: server-side metadata, HowTo schema, breadcrumb, related questions
 // Supports BOTH slug-based URLs (/interviews/python-basics/palindrom-kontrol)
 // AND legacy ID URLs (/interviews/python-basics/3) — slug gelirse ID'ye resolve eder
+//
+// 📌 CSV-FIRST: Yeni eklenen sorular henüz DB'de olmayabilir (Railway deploy
+// gecikebilir). Bu yüzden önce CSV'den (jsDelivr CDN, GitHub main) çekiyoruz,
+// bulamazsak backend DB'ye düşüyoruz. Her iki kaynak aynı şemaya normalize
+// ediliyor, downstream kod değişmiyor.
 
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -9,6 +14,7 @@ import type { Metadata } from "next";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
 import { getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
+import { findQuestion, slugifyTitle as csvSlugify, type CSVQuestion } from "../../../../lib/csvSource";
 
 // Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
 
@@ -51,8 +57,52 @@ interface SSRQuestionTests {
   test_cases: SSRTestCase[];
 }
 
+// ─── CSV → DB Question normalizasyonu ─────────────────────────
+function csvToSEOQuestion(q: CSVQuestion, actualId: number, slug: string): SEOQuestion {
+  // test_cases JSON string → array
+  let testCases: any[] = [];
+  try { testCases = JSON.parse(q.test_cases || "[]"); } catch { testCases = []; }
+  // hints JSON string → array
+  let hints: string[] = [];
+  try { hints = JSON.parse(q.hints || "[]"); } catch { hints = []; }
+
+  return {
+    id: actualId,
+    title: q.title,
+    description: q.description,
+    level: q.level,
+    category: q.category,
+    slug,
+    starter_code: q.starter_code,
+    hints,
+    // test_cases detay sayfada ayrı çekiliyor, ama yine de hazır
+    tags: [],
+  };
+}
+
 // ─── Server-side test cases fetch (SSR: misafirler de okuyabilsin) ─────
 async function fetchQuestionTests(category: string, slugOrId: string): Promise<SSRQuestionTests | null> {
+  // 1) CSV'den dene (yeni sorular DB'de olmayabilir)
+  try {
+    const csvQ = await findQuestion(category, slugOrId);
+    if (csvQ) {
+      let cases: SSRTestCase[] = [];
+      try { cases = JSON.parse(csvQ.test_cases || "[]"); } catch { cases = []; }
+      return {
+        question_id: csvQ.id,
+        function_name: csvQ.function_name,
+        test_cases: cases.map((c) => ({
+          input: c.input,
+          expected: c.expected,
+          description: c.description,
+        })),
+      };
+    }
+  } catch {
+    // devam
+  }
+
+  // 2) Backend fallback
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
     const asNum = parseInt(slugOrId, 10);
@@ -73,6 +123,18 @@ async function fetchQuestionTests(category: string, slugOrId: string): Promise<S
 
 // ─── Server-side data fetch ────────────────────────────────
 async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuestion | null> {
+  // 1) CSV'den dene (yeni eklenen 10 DP sorusu henüz DB'de yok)
+  try {
+    const csvQ = await findQuestion(category, id);
+    if (csvQ) {
+      const slug = csvSlugify(csvQ.title);
+      return csvToSEOQuestion(csvQ, csvQ.id, slug);
+    }
+  } catch {
+    // devam
+  }
+
+  // 2) Backend DB fallback
   try {
     const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
