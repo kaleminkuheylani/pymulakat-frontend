@@ -181,7 +181,7 @@ export default function QuestionListClient({
   const [questions, setQuestions] = useState<Question[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [source, setSource] = useState<"csv" | "db" | null>(null);
+  const [source, setSource] = useState<"csv" | "csv-fallback" | "db" | null>(null);
 
   useEffect(() => {
     let cancelled = false;
