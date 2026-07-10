@@ -362,10 +362,14 @@ export default async function Page({ params, searchParams }: PageProps) {
   //   - /interviews/{cat}/{slug}  → burada render (canonical, indexlenir)
   //   - /interviews/{cat}/{id}    → middleware slug URL'e yonlendirir (308)
   // Burada slug'in gecerli oldugunu dogrulayip fetch ediyoruz.
+  //
+  // ⚠️ parseInt('0-1-knapsack') === 0 (parseInt leading digit'i alir),
+  //    isNaN(0) === false → slug olarak davranmiyor → 404.
+  //    Cozum: sadece /^\d+$/ ise ID kabul et, aksi halde slug.
   let resolvedId: number | null = null;
-  const _asNum = parseInt(resolvedParams.id, 10);
-  if (!isNaN(_asNum)) {
-    resolvedId = _asNum;  // Eski ID URL (legacy /interviews/python-basics/3 gibi)
+  const _isPureId = /^\d+$/.test(resolvedParams.id);
+  if (_isPureId) {
+    resolvedId = parseInt(resolvedParams.id, 10);  // Eski ID URL
   } else {
     // Slug → ID cozumleme:
     // 1) Backend by-slug API (runtime)
@@ -392,7 +396,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   }
   // Slug ile geldiyse resolvedId null olabilir — bu durumda WorkspaceClient
   // kendi fetch'iyle soruyu çekecek. notFound() sadece gerçekten bulunamadıysa çağrılır.
-  const isSlugRequest = isNaN(_asNum);
+  const isSlugRequest = !_isPureId;
   if (!resolvedId && !isSlugRequest) {
     notFound();
   }
@@ -401,11 +405,10 @@ export default async function Page({ params, searchParams }: PageProps) {
     isMobileDevice(),
     fetchQuestionSEO(resolvedParams.category, String(resolvedId)),
     // SSR: test case'leri server-side çek. Misafirler de Testler tab'ında görebilsin.
-    resolvedId && !isNaN(resolvedId as any)
-      ? fetchQuestionTests(resolvedParams.category, String(resolvedId))
-      : resolvedParams.id && !isNaN(parseInt(resolvedParams.id, 10)) === false
+    // ⚠️ _isPureId tek doğru slug/ID discriminator: '0-1-knapsack' parseInt=0 → BUG
+    _isPureId
       ? fetchQuestionTests(resolvedParams.category, resolvedParams.id)
-      : Promise.resolve(null),
+      : fetchQuestionTests(resolvedParams.category, resolvedParams.id),
   ]);
 
   // 📌 Guide (DB-backed analiz) var mı? Sadece DB'den gelirse CTA göster,

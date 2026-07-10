@@ -230,13 +230,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  const asNumber = parseInt(idOrSlug, 10);
-  if (isNaN(asNumber)) {
+  // ⚠️ parseInt('0-1-knapsack') === 0, isNaN(0) === false → ID gibi davranip 404.
+  //    Sadece /^\d+$/ ise ID kabul et, aksi halde slug (canonical, render).
+  const isPureId = /^\d+$/.test(idOrSlug);
+  if (!isPureId) {
     // Slug ise — canonical, geç
     return NextResponse.next();
   }
 
   // ID geldi — DB'den slug al
+  const asNumber = parseInt(idOrSlug, 10);
   const map = await getIdToSlug();
   const slug = map.get(asNumber);
   if (!slug) {
