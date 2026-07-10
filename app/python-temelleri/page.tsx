@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
 import QuestionListClient from "../../components/QuestionListClient";
+import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
   title: "Python Temelleri Soruları ve Çözümleri",
@@ -74,6 +75,64 @@ const related: RelatedCategory[] = [
   { href: "/python-algoritma-sorulari", icon: "⚡", title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf algoritmaları.", gradient: "amber-indigo" },
 ];
 
+const contextBlocks: ContextBlock[] = [
+  {
+    heading: "Python Temelleri Nedir?",
+    paragraphs: [
+      <>
+        <strong className="text-amber-400">Python temelleri</strong>, Python programlama dilinin en temel yapı taşlarını kapsar: değişkenler, veri tipleri, operatörler, string işlemleri, kontrol yapıları (if/else), döngüler (for/while) ve fonksiyonlar. Bu konular mülakatlarda ve günlük programlama görevlerinde en sık karşılaşılan konulardır — iyi bir temel, ileri konulara geçişin ön koşuludur.
+      </>,
+      <>
+        Python&apos;da tip bildirimi yapılmaz; değişkenler doğrudan atama ile oluşturulur. Yerleşik veri tipleri <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">int</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">float</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">str</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">bool</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">list</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">dict</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">tuple</code> ve <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">set</code> ile başlar. Tip dönüşümü için <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">int()</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">str()</code> gibi fonksiyonlar kullanılır.
+      </>,
+    ],
+    code: {
+      label: "temel_degiskenler.py",
+      content: `isim = "Ali"        # str
+yas = 28             # int
+pi = 3.14            # float
+aktif = True         # bool
+liste = [1, 2, 3]    # list
+sozluk = {"a": 1}    # dict
+
+# Tip dönüşümü
+sayi = int("42")     # str → int
+metin = str(123)     # int → str
+
+# Çoklu atama
+x, y, z = 1, 2, 3`,
+    },
+  },
+  {
+    heading: "Mülakatlarda En Sık Sorulan Temel Konular",
+    paragraphs: [
+      <>
+        Junior Python mülakatlarında en sık karşılaşılan soru tipleri şunlardır: palindrom kontrolü, anagram tespiti, liste üzerinde filtreleme/map/reduce, string tersine çevirme, FizzBuzz, asal sayı kontrolü, fibonacci dizisi, iki sayının toplamı, listedeki tekrar eden elemanları bulma. Bu sorular algoritmik düşünmeyi ölçer; veri yapılarına veya ileri konulara geçmeden önce bu kategoride en az 15-20 soru çözmeni öneriyoruz.
+      </>,
+      <>
+        Bu kategorideki soruların hepsi tarayıcıda interaktif olarak çalışır: kodu yaz, otomatik test case&apos;lerini geç, yapay zekâdan anında geri bildirim al. Kurulum gerekmez. <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">def</code> ile fonksiyon tanımla, parametrelerle oyna, edge case&apos;leri dene.
+      </>,
+    ],
+    tip: {
+      title: "Başlangıç İçin Sıra Önerisi",
+      text: (
+        <>
+          Önce <strong>palindrom + anagram + FizzBuzz</strong> üçlüsü ile başla (string işlemleri temel), sonra <strong>asal sayı + fibonacci + iki sayının toplamı</strong> üçlüsüne geç (algoritmik düşünme), ardından <strong>liste filtreleme + dict işlemleri + comprehension</strong> ile veri tiplerini pekiştir.
+        </>
+      ),
+    },
+    whenToUse: {
+      title: "Python Temellerini Ne Zaman Çalışmalısın?",
+      items: [
+        "Python'a yeni başlıyorsan ve ilk işini arıyorsan (junior pozisyonu)",
+        "Üniversitede Python gördüysen ama unuttuklarını tazelemek istiyorsan",
+        "OOP veya Pandas gibi ileri konulara geçmeden önce temeli sağlamlaştırmak istiyorsan",
+        "Mülakat öncesi 2-3 günlük hızlı tekrar yapmak istiyorsan",
+      ],
+    },
+  },
+];
+
 export default function PythonTemelleriPage() {
   return (
     <>
@@ -94,6 +153,17 @@ export default function PythonTemelleriPage() {
         backHref="/interviews"
         backLabel="Tüm Kategoriler"
         related={related}
+        beforeRelated={
+          <CategoryContext
+            category="Python Temelleri"
+            blocks={contextBlocks}
+            furtherReading={[
+              { label: "Python Liste & Sözlük", href: "/python-liste-sozluk" },
+              { label: "Python Eğitimi", href: "/python-egitimi" },
+              { label: "Python Kodları", href: "/python-kodlari" },
+            ]}
+          />
+        }
       >
         <QuestionListClient
           category="python-basics"

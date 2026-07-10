@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
 import QuestionListClient from "../../components/QuestionListClient";
+import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
   title: "Python Heap Soruları — heapq, Priority Queue",
@@ -60,6 +61,74 @@ const related: RelatedCategory[] = [
   { href: "/python-egitimi", icon: "🎓", title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
 ];
 
+const contextBlocks: ContextBlock[] = [
+  {
+    heading: "Heap / Priority Queue Nedir?",
+    paragraphs: [
+      <>
+        <strong className="text-amber-400">Heap</strong>, her düğümün çocuklarından büyük (veya küçük) olduğu özel bir binary tree veri yapısıdır. En yaygın kullanımı <strong>priority queue</strong>: en yüksek (veya en düşük) öncelikli elemanın O(1) veya O(log n) sürede alınması. Python&apos;da <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">heapq</code> modülü <strong>min-heap</strong> implementasyonu sağlar; max-heap için değerlerin negatifi kullanılır.
+      </>,
+      <>
+        Mülakatlarda en sık sorulan heap soruları: <strong>K&apos;th largest/smallest</strong> elemanı bul, <strong>top K frequent</strong>, <strong>median maintenance</strong> (veri akışından medyan tut), <strong>Dijkstra&apos;nın kısa yol</strong> algoritması. Heap&apos;in asıl gücü, sıralanmamış bir veri yapısından <strong>en iyi/en kötü elemanı sürekli çekme</strong> işleminde ortaya çıkar.
+      </>,
+    ],
+    code: {
+      label: "temel_heap.py",
+      content: `import heapq
+
+# Min-heap oluşturma
+heap = []
+heapq.heappush(heap, 5)
+heapq.heappush(heap, 1)
+heapq.heappush(heap, 3)
+heapq.heappush(heap, 7)
+
+# En küçük elemanı çek (O(log n))
+print(heapq.heappop(heap))   # 1
+print(heap)                   # [3, 5, 7]
+
+# Max-heap trick: negatif değerler
+maxh = []
+heapq.heappush(maxh, -5)
+heapq.heappush(maxh, -1)
+heapq.heappush(maxh, -3)
+print(-heapq.heappop(maxh))   # 5
+
+# n largest / n smallest
+nums = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]
+print(heapq.nlargest(3, nums))   # [9, 6, 5]
+print(heapq.nsmallest(3, nums))  # [1, 1, 2]`,
+    },
+  },
+  {
+    heading: "Heap Ne Zaman Kullanılır?",
+    paragraphs: [
+      <>
+        Heap, <strong>en iyi/en kötü elemanı sürekli çekmen</strong> gereken durumlarda idealdir. Sıralı erişim gerekmiyorsa (O(1) peek + O(log n) pop), <strong>Dijkstra</strong> ve <strong>A*</strong> gibi graf algoritmalarında, <strong>median maintenance</strong> (iki heap&apos;le çalışan trick), <strong>task scheduler</strong> (en yüksek öncelikli görev önce), ve <strong>K&apos;th largest</strong> problemlerinde kullanılır. Sıralı iterasyon gerekirse heap yerine sorted set veya balanced BST tercih edilir.
+      </>,
+    ],
+    tip: {
+      title: "Sık Yapılan Hata",
+      text: (
+        <>
+          Max-heap için <code className="px-1 py-0.5 rounded bg-white/5 text-amber-300 text-xs">heapq</code> doğrudan desteklemez. Negatif değer trick&apos;ini unutma veya <code className="px-1 py-0.5 rounded bg-white/5 text-amber-300 text-xs">sortedcontainers</code> gibi üçüncü parti kütüphane kullan.
+        </>
+      ),
+    },
+    whenToUse: {
+      title: "Heap Kullanım Senaryoları",
+      items: [
+        "K'th largest/smallest eleman: O(n log k)",
+        "Top K frequent: O(n log k)",
+        "Median maintenance: iki heap ile O(1) ekleme, O(1) medyan",
+        "Dijkstra/A* kısa yol algoritması: öncelik kuyruğu",
+        "Task scheduler: en öncelikli işi önce al",
+        "Stream medyan: veri akışından medyanı tut",
+      ],
+    },
+  },
+];
+
 export default function PythonHeapPage() {
   return (
     <>
@@ -76,6 +145,16 @@ export default function PythonHeapPage() {
         backHref="/python-veri-yapilari"
         backLabel="Veri Yapıları"
         related={related}
+        beforeRelated={
+          <CategoryContext
+            category="Python Heap"
+            blocks={contextBlocks}
+            furtherReading={[
+              { label: "Veri Yapıları", href: "/python-veri-yapilari" },
+              { label: "Algoritma Soruları", href: "/python-algoritma-sorulari" },
+            ]}
+          />
+        }
       >
         <QuestionListClient category="heap" urlSlug="python-heap" displaySlug="heap" skeletonCount={6} />
       </CategoryPageTemplate>

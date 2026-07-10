@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
 import QuestionListClient from "../../components/QuestionListClient";
+import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
   title: "Python Veri Yapıları Soruları — Stack, Queue, Tree, Linked List",
@@ -63,6 +64,74 @@ const related: RelatedCategory[] = [
   { href: "/python-temelleri", icon: "🐍", title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "amber-indigo" },
 ];
 
+const contextBlocks: ContextBlock[] = [
+  {
+    heading: "Veri Yapıları Nedir?",
+    paragraphs: [
+      <>
+        <strong className="text-amber-400">Veri yapıları</strong>, veriyi organize etmenin, depolamanın ve üzerinde işlem yapmanın yollarıdır. Doğru veri yapısı seçimi, algoritmanın hızını ve bellek kullanımını doğrudan etkiler. Mülakatlarda en sık sorulan veri yapıları: <strong>stack (yığın)</strong>, <strong>queue (kuyruk)</strong>, <strong>linked list (bağlı liste)</strong>, <strong>tree (ağaç)</strong>, <strong>graph (çizge)</strong>, <strong>heap</strong> ve <strong>hash table (sözlük)</strong>.
+      </>,
+      <>
+        Python&apos;da yerleşik veri yapıları <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">list</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">dict</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">set</code> ve <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">tuple</code> ile başlar. <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">collections</code> modülünde ise <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">deque</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">Counter</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">OrderedDict</code>, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">defaultdict</code> gibi gelişmiş yapılar yer alır.
+      </>,
+    ],
+    code: {
+      label: "temel_veri_yapilari.py",
+      content: `from collections import deque, Counter, defaultdict
+
+# Stack (LIFO) — list.append/pop
+stack = []
+stack.append(1)        # push
+stack.append(2)
+stack.pop()            # pop → 2
+
+# Queue (FIFO) — deque
+q = deque()
+q.append(1)            # enqueue (sağdan ekle)
+q.append(2)
+q.popleft()            # dequeue (soldan çıkar) → 1
+
+# Counter — sayım
+sayim = Counter("abracadabra")
+print(sayim.most_common(3))   # [('a', 5), ('b', 2), ('r', 2)]
+
+# defaultdict — varsayılan değerli dict
+graph = defaultdict(list)
+graph["a"].append("b")`,
+    },
+  },
+  {
+    heading: "Big-O Karmaşıklık ve Doğru Yapı Seçimi",
+    paragraphs: [
+      <>
+        Her veri yapısının ekleme, silme, arama işlemleri için farklı zaman karmaşıklıkları vardır. <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">list</code> araması O(n), <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">dict</code> araması O(1) ortalamadır. Bu yüzden sık arama yapılacaksa <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">dict</code>, sıralı veri veya benzersizlik gerekiyorsa <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">set</code>, LIFO gerekiyorsa <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">list</code> (append/pop), FIFO gerekiyorsa <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">deque</code> tercih edilir.
+      </>,
+      <>
+        Mülakatlarda "neden bu veri yapısını seçtin?" sorusu sıklıkla gelir. Cevabını bil: O(1) mi O(n) mi, hangi edge case&apos;lerde bozulur, hangi senaryolarda alternatif daha iyi olur.
+      </>,
+    ],
+    whenToUse: {
+      title: "Hangi Yapıyı Ne Zaman Kullanmalısın?",
+      items: [
+        "Stack (LIFO): undo/redo, parantez dengesi, DFS, expression evaluation",
+        "Queue (FIFO): BFS, task scheduling, printer queue, message queue",
+        "Linked List: sık insert/delete (ortada), bellek tasarrufu, dynamic size",
+        "Tree (BST/Heap): sıralı erişim, range query, priority queue",
+        "Graph: ağ yapıları, shortest path, dependency, sosyal ağ",
+        "Hash Table (dict): O(1) arama, sayaç, memoization, cache",
+      ],
+    },
+    tip: {
+      title: "Sıralı Çalışma Önerisi",
+      text: (
+        <>
+          Stack → Queue → Linked List → Tree → Heap → Graph sırasıyla ilerle. Her yapı için önce manuel implementasyon yap, sonra Python&apos;ın yerleşik <code className="px-1 py-0.5 rounded bg-white/5 text-amber-300 text-xs">collections</code> modülünü kullan.
+        </>
+      ),
+    },
+  },
+];
+
 export default function PythonVeriYapilariPage() {
   return (
     <>
@@ -79,6 +148,17 @@ export default function PythonVeriYapilariPage() {
         backHref="/interviews"
         backLabel="Tüm Kategoriler"
         related={related}
+        beforeRelated={
+          <CategoryContext
+            category="Python Veri Yapıları"
+            blocks={contextBlocks}
+            furtherReading={[
+              { label: "Python Stack", href: "/python-stack" },
+              { label: "Python Queue", href: "/python-queue" },
+              { label: "Python Heap", href: "/python-heap" },
+            ]}
+          />
+        }
       >
         <QuestionListClient category="data-structures" urlSlug="python-veri-yapilari" displaySlug="veri-yapilari" skeletonCount={9} />
       </CategoryPageTemplate>

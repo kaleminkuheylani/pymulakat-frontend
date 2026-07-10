@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
 import QuestionListClient from "../../components/QuestionListClient";
+import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
   title: "Python Stack Soruları — LIFO, Parantez Dengesi",
@@ -59,6 +60,78 @@ const related: RelatedCategory[] = [
   { href: "/python-egitimi", icon: "🎓", title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
 ];
 
+const contextBlocks: ContextBlock[] = [
+  {
+    heading: "Stack (Yığın) Nedir?",
+    paragraphs: [
+      <>
+        <strong className="text-amber-400">Stack</strong>, <strong>LIFO</strong> (Last-In, First-Out — son giren ilk çıkar) prensibiyle çalışan bir veri yapısıdır. İki temel işlemi vardır: <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">push</code> (yığına ekle) ve <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">pop</code> (yığının tepesinden çıkar). Python&apos;da <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">list</code> doğal olarak stack olarak kullanılabilir: <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">append</code> push, <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">pop</code> pop işlemi yapar.
+      </>,
+      <>
+        Stack&apos;in klasik kullanım alanları: <strong>parantez dengesi kontrolü</strong>, <strong>undo/redo</strong>, <strong>DFS (derinlik öncelikli arama)</strong>, <strong>expression evaluation</strong> (RPN), <strong>call stack</strong> (programlama dillerinde fonksiyon çağrı zinciri), <strong>string reverse</strong> (karakterleri yığına at, sonra çek). Mülakatlarda en sık sorulan soru &quot;parantezleri dengeli mi?&quot; problemidir.
+      </>,
+    ],
+    code: {
+      label: "temel_stack.py",
+      content: `# Stack — list ile
+stack = []
+stack.append("a")    # push
+stack.append("b")
+stack.append("c")
+print(stack)         # ['a', 'b', 'c']
+
+top = stack.pop()    # pop → 'c'
+print(stack)         # ['a', 'b']
+
+# peek (sadece göster, çıkarma)
+if stack:
+    print(stack[-1])   # 'b'
+
+# Parantez dengesi örneği
+def is_balanced(s: str) -> bool:
+    stack = []
+    pairs = {")": "(", "]": "[", "}": "{"}
+    for c in s:
+        if c in "([{":
+            stack.append(c)
+        elif c in ")]}":
+            if not stack or stack.pop() != pairs[c]:
+                return False
+    return not stack
+
+print(is_balanced("({[]})"))   # True
+print(is_balanced("({[})"))    # False`,
+    },
+  },
+  {
+    heading: "Stack vs Queue vs Deque",
+    paragraphs: [
+      <>
+        Stack&apos;in LIFO yapısının tersi queue&apos;nun FIFO (First-In, First-Out) yapısıdır. İkisi de sıralı veri saklar ama çıkarma sırası farklıdır. <strong>Doubly-ended queue (deque)</strong> ise her iki uçtan da ekleme/çıkarma yapabilen hibrit bir yapıdır — Python&apos;da <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">collections.deque</code> ile kullanılır. Çok yönlü bir yapı gerektiğinde <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">deque</code>, basit LIFO için <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">list</code> tercih edilir.
+      </>,
+    ],
+    tip: {
+      title: "Stack Mülakat İpuçları",
+      text: (
+        <>
+          &quot;Parantez dengesi&quot; sorusunda stack&apos;i manuel implement et, Python&apos;ın <code className="px-1 py-0.5 rounded bg-white/5 text-amber-300 text-xs">list</code>&apos;ini kullan. Edge case&apos;leri unutma: sadece açılış parantez varsa (kapanmamış), sadece kapanış varsa, içiçe birden fazla tip parantez.
+        </>
+      ),
+    },
+    whenToUse: {
+      title: "Stack Ne Zaman Kullanılır?",
+      items: [
+        "Parantez dengesi kontrolü: derleyici/interpreter doğrulama",
+        "Undo/redo: editör, IDE, grafik uygulamalar",
+        "DFS (depth-first search): graf/tree dolaşma",
+        "Call stack: programlama dili fonksiyon çağrı yönetimi",
+        "RPN calculator: ters Polonyalı ifade değerlendirme",
+        "String reverse: karakterleri sırayla push, sonra pop",
+      ],
+    },
+  },
+];
+
 export default function PythonStackPage() {
   return (
     <>
@@ -75,6 +148,16 @@ export default function PythonStackPage() {
         backHref="/python-veri-yapilari"
         backLabel="Veri Yapıları"
         related={related}
+        beforeRelated={
+          <CategoryContext
+            category="Python Stack"
+            blocks={contextBlocks}
+            furtherReading={[
+              { label: "Python Queue", href: "/python-queue" },
+              { label: "Veri Yapıları", href: "/python-veri-yapilari" },
+            ]}
+          />
+        }
       >
         <QuestionListClient category="stack" urlSlug="python-stack" displaySlug="stack" skeletonCount={5} />
       </CategoryPageTemplate>

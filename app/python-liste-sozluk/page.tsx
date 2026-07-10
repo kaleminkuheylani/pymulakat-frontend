@@ -3,6 +3,7 @@
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
 import QuestionListClient from "../../components/QuestionListClient";
+import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
   title: "Python Liste ve Sözlük Soruları — List, Dict, Tuple, Set",
@@ -61,6 +62,67 @@ const related: RelatedCategory[] = [
   { href: "/python-egitimi", icon: "🎓", title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
 ];
 
+const contextBlocks: ContextBlock[] = [
+  {
+    heading: "Liste & Sözlük Nedir?",
+    paragraphs: [
+      <>
+        <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">list</code> (liste) ve <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">dict</code> (sözlük) Python&apos;ın en sık kullanılan iki veri yapısıdır. <strong>Liste</strong> sıralı (ordered), değiştirilebilir (mutable), tekrar eden elemanlara izin veren bir koleksiyondur — <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">liste = [1, 2, 3]</code>. <strong>Sözlük</strong> anahtar-değer (key-value) çiftlerinden oluşur, anahtarlar unique olmalıdır — <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">sozluk = {"{"}"a": 1{"}"}</code>.
+      </>,
+      <>
+        Bunlara ek olarak <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">tuple</code> (değiştirilemez liste) ve <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">set</code> (benzersiz eleman kümesi) de sıkça kullanılır. Tuple&apos;lar dictionary key olarak kullanılabilir (hash&apos;lenebilir olduğu için), set&apos;ler ise <code className="px-1.5 py-0.5 rounded bg-white/5 text-amber-300 text-sm">in</code> operatörü ile O(1) arama sağlar — listedeki O(n) aramadan çok daha hızlıdır.
+      </>,
+    ],
+    code: {
+      label: "temel_liste_sozluk.py",
+      content: `# Liste
+sayilar = [3, 1, 4, 1, 5, 9, 2, 6]
+sayilar.append(7)              # sona ekle
+sayilar.sort()                  # sırala (in-place)
+sayilar[0]                      # ilk eleman → 1
+sayilar[1:4]                    # dilim [1, 2, 3]
+
+# Sözlük
+kisi = {"ad": "Ali", "yas": 28}
+kisi["email"] = "ali@x.com"    # ekle/güncelle
+kisi.get("sehir", "Bilinmiyor")  # güvenli erişim
+
+# Comprehension
+ciftler = [x for x in sayilar if x % 2 == 0]
+kareler = {x: x**2 for x in range(5)}
+
+# Set
+benzersiz = set([1, 2, 2, 3, 3, 3])
+# {1, 2, 3}`,
+    },
+  },
+  {
+    heading: "Hangi Yapıyı Ne Zaman Kullanmalısın?",
+    paragraphs: [
+      <>
+        Mülakatlarda &quot;neden sözlük yerine liste?&quot; veya &quot;neden set yerine liste?&quot; gibi sorular sıklıkla gelir. Cevap, <strong>arama hızına</strong> bağlıdır. Liste O(n), set/dict O(1) — milyonlarca eleman için bu fark dakikalar mertebesinde olur. <strong>Sıra koruma</strong> gerekiyorsa liste, <strong>benzersizlik</strong> gerekiyorsa set, <strong>anahtar-değer eşlemesi</strong> gerekiyorsa dict kullan.
+      </>,
+    ],
+    whenToUse: {
+      title: "Hangi Yapıyı Ne Zaman?",
+      items: [
+        "List: sıralı veri, sık insert/delete (sona), tekrarlı elemanlar",
+        "Tuple: değişmeyecek veri, dictionary key, fonksiyon birden fazla değer döndürürken",
+        "Dict: anahtar-değer eşleme, hızlı arama (O(1)), sayaç, cache",
+        "Set: benzersiz elemanlar, küme işlemleri (birleşim, kesişim, fark)",
+      ],
+    },
+    tip: {
+      title: "Mülakatlarda Sık Sorulan İpuçları",
+      text: (
+        <>
+          &quot;Bir listedeki tekrar eden elemanları bul&quot; sorusunda <code className="px-1 py-0.5 rounded bg-white/5 text-amber-300 text-xs">set</code> + <code className="px-1 py-0.5 rounded bg-white/5 text-amber-300 text-xs">len()</code> karşılaştırması, O(n) çözüm sunar. &quot;İki liste ortak eleman&quot; sorusunda <code className="px-1 py-0.5 rounded bg-white/5 text-amber-300 text-xs">set(a) &amp; set(b)</code> küme kesişimi en zarif çözüm.
+        </>
+      ),
+    },
+  },
+];
+
 export default function PythonListeSozlukPage() {
   return (
     <>
@@ -77,6 +139,17 @@ export default function PythonListeSozlukPage() {
         backHref="/interviews"
         backLabel="Tüm Kategoriler"
         related={related}
+        beforeRelated={
+          <CategoryContext
+            category="Python Liste & Sözlük"
+            blocks={contextBlocks}
+            furtherReading={[
+              { label: "Python Temelleri", href: "/python-temelleri" },
+              { label: "Python Veri Yapıları", href: "/python-veri-yapilari" },
+              { label: "Python Pandas", href: "/python-pandas" },
+            ]}
+          />
+        }
       >
         <QuestionListClient category="list-dict" urlSlug="python-liste-sozluk" displaySlug="list-dict" skeletonCount={6} />
       </CategoryPageTemplate>
