@@ -125,7 +125,7 @@ function Hero({ user: _ }: { user: any }) {
           <span className="text-white/95">Ciddiye Al</span>
         </span>
         <span className="block text-base md:text-xl text-white/50 mt-6 font-light max-w-2xl mx-auto leading-relaxed">
-          Tarayıcıda Python kodu yaz, otomatik puanla. Kodun sadece senin cihazında çalışır;
+          Python mülakat soruları, algoritma soruları ve dinamik programlama için Türkçe interaktif pratik. Tarayıcıda Python kodu yaz, otomatik puanla. Kodun sadece senin cihazında çalışır;
           sadece ilerlemen kaydedilir.
           <br className="hidden md:block" />
           Kurulum yok. Python kütüphanesi yok. Sadece 60 saniyede başla.
@@ -455,6 +455,23 @@ export default function HomePage() {
             highlight="21 snippet"
             index={10}
             href="/python-kodlari"
+          />
+          {/* 📌 ACİL #1+#2: Pillar-cluster linkleme — hedef kelimeler için yeni sayfalara yönlendirme */}
+          <FeatureCard
+            icon="⚡"
+            title="Python Algoritma Soruları"
+            description="Sıralama, arama, DP, graf ve string algoritmaları. 26+ interaktif soru, otomatik test ve AI geri bildirimi."
+            highlight="26+ soru"
+            index={11}
+            href="/python-algoritma-sorulari"
+          />
+          <FeatureCard
+            icon="🧠"
+            title="Python Dinamik Programlama"
+            description="Fibonacci memoization, 0/1 Knapsack, Coin Change, Edit Distance, LCS. Memoization + tabulation pratiği."
+            highlight="12+ soru"
+            index={12}
+            href="/python-dinamik-programlama"
           />
         </div>
       </section>

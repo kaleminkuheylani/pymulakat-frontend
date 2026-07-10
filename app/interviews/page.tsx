@@ -110,6 +110,50 @@ export default function InterviewsPage() {
         </div>
       </header>
 
+      {/* ─── ACİL #3: HIZLI HEDEF KEŞFİ (Internal Linkleme) ─── */}
+      <section className="max-w-6xl mx-auto px-6 pt-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Link
+            href="/python-algoritma-sorulari"
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/[0.07] via-amber-500/[0.05] to-transparent p-5 hover:border-amber-400/40 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-indigo-500 to-amber-500 flex items-center justify-center text-2xl flex-shrink-0">
+                ⚡
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
+                  Python Algoritma Soruları
+                </h2>
+                <p className="text-sm text-white/50 mt-0.5">
+                  Sıralama, arama, DP, graf ve string algoritmaları — 26+ interaktif soru.
+                </p>
+              </div>
+              <span className="text-amber-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
+            </div>
+          </Link>
+          <Link
+            href="/python-dinamik-programlama"
+            className="group relative overflow-hidden rounded-2xl border border-white/10 bg-gradient-to-br from-amber-500/[0.07] via-indigo-500/[0.05] to-transparent p-5 hover:border-indigo-400/40 transition-all"
+          >
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-500 to-indigo-500 flex items-center justify-center text-2xl flex-shrink-0">
+                🧠
+              </div>
+              <div className="flex-1">
+                <h2 className="text-lg font-bold text-white group-hover:text-amber-400 transition-colors">
+                  Python Dinamik Programlama
+                </h2>
+                <p className="text-sm text-white/50 mt-0.5">
+                  Fibonacci, Knapsack, Edit Distance, LCS — 12+ klasik DP sorusu.
+                </p>
+              </div>
+              <span className="text-indigo-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
+            </div>
+          </Link>
+        </div>
+      </section>
+
       {/* ─── KATEGORİ KARTLARI ──────────────────────────── */}
       <main className="max-w-6xl mx-auto px-6 py-10">
         {loading ? (

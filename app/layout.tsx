@@ -49,12 +49,12 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "Python Mülakat Soruları ve Online Pratik",
+      "Python Mülakat Soruları, Algoritma ve Online Pratik",
     template: "%s | Python Mülakat",
   },
 
   description:
-    "Python online mülakat hazırlığı için Türkçe interaktif platform. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas ve algoritmik düşünme sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al.",
+    "Python mülakat soruları, Python algoritma soruları ve dinamik programlama için Türkçe interaktif pratik platformu. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al.",
 
   keywords: [
     // Temel / Yeni başlayan
@@ -86,6 +86,13 @@ export const metadata: Metadata = {
     "python beyin fırtınası soruları",
     "python kodlama mülakatı",
     "junior python developer mülakat soruları",
+    "python algoritma soruları",        // 📌 ACİL #4: title/H1 destekleyici keyword
+    "python dinamik programlama",       // 📌 ACİL #4: title/H1 destekleyici keyword
+    "python dynamic programming",
+    "python dp soruları",
+    "python knapsack problemi",
+    "python fibonacci memoization",
+    "python longest common subsequence",
     "python online",                    // 📌 Ubersuggest: 9.9K vol, SEO 27, ₺53 CPC
 
     // Veritabanı / Kütüphaneler
@@ -124,9 +131,9 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     url: "https://pythonmulakat.com",
     siteName: "Python Mülakat",
-    title: "Python Mülakat Hazırlığı | Yeni Başlayanlar İçin",
+    title: "Python Mülakat, Algoritma ve Dinamik Programlama Soruları",
     description:
-      "Sıfırdan Python öğrenenler için Türkçe interaktif mülakat soruları. OOP, SQLite, Pandas, sandbox ve anlık AI geri bildirimi.",
+      "Python mülakat soruları, algoritma soruları ve dinamik programlama için Türkçe interaktif pratik. OOP, SQLite, Pandas, sandbox ve anlık AI geri bildirimi.",
     images: [
       {
         url: "https://pythonmulakat.com/og-default.png",
@@ -140,9 +147,9 @@ export const metadata: Metadata = {
   // ── Twitter / X ─────────────────────────────────────────────
   twitter: {
     card: "summary_large_image",
-    title: "Python Mülakat Hazırlığı | Yeni Başlayanlar İçin",
+    title: "Python Mülakat, Algoritma ve Dinamik Programlama Soruları",
     description:
-      "Türkçe interaktif Python mülakat soruları. OOP, veri tipleri, SQLite, sandbox ve anlık AI geri bildirimi.",
+      "Türkçe interaktif Python mülakat soruları, algoritma soruları ve dinamik programlama. OOP, veri tipleri, SQLite, sandbox ve anlık AI geri bildirimi.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
