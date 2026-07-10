@@ -9,7 +9,7 @@ import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCateg
 export const metadata: Metadata = {
   title: "Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
   description:
-    "Python eğitimi — Türkçe, ücretsiz ve kapsamlı. Değişkenler, döngüler, fonksiyonlar, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör içerir.",
+    "Python eğitimi — Türkçe, ücretsiz ve kapsamlı. Değişkenler, döngüler, fonksiyonlar, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör içerir. Python örnekleri ve playground ile pratik yap.",
   keywords: [
     "python eğitimi",
     "python dersleri",
@@ -23,6 +23,8 @@ export const metadata: Metadata = {
     "python dekoratör",
     "sıfırdan python",
     "python dersleri türkçe",
+    "python örnekleri",
+    "python playground",
   ],
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
   creator: "Python Mülakat",
@@ -36,7 +38,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Eğitimi — Türkçe, Ücretsiz, Kapsamlı",
-    description: "Başlangıçtan ileri seviyeye Python öğren. Her ders kod örnekleriyle.",
+    description: "Başlangıçtan ileri seviyeye Python öğren. Her ders kod örnekleri ve playground içerir.",
     url: "https://pythonmulakat.com/python-egitimi",
     siteName: "PythonMulakat",
     locale: "tr_TR",
