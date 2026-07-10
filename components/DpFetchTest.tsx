@@ -48,7 +48,7 @@ function slugifyTitle(title: string): string {
     .replace(/^-+|-+$/g, "");
 }
 
-function parseCSV(text: string): Array<{ id: string; category: string; title: string }> {
+function parseCSV(text: string): Array<{ id: string; category: string; title: string; test_cases: string; function_name: string }> {
   const rows: string[][] = [];
   let current: string[] = [];
   let cell = "";
@@ -159,9 +159,10 @@ export default function DpFetchTest() {
       const dp = all.filter((q) => q.category === "dynamic-programming");
       setCsvCount(all.length);
 
-      // 📌 CSV-FIRST mimari uyumu: yeni eklenen 10 DP sorusu (172-181) henüz
-      //    DB'de yok, ama CSV'de var. Backend 404 dönerse CSV'den o sorunun
-      //    test_cases'ini parse edip "ok" say (csv-fallback etiketiyle).
+      // 📌 CSV-FIRST mimari: CSV'yi ana kaynak olarak parse et, sonra DB
+      //    endpoint'i sadece "diagnosis" için probe et. Eski DP soruları DB'de
+      //    var (200), yeni eklenenler (172-181) DB'de yok (404) → CSV-FIRST
+      //    fallback sayesinde frontend görüntüleme bozulmaz.
       const testsById = new Map<number, { function_name: string; test_cases: any[] }>();
       for (const q of dp) {
         try {
@@ -173,15 +174,19 @@ export default function DpFetchTest() {
         } catch { /* invalid JSON, skip */ }
       }
 
-      // 2) Her DP sorusu için detail + tests probe
+      // 2) Her DP sorusu için initial row: CSV'de test_cases varsa direkt "ok"
+      //    (CSV-FIRST mimari), yoksa pending (DB probe sonucu bekleniyor).
       const initial: TestRow[] = dp.map((q) => {
         const slug = slugifyTitle(q.title);
+        const csvHas = testsById.get(parseInt(q.id, 10))?.test_cases.length ?? 0;
         return {
           id: parseInt(q.id, 10),
           slug,
           title: q.title,
           detailStatus: "pending",
-          testsStatus: "pending",
+          // CSV-FIRST: CSV'de test var → default ok. DB probe'u hata gösterirse bile ok kalır.
+          testsStatus: csvHas > 0 ? "ok" : "pending",
+          testsCount: csvHas,
           detailUrl: `/interviews/dynamic-programming/${slug}`,
           testsUrl: `${API_BASE}/api/v2/questions/${q.id}/tests`,
         };
@@ -199,21 +204,26 @@ export default function DpFetchTest() {
         const testsProbe = await probeJson(r.testsUrl, 6000);
         if (cancelled) return;
 
-        // CSV-FIRST fallback: DB 404 dönerse CSV'den al
+        // CSV-FIRST mimari: tests status zaten CSV'den dolu (initial).
+        // Backend probe'u sadece diagnosis — DB 404'sini logla ama
+        // CSV'de test varsa final status "ok" kalır (csv-fallback etiketi).
         const dbTestsCount = testsProbe.data?.data?.test_cases?.length;
         const csvTests = testsById.get(r.id);
+        const csvHas = csvTests?.test_cases.length ?? 0;
+        // DB probe sonucu: ya ok (DB'de var) ya hata (henüz deploy edilmemiş)
+        // CSV'de varsa → final status "ok" (csv-fallback), hata loglanır.
         const finalTestsStatus: Status = testsProbe.status === "ok"
-          ? "ok"
-          : csvTests && csvTests.test_cases.length > 0
-            ? "ok"   // CSV-FIRST mimari: CSV'de varsa 200 eşdeğeri
+          ? "ok"  // Backend DB'de var
+          : csvHas > 0
+            ? "ok"  // CSV-FIRST fallback
             : testsProbe.status;
         const finalTestsCount = testsProbe.status === "ok"
           ? dbTestsCount
           : csvTests?.test_cases.length;
         const finalError = testsProbe.status === "ok"
           ? testsProbe.error
-          : csvTests && csvTests.test_cases.length > 0
-            ? "csv-fallback"
+          : csvHas > 0
+            ? `csv-fallback (db: ${testsProbe.error || "404"})`
             : testsProbe.error;
 
         setRows((prev) =>
@@ -245,6 +255,8 @@ export default function DpFetchTest() {
     detailTimeout: rows.filter((r) => r.detailStatus === "timeout").length,
     testsOk: rows.filter((r) => r.testsStatus === "ok").length,
     testsErr: rows.filter((r) => r.testsStatus === "error").length,
+    // CSV-FIRST: DB probe'unda hata alıp CSV'de test'i olanlar (DB import bekliyor)
+    csvFallback: rows.filter((r) => r.error?.includes("csv-fallback")).length,
   };
 
   return (
@@ -252,7 +264,7 @@ export default function DpFetchTest() {
       <div className="max-w-6xl mx-auto">
         <h1 className="text-2xl md:text-3xl font-bold mb-2">DP Fetch-Test Diagnostics</h1>
         <p className="text-white/60 text-sm mb-6">
-          CSV: <code className="text-amber-300">raw.githubusercontent.com</code> &middot; Detail: slug URL &middot; Tests: backend API
+          CSV: <code className="text-amber-300">raw.githubusercontent.com</code> &middot; Detail: slug URL &middot; Tests: <span className="text-emerald-300">CSV-FIRST</span> (DB probe diagnosis)
         </p>
 
         {/* CSV status */}
@@ -266,7 +278,7 @@ export default function DpFetchTest() {
         </div>
 
         {/* Summary */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6 text-sm">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6 text-sm">
           <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3">
             <div className="text-white/40 text-xs uppercase tracking-wider mb-1">Toplam DP</div>
             <div className="text-2xl font-bold text-white">{summary.total}</div>
@@ -274,6 +286,11 @@ export default function DpFetchTest() {
           <div className="rounded-xl border border-emerald-500/30 bg-emerald-500/[0.05] p-3">
             <div className="text-emerald-300 text-xs uppercase tracking-wider mb-1">Detail ✅ 200</div>
             <div className="text-2xl font-bold text-emerald-300">{summary.detailOk}</div>
+          </div>
+          <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/[0.05] p-3">
+            <div className="text-cyan-300 text-xs uppercase tracking-wider mb-1">Tests CSV</div>
+            <div className="text-2xl font-bold text-cyan-300">{summary.testsOk}<span className="text-sm text-white/40"> / {summary.total}</span></div>
+            <div className="text-[10px] text-cyan-300/60 mt-0.5">db: {summary.total - summary.csvFallback} · csv: {summary.csvFallback}</div>
           </div>
           <div className="rounded-xl border border-rose-500/30 bg-rose-500/[0.05] p-3">
             <div className="text-rose-300 text-xs uppercase tracking-wider mb-1">Detail ❌</div>
@@ -289,7 +306,7 @@ export default function DpFetchTest() {
                 <th className="px-4 py-3 w-12">id</th>
                 <th className="px-4 py-3">Title</th>
                 <th className="px-4 py-3 text-center">Detail</th>
-                <th className="px-4 py-3 text-center">Tests</th>
+                <th className="px-4 py-3 text-center">Tests<br/><span className="text-[10px] text-white/40 normal-case font-normal">CSV-FIRST (DB probe)</span></th>
                 <th className="px-4 py-3 text-right">ms</th>
               </tr>
             </thead>
