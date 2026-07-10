@@ -248,7 +248,8 @@ export default function InterviewsPage() {
 
                       {/* function_name alanı yerine slug (DP şablonu) */}
                       <div className="mt-3 text-xs text-white/40 font-mono">
-                        <span className="text-indigo-300">def</span> practice_{cat.slug.replace(/-/g, "_')}()
+                        <span className="text-indigo-300">def</span>{" "}
+                        practice_{cat.slug.replace(/-/g, "_")}()
                       </div>
 
                       <div className="flex items-center justify-between text-xs pt-3 mt-2 border-t border-white/5">
