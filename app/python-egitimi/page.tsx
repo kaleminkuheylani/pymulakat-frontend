@@ -4,6 +4,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LESSONS, getLesson } from "./lessons";
+import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCategories";
 
 export const metadata: Metadata = {
   title: "Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
@@ -202,33 +203,28 @@ export default function PythonEgitimiPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqJsonLd) }} />
 
       <div className="min-h-screen bg-[#050816] text-white">
-        <header className="border-b border-white/10 bg-[#0a0e1a]/80 backdrop-blur">
-          <div className="max-w-5xl mx-auto px-4 py-8 sm:py-12">
-            <div className="flex items-center gap-2 text-[10px] text-white/40 mb-3">
-              <Link href="/" className="hover:text-white/70">Ana Sayfa</Link>
-              <span>/</span>
-              <span className="text-white/60">Python Eğitimi</span>
-            </div>
-            <h1 className="text-3xl sm:text-4xl font-bold mb-3">
-              Python Eğitimi
-            </h1>
-            <p className="text-base sm:text-lg text-white/70 max-w-3xl">
+        <header className="bg-[#0a0e1a]/50 backdrop-blur-sm">
+          <div className="max-w-6xl mx-auto px-6 py-8">
+            <Link
+              href="/"
+              className="inline-flex items-center gap-2 text-white/40 hover:text-white text-sm mb-3 transition-colors"
+            >
+              ← Ana Sayfa
+            </Link>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Eğitimi</h1>
+            <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
               Başlangıçtan ileri seviyeye, <span className="text-amber-300">Türkçe ve ücretsiz</span> Python dersleri.
               Her ders çalıştırılabilir kod örneği, kısa açıklama ve pratik ödev içerir.
             </p>
-            <div className="flex flex-wrap gap-2 mt-4 text-xs">
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-                ✓ Ücretsiz
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-                ✓ Üyelik gerektirmez
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-emerald-500/10 text-emerald-300 border border-emerald-500/20">
-                ✓ Tarayıcıda çalışır
-              </span>
-              <span className="px-2.5 py-1 rounded-lg bg-amber-500/10 text-amber-300 border border-amber-500/20">
-                {LESSONS.length} ders
-              </span>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {["✓ Ücretsiz", "✓ Üyelik gerektirmez", "✓ Tarayıcıda çalışır", `${LESSONS.length} ders`].map((t) => (
+                <span
+                  key={t}
+                  className="text-xs px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300"
+                >
+                  {t}
+                </span>
+              ))}
             </div>
           </div>
         </header>
@@ -347,25 +343,23 @@ export default function PythonEgitimiPage() {
             </div>
           </section>
 
-          {/* 📌 Ilgili Konular — cross-link */}
-          <section className="mb-10 p-6 rounded-2xl border border-white/10 bg-white/[0.02]">
-            <h2 className="text-xl font-bold mb-4 text-white">📚 İlgili Kaynaklar</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Link href="/python-kodlari" className="block p-4 rounded-xl bg-gradient-to-br from-purple-500/10 to-pink-500/5 border border-purple-500/20 hover:border-purple-500/50 transition-colors">
-                <div className="text-2xl mb-2">📖</div>
-                <h3 className="font-bold text-white mb-1">Python Kodları</h3>
-                <p className="text-xs text-white/60">19 hazır kod örneği, 6 kategori. Her biri ne zaman + gerçek dünya + yaygın hata bilgisi ile.</p>
-              </Link>
-              <Link href="/interviews" className="block p-4 rounded-xl bg-gradient-to-br from-amber-500/10 to-rose-500/5 border border-amber-500/20 hover:border-amber-500/50 transition-colors">
-                <div className="text-2xl mb-2">🧪</div>
-                <h3 className="font-bold text-white mb-1">Mülakat Soruları</h3>
-                <p className="text-xs text-white/60">132 gerçek dünya sorusu, 9 kategori. Otomatik test + AI koç ile pratik.</p>
-              </Link>
-              <Link href="/python-online" className="block p-4 rounded-xl bg-gradient-to-br from-indigo-500/10 to-purple-500/5 border border-indigo-500/20 hover:border-indigo-500/50 transition-colors">
-                <div className="text-2xl mb-2">🖥️</div>
-                <h3 className="font-bold text-white mb-1">Online Editör</h3>
-                <p className="text-xs text-white/60">Tarayıcıda kurulum sız Python editörü. Pyodide WASM ile 100ms'de başlar.</p>
-              </Link>
+          {/* 📌 Ilgili Konular — CategoryPageTemplate ile eş */}
+          <section className="mt-16 pt-10 border-t border-white/10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-6">İlgili Kategoriler</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
+              {DEFAULT_RELATED_CATEGORIES.map((r) => (
+                <Link
+                  key={r.href}
+                  href={r.href}
+                  className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
+                >
+                  <div className="text-3xl mb-3">{r.icon}</div>
+                  <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">
+                    {r.title}
+                  </h3>
+                  <p className="text-sm text-white/50 leading-relaxed">{r.description}</p>
+                </Link>
+              ))}
             </div>
           </section>
         </main>

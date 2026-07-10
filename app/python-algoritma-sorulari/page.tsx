@@ -1,9 +1,8 @@
-// /python-algoritma-sorulari — Algoritma soruları kataloğu sayfası.
-// ACİL #2: Hedef keyword "Python algoritma soruları" için pillar-cluster sayfa.
-// Server-side fetch (next/headers cache) — en iyi SEO + Lighthouse.
+// /python-algoritma-sorulari — Python algoritma soruları kataloğu sayfası.
+// Paylaşılan CategoryPageTemplate'i kullanır.
 
 import type { Metadata } from "next";
-import Link from "next/link";
+import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
 import AlgorithmQuestionList from "./AlgorithmQuestionList";
 
 export const metadata: Metadata = {
@@ -95,9 +94,37 @@ const learningResourceJsonLd = {
   inLanguage: "tr-TR",
 };
 
+// Bu sayfada gösterilecek ilgili kategoriler — DP, tüm kategoriler, kodlar
+const related: RelatedCategory[] = [
+  {
+    href: "/python-dinamik-programlama",
+    icon: "🧠",
+    title: "Python Dinamik Programlama",
+    description:
+      "Dinamik programlama soruları: fibonacci memoization, knapsack, edit distance, longest common subsequence.",
+    gradient: "amber-indigo",
+  },
+  {
+    href: "/interviews",
+    icon: "📚",
+    title: "Tüm Mülakat Kategorileri",
+    description:
+      "Python mülakat soruları kataloğu: OOP, SQLite, Pandas, veri yapıları ve daha fazlası.",
+    gradient: "indigo-amber",
+  },
+  {
+    href: "/python-kodlari",
+    icon: "📖",
+    title: "Python Kodları",
+    description:
+      "Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar. Kopyala, çalıştır, öğren.",
+    gradient: "amber-indigo",
+  },
+];
+
 export default function PythonAlgoritmaSorulariPage() {
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
+    <>
       {/* JSON-LD: BreadcrumbList + LearningResource */}
       <script
         type="application/ld+json"
@@ -108,84 +135,23 @@ export default function PythonAlgoritmaSorulariPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(learningResourceJsonLd) }}
       />
 
-      {/* ─── HEADER ──────────────────────────────────────── */}
-      <header className="bg-[#0a0e1a]/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <Link
-            href="/interviews"
-            className="inline-flex items-center gap-2 text-white/40 hover:text-white text-sm mb-3 transition-colors"
-          >
-            ← Tüm Kategoriler
-          </Link>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
-            Python Algoritma Soruları
-          </h1>
-          <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
+      <CategoryPageTemplate
+        title="Python Algoritma Soruları"
+        subtitle={
+          <>
             Python algoritma soruları ile mülakata hazırlan. Sıralama, arama, dinamik programlama, graf ve string
             algoritmaları için{" "}
             <strong className="text-amber-400">26+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test
             et, yapay zekâdan anında geri bildirim al.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {["Sıralama", "Arama", "Dinamik Programlama", "Graf", "String", "Matris"].map((t) => (
-              <span
-                key={t}
-                className="text-xs px-3 py-1 rounded-full bg-indigo-500/10 border border-indigo-500/20 text-indigo-300"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </header>
-
-      {/* ─── SORU LİSTESİ ──────────────────────────────── */}
-      <main className="max-w-6xl mx-auto px-6 py-10">
+          </>
+        }
+        tags={["Sıralama", "Arama", "Dinamik Programlama", "Graf", "String", "Matris"]}
+        backHref="/interviews"
+        backLabel="Tüm Kategoriler"
+        related={related}
+      >
         <AlgorithmQuestionList />
-
-        {/* ─── İLGİLİ KATEGORİLER (İç linkleme) ──────────────── */}
-        <section className="mt-16 pt-10 border-t border-white/10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">İlgili Kategoriler</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <Link
-              href="/python-dinamik-programlama"
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
-            >
-              <div className="text-3xl mb-3">🧠</div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
-                Python Dinamik Programlama
-              </h3>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Dinamik programlama soruları: fibonacci memoization, knapsack, edit distance, longest common subsequence.
-              </p>
-            </Link>
-            <Link
-              href="/interviews"
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
-            >
-              <div className="text-3xl mb-3">📚</div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
-                Tüm Kategoriler
-              </h3>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Python mülakat soruları kataloğu: OOP, SQLite, Pandas, veri yapıları ve daha fazlası.
-              </p>
-            </Link>
-            <Link
-              href="/python-kodlari"
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
-            >
-              <div className="text-3xl mb-3">📖</div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
-                Python Kodları
-              </h3>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar.
-              </p>
-            </Link>
-          </div>
-        </section>
-      </main>
-    </div>
+      </CategoryPageTemplate>
+    </>
   );
 }

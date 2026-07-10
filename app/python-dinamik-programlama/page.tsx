@@ -1,8 +1,8 @@
-// /python-dinamik-programlama — Dinamik programlama soruları kataloğu sayfası.
-// ACİL #1: Hedef keyword "Python dinamik programlama" için pillar-cluster sayfa.
+// /python-dinamik-programlama — Python dinamik programlama soruları kataloğu sayfası.
+// Paylaşılan CategoryPageTemplate'i kullanır.
 
 import type { Metadata } from "next";
-import Link from "next/link";
+import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
 import DynamicProgrammingQuestionList from "./DynamicProgrammingQuestionList";
 
 export const metadata: Metadata = {
@@ -99,9 +99,36 @@ const learningResourceJsonLd = {
   inLanguage: "tr-TR",
 };
 
+const related: RelatedCategory[] = [
+  {
+    href: "/python-algoritma-sorulari",
+    icon: "⚡",
+    title: "Python Algoritma Soruları",
+    description:
+      "Sıralama, arama, DP, graf ve string algoritmaları için 26+ interaktif soru.",
+    gradient: "indigo-amber",
+  },
+  {
+    href: "/interviews",
+    icon: "📚",
+    title: "Tüm Mülakat Kategorileri",
+    description:
+      "Python mülakat soruları kataloğu: OOP, SQLite, Pandas, veri yapıları.",
+    gradient: "amber-indigo",
+  },
+  {
+    href: "/python-kodlari",
+    icon: "📖",
+    title: "Python Kodları",
+    description:
+      "Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar.",
+    gradient: "indigo-amber",
+  },
+];
+
 export default function PythonDinamikProgramlamaPage() {
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
+    <>
       {/* JSON-LD: BreadcrumbList + LearningResource */}
       <script
         type="application/ld+json"
@@ -112,121 +139,61 @@ export default function PythonDinamikProgramlamaPage() {
         dangerouslySetInnerHTML={{ __html: JSON.stringify(learningResourceJsonLd) }}
       />
 
-      {/* ─── HEADER ──────────────────────────────────────── */}
-      <header className="bg-[#0a0e1a]/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-6 py-8">
-          <Link
-            href="/python-algoritma-sorulari"
-            className="inline-flex items-center gap-2 text-white/40 hover:text-white text-sm mb-3 transition-colors"
-          >
-            ← Python Algoritma Soruları
-          </Link>
-          <h1 className="text-4xl md:text-5xl font-extrabold mb-3">
-            Python Dinamik Programlama
-          </h1>
-          <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
+      <CategoryPageTemplate
+        title="Python Dinamik Programlama"
+        subtitle={
+          <>
             Python dinamik programlama soruları ile mülakata hazırlan. Memoization (top-down) ve tabulation
             (bottom-up) teknikleriyle klasik DP problemlerini çöz:{" "}
             <strong className="text-amber-400">Fibonacci, 0/1 Knapsack, Coin Change, Edit Distance,
             Longest Common Subsequence, Climbing Stairs, House Robber</strong>. Tarayıcıda kod yaz, otomatik
             test et, yapay zekâdan anında geri bildirim al.
-          </p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {["Memoization", "Tabulation", "Fibonacci", "Knapsack", "Edit Distance", "LCS", "Climbing Stairs", "House Robber"].map((t) => (
-              <span
-                key={t}
-                className="text-xs px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300"
-              >
-                {t}
-              </span>
-            ))}
-          </div>
-        </div>
-      </header>
-
-      {/* ─── SORU LİSTESİ ──────────────────────────────── */}
-      <main className="max-w-6xl mx-auto px-6 py-10">
+          </>
+        }
+        tags={["Memoization", "Tabulation", "Fibonacci", "Knapsack", "Edit Distance", "LCS", "Climbing Stairs", "House Robber"]}
+        backHref="/python-algoritma-sorulari"
+        backLabel="Python Algoritma Soruları"
+        tagStyle="amber"
+        related={related}
+        beforeRelated={
+          <section className="mt-16 pt-10 border-t border-white/10">
+            <h2 className="text-2xl md:text-3xl font-bold mb-4">Dinamik Programlama Nedir?</h2>
+            <div className="prose prose-invert max-w-3xl text-white/70 leading-relaxed space-y-4">
+              <p>
+                <strong className="text-amber-400">Dinamik programlama (DP)</strong>, karmaşık problemleri
+                daha küçük, örtüşen alt problemlere ayırarak çözen bir algoritma tekniğidir. Her alt problem
+                yalnızca bir kez çözülür ve sonucu bir yerde saklanır (cache / memoization), böylece aynı
+                alt problem tekrar hesaplanmaz. Bu yaklaşım, üssel zaman karmaşıklığına sahip problemleri
+                polinom zamana indirgeyebilir.
+              </p>
+              <p>
+                Python&apos;da dinamik programlama iki temel yaklaşımla uygulanır:
+              </p>
+              <ul className="list-disc pl-6 space-y-2 text-white/70">
+                <li>
+                  <strong className="text-indigo-300">Memoization (top-down):</strong> Rekürsif çözüm,
+                  sonuçları bir sözlükte (dict) saklar. Aynı alt problem tekrar geldiğinde sözlükten döner.
+                  <code className="ml-2 px-2 py-0.5 rounded bg-white/5 text-amber-300">@lru_cache</code>{" "}
+                  decorator&apos;ı ile tek satırda uygulanabilir.
+                </li>
+                <li>
+                  <strong className="text-indigo-300">Tabulation (bottom-up):</strong> Yinelemeli (iterative)
+                  çözüm, küçük alt problemlerden büyüğe doğru bir tablo doldurur. Genellikle bellek açısından
+                  daha verimlidir.
+                </li>
+              </ul>
+              <p>
+                Klasik dinamik programlama problemleri arasında <em>Fibonacci</em>, <em>0/1 Knapsack</em>,
+                <em>Coin Change</em>, <em>Edit Distance</em>, <em>Longest Common Subsequence</em> (LCS) ve
+                <em>Longest Increasing Subsequence</em> (LIS) sayılabilir. Mülakatlarda en sık sorulan DP
+                sorularından birkaçını yukarıda interaktif olarak çözebilirsin.
+              </p>
+            </div>
+          </section>
+        }
+      >
         <DynamicProgrammingQuestionList />
-
-        {/* ─── DP NEDİR? — Kısa Açıklama (SEO içerik) ────────── */}
-        <section className="mt-16 pt-10 border-t border-white/10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-4">Dinamik Programlama Nedir?</h2>
-          <div className="prose prose-invert max-w-3xl text-white/70 leading-relaxed space-y-4">
-            <p>
-              <strong className="text-amber-400">Dinamik programlama (DP)</strong>, karmaşık problemleri
-              daha küçük, örtüşen alt problemlere ayırarak çözen bir algoritma tekniğidir. Her alt problem
-              yalnızca bir kez çözülür ve sonucu bir yerde saklanır (cache / memoization), böylece aynı
-              alt problem tekrar hesaplanmaz. Bu yaklaşım, üssel zaman karmaşıklığına sahip problemleri
-              polinom zamana indirgeyebilir.
-            </p>
-            <p>
-              Python&apos;da dinamik programlama iki temel yaklaşımla uygulanır:
-            </p>
-            <ul className="list-disc pl-6 space-y-2 text-white/70">
-              <li>
-                <strong className="text-indigo-300">Memoization (top-down):</strong> Rekürsif çözüm,
-                sonuçları bir sözlükte (dict) saklar. Aynı alt problem tekrar geldiğinde sözlükten döner.
-                <code className="ml-2 px-2 py-0.5 rounded bg-white/5 text-amber-300">@lru_cache</code>{" "}
-                decorator&apos;ı ile tek satırda uygulanabilir.
-              </li>
-              <li>
-                <strong className="text-indigo-300">Tabulation (bottom-up):</strong> Yinelemeli (iterative)
-                çözüm, küçük alt problemlerden büyüğe doğru bir tablo doldurur. Genellikle bellek açısından
-                daha verimlidir.
-              </li>
-            </ul>
-            <p>
-              Klasik dinamik programlama problemleri arasında <em>Fibonacci</em>, <em>0/1 Knapsack</em>,
-              <em>Coin Change</em>, <em>Edit Distance</em>, <em>Longest Common Subsequence</em> (LCS) ve
-              <em>Longest Increasing Subsequence</em> (LIS) sayılabilir. Mülakatlarda en sık sorulan DP
-              sorularından birkaçını yukarıda interaktif olarak çözebilirsin.
-            </p>
-          </div>
-        </section>
-
-        {/* ─── İLGİLİ KATEGORİLER (İç linkleme) ──────────────── */}
-        <section className="mt-12 pt-10 border-t border-white/10">
-          <h2 className="text-2xl md:text-3xl font-bold mb-6">İlgili Kategoriler</h2>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            <Link
-              href="/python-algoritma-sorulari"
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-indigo-400/40 transition-all"
-            >
-              <div className="text-3xl mb-3">⚡</div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
-                Python Algoritma Soruları
-              </h3>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Sıralama, arama, DP, graf ve string algoritmaları için 26+ interaktif soru.
-              </p>
-            </Link>
-            <Link
-              href="/interviews"
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-indigo-400/40 transition-all"
-            >
-              <div className="text-3xl mb-3">📚</div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
-                Tüm Kategoriler
-              </h3>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Python mülakat soruları kataloğu: OOP, SQLite, Pandas, veri yapıları.
-              </p>
-            </Link>
-            <Link
-              href="/python-kodlari"
-              className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-indigo-400/40 transition-all"
-            >
-              <div className="text-3xl mb-3">📖</div>
-              <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
-                Python Kodları
-              </h3>
-              <p className="text-sm text-white/50 leading-relaxed">
-                Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar.
-              </p>
-            </Link>
-          </div>
-        </section>
-      </main>
-    </div>
+      </CategoryPageTemplate>
+    </>
   );
 }
