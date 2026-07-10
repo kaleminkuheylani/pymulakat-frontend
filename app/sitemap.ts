@@ -124,5 +124,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // 📌 Tutorials kaldırıldı — /guides sayfası silindi, sitemap'te yer almıyor.
-  return [...staticPages, ...categoryPages, ...questionPages, ...lessonPages];
+  // categoryPages kaldırıldı: /interviews/[category] artık redirect (yeni pillar URL'leri
+  // staticPages'de zaten var). Sadece questionPages + lessonPages ekleniyor.
+  return [...staticPages, ...questionPages, ...lessonPages];
 }
