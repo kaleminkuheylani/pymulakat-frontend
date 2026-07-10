@@ -13,8 +13,9 @@ const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-p
 
 // jsDelivr CDN — GitHub raw yerine tercih edilir (daha hızlı, content-type: text/csv)
 // @main branch = main, @v1 / @commit-sha = pinned (cache'lenebilir)
-const CSV_PRIMARY = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
-const CSV_FALLBACK = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+// Fallback: backend /api/v2/questions/all (eski davranış)
+const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
 
 export interface QuestionListClientProps {
   /** Filtrelenecek kategori (örn. "python-basics", "dynamic-programming") */
@@ -129,25 +130,40 @@ function parseCSV(text: string): Question[] {
 }
 
 async function fetchCSV(): Promise<Question[]> {
-  // 1) jsDelivr (primary, hızlı, content-type: text/csv)
+  const errors: string[] = [];
+  // 1) raw GitHub (primary, Vercel fetch'i en güvenilir bu)
   for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
     try {
       const r = await fetch(url, { cache: "no-store" });
       if (r.ok) {
         const text = await r.text();
         const parsed = parseCSV(text);
-        if (parsed.length > 0) return parsed;
+        if (parsed.length > 0) {
+          if (url !== CSV_PRIMARY) setSource("csv-fallback");
+          return parsed;
+        }
+      } else {
+        errors.push(`${url}: HTTP ${r.status}`);
       }
-    } catch {
-      // devam et, sıradaki URL'i dene
+    } catch (e: any) {
+      errors.push(`${url}: ${e?.message || "fetch error"}`);
     }
   }
 
-  // 2) Backend DB fallback (eski davranış)
-  const r = await fetch(`${API_BASE}/api/v2/questions/all`, { cache: "no-store" });
-  if (!r.ok) throw new Error(`HTTP ${r.status}`);
-  const data: QuestionsResponse | Question[] = await r.json();
-  return Array.isArray(data) ? data : data?.data || [];
+  // 2) Backend DB fallback
+  try {
+    const r = await fetch(`${API_BASE}/api/v2/questions/all`, { cache: "no-store" });
+    if (r.ok) {
+      const data: QuestionsResponse | Question[] = await r.json();
+      setSource("db");
+      return Array.isArray(data) ? data : data?.data || [];
+    }
+    errors.push(`backend: HTTP ${r.status}`);
+  } catch (e: any) {
+    errors.push(`backend: ${e?.message || "fetch error"}`);
+  }
+
+  throw new Error(errors.join("; "));
 }
 
 export default function QuestionListClient({

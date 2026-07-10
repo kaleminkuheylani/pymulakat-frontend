@@ -5,8 +5,8 @@
 // Cache stratejisi: Next.js fetch revalidate (1 saat). jsDelivr CDN de
 // cache'li, double-cache.
 
-const CSV_PRIMARY = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
-const CSV_FALLBACK = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
 
 export interface CSVQuestion {
   id: number;

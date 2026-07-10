@@ -31,8 +31,8 @@ interface CategoriesResponse {
 
 // 📌 CSV-FIRST: backend deploy gecikse bile GitHub'daki CSV'den okuyoruz.
 // jsDelivr CDN cache'lenebilir, hızlı. Backend'e sadece fallback olarak düşer.
-const CSV_PRIMARY = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
-const CSV_FALLBACK = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
 
 // Kategori label ve icon mapping (backend bu alanları DB'de tutuyordu;
 // CSV'de olmadığı için burada static tanımlı)
