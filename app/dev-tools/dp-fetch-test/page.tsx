@@ -1,6 +1,6 @@
-// app/_dev/dp-fetch-test/page.tsx
+// app/dev-tools/dp-fetch-test/page.tsx
 // Geliştirici diagnostic sayfası — production'da kullanılmaz.
-// Sadece /_dev/* prefix'li sayfalar robots.txt'te disallow edilir.
+// Sadece /dev-tools/* prefix'li sayfalar robots.txt'te disallow edilir.
 
 import DpFetchTest from "../../../components/DpFetchTest";
 
