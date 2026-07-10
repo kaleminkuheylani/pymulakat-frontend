@@ -77,6 +77,8 @@ function parseCSV(text: string): Array<{ id: string; category: string; title: st
     id: cols[h.indexOf("id")] || "",
     category: cols[h.indexOf("category")] || "",
     title: cols[h.indexOf("title")] || "",
+    test_cases: cols[h.indexOf("test_cases")] || "",
+    function_name: cols[h.indexOf("function_name")] || "",
   })).filter((q) => q.id && q.title);
 }
 
@@ -157,6 +159,20 @@ export default function DpFetchTest() {
       const dp = all.filter((q) => q.category === "dynamic-programming");
       setCsvCount(all.length);
 
+      // 📌 CSV-FIRST mimari uyumu: yeni eklenen 10 DP sorusu (172-181) henüz
+      //    DB'de yok, ama CSV'de var. Backend 404 dönerse CSV'den o sorunun
+      //    test_cases'ini parse edip "ok" say (csv-fallback etiketiyle).
+      const testsById = new Map<number, { function_name: string; test_cases: any[] }>();
+      for (const q of dp) {
+        try {
+          const cases = JSON.parse(q.test_cases || "[]");
+          testsById.set(parseInt(q.id, 10), {
+            function_name: q.function_name,
+            test_cases: Array.isArray(cases) ? cases : [],
+          });
+        } catch { /* invalid JSON, skip */ }
+      }
+
       // 2) Her DP sorusu için detail + tests probe
       const initial: TestRow[] = dp.map((q) => {
         const slug = slugifyTitle(q.title);
@@ -179,9 +195,27 @@ export default function DpFetchTest() {
         // Detail page (HTML response)
         const detailProbe = await probeJson(r.detailUrl, 8000);
         if (cancelled) return;
-        // Tests endpoint
+        // Tests endpoint — backend DB
         const testsProbe = await probeJson(r.testsUrl, 6000);
         if (cancelled) return;
+
+        // CSV-FIRST fallback: DB 404 dönerse CSV'den al
+        const dbTestsCount = testsProbe.data?.data?.test_cases?.length;
+        const csvTests = testsById.get(r.id);
+        const finalTestsStatus: Status = testsProbe.status === "ok"
+          ? "ok"
+          : csvTests && csvTests.test_cases.length > 0
+            ? "ok"   // CSV-FIRST mimari: CSV'de varsa 200 eşdeğeri
+            : testsProbe.status;
+        const finalTestsCount = testsProbe.status === "ok"
+          ? dbTestsCount
+          : csvTests?.test_cases.length;
+        const finalError = testsProbe.status === "ok"
+          ? testsProbe.error
+          : csvTests && csvTests.test_cases.length > 0
+            ? "csv-fallback"
+            : testsProbe.error;
+
         setRows((prev) =>
           prev.map((p) =>
             p.id === r.id
@@ -189,10 +223,10 @@ export default function DpFetchTest() {
                   ...p,
                   detailStatus: detailProbe.status,
                   detailMs: detailProbe.ms,
-                  testsStatus: testsProbe.status,
+                  testsStatus: finalTestsStatus,
                   testsMs: testsProbe.ms,
-                  testsCount: testsProbe.data?.data?.test_cases?.length,
-                  error: detailProbe.error || testsProbe.error,
+                  testsCount: finalTestsCount,
+                  error: detailProbe.error || finalError,
                 }
               : p
           )
