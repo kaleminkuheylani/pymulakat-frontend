@@ -1,9 +1,9 @@
 // /python-dinamik-programlama — Python dinamik programlama soruları kataloğu sayfası.
-// Paylaşılan CategoryPageTemplate'i kullanır.
+// Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
-import DynamicProgrammingQuestionList from "./DynamicProgrammingQuestionList";
+import QuestionListClient from "../../components/QuestionListClient";
 
 export const metadata: Metadata = {
   title: "Python Dinamik Programlama Soruları ve Çözümleri",
@@ -192,7 +192,12 @@ export default function PythonDinamikProgramlamaPage() {
           </section>
         }
       >
-        <DynamicProgrammingQuestionList />
+        <QuestionListClient
+          category="dynamic-programming"
+          urlSlug="python-dinamik-programlama"
+          displaySlug="dynamic-programming"
+          skeletonCount={6}
+        />
       </CategoryPageTemplate>
     </>
   );

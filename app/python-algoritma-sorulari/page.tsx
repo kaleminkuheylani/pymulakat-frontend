@@ -1,9 +1,9 @@
 // /python-algoritma-sorulari — Python algoritma soruları kataloğu sayfası.
-// Paylaşılan CategoryPageTemplate'i kullanır.
+// Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
-import AlgorithmQuestionList from "./AlgorithmQuestionList";
+import QuestionListClient from "../../components/QuestionListClient";
 
 export const metadata: Metadata = {
   title: "Python Algoritma Soruları — Pratik Yap, Anında Geri Bildirim Al",
@@ -150,7 +150,21 @@ export default function PythonAlgoritmaSorulariPage() {
         backLabel="Tüm Kategoriler"
         related={related}
       >
-        <AlgorithmQuestionList />
+        {/* algorithms + dynamic-programming — iki kategorinin tamamı algoritma kapsamında */}
+        <QuestionListClient
+          category="algorithms"
+          urlSlug="python-algoritma-sorulari"
+          displaySlug="algorithms"
+          skeletonCount={9}
+        />
+        <div className="mt-8 pt-8 border-t border-white/10">
+          <QuestionListClient
+            category="dynamic-programming"
+            urlSlug="python-dinamik-programlama"
+            displaySlug="dynamic-programming"
+            skeletonCount={6}
+          />
+        </div>
       </CategoryPageTemplate>
     </>
   );
