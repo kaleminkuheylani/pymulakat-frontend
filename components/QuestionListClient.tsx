@@ -256,7 +256,7 @@ export default function QuestionListClient({
         </div>
         {source && (
           <div className="text-[10px] uppercase tracking-wider text-white/30 font-mono">
-            {source === "csv" ? "📄 CSV (GitHub)" : "🗄️ DB fallback"}
+            {source === "primary" ? "📄 CSV (raw GitHub)" : source === "fallback" ? "📄 CSV (jsDelivr)" : "📄 CSV"}
           </div>
         )}
       </div>
