@@ -110,15 +110,17 @@ function parseCSV(text: string): { id: number; category: string; title: string }
   if (cell || current.length) { current.push(cell); rows.push(current); }
   if (rows.length < 2) return [];
   const h = rows[0];
-  const get = (k: string) => {
-    const i = h.indexOf(k);
-    return i >= 0 ? cols[i] || "" : "";
-  };
-  return rows.slice(1).map((cols) => ({
-    id: parseInt(get("id"), 10) || 0,
-    category: get("category"),
-    title: get("title"),
-  })).filter((q) => q.id > 0);
+  return rows.slice(1).map((cols) => {
+    const get = (k: string) => {
+      const i = h.indexOf(k);
+      return i >= 0 ? cols[i] || "" : "";
+    };
+    return {
+      id: parseInt(get("id"), 10) || 0,
+      category: get("category"),
+      title: get("title"),
+    };
+  }).filter((q) => q.id > 0);
 }
 
 async function fetchCategoriesFromCSV(): Promise<Category[]> {
