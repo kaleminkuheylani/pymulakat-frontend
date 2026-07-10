@@ -19,8 +19,10 @@ const nextConfig = {
       // Fonts (next/font inline data URIs)
       "font-src 'self' data:",
       // API calls (Supabase REST + Realtime WebSocket + own backend + GTM +
-      // Pyodide stdlib: jsdelivr.net — Python import'lar paketleri buradan çeker)
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net data: blob:`,
+      // Pyodide stdlib: jsdelivr.net — Python import'lar paketleri buradan çeker.
+      // CSV-FIRST mimari: raw.githubusercontent.com + *.githubusercontent.com
+      // (GitHub raw content endpoint) CSV'yi çekmek için gerekli.
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://*.githubusercontent.com data: blob:`,
       // GTM iframe (noscript fallback) + Clickjacking koruması (X-Frame-Options yerine modern alternatif)
       "frame-src 'self' https://www.googletagmanager.com",
       // Web Workers (Pyodide runs in a worker)
