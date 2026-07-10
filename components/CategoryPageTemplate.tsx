@@ -18,8 +18,8 @@ export interface RelatedCategory {
 export interface CategoryPageTemplateProps {
   /** Sayfa başlığı (H1) */
   title: string;
-  /** Sayfa alt başlığı (paragraf) */
-  subtitle: string;
+  /** Sayfa alt başlığı (paragraf) — string veya JSX kabul eder */
+  subtitle: ReactNode;
   /** Header'daki chip etiketler */
   tags?: string[];
   /** Header'daki üst link (back) */
