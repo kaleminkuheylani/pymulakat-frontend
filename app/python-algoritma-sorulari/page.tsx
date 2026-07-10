@@ -3,7 +3,9 @@
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
-import QuestionListClient from "../../components/QuestionListClient";
+import ServerQuestionList from "../../components/ServerQuestionList";
+
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Python Algoritma Soruları — Pratik Yap, Anında Geri Bildirim Al",
@@ -151,14 +153,14 @@ export default function PythonAlgoritmaSorulariPage() {
         related={related}
       >
         {/* algorithms + dynamic-programming — iki kategorinin tamamı algoritma kapsamında */}
-        <QuestionListClient
+        <ServerQuestionList
           category="algorithms"
           urlSlug="python-algoritma-sorulari"
           displaySlug="algorithms"
           skeletonCount={9}
         />
         <div className="mt-8 pt-8 border-t border-white/10">
-          <QuestionListClient
+          <ServerQuestionList
             category="dynamic-programming"
             urlSlug="python-dinamik-programlama"
             displaySlug="dynamic-programming"

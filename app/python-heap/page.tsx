@@ -2,7 +2,7 @@
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
-import QuestionListClient from "../../components/QuestionListClient";
+import ServerQuestionList from "../../components/ServerQuestionList";
 import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
@@ -41,6 +41,8 @@ export const metadata: Metadata = {
     creator: "@pythonmulakat",
   },
 };
+
+export const revalidate = 3600;
 
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
@@ -156,7 +158,7 @@ export default function PythonHeapPage() {
           />
         }
       >
-        <QuestionListClient category="heap" urlSlug="python-heap" displaySlug="heap" skeletonCount={6} />
+        <ServerQuestionList category="heap" urlSlug="python-heap" displaySlug="heap" skeletonCount={6} />
       </CategoryPageTemplate>
     </>
   );

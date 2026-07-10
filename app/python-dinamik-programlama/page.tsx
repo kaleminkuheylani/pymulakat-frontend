@@ -1,9 +1,15 @@
 // /python-dinamik-programlama — Python dinamik programlama soruları kataloğu sayfası.
 // Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
+// CSV-FIRST: server-side CSV fetch, initialQuestions ile SSR HTML'e 22 DP basılıyor
+// (Googlebot + no-JS kullanıcı için).
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
-import QuestionListClient from "../../components/QuestionListClient";
+import ServerQuestionList from "../../components/ServerQuestionList";
+
+// Sayfa her istekte yeniden CSV çeker (1 saat Next cache'li).
+// Yeni eklenen sorular max 1 saat gecikmeyle görünür.
+export const revalidate = 3600;
 
 export const metadata: Metadata = {
   title: "Python Dinamik Programlama Soruları ve Çözümleri",
@@ -192,7 +198,7 @@ export default function PythonDinamikProgramlamaPage() {
           </section>
         }
       >
-        <QuestionListClient
+        <ServerQuestionList
           category="dynamic-programming"
           urlSlug="python-dinamik-programlama"
           displaySlug="dynamic-programming"

@@ -119,3 +119,11 @@ export async function findQuestion(
 
   return null;
 }
+
+// ─── Server-side liste: kategori bazlı tüm soruları döner ────
+// CSV-FIRST mimari: ilk HTML'e (SSR) soruları bas, JS olmasa bile
+// Googlebot ve no-JS kullanıcı 22 DP'yi görsün.
+export async function listQuestionsByCategory(category: string): Promise<CSVQuestion[]> {
+  const rows = await fetchCSVQuestions();
+  return rows.filter((q) => q.category === category);
+}

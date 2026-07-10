@@ -26,6 +26,14 @@ export interface QuestionListClientProps {
   displaySlug?: string;
   /** Skeleton sayısı (yüklenirken) */
   skeletonCount?: number;
+  /**
+   * SSR için server tarafında CSV'den çekilmiş initial sorular.
+   * CSV-FIRST mimari: ilk HTML'e (no-JS / Googlebot) soruları basar.
+   * Prop verilirse useEffect'in ilk fetch'i skip edilir.
+   */
+  initialQuestions?: Question[];
+  /** initialQuestions'un kaynağı (debug/SEO için) */
+  initialSource?: "csv" | "csv-fallback" | "db";
 }
 
 interface Question {
@@ -177,13 +185,20 @@ export default function QuestionListClient({
   urlSlug,
   displaySlug,
   skeletonCount = 6,
+  initialQuestions,
+  initialSource,
 }: QuestionListClientProps) {
-  const [questions, setQuestions] = useState<Question[]>([]);
-  const [loading, setLoading] = useState(true);
+  // CSV-FIRST: initial veri varsa direkt kullan, ilk render'da sorular görünür.
+  // Boş array ([]) ile başlatmak loading flash'a yol açar, undefined ile başlat
+  // "henüz fetch edilmedi" demek.
+  const [questions, setQuestions] = useState<Question[]>(initialQuestions ?? []);
+  const [loading, setLoading] = useState<boolean>(initialQuestions === undefined);
   const [error, setError] = useState<string | null>(null);
-  const [source, setSource] = useState<"csv" | "csv-fallback" | "db" | null>(null);
+  const [source, setSource] = useState<"csv" | "csv-fallback" | "db" | null>(initialSource ?? null);
 
   useEffect(() => {
+    // Initial veri zaten varsa (SSR'dan geldi) tekrar fetch etme.
+    if (initialQuestions !== undefined) return;
     let cancelled = false;
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);

@@ -2,7 +2,7 @@
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
-import QuestionListClient from "../../components/QuestionListClient";
+import ServerQuestionList from "../../components/ServerQuestionList";
 import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
@@ -40,6 +40,8 @@ export const metadata: Metadata = {
     creator: "@pythonmulakat",
   },
 };
+
+export const revalidate = 3600;
 
 const breadcrumbJsonLd = {
   "@context": "https://schema.org",
@@ -159,7 +161,7 @@ export default function PythonStackPage() {
           />
         }
       >
-        <QuestionListClient category="stack" urlSlug="python-stack" displaySlug="stack" skeletonCount={5} />
+        <ServerQuestionList category="stack" urlSlug="python-stack" displaySlug="stack" skeletonCount={5} />
       </CategoryPageTemplate>
     </>
   );
