@@ -1,19 +1,14 @@
 // components/QuestionListClient.tsx
 // TÜM kategori sayfalarında paylaşılan soru listesi client component.
-// 📌 CSV-FIRST: GitHub'daki public CSV'yi jsDelivr CDN üzerinden çeker.
-// Backend DB yavaş deploy olur / cache'li kalır — CSV ise push ile anında güncellenir.
-// DB endpoint'i sadece CSV fetch başarısız olursa fallback olarak kullanılır.
+// 📌 CSV-ONLY mimari: GitHub'daki public CSV'yi çeker (raw primary, jsDelivr fallback).
+// Backend DB'ye hiç bağlanmıyoruz — CSV = tek kaynak.
 
 "use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-
-// jsDelivr CDN — GitHub raw yerine tercih edilir (daha hızlı, content-type: text/csv)
-// @main branch = main, @v1 / @commit-sha = pinned (cache'lenebilir)
-// Fallback: backend /api/v2/questions/all (eski davranış)
+// CSV kaynakları (raw GitHub primary, jsDelivr fallback)
 const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
 const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
 
@@ -33,7 +28,7 @@ export interface QuestionListClientProps {
    */
   initialQuestions?: Question[];
   /** initialQuestions'un kaynağı (debug/SEO için) */
-  initialSource?: "csv" | "csv-fallback" | "db";
+  initialSource?: "primary" | "fallback";
 }
 
 interface Question {
@@ -137,11 +132,12 @@ function parseCSV(text: string): Question[] {
     .filter((q) => q.id > 0 && q.title);
 }
 
-type FetchSource = "csv" | "csv-fallback" | "db";
+type FetchSource = "primary" | "fallback";
 
+// CSV-only mimari: CSV = tek kaynak, backend DB'ye hiç bağlanmıyoruz.
+// raw GitHub primary, jsDelivr fallback. Hata durumunda sonucu döner (boş array değil — caller'a haber).
 async function fetchCSV(): Promise<{ items: Question[]; source: FetchSource }> {
   const errors: string[] = [];
-  // 1) raw GitHub (primary, Vercel fetch'i en güvenilir bu)
   for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
     try {
       const r = await fetch(url, { cache: "no-store" });
@@ -151,7 +147,7 @@ async function fetchCSV(): Promise<{ items: Question[]; source: FetchSource }> {
         if (parsed.length > 0) {
           return {
             items: parsed,
-            source: url === CSV_PRIMARY ? "csv" : "csv-fallback",
+            source: url === CSV_PRIMARY ? "primary" : "fallback",
           };
         }
       } else {
@@ -161,23 +157,7 @@ async function fetchCSV(): Promise<{ items: Question[]; source: FetchSource }> {
       errors.push(`${url}: ${e?.message || "fetch error"}`);
     }
   }
-
-  // 2) Backend DB fallback
-  try {
-    const r = await fetch(`${API_BASE}/api/v2/questions/all`, { cache: "no-store" });
-    if (r.ok) {
-      const data: QuestionsResponse | Question[] = await r.json();
-      return {
-        items: Array.isArray(data) ? data : data?.data || [],
-        source: "db",
-      };
-    }
-    errors.push(`backend: HTTP ${r.status}`);
-  } catch (e: any) {
-    errors.push(`backend: ${e?.message || "fetch error"}`);
-  }
-
-  throw new Error(errors.join("; "));
+  throw new Error(`CSV kaynaklarına erişilemedi: ${errors.join("; ")}`);
 }
 
 export default function QuestionListClient({
@@ -194,7 +174,7 @@ export default function QuestionListClient({
   const [questions, setQuestions] = useState<Question[]>(initialQuestions ?? []);
   const [loading, setLoading] = useState<boolean>(initialQuestions === undefined);
   const [error, setError] = useState<string | null>(null);
-  const [source, setSource] = useState<"csv" | "csv-fallback" | "db" | null>(initialSource ?? null);
+  const [source, setSource] = useState<"primary" | "fallback" | null>(initialSource ?? null);
 
   useEffect(() => {
     // Initial veri zaten varsa (SSR'dan geldi) tekrar fetch etme.

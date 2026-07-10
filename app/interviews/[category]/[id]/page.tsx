@@ -13,7 +13,7 @@ import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
-import { getIdFromSlug, slugifyTitle } from "../../../../lib/questionMeta";
+import { slugifyTitle } from "../../../../lib/questionMeta";
 import { findQuestion, slugifyTitle as csvSlugify, type CSVQuestion } from "../../../../lib/csvSource";
 
 // Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
@@ -82,40 +82,21 @@ function csvToSEOQuestion(q: CSVQuestion, actualId: number, slug: string): SEOQu
 
 // ─── Server-side test cases fetch (SSR: misafirler de okuyabilsin) ─────
 async function fetchQuestionTests(category: string, slugOrId: string): Promise<SSRQuestionTests | null> {
-  // 1) CSV'den dene (yeni sorular DB'de olmayabilir)
+  // CSV-only mimari: CSV = tek kaynak, backend'e hiç bağlanmıyoruz.
   try {
     const csvQ = await findQuestion(category, slugOrId);
-    if (csvQ) {
-      let cases: SSRTestCase[] = [];
-      try { cases = JSON.parse(csvQ.test_cases || "[]"); } catch { cases = []; }
-      return {
-        question_id: csvQ.id,
-        function_name: csvQ.function_name,
-        test_cases: cases.map((c) => ({
-          input: c.input,
-          expected: c.expected,
-          description: c.description,
-        })),
-      };
-    }
-  } catch {
-    // devam
-  }
-
-  // 2) Backend fallback
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-    const asNum = parseInt(slugOrId, 10);
-    const url = isNaN(asNum)
-      ? `${apiUrl}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slugOrId)}/tests`
-      : `${apiUrl}/api/v2/questions/${asNum}/tests`;
-    const res = await fetch(url, {
-      next: { revalidate: 3600 },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.data || data;
+    if (!csvQ) return null;
+    let cases: SSRTestCase[] = [];
+    try { cases = JSON.parse(csvQ.test_cases || "[]"); } catch { cases = []; }
+    return {
+      question_id: csvQ.id,
+      function_name: csvQ.function_name,
+      test_cases: cases.map((c) => ({
+        input: c.input,
+        expected: c.expected,
+        description: c.description,
+      })),
+    };
   } catch {
     return null;
   }
@@ -123,74 +104,21 @@ async function fetchQuestionTests(category: string, slugOrId: string): Promise<S
 
 // ─── Server-side data fetch ────────────────────────────────
 async function fetchQuestionSEO(category: string, id: string): Promise<SEOQuestion | null> {
-  // 1) CSV'den dene (yeni eklenen 10 DP sorusu henüz DB'de yok)
+  // CSV-only mimari: CSV = tek kaynak, backend'e hiç bağlanmıyoruz.
   try {
     const csvQ = await findQuestion(category, id);
-    if (csvQ) {
-      const slug = csvSlugify(csvQ.title);
-      return csvToSEOQuestion(csvQ, csvQ.id, slug);
-    }
-  } catch {
-    // devam
-  }
-
-  // 2) Backend DB fallback
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-
-    // ✅ Slug veya ID'yi kabul et → backend by-slug API veya ID fetch
-    let actualId = id;
-    const asNum = parseInt(id, 10);
-
-    if (isNaN(asNum)) {
-      // Slug → backend by-slug
-      const slug = id;
-      try {
-        const bySlugRes = await fetch(
-          `${apiUrl}/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,
-          { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
-        );
-        if (bySlugRes.ok) {
-          const data = await bySlugRes.json();
-          return data.data || data;
-        }
-      } catch {
-        // Fallback: slug -> ID resolver
-      }
-      const resolvedId = await getIdFromSlug(slug, apiUrl);
-      if (resolvedId) {
-        actualId = String(resolvedId);
-      }
-    }
-
-    const res = await fetch(`${apiUrl}/api/v2/questions/${actualId}`, {
-      next: { revalidate: 3600 },
-      signal: AbortSignal.timeout(5000),
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
-    return data.data || data;
+    if (!csvQ) return null;
+    const slug = csvSlugify(csvQ.title);
+    return csvToSEOQuestion(csvQ, csvQ.id, slug);
   } catch {
     return null;
   }
 }
 
-async function fetchHasStudy(questionId: number): Promise<boolean> {
-  // Mevcut sorunun guide (study) DB'de var mı? (CSV metadata fallback sayılmaz)
-  try {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-    const res = await fetch(
-      `${apiUrl}/api/v2/guides/by-question-id/${questionId}`,
-      { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
-    );
-    if (!res.ok) return false;
-    const data = await res.json();
-    // DB'den geliyorsa (source="db") gerçek analiz var.
-    // CSV fallback'te içerik alanları boş → hasStudy=false say.
-    return data?.source === "db";
-  } catch {
-    return false;
-  }
+async function fetchHasStudy(_questionId: number): Promise<boolean> {
+  // CSV-only mimari: guide (study) backend'de tutuluyordu, artık kullanılmıyor.
+  // CSV'de guide alanı yoksa hasStudy=false kabul ediyoruz.
+  return false;
 }
 
 // ─── Related questions fetch (batch) ─────────────────────
@@ -366,34 +294,16 @@ export default async function Page({ params, searchParams }: PageProps) {
   // ⚠️ parseInt('0-1-knapsack') === 0 (parseInt leading digit'i alir),
   //    isNaN(0) === false → slug olarak davranmiyor → 404.
   //    Cozum: sadece /^\d+$/ ise ID kabul et, aksi halde slug.
+  //
+  // 📌 CSV-only mimari: resolvedId sadece URL /^\d+$/ ise set edilir.
+  //    Slug geliyorsa resolvedId null kalır → fetchQuestionSEO CSV'den
+  //    slug'ı bulur, notFound() tetiklenmez.
   let resolvedId: number | null = null;
   const _isPureId = /^\d+$/.test(resolvedParams.id);
   if (_isPureId) {
     resolvedId = parseInt(resolvedParams.id, 10);  // Eski ID URL
-  } else {
-    // Slug → ID cozumleme:
-    // 1) Backend by-slug API (runtime)
-    resolvedId = await getIdFromSlug(resolvedParams.id);
-    // 2) Q-v4 (89+) icin DB uzerinden by-slug API dene (runtime fetch)
-    if (!resolvedId) {
-      try {
-        const apiBase2 = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-        const bySlugRes = await fetch(
-          `${apiBase2}/api/v2/questions/by-slug/${encodeURIComponent(resolvedParams.category)}/${encodeURIComponent(resolvedParams.id)}`,
-          { next: { revalidate: 3600 }, signal: AbortSignal.timeout(5000) }
-        );
-        if (bySlugRes.ok) {
-          const data = await bySlugRes.json();
-          const q = data.data || data;
-          if (q && typeof q.id === "number") {
-            resolvedId = q.id;
-          }
-        }
-      } catch {
-        // Sessizce devam et, notFound fallback
-      }
-    }
   }
+  // (Eski backend by-slug çözümlemesi kaldırıldı — CSV-only mimari.)
   // Slug ile geldiyse resolvedId null olabilir — bu durumda WorkspaceClient
   // kendi fetch'iyle soruyu çekecek. notFound() sadece gerçekten bulunamadıysa çağrılır.
   const isSlugRequest = !_isPureId;
@@ -403,12 +313,10 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   const [mobile, seoQ, ssrTests] = await Promise.all([
     isMobileDevice(),
-    fetchQuestionSEO(resolvedParams.category, String(resolvedId)),
+    // fetchQuestionSEO slug/ID kabul eder (CSV-only mimari)
+    fetchQuestionSEO(resolvedParams.category, resolvedParams.id),
     // SSR: test case'leri server-side çek. Misafirler de Testler tab'ında görebilsin.
-    // ⚠️ _isPureId tek doğru slug/ID discriminator: '0-1-knapsack' parseInt=0 → BUG
-    _isPureId
-      ? fetchQuestionTests(resolvedParams.category, resolvedParams.id)
-      : fetchQuestionTests(resolvedParams.category, resolvedParams.id),
+    fetchQuestionTests(resolvedParams.category, resolvedParams.id),
   ]);
 
   // 📌 Guide (DB-backed analiz) var mı? Sadece DB'den gelirse CTA göster,

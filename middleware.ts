@@ -8,17 +8,15 @@ import type { NextRequest } from "next/server";
 // /interviews/{category}/{id}   -> 308 /interviews/{category}/{slug}
 // /interviews/{category}/{slug} -> render (canonical, indexlenir)
 //
-// DB source of truth: build time'da backend /api/v2/questions/all'dan map çekilir.
-// Vercel Edge runtime'da çalışır (10s timeout).
+// CSV-only mimari: id→slug map CSV'den üretilir (raw primary + jsDelivr fallback).
+// Backend DB'ye hiç bağlanmıyoruz. Vercel Edge runtime'da çalışır (10s timeout).
 // ═════════════════════════════════════════════════════════
 
-const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-
 // Build time'da ve runtime'da idToSlug map'i lazy yükle.
-// 1 saatlik revalidate — DB'de yeni soru eklenirse max 1 saat gecikmeyle canonical URL'ler güncellenir.
-// CSV-FIRST: yeni sorular DB'de yoksa CSV'den title → slug üretir.
+// 1 saatlik revalidate — CSV'ye yeni soru eklenirse max 1 saat gecikmeyle canonical URL'ler güncellenir.
 
-const CSV_PRIMARY = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
+const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
 
 // Edge runtime'da title → slug üretici
 function slugifyTitle(title: string): string {
@@ -40,38 +38,18 @@ async function getIdToSlug(): Promise<Map<number, string>> {
   }
   const map = new Map<number, string>();
 
-  // 1) Backend DB'den (slug alanı DB'de varsa)
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(`${API}/api/v2/questions/all?limit=500`, {
-      signal: controller.signal,
-      next: { revalidate: 3600 },
-    });
-    clearTimeout(timeout);
-    if (res.ok) {
-      const data = await res.json();
-      for (const q of data?.data || []) {
-        if (typeof q.id === "number") {
-          if (q.slug) map.set(q.id, q.slug);
-          else if (q.title) map.set(q.id, slugifyTitle(q.title));
-        }
-      }
-    }
-  } catch {
-    // devam
-  }
-
-  // 2) CSV'den (yeni sorular DB'de olmayabilir, ama CSV'de kesin var)
-  try {
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), 8000);
-    const res = await fetch(CSV_PRIMARY, {
-      signal: controller.signal,
-      next: { revalidate: 3600 },
-    });
-    clearTimeout(timeout);
-    if (res.ok) {
+  // CSV-only mimari: CSV = tek kaynak, backend'e hiç bağlanmıyoruz.
+  // raw GitHub primary, jsDelivr fallback.
+  for (const csvUrl of [CSV_PRIMARY, CSV_FALLBACK]) {
+    try {
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 8000);
+      const res = await fetch(csvUrl, {
+        signal: controller.signal,
+        next: { revalidate: 3600 },
+      });
+      clearTimeout(timeout);
+      if (!res.ok) continue;
       const text = await res.text();
       // Basit CSV parser — header-driven
       const rows: string[][] = [];
@@ -102,14 +80,15 @@ async function getIdToSlug(): Promise<Map<number, string>> {
         for (const cols of rows.slice(1)) {
           const id = parseInt(cols[idx("id")] || "0", 10);
           const title = cols[idx("title")] || "";
-          if (id > 0 && title && !map.has(id)) {
+          if (id > 0 && title) {
             map.set(id, slugifyTitle(title));
           }
         }
       }
+      break;  // İlk başarılı kaynak yeterli
+    } catch {
+      // Diğer CSV kaynağını dene
     }
-  } catch {
-    // CSV de başarısızsa eldeki map ile devam
   }
 
   idToSlugCache = map;

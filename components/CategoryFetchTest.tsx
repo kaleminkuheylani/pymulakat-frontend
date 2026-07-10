@@ -1,8 +1,12 @@
 // components/CategoryFetchTest.tsx
 //
 // TÜM kategori sayfaları için FETCH-TEST diagnostic component.
-// Her sorunun detay sayfasını + tests endpoint'ini probe eder,
-// HTTP status kodunu ve response time'ı gösterir.
+// CSV-only mimari: CSV = TEK kaynak. Backend DB'ye hiç bağlanmıyoruz.
+//   • CSV (raw GitHub + jsDelivr CDN) → sorular ve test_cases parse
+//   • Detail sayfası → Vercel'de Next.js ile render (CSV-FIRST)
+//
+// Backend DB kullanılmıyor — sadece CSV'de yoksa "missing" olur (yeni
+// eklenen ama henüz push edilmemiş demektir). Mimari: CSV = source of truth.
 //
 // Kullanım:
 //   <CategoryFetchTest category="dynamic-programming" />  → sadece DP
@@ -10,24 +14,16 @@
 //
 // Çıktı:
 //   ✅ 200 OK  + ms    → her şey yolunda
-//   ❌ 404/500 + ms    → backend veya CSV problemi
+//   ❌ 404/500 + ms    → Next.js detay sayfası yok
 //   ⏱  timeout        → çok yavaş
 //   ⏳ pending        → henüz fetch edilmedi
-//
-// URL pattern'leri test edilir:
-//   1) CSV raw GitHub   → soruları çek (CSV-FIRST mimari)
-//   2) Detail sayfası   → /interviews/{category}/{slug}
-//   3) Tests endpoint   → backend DB + CSV-FIRST fallback (csv-fallback etiketi)
-//
-// 📌 Mimari not: DB'de olmayan yeni sorular (henüz seed edilmemiş) için
-//    backend 404 döner — bu beklenen durum. CSV-FIRST fallback testleri
-//    parse edip "ok (csv-fallback)" sayar. Mimari bozulmaz.
+//   ⚠ missing          → CSV'de soru yok (henüz push edilmemiş)
 
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
 
-type Status = "pending" | "ok" | "error" | "timeout";
+type Status = "pending" | "ok" | "error" | "timeout" | "missing";
 
 export interface CategoryFetchTestProps {
   /** Filtrelenecek kategori. Boş/undefined = tüm 9 kategori. */
@@ -45,12 +41,11 @@ interface TestRow {
   category: string;
   detailStatus: Status;
   detailMs?: number;
-  testsStatus: Status;
-  testsMs?: number;
-  testsCount?: number;
-  source: "csv" | "csv-fallback" | "db" | null;
+  /** CSV'de test_cases parse sonucu: ok (varsa) / missing (yok) */
+  csvTestsStatus: Status;
+  csvTestsCount: number;
+  csvParseMs?: number;
   detailUrl: string;
-  testsUrl: string;
   error?: string;
 }
 
@@ -64,19 +59,20 @@ interface CategoryInfo {
 }
 
 const ALL_CATEGORIES: CategoryInfo[] = [
-  { key: "python-basics",     label: "Python Temelleri",       urlPrefix: "/python-temelleri" },
-  { key: "data-structures",   label: "Veri Yapıları",          urlPrefix: "/python-veri-yapilari" },
-  { key: "pandas",            label: "Pandas",                 urlPrefix: "/python-pandas" },
-  { key: "list-dict",         label: "Liste / Sözlük",         urlPrefix: "/python-liste-sozluk" },
-  { key: "heap",              label: "Heap",                   urlPrefix: "/python-heap" },
-  { key: "stack",             label: "Stack",                  urlPrefix: "/python-stack" },
-  { key: "queue",             label: "Queue",                  urlPrefix: "/python-queue" },
-  { key: "algorithms",        label: "Algoritmalar",           urlPrefix: "/python-algoritma-sorulari" },
-  { key: "dynamic-programming", label: "Dinamik Programlama",  urlPrefix: "/python-dinamik-programlama" },
+  { key: "python-basics",       label: "Python Temelleri",      urlPrefix: "/python-temelleri" },
+  { key: "data-structures",     label: "Veri Yapıları",         urlPrefix: "/python-veri-yapilari" },
+  { key: "pandas",              label: "Pandas",                urlPrefix: "/python-pandas" },
+  { key: "list-dict",           label: "Liste / Sözlük",        urlPrefix: "/python-liste-sozluk" },
+  { key: "heap",                label: "Heap",                  urlPrefix: "/python-heap" },
+  { key: "stack",               label: "Stack",                 urlPrefix: "/python-stack" },
+  { key: "queue",               label: "Queue",                 urlPrefix: "/python-queue" },
+  { key: "algorithms",          label: "Algoritmalar",          urlPrefix: "/python-algoritma-sorulari" },
+  { key: "dynamic-programming", label: "Dinamik Programlama",   urlPrefix: "/python-dinamik-programlama" },
 ];
 
-const CSV_URL = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+// CSV-only: backend'e hiç gitmiyoruz
+const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
+const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
 
 function slugifyTitle(title: string): string {
   return title
@@ -93,6 +89,7 @@ interface ParsedRow {
   title: string;
   test_cases: string;
   function_name: string;
+  level: string;
 }
 
 function parseCSV(text: string): ParsedRow[] {
@@ -126,10 +123,11 @@ function parseCSV(text: string): ParsedRow[] {
     title: cols[h.indexOf("title")] || "",
     test_cases: cols[h.indexOf("test_cases")] || "",
     function_name: cols[h.indexOf("function_name")] || "",
+    level: cols[h.indexOf("level")] || "beginner",
   })).filter((q) => q.id && q.title);
 }
 
-async function probe(url: string, timeoutMs = 6000): Promise<{ status: Status; ms: number; data?: any; error?: string }> {
+async function probe(url: string, timeoutMs = 6000): Promise<{ status: Status; ms: number; error?: string }> {
   const start = performance.now();
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), timeoutMs);
@@ -138,9 +136,7 @@ async function probe(url: string, timeoutMs = 6000): Promise<{ status: Status; m
     clearTimeout(timer);
     const ms = Math.round(performance.now() - start);
     if (!r.ok) return { status: "error", ms, error: `HTTP ${r.status}` };
-    let data: any = null;
-    try { data = await r.json(); } catch {}
-    return { status: "ok", ms, data };
+    return { status: "ok", ms };
   } catch (e: any) {
     clearTimeout(timer);
     const ms = Math.round(performance.now() - start);
@@ -150,17 +146,19 @@ async function probe(url: string, timeoutMs = 6000): Promise<{ status: Status; m
 }
 
 const STATUS_COLORS: Record<Status, string> = {
-  pending: "bg-white/5 text-white/40 border-white/10",
-  ok: "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
-  error: "bg-rose-500/10 text-rose-300 border-rose-500/30",
-  timeout: "bg-amber-500/10 text-amber-300 border-amber-500/30",
+  pending:  "bg-white/5 text-white/40 border-white/10",
+  ok:       "bg-emerald-500/10 text-emerald-300 border-emerald-500/30",
+  error:    "bg-rose-500/10 text-rose-300 border-rose-500/30",
+  timeout:  "bg-amber-500/10 text-amber-300 border-amber-500/30",
+  missing:  "bg-rose-500/10 text-rose-300 border-rose-500/30",
 };
 
 const STATUS_LABELS: Record<Status, string> = {
-  pending: "⏳ pending",
-  ok: "✅ 200 OK",
-  error: "❌ error",
-  timeout: "⏱ timeout",
+  pending:  "⏳ pending",
+  ok:       "✅ 200 OK",
+  error:    "❌ error",
+  timeout:  "⏱ timeout",
+  missing:  "⚠ missing",
 };
 
 export default function CategoryFetchTest({
@@ -168,7 +166,6 @@ export default function CategoryFetchTest({
   maxRows = 50,
   categoryLabel,
 }: CategoryFetchTestProps) {
-  // Tüm kategoriler modu (default): kategori filtresi uygulanmaz
   const isAllMode = !category;
   const targetCategories = useMemo(() => {
     if (category) return ALL_CATEGORIES.filter((c) => c.key === category);
@@ -179,69 +176,73 @@ export default function CategoryFetchTest({
   const [csvStatus, setCsvStatus] = useState<Status>("pending");
   const [csvMs, setCsvMs] = useState<number | undefined>();
   const [csvCount, setCsvCount] = useState<number | undefined>();
+  const [csvSource, setCsvSource] = useState<"primary" | "fallback" | null>(null);
   const [activeCategory, setActiveCategory] = useState<string>(category || ALL_CATEGORIES[0].key);
 
   useEffect(() => {
     let cancelled = false;
 
     async function run() {
-      // 1) CSV'yi text olarak çek (tek sefer, tüm kategoriler için paylaşılan)
+      // 1) CSV'yi text olarak çek — CSV-only mimari
       let csvText = "";
       let csvMsVal = 0;
-      try {
+      let source: "primary" | "fallback" | null = null;
+      let ok = false;
+      for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
         const start = performance.now();
         const controller = new AbortController();
         const timer = setTimeout(() => controller.abort(), 8000);
-        const r = await fetch(CSV_URL, { cache: "no-store", signal: controller.signal });
-        clearTimeout(timer);
-        csvMsVal = Math.round(performance.now() - start);
-        if (r.ok) {
-          csvText = await r.text();
-          setCsvStatus("ok");
-          setCsvMs(csvMsVal);
-          setCsvCount(parseCSV(csvText).length);
-        } else {
-          setCsvStatus("error");
-          setCsvMs(csvMsVal);
-          return;
+        try {
+          const r = await fetch(url, { cache: "no-store", signal: controller.signal });
+          clearTimeout(timer);
+          csvMsVal = Math.round(performance.now() - start);
+          if (r.ok) {
+            csvText = await r.text();
+            source = url === CSV_PRIMARY ? "primary" : "fallback";
+            setCsvStatus("ok");
+            setCsvMs(csvMsVal);
+            setCsvSource(source);
+            ok = true;
+            break;
+          }
+        } catch {
+          clearTimeout(timer);
         }
-      } catch (e: any) {
-        setCsvStatus(e?.name === "AbortError" ? "timeout" : "error");
+      }
+      if (!ok) {
+        setCsvStatus("error");
         setCsvMs(csvMsVal);
         return;
       }
+      if (cancelled) return;
 
       const all = parseCSV(csvText);
-      const testsById = new Map<number, { function_name: string; test_cases: any[] }>();
-      for (const q of all) {
-        try {
-          const cases = JSON.parse(q.test_cases || "[]");
-          testsById.set(parseInt(q.id, 10), {
-            function_name: q.function_name,
-            test_cases: Array.isArray(cases) ? cases : [],
-          });
-        } catch { /* invalid JSON, skip */ }
-      }
+      setCsvCount(all.length);
 
-      // 2) Her kategori için initial row oluştur
+      // 2) Her kategori için initial row — CSV'de test_cases ok=missing
       const initial: Record<string, TestRow[]> = {};
       for (const cat of targetCategories) {
         const catRows = all.filter((q) => q.category === cat.key);
         const rows: TestRow[] = catRows.slice(0, maxRows).map((q) => {
           const slug = slugifyTitle(q.title);
-          const csvHas = testsById.get(parseInt(q.id, 10))?.test_cases.length ?? 0;
+          // CSV-FIRST: test_cases parse et
+          let cases: any[] = [];
+          let parseStatus: Status = "ok";
+          try {
+            cases = JSON.parse(q.test_cases || "[]");
+            if (!Array.isArray(cases) || cases.length === 0) parseStatus = "missing";
+          } catch {
+            parseStatus = "missing";
+          }
           return {
             id: parseInt(q.id, 10),
             slug,
             title: q.title,
             category: cat.key,
-            // CSV-FIRST: CSV'de test_cases varsa default ok
-            testsStatus: csvHas > 0 ? "ok" : "pending",
-            testsCount: csvHas,
-            source: csvHas > 0 ? "csv" : null,
             detailStatus: "pending",
+            csvTestsStatus: parseStatus,
+            csvTestsCount: cases.length || 0,
             detailUrl: `/interviews/${cat.key}/${slug}`,
-            testsUrl: `${API_BASE}/api/v2/questions/${q.id}/tests`,
           };
         });
         initial[cat.key] = rows;
@@ -249,7 +250,7 @@ export default function CategoryFetchTest({
       if (cancelled) return;
       setAllRows(initial);
 
-      // 3) Her kategori için sırayla probe
+      // 3) Her satır için detail sayfası probe et (Next.js render)
       for (const cat of targetCategories) {
         if (cancelled) return;
         const rows = initial[cat.key];
@@ -258,48 +259,13 @@ export default function CategoryFetchTest({
           const r = rows[i];
           const detailProbe = await probe(r.detailUrl, 8000);
           if (cancelled) return;
-          const testsProbe = await probe(r.testsUrl, 6000);
-          if (cancelled) return;
-
-          // CSV-FIRST mimari: DB 404 → CSV fallback "ok"
-          const dbTestsCount = testsProbe.data?.data?.test_cases?.length;
-          const csvTests = testsById.get(r.id);
-          const csvHas = csvTests?.test_cases.length ?? 0;
-          const finalTestsStatus: Status = testsProbe.status === "ok"
-            ? "ok"
-            : csvHas > 0
-              ? "ok"  // CSV-FIRST fallback
-              : testsProbe.status;
-          const finalTestsCount = testsProbe.status === "ok"
-            ? dbTestsCount
-            : csvTests?.test_cases.length;
-          const finalSource: TestRow["source"] = testsProbe.status === "ok"
-            ? "db"
-            : csvHas > 0
-              ? "csv"
-              : null;
-          const finalError = testsProbe.status === "ok"
-            ? testsProbe.error
-            : csvHas > 0
-              ? `csv-fallback (db: ${testsProbe.error || "404"})`
-              : testsProbe.error;
-
           setAllRows((prev) => {
             const catRows = prev[cat.key] || [];
             return {
               ...prev,
               [cat.key]: catRows.map((p) =>
                 p.id === r.id
-                  ? {
-                      ...p,
-                      detailStatus: detailProbe.status,
-                      detailMs: detailProbe.ms,
-                      testsStatus: finalTestsStatus,
-                      testsMs: testsProbe.ms,
-                      testsCount: finalTestsCount,
-                      source: finalSource,
-                      error: detailProbe.error || finalError,
-                    }
+                  ? { ...p, detailStatus: detailProbe.status, detailMs: detailProbe.ms, error: detailProbe.error }
                   : p
               ),
             };
@@ -312,13 +278,11 @@ export default function CategoryFetchTest({
     return () => { cancelled = true; };
   }, [category, maxRows, targetCategories]);
 
-  // Tüm kategorilerin row'larını birleştir (özet için)
   const allRowsFlat = useMemo(
     () => Object.values(allRows).flat(),
     [allRows]
   );
 
-  // Aktif kategori (tekil modda hep aynı, tüm modda seçilen)
   const visibleRows = isAllMode ? (allRows[activeCategory] || []) : (allRows[category!] || []);
 
   const summary = {
@@ -326,15 +290,14 @@ export default function CategoryFetchTest({
     detailOk: allRowsFlat.filter((r) => r.detailStatus === "ok").length,
     detailErr: allRowsFlat.filter((r) => r.detailStatus === "error").length,
     detailTimeout: allRowsFlat.filter((r) => r.detailStatus === "timeout").length,
-    testsOk: allRowsFlat.filter((r) => r.testsStatus === "ok").length,
-    testsErr: allRowsFlat.filter((r) => r.testsStatus === "error").length,
-    csvFallback: allRowsFlat.filter((r) => r.error?.includes("csv-fallback")).length,
+    csvTestsOk: allRowsFlat.filter((r) => r.csvTestsStatus === "ok").length,
+    csvTestsMissing: allRowsFlat.filter((r) => r.csvTestsStatus === "missing").length,
     byCategory: targetCategories.map((c) => ({
       ...c,
       count: allRows[c.key]?.length || 0,
       detailOk: allRows[c.key]?.filter((r) => r.detailStatus === "ok").length || 0,
-      testsOk: allRows[c.key]?.filter((r) => r.testsStatus === "ok").length || 0,
-      csvFallback: allRows[c.key]?.filter((r) => r.error?.includes("csv-fallback")).length || 0,
+      csvTestsOk: allRows[c.key]?.filter((r) => r.csvTestsStatus === "ok").length || 0,
+      csvTestsMissing: allRows[c.key]?.filter((r) => r.csvTestsStatus === "missing").length || 0,
     })),
   };
 
@@ -345,16 +308,17 @@ export default function CategoryFetchTest({
           {isAllMode ? "Category Fetch-Test Diagnostics" : `${categoryLabel || category} Fetch-Test`}
         </h1>
         <p className="text-white/60 text-sm mb-6">
-          CSV: <code className="text-amber-300">raw.githubusercontent.com</code> &middot; Detail: slug URL &middot; Tests: <span className="text-emerald-300">CSV-FIRST</span> (DB probe diagnosis)
+          <span className="text-amber-300">CSV-only mimari</span> · CSV: <code className="text-amber-300">raw.githubusercontent.com</code> + jsDelivr · Detail: Next.js slug URL
         </p>
 
         {/* CSV status */}
         <div className={`rounded-xl border p-4 mb-6 ${STATUS_COLORS[csvStatus]}`}>
-          <div className="flex items-center gap-3 text-sm">
+          <div className="flex items-center gap-3 text-sm flex-wrap">
             <span className="font-semibold">📄 CSV</span>
             <span>{STATUS_LABELS[csvStatus]}</span>
             {csvMs !== undefined && <span className="text-white/50">&middot; {csvMs}ms</span>}
             {csvCount !== undefined && <span className="text-white/50">&middot; {csvCount} satır</span>}
+            {csvSource && <span className="text-white/50">&middot; {csvSource}</span>}
           </div>
         </div>
 
@@ -369,9 +333,11 @@ export default function CategoryFetchTest({
             <div className="text-2xl font-bold text-emerald-300">{summary.detailOk}</div>
           </div>
           <div className="rounded-xl border border-cyan-500/30 bg-cyan-500/[0.05] p-3">
-            <div className="text-cyan-300 text-xs uppercase tracking-wider mb-1">Tests CSV-FIRST</div>
-            <div className="text-2xl font-bold text-cyan-300">{summary.testsOk}<span className="text-sm text-white/40"> / {summary.total}</span></div>
-            <div className="text-[10px] text-cyan-300/60 mt-0.5">db: {summary.testsOk - summary.csvFallback} · csv: {summary.csvFallback}</div>
+            <div className="text-cyan-300 text-xs uppercase tracking-wider mb-1">CSV Test Cases</div>
+            <div className="text-2xl font-bold text-cyan-300">
+              {summary.csvTestsOk}<span className="text-sm text-white/40"> / {summary.total}</span>
+            </div>
+            <div className="text-[10px] text-cyan-300/60 mt-0.5">ok: {summary.csvTestsOk} · missing: {summary.csvTestsMissing}</div>
           </div>
           <div className="rounded-xl border border-rose-500/30 bg-rose-500/[0.05] p-3">
             <div className="text-rose-300 text-xs uppercase tracking-wider mb-1">Detail ❌</div>
@@ -396,8 +362,8 @@ export default function CategoryFetchTest({
                 <span className="ml-2 text-white/40">
                   {c.detailOk}/{c.count}
                 </span>
-                {c.csvFallback > 0 && (
-                  <span className="ml-1 text-cyan-300/80">·csv:{c.csvFallback}</span>
+                {c.csvTestsMissing > 0 && (
+                  <span className="ml-1 text-rose-300/80">·missing:{c.csvTestsMissing}</span>
                 )}
               </button>
             ))}
@@ -406,7 +372,7 @@ export default function CategoryFetchTest({
 
         {/* Aktif kategori özet kartı */}
         <div className="rounded-xl border border-white/10 bg-white/[0.02] p-3 mb-4 text-sm">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 flex-wrap">
             <span className="text-white/40 uppercase text-xs tracking-wider">Aktif:</span>
             <span className="font-semibold">
               {ALL_CATEGORIES.find((c) => c.key === activeCategory)?.label || activeCategory}
@@ -429,8 +395,8 @@ export default function CategoryFetchTest({
               <tr className="text-left text-white/50 text-xs uppercase tracking-wider">
                 <th className="px-4 py-3 w-12">id</th>
                 <th className="px-4 py-3">Title</th>
-                <th className="px-4 py-3 text-center">Detail</th>
-                <th className="px-4 py-3 text-center">Tests<br/><span className="text-[10px] text-white/40 normal-case font-normal">CSV-FIRST (DB probe)</span></th>
+                <th className="px-4 py-3 text-center">Detail<br/><span className="text-[10px] text-white/40 normal-case font-normal">Next.js slug URL</span></th>
+                <th className="px-4 py-3 text-center">CSV Tests<br/><span className="text-[10px] text-white/40 normal-case font-normal">test_cases JSON</span></th>
                 <th className="px-4 py-3 text-right">ms</th>
               </tr>
             </thead>
@@ -458,18 +424,15 @@ export default function CategoryFetchTest({
                     )}
                   </td>
                   <td className="px-4 py-3 text-center">
-                    <span className={`inline-block px-2 py-0.5 rounded border text-[10px] font-semibold uppercase tracking-wider ${STATUS_COLORS[r.testsStatus]}`}>
-                      {STATUS_LABELS[r.testsStatus]}
+                    <span className={`inline-block px-2 py-0.5 rounded border text-[10px] font-semibold uppercase tracking-wider ${STATUS_COLORS[r.csvTestsStatus]}`}>
+                      {STATUS_LABELS[r.csvTestsStatus]}
                     </span>
-                    {r.testsMs !== undefined && (
-                      <div className="text-[10px] text-white/40 mt-1">{r.testsMs}ms{r.testsCount ? ` · ${r.testsCount} tests` : ""}</div>
-                    )}
-                    {r.error && (
-                      <div className="text-[10px] text-cyan-300/80 mt-1">{r.error}</div>
-                    )}
+                    <div className="text-[10px] text-white/40 mt-1">
+                      {r.csvTestsCount > 0 ? `${r.csvTestsCount} tests` : "—"}
+                    </div>
                   </td>
                   <td className="px-4 py-3 text-right font-mono text-xs text-white/60">
-                    d:{r.detailMs ?? "–"} t:{r.testsMs ?? "–"}
+                    d:{r.detailMs ?? "–"}
                   </td>
                 </tr>
               ))}
@@ -481,9 +444,9 @@ export default function CategoryFetchTest({
         </div>
 
         <p className="mt-4 text-xs text-white/40">
-          💡 Mimari: CSV = kaynak, DB = opsiyonel cache. 404'ler backend DB'de
-          olmayan yeni sorular (henüz seed edilmemiş) — CSV-FIRST fallback
-          test case'leri CSV'den parse edip "ok" sayıyor.
+          💡 Mimari: <span className="text-amber-300">CSV = tek kaynak</span>.
+          Backend DB'ye hiç bağlanmıyoruz. "missing" = CSV'de test_cases
+          boş/parse hatası (push edilmemiş demektir).
         </p>
       </div>
     </div>

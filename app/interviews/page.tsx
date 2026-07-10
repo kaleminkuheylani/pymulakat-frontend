@@ -15,8 +15,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-
 interface Category {
   slug: string;
   label: string;
@@ -25,12 +23,7 @@ interface Category {
   question_count: number;
 }
 
-interface CategoriesResponse {
-  data: Category[];
-}
-
-// 📌 CSV-FIRST: backend deploy gecikse bile GitHub'daki CSV'den okuyoruz.
-// jsDelivr CDN cache'lenebilir, hızlı. Backend'e sadece fallback olarak düşer.
+// 📌 CSV-only mimari: backend'e hiç bağlanmıyoruz. CSV = tek kaynak.
 const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
 const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
 
@@ -201,24 +194,8 @@ export default function InterviewsPage() {
         if (controller.signal.aborted) return;
         setCategories(list);
       })
-      .catch((csvErr) => {
-        // CSV başarısızsa backend fallback
-        console.warn("[InterviewsPage] CSV failed, trying backend:", csvErr);
-        return fetch(`${API_BASE}/api/v2/categories`, {
-          cache: "no-store",
-          signal: controller.signal,
-        })
-          .then((res) => {
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            return res.json();
-          })
-          .then((data: CategoriesResponse | Category[]) => {
-            if (Array.isArray(data)) setCategories(data);
-            else if (data && Array.isArray(data.data)) setCategories(data.data);
-            else setCategories([]);
-          });
-      })
       .catch((err) => {
+        // CSV-only mimari: backend'e fallback yok.
         if (err?.name !== "AbortError") {
           console.warn("[InterviewsPage] fetch error:", err);
           setError(err?.message || "Kategoriler yüklenemedi");

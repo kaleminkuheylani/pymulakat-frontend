@@ -41,7 +41,7 @@ export default async function ServerQuestionList({
       displaySlug={displaySlug}
       skeletonCount={skeletonCount}
       initialQuestions={initialQuestions}
-      initialSource="csv"
+      initialSource="primary"
     />
   );
 }
