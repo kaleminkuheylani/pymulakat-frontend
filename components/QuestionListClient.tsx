@@ -129,7 +129,9 @@ function parseCSV(text: string): Question[] {
     .filter((q) => q.id > 0 && q.title);
 }
 
-async function fetchCSV(): Promise<Question[]> {
+type FetchSource = "csv" | "csv-fallback" | "db";
+
+async function fetchCSV(): Promise<{ items: Question[]; source: FetchSource }> {
   const errors: string[] = [];
   // 1) raw GitHub (primary, Vercel fetch'i en güvenilir bu)
   for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
@@ -139,8 +141,10 @@ async function fetchCSV(): Promise<Question[]> {
         const text = await r.text();
         const parsed = parseCSV(text);
         if (parsed.length > 0) {
-          if (url !== CSV_PRIMARY) setSource("csv-fallback");
-          return parsed;
+          return {
+            items: parsed,
+            source: url === CSV_PRIMARY ? "csv" : "csv-fallback",
+          };
         }
       } else {
         errors.push(`${url}: HTTP ${r.status}`);
@@ -155,8 +159,10 @@ async function fetchCSV(): Promise<Question[]> {
     const r = await fetch(`${API_BASE}/api/v2/questions/all`, { cache: "no-store" });
     if (r.ok) {
       const data: QuestionsResponse | Question[] = await r.json();
-      setSource("db");
-      return Array.isArray(data) ? data : data?.data || [];
+      return {
+        items: Array.isArray(data) ? data : data?.data || [],
+        source: "db",
+      };
     }
     errors.push(`backend: HTTP ${r.status}`);
   } catch (e: any) {
@@ -183,12 +189,10 @@ export default function QuestionListClient({
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
     fetchCSV()
-      .then((list) => {
+      .then((result) => {
         if (cancelled) return;
-        // CSV kaynağını ayırt etmek için: parseCSV her zaman döner, DB döner ya liste
-        // Ya da basitçe CSV_FALLBACK'e düşmediyse csv, düştüyse db
-        setSource("csv");
-        const filtered = list.filter((q) => q.category === category);
+        setSource(result.source);
+        const filtered = result.items.filter((q) => q.category === category);
         setQuestions(filtered);
       })
       .catch((err) => {
@@ -349,3 +353,5 @@ export default function QuestionListClient({
     </>
   );
 }
+
+// EOF
