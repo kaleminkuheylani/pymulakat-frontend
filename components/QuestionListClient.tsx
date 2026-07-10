@@ -52,6 +52,18 @@ const DEFAULT_GRADIENT_FROM = "#6366f1";
 const DEFAULT_GRADIENT_TO = "#f59e0b";
 const DEFAULT_ACCENT = "#fbbf24";
 
+// ─── Title → URL-safe slug ────────────────────────────────
+// Server-side csvSource.ts ile aynı kural seti — DRY için paylaşılabilir,
+// ama burada kısa bir kopyası (build'de tree-shake eder).
+function slugifyTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/ı/g, "i").replace(/ü/g, "u").replace(/ö/g, "o")
+    .replace(/ş/g, "s").replace(/ç/g, "c").replace(/ğ/g, "g")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 // ─── CSV Parser (RFC 4180 mini) ──────────────────────────────
 // 9 kolon CSV: category,title,level,description,starter_code,test_cases,hints,id,function_name
 function parseCSV(text: string): Question[] {
@@ -236,10 +248,16 @@ export default function QuestionListClient({
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {questions.map((q) => {
           const lvl = (q.level || "beginner").toLowerCase();
+          // Slug-URL tercih edilir: /interviews/[category]/[slug]
+          // Title yoksa ID'ye fallback.
+          const slug = q.title ? slugifyTitle(q.title) : null;
+          const href = slug
+            ? `/interviews/${q.category}/${slug}`
+            : `/interviews/${q.category}/${q.id}`;
           return (
             <Link
               key={q.id}
-              href={`/interviews/${q.category}/${q.id}`}
+              href={href}
               className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-white/20 transition-all overflow-hidden"
             >
               <div

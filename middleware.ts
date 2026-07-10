@@ -16,6 +16,20 @@ const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-produc
 
 // Build time'da ve runtime'da idToSlug map'i lazy yükle.
 // 1 saatlik revalidate — DB'de yeni soru eklenirse max 1 saat gecikmeyle canonical URL'ler güncellenir.
+// CSV-FIRST: yeni sorular DB'de yoksa CSV'den title → slug üretir.
+
+const CSV_PRIMARY = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
+
+// Edge runtime'da title → slug üretici
+function slugifyTitle(title: string): string {
+  return title
+    .toLowerCase()
+    .replace(/ı/g, "i").replace(/ü/g, "u").replace(/ö/g, "o")
+    .replace(/ş/g, "s").replace(/ç/g, "c").replace(/ğ/g, "g")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
 let idToSlugCache: Map<number, string> | null = null;
 let cacheTs = 0;
 const CACHE_TTL = 3600 * 1000; // 1 saat
@@ -24,6 +38,9 @@ async function getIdToSlug(): Promise<Map<number, string>> {
   if (idToSlugCache && Date.now() - cacheTs < CACHE_TTL) {
     return idToSlugCache;
   }
+  const map = new Map<number, string>();
+
+  // 1) Backend DB'den (slug alanı DB'de varsa)
   try {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 8000);
@@ -34,21 +51,70 @@ async function getIdToSlug(): Promise<Map<number, string>> {
     clearTimeout(timeout);
     if (res.ok) {
       const data = await res.json();
-      const map = new Map<number, string>();
       for (const q of data?.data || []) {
-        if (typeof q.id === "number" && q.slug) {
-          map.set(q.id, q.slug);
+        if (typeof q.id === "number") {
+          if (q.slug) map.set(q.id, q.slug);
+          else if (q.title) map.set(q.id, slugifyTitle(q.title));
         }
       }
-      idToSlugCache = map;
-      cacheTs = Date.now();
-      return map;
     }
   } catch {
-    // Fallback: boş map → legacy ID URL'leri middleware'den geçer,
-    // page.tsx 404 verir
+    // devam
   }
-  return new Map();
+
+  // 2) CSV'den (yeni sorular DB'de olmayabilir, ama CSV'de kesin var)
+  try {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    const res = await fetch(CSV_PRIMARY, {
+      signal: controller.signal,
+      next: { revalidate: 3600 },
+    });
+    clearTimeout(timeout);
+    if (res.ok) {
+      const text = await res.text();
+      // Basit CSV parser — header-driven
+      const rows: string[][] = [];
+      let cur: string[] = [];
+      let cell = "";
+      let inQ = false;
+      for (let i = 0; i < text.length; i++) {
+        const c = text[i];
+        if (inQ) {
+          if (c === '"') {
+            if (text[i + 1] === '"') { cell += '"'; i++; } else inQ = false;
+          } else cell += c;
+        } else {
+          if (c === '"') inQ = true;
+          else if (c === ",") { cur.push(cell); cell = ""; }
+          else if (c === "\n" || c === "\r") {
+            if (c === "\r" && text[i + 1] === "\n") i++;
+            cur.push(cell); cell = "";
+            if (cur.length > 1 || cur[0] !== "") rows.push(cur);
+            cur = [];
+          } else cell += c;
+        }
+      }
+      if (cell || cur.length) { cur.push(cell); rows.push(cur); }
+      if (rows.length >= 2) {
+        const h = rows[0];
+        const idx = (k: string) => h.indexOf(k);
+        for (const cols of rows.slice(1)) {
+          const id = parseInt(cols[idx("id")] || "0", 10);
+          const title = cols[idx("title")] || "";
+          if (id > 0 && title && !map.has(id)) {
+            map.set(id, slugifyTitle(title));
+          }
+        }
+      }
+    }
+  } catch {
+    // CSV de başarısızsa eldeki map ile devam
+  }
+
+  idToSlugCache = map;
+  cacheTs = Date.now();
+  return map;
 }
 
 export async function middleware(request: NextRequest) {
