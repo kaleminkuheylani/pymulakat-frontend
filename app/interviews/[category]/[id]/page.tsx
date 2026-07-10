@@ -462,7 +462,7 @@ export default async function Page({ params, searchParams }: PageProps) {
         <Component
           initialParams={resolvedParams}
           readonly={readonly}
-          initialInterview={(mobile ? initialInterview : undefined) as any}
+          initialInterview={initialInterview as any}
           initialTestCases={initialTests}
           hasStudy={initialHasStudy}
         />
