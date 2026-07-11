@@ -10,7 +10,7 @@ import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCateg
 export const metadata: Metadata = {
   title: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
   description:
-    "Python online editör: tarayıcıda Python 3.12 kodunu yaz, Pyodide ile anında çalıştır. Kurulum yok, hesap yok. Öğrenmek için ideal playground. Python örnekleri ile pratik yap.",
+    "Python öğren — online tarayıcı editörü. Python 3.12 kodunu Pyodide ile anında çalıştır. Kurulum yok, hesap yok. Öğrenmek için ideal playground. Python örnekleri ile pratik yap.",
   keywords: [
     "python online",
     "python online editör",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Online — Tarayıcıda Ücretsiz Editör",
-    description: "Python kodunu tarayıcıda anında çalıştır.",
+    description: "Python öğren — tarayıcıda anında çalıştır, kurulum yok.",
     images: ["https://pythonmulakat.com/og-default.png"],
   },
 };
