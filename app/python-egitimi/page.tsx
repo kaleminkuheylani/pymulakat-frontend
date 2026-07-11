@@ -21,8 +21,8 @@ export const metadata: Metadata = {
     "python veri yapıları",
     "python generator",
     "python dekoratör",
-    "sıfırdan python",
-    "python dersleri türkçe",
+    "python pratik soruları",
+    "python sınav soruları",
     "python örnekleri",
     "python playground",
     "python ne işe yarar",
@@ -33,6 +33,9 @@ export const metadata: Metadata = {
     "python online test çöz",
     "python online mülakat",
     "python online sınav",
+    "python pratik soruları",
+    "python sınav soruları"
+
   ],
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
   creator: "Python Mülakat",

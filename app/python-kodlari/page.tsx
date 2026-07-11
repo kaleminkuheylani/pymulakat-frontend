@@ -15,7 +15,6 @@ export const metadata: Metadata = {
   keywords: [
     "python kodları",
     "python örnekleri",
-    "python kod örnekleri",
     "python snippets",
     "python algoritmaları",
     "python şablonları",
@@ -30,6 +29,9 @@ export const metadata: Metadata = {
     "python mülakat soruları",
     "python mülakat hazırlık",
     "python online test çöz",
+    "python örnek sorular",
+    "python alıştırma soruları"
+
   ],
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
   creator: "Python Mülakat",

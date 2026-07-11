@@ -32,6 +32,9 @@ export const metadata: Metadata = {
     "python mülakat soruları",
     "python mülakat hazırlık",
     "python online test çöz",
+    "python dp alıştırma",
+    "python dinamik programlama soruları çözümlü"
+
   ],
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
   creator: "Python Mülakat",

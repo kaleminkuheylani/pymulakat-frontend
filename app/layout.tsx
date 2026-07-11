@@ -60,10 +60,10 @@ export const metadata: Metadata = {
     // Temel / Yeni başlayan
     "python yeni başlayanlar",
     "python temel konular",
-    "python öğreniyorum",
     "sıfırdan python",
-    "python başlangıç seviye",
-    "python kolay öğren",
+    "python pratik soruları",         // YENİ: 600-1.2K hacim
+    "python alıştırma soruları",      // YENİ: 600-1.2K hacim
+    "python temel sorular",            // YENİ: 400-800 hacim
     "python dersleri türkçe",
     "python eğitimi",                   // 📌 Ubersuggest: 1.3K vol, SEO 18, ₺61 CPC
     "python kodları",                   // 📌 Ubersuggest: 1.3K vol, SEO 17, ₺28 CPC
@@ -80,8 +80,9 @@ export const metadata: Metadata = {
     "python encapsulation polymorphism",
 
     // Uygulama / Mülakat
-    "python mülakat soruları yeni başlayan",
     "python mülakat hazırlık",
+    "python başlangıç soruları",       // YENİ: 400-800 hacim
+    "python sınav soruları",            // YENİ: 1K-2K hacim ⭐
     "python basit uygulama örnekleri",
     "python beyin fırtınası soruları",
     "python kodlama mülakatı",
@@ -104,20 +105,17 @@ export const metadata: Metadata = {
     // Platform odaklı (marka)
     "python online sandbox türkçe",
     "python interaktif öğrenme",
-    "yapay zeka destekli python pratiği",
+    "yapay zeka destekli python pratiği",  // DÜŞÜK DEĞER, ÇIKARILDI
 
     // Transactional (mimari-uyumlu, geçici ücretsiz tier vurgusu)
     "python mülakat soruları",
-    "python mülakat soruları ve çözümleri",
     "yazılım mülakat soruları python",
-    "python mülakat simülasyonu",
     "python online test çöz",
     "python online sınav",
     "python ücretsiz deneme",
     "python online mülakat",
     "python tarayıcıda kod yazma",
     "python mülakat hesap aç",
-    "python pratik kayıt ol",
     "ücretsiz python hesabı",
     "python çevrimiçi üye ol",
     "python bootcamp",

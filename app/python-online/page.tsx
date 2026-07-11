@@ -25,6 +25,9 @@ export const metadata: Metadata = {
     "python online sınav",
     "python online mülakat",
     "python tarayıcıda kod yazma",
+    "python online test soruları",
+    "python pratik soruları"
+
   ],
   alternates: {
     canonical: "https://pythonmulakat.com/python-online",
