@@ -87,7 +87,7 @@ async function buildLocalFallback(isAuthed: boolean = false): Promise<FlowRespon
         title: q.title,
         category: q.category,
         level: q.level || "beginner",
-        slug: q.slug || null,
+        slug: q.slug ?? "",
         score: 100 - q.id,
         reason: "📌 Öneri",
         created_at: new Date(now - q.id * 86400000).toISOString(),
