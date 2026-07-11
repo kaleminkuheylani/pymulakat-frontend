@@ -376,7 +376,7 @@ export default function WorkspaceClient({
         <main className="flex-1 flex flex-col overflow-hidden">
           <div className="flex-1 relative">
             {isGuest ? (
-              <GuestEditorFallback category={category ?? ""} id={id ?? ""} starterCode={interview?.starter_code} />
+              <GuestEditorFallback category={category ?? ""} id={id ?? ""} starterCode={interview?.starter_code ?? undefined} />
             ) : (
               <CodeEditorPanel
                 editorRef={editorRef}
