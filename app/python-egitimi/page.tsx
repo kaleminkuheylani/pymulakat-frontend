@@ -9,7 +9,7 @@ import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCateg
 export const metadata: Metadata = {
   title: "Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
   description:
-    "Python öğren — Türkçe, şimdilik ücretsiz kapsamlı eğitim. Değişkenler, döngüler, fonksiyonlar, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör içerir. Python örnekleri ve playground ile pratik yap.",
+    "Python öğren — Türkçe, ücretsiz eğitim. Değişkenler, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör.",
   keywords: [
     "python eğitimi",
     "python dersleri",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Eğitimi — Türkçe, Ücretsiz, Kapsamlı",
-    description: "Başlangıçtan ileri seviyeye Python öğren. Her ders kod örnekleri ve playground içerir.",
+    description: "Python öğren — Türkçe, ücretsiz kapsamlı eğitim. 6 ders, kod örnekleri, online editör.",
     url: "https://pythonmulakat.com/python-egitimi",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -85,7 +85,7 @@ const courseJsonLd = {
   "@type": "LearningResource",
   "@id": "https://pythonmulakat.com/python-egitimi#learning-resource",
   name: "Python Eğitimi — Başlangıçtan İleri Seviye",
-  description: "Türkçe, ücretsiz, kapsamlı Python dersleri. Değişkenlerden async/await'a kadar 6 dersten oluşan sıralı yol haritası. Her ders çalıştırılabilir kod örneği ve pratik ödev içerir.",
+  description: "Türkçe, ücretsiz, kapsamlı Python dersleri. Sıfırdan async/await'a kadar 6 dersten oluşan sıralı yol haritası. Her ders çalıştırılabilir kod örneği içerir.",
   url: "https://pythonmulakat.com/python-egitimi",
   provider: {
     "@type": "Organization",

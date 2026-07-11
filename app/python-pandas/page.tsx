@@ -8,7 +8,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Pandas Soruları ve Çözümleri",
   description:
-    "Python pandas soruları: DataFrame, Series, groupby, merge, filter, agg. 13+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python pandas soruları: DataFrame, Series, groupby, merge, filter, agg. 13+ interaktif soru, AI feedback.",
   keywords: [
     "python pandas",
     "pandas soruları",

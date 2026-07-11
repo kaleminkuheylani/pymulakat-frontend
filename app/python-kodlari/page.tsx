@@ -11,7 +11,7 @@ import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCateg
 export const metadata: Metadata = {
   title: "Python Kodları — Hazır Örnekler ve Şablonlar",
   description:
-    "Python kodları kataloğu — sık kullanılan algoritmalar, veri yapıları, dosya işlemleri, web scraping, API çağrıları. Kopyala, çalıştır, öğren. Python playground'da anında dene. Şimdilik ücretsiz.",
+    "Python kodları kataloğu — algoritmalar, veri yapıları, dosya işlemleri, API çağrıları. Kopyala, çalıştır, öğren.",
   keywords: [
     "python kodları",
     "python örnekleri",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Kodları — Hazır Örnekler ve Şablonlar",
-    description: "Sık kullanılan Python kodları, kategorize, çalıştırılabilir. Python öğren ve playground'da dene. Şimdilik ücretsiz.",
+    description: "Python kodları — kategorize, çalıştırılabilir hazır örnekler ve şablonlar. Kopyala, dene.",
     url: "https://pythonmulakat.com/python-kodlari",
     siteName: "PythonMulakat",
     locale: "tr_TR",

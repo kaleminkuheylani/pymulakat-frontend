@@ -6,9 +6,9 @@ import ServerQuestionList from "../../components/ServerQuestionList";
 import CategoryContext, { type ContextBlock } from "../../components/CategoryContext";
 
 export const metadata: Metadata = {
-  title: "Python Veri Yapıları Soruları — Stack, Queue, Tree, Linked List",
+  title: "Python Veri Yapıları Soruları",
   description:
-    "Python veri yapıları soruları: stack, queue, linked list, tree, graph, hash table. 21+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python veri yapıları soruları: stack, queue, linked list, tree, graph, hash table. 21+ interaktif soru, AI feedback.",
   keywords: [
     "python veri yapıları",
     "python data structures",

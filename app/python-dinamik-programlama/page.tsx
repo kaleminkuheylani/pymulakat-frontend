@@ -14,7 +14,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Python Dinamik Programlama Soruları ve Çözümleri",
   description:
-    "Python dinamik programlama soruları: Fibonacci memoization, 0/1 Knapsack, Coin Change, Edit Distance, Longest Common Subsequence, Climbing Stairs, House Robber. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python dinamik programlama soruları: Fibonacci, Knapsack, Coin Change, Edit Distance, LCS. Tarayıcıda çöz, AI geri bildirim al.",
   keywords: [
     "python dinamik programlama",
     "python dp",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Python Dinamik Programlama Soruları ve Çözümleri",
     description:
-      "Python dinamik programlama soruları: fibonacci, knapsack, edit distance, LCS, climbing stairs. Tarayıcıda interaktif pratik.",
+      "Python dinamik programlama — Fibonacci, Knapsack, Coin Change, LCS. Tarayıcıda interaktif pratik, AI feedback.",
     url: "https://pythonmulakat.com/python-dinamik-programlama",
     siteName: "PythonMulakat",
     locale: "tr_TR",

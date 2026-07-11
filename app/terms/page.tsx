@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kullanıcı Sözleşmesi, Aydınlatma ve Açık Rıza Metni | Python Mulakat",
+  title: "Kullanıcı Sözleşmesi | Python Mülakat",
   description:
     "Python Mulakat platformu kullanıcı sözleşmesi, KVKK aydınlatma metni ve açık rıza beyanı.",
 };

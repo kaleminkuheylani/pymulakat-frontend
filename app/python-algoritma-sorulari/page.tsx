@@ -8,9 +8,9 @@ import ServerQuestionList from "../../components/ServerQuestionList";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Python Algoritma Soruları — Pratik Yap, Anında Geri Bildirim Al",
+  title: "Python Algoritma Soruları ve Çözümleri",
   description:
-    "Python algoritma soruları kataloğu. Sıralama, arama, dinamik programlama, graf ve string algoritmaları için 26+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python algoritma soruları: sıralama, arama, dinamik programlama, graf, string. Tarayıcıda interaktif çöz, AI feedback.",
   keywords: [
     "python algoritma soruları",
     "python algoritma",
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Python Algoritma Soruları — Pratik Yap, Anında Geri Bildirim Al",
     description:
-      "Python algoritma soruları: sıralama, arama, DP, graf, string algoritmaları için 26+ interaktif soru. Tarayıcıda kod yaz, otomatik test et.",
+      "Python algoritma soruları — tarayıcı tabanlı, AI feedback'li interaktif pratik.",
     url: "https://pythonmulakat.com/python-algoritma-sorulari",
     siteName: "PythonMulakat",
     locale: "tr_TR",

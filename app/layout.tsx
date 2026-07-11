@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Python mülakat soruları, Python algoritma soruları ve dinamik programlama için Türkçe interaktif pratik platformu. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al. Şimdilik ücretsiz dene — ileride ücretli planlar.",
+    "Python mülakat soruları, algoritma ve dinamik programlama için Türkçe interaktif pratik platformu. Tarayıcıda kod yaz, AI geri bildirim al. Şimdilik ücretsiz.",
 
   keywords: [
     // Temel / Yeni başlayan

@@ -8,7 +8,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Temelleri Soruları ve Çözümleri",
   description:
-    "Python temelleri soruları: değişkenler, veri tipleri, string işlemleri, kontrol yapıları, döngüler, fonksiyonlar. 34+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python temelleri soruları: değişkenler, veri tipleri, string, kontrol yapıları, döngüler, fonksiyonlar. Tarayıcıda interaktif pratik.",
   keywords: [
     "python temelleri",
     "python temel konular",

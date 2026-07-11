@@ -43,6 +43,13 @@ const nextConfig = {
     ].join(", ");
 
     return [
+      // Auth-gated sayfalar: noindex (Google'da görünmesin)
+      {
+        source: "/:path(login|register|dashboard|dashboard/:path*|profile)",
+        headers: [
+          { key: "X-Robots-Tag", value: "noindex, nofollow" },
+        ],
+      },
       {
         source: "/:path*",
         headers: [
