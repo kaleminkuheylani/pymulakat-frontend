@@ -247,3 +247,19 @@ export async function incrementPlayCount(): Promise<{ count: number } | null> {
 
 /** API_BASE export — sadece authAPI dış bağlantı için (örn. lib/revalidate.ts) */
 export { API_BASE };
+
+/** Namespace export: import { authAPI } from "./authAPI"; authAPI.getMe() */
+export const authAPI = {
+  getMe,
+  login,
+  register,
+  verifyEmail,
+  resendCode,
+  refreshToken,
+  deleteAccount,
+  submitAttempt,
+  getMyAttempts,
+  getMyStats,
+  getPlayCount,
+  incrementPlayCount,
+};

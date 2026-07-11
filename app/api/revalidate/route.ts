@@ -56,8 +56,8 @@ export async function POST(req: NextRequest) {
   }
 
   if (body.tag) {
-    // Tag bazlı revalidation (commit 3'te tag eklenecek)
-    revalidateTag(body.tag);
+    // Tag bazlı revalidation (Next.js 15+ requires 2 args: tag + profile)
+    revalidateTag(body.tag, "default");
     invalidated.push(`tag:${body.tag}`);
   }
 
