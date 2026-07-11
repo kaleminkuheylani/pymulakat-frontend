@@ -33,8 +33,22 @@ export function useRecommendations(limit: number = 10) {
     setError(null);
 
     try {
+      // user state'i UserResponse (id, email, points) taşır; access_token
+      // localStorage'da ayrı tutulur. Burada opsiyonel oku (yoksa undefined).
+      let accessToken: string | undefined;
+      if (typeof window !== "undefined") {
+        try {
+          const raw = window.localStorage.getItem("auth");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            accessToken = parsed?.access_token;
+          }
+        } catch {
+          // ignore — token opsiyonel
+        }
+      }
       const data = await recommendationsAPI.getRecommendations(limit, {
-        accessToken: (user as any)?.access_token,
+        accessToken,
       });
       setItems(data.items);
       setContext(data.context);
@@ -73,8 +87,20 @@ async function computeLocalRecommendations(user: any, limit: number): Promise<Sc
   // DB'den soru listesi çek (fallback — backend recommendations başarısız olursa)
   let all: Array<{ id: number; title: string; category: string; level: string; slug: string }> = [];
   try {
-    const data = (await recommendationsAPI.getAllQuestionsForRecs(200)) as any;
-    all = (data?.data || []).filter((q: any) => q && q.slug);
+    const data = await recommendationsAPI.getAllQuestionsForRecs(200);
+    // data tipi: { data: [...] } veya [...] (apiFetch array'i direkt döndürür)
+    const rows = Array.isArray(data)
+      ? data
+      : (data as { data?: unknown[] })?.data || [];
+    all = (rows as Array<Record<string, unknown>>)
+      .filter((q) => q && typeof q.slug === "string")
+      .map((q) => ({
+        id: Number(q.id) || 0,
+        title: String(q.title || ""),
+        category: String(q.category || ""),
+        level: String(q.level || ""),
+        slug: String(q.slug || ""),
+      }));
   } catch {
     // empty
   }

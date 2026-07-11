@@ -47,9 +47,11 @@ export async function getCommunityPicks(
 
 export async function getAllQuestionsForRecs(
   limit = 200
-): Promise<unknown[]> {
+): Promise<unknown[] | { data?: unknown[] }> {
   // Dashboard overview için tüm sorular (recommendations engine feed)
-  return apiFetch<unknown[]>(`/api/v2/questions/all?limit=${limit}`, {
-    cache: "no-store",
-  });
+  // Backend ya direkt array ya da {data: [...]} dönebilir — iki şekli de kabul et
+  return apiFetch<unknown[] | { data?: unknown[] }>(
+    `/api/v2/questions/all?limit=${limit}`,
+    { cache: "no-store" }
+  );
 }
