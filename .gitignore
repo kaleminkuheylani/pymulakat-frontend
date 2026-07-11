@@ -47,3 +47,6 @@ screenshot-landing.mjs
 screenshot-alternatives.mjs
 
 # Frontend'de soru verisi artık YOK — backend DB source of truth
+
+**/*.bak
+**/API_MIGRATION_PLAN.md
