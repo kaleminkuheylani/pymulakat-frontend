@@ -7,8 +7,8 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-
-const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+import { findQuestion } from "../../../../../lib/api/questionAPI";
+import { apiFetch, ApiError } from "../../../../../lib/api";
 
 interface Guide {
   question_id: number;
@@ -29,16 +29,17 @@ interface Guide {
   challenges: string | null;
 }
 
-// ─── Server-side fetch ─────────────────────────────────────
+// ─── Server-side fetch (lib/api wrapper) ──────────────────
 async function fetchGuideBySlug(studySlug: string): Promise<Guide | null> {
   try {
-    const r = await fetch(`${API}/api/v2/guides/by-slug/${studySlug}`, {
-      next: { revalidate: 3600 },
-    });
-    if (!r.ok) return null;
-    const data = await r.json();
-    return data?.data || data || null;
-  } catch {
+    const data = await apiFetch<{ data: Guide } | Guide>(
+      `/api/v2/guides/by-slug/${encodeURIComponent(studySlug)}`,
+      { next: { revalidate: 3600 } }
+    );
+    if ("data" in data && data.data) return data.data;
+    return data as Guide;
+  } catch (e) {
+    if (e instanceof ApiError && e.status === 404) return null;
     return null;
   }
 }
@@ -47,13 +48,14 @@ async function fetchGuide(idOrSlug: string): Promise<Guide | null> {
   // Önce id integer mı dene, yoksa slug olarak kullan
   if (/^\d+$/.test(idOrSlug)) {
     try {
-      const r = await fetch(`${API}/api/v2/guides/by-question-id/${idOrSlug}`, {
-        next: { revalidate: 3600 },
-      });
-      if (!r.ok) return null;
-      const data = await r.json();
-      return data?.data || data || null;
-    } catch {
+      const data = await apiFetch<{ data: Guide } | Guide>(
+        `/api/v2/guides/by-question-id/${idOrSlug}`,
+        { next: { revalidate: 3600 } }
+      );
+      if ("data" in data && data.data) return data.data;
+      return data as Guide;
+    } catch (e) {
+      if (e instanceof ApiError && e.status === 404) return null;
       return null;
     }
   }
@@ -61,18 +63,9 @@ async function fetchGuide(idOrSlug: string): Promise<Guide | null> {
 }
 
 async function fetchQuestionMeta(category: string, slug: string) {
+  // lib/api/questionAPI.ts → findQuestion (slug/ID unified resolver)
   try {
-    // by-slug ile önce id al
-    const r = await fetch(`${API}/api/v2/questions/by-slug/${category}/${slug}`);
-    if (!r.ok) {
-      // Slug bazlı değilse id olarak tüm soruları tara
-      const allR = await fetch(`${API}/api/v2/questions/all`);
-      if (!allR.ok) return null;
-      const allData = await allR.json();
-      const items: any[] = allData?.data || [];
-      return items.find((q) => String(q.id) === String(slug)) || null;
-    }
-    return await r.json();
+    return await findQuestion(category, slug);
   } catch {
     return null;
   }

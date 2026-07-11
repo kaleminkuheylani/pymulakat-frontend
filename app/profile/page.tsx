@@ -7,6 +7,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { interviewsAPI, AttemptResponse } from "../../api/v2/questions";
 import { slugifyTitle } from "../../lib/questionMeta";
+import { deleteAccount, getMyAttempts } from "../../lib/api/authAPI";
 
 // 🔹 Yardımcı: Relative Time
 function timeAgo(dateStr: string): string {
@@ -207,9 +208,10 @@ export default function ProfilePage() {
     if (!user) return;
     let cancelled = false;
 
-    interviewsAPI.getMyAttempts(10)
+    // authAPI.getMyAttempts (lib/api/authAPI.ts) — typed wrapper
+    getMyAttempts(10)
       .then((data) => {
-        if (!cancelled) setAttempts(data);
+        if (!cancelled) setAttempts(data as AttemptResponse[]);
       })
       .catch((err) => {
         console.warn("Attempts yüklenemedi:", err);
@@ -252,34 +254,8 @@ export default function ProfilePage() {
     setIsDeleting(true);
     setDeleteError(null);
     try {
-      // Supabase token'ı al (sb-pymulakat-auth-token veya fallback 'token')
-      const getToken = (): string | null => {
-        if (typeof window === "undefined") return null;
-        try {
-          const raw = localStorage.getItem("sb-pymulakat-auth-token");
-          if (raw) {
-            const parsed = JSON.parse(raw);
-            if (parsed?.access_token) return parsed.access_token;
-          }
-        } catch {
-          // ignore
-        }
-        return localStorage.getItem("token");
-      };
-      const token = getToken();
-      const apiBase = process.env.NEXT_PUBLIC_API_URL || "";
-      const res = await fetch(`${apiBase}/api/v2/account/delete`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ confirmation: deleteConfirmText }),
-      });
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data.detail || "Hesap silinemedi");
-      }
+      // authAPI.deleteAccount — typed + auth header otomatik (lib/api/authAPI.ts)
+      await deleteAccount(deleteConfirmText);
       // Logout
       localStorage.removeItem("token");
       localStorage.removeItem("user");

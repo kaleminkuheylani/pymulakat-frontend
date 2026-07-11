@@ -9,6 +9,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useUser } from "../../hooks/useUser";
 import OnboardingGate from "../../components/OnboardingGate";
+import { getAllQuestions, getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
 
 // 📌 Lazy load — initial bundle'dan cikar (mobil performans)
 const PersonalFlow = dynamic(() => import("../../components/dashboard/PersonalFlow"), {
@@ -63,8 +64,6 @@ interface FlowResponse {
   source?: string;
 }
 
-const API = () => process.env.NEXT_PUBLIC_API_URL || "";
-
 // 📌 Local fallback: backend /flow endpoint'i yoksa veya timeout olursa
 // Soru listesini backend'den çeker (DB source of truth).
 const EMPTY: FlowResponse = {
@@ -76,16 +75,8 @@ const EMPTY: FlowResponse = {
 };
 
 async function buildLocalFallback(isAuthed: boolean = false): Promise<FlowResponse> {
-  const api = API();
-  if (!api) return { ...EMPTY, context: { ...EMPTY.context, is_authenticated: isAuthed } };
-
   try {
-    const res = await fetch(`${api}/api/v2/questions/all`, {
-      next: { revalidate: 60 },
-    });
-    if (!res.ok) return { ...EMPTY, context: { ...EMPTY.context, is_authenticated: isAuthed } };
-    const data = await res.json();
-    const all: Array<any> = data?.data || [];
+    const all = await getAllQuestions();
 
     const now = Date.now();
     const items: FlowItem[] = all
@@ -96,7 +87,7 @@ async function buildLocalFallback(isAuthed: boolean = false): Promise<FlowRespon
         title: q.title,
         category: q.category,
         level: q.level || "beginner",
-        slug: q.slug,
+        slug: q.slug || null,
         score: 100 - q.id,
         reason: "📌 Öneri",
         created_at: new Date(now - q.id * 86400000).toISOString(),
@@ -174,19 +165,13 @@ export default function DashboardHome() {
     if (showSpinner) setRefreshing(true);
     setFlowError(null);
     try {
-      const token = getToken();
-      const res = await fetch(`${API()}/api/v2/recommendations/flow`, {
-        credentials: "include",
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
-      if (res.ok) {
-        const data = await res.json();
+      // questionAPI.getRecommendationFlow (lib/api/questionAPI.ts) — typed + auth header otomatik
+      const data = await getRecommendationFlow(20);
+      if (data) {
         setFlow(data);
         setLastUpdated(new Date());
       } else {
-        const txt = await res.text();
-        console.warn("[flow] non-2xx:", res.status, txt);
-        setFlowError(`${res.status} — ${txt.slice(0, 200)}`);
+        setFlowError("Öneri akışı alınamadı");
         setFlow(null);
       }
     } catch (e: any) {
@@ -200,17 +185,14 @@ export default function DashboardHome() {
   const fetchCommunity = useCallback(async () => {
     if (!mountedRef.current) return;
     try {
-      const token = getToken();
-      const res = await fetch(`${API()}/api/v2/recommendations/community?limit=15`, {
-        headers: token ? { Authorization: `Bearer ${token}` } : {},
-      });
+      // questionAPI.getCommunityRecommendations (lib/api/questionAPI.ts) — typed + auth header otomatik
+      const data = await getCommunityRecommendations(15);
       if (!mountedRef.current) return;
-      if (res.ok) {
-        const data = await res.json();
-        if (!mountedRef.current) return;
-        setCommunity(data.data || []);
-      }
-    } catch {}
+      const list = Array.isArray(data?.data) ? data.data : [];
+      setCommunity(list as FlowItem[]);
+    } catch {
+      // silent fail
+    }
   }, []);
 
   useEffect(() => {

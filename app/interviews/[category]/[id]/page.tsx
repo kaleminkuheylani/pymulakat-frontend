@@ -11,10 +11,14 @@
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import WorkspaceClient from "./WorkspaceClient";
-import WorkspaceMobileClient from "./WorkspaceMobileClient";
+// 📌 Code splitting (2026-07-11, kalıcı): Workspace artık mobile/desktop
+// switch'i kendi içinde yapıyor. page.tsx server-side isMobileDevice() ile
+// variant'ı hesaplayıp <Workspace variant="mobile|desktop" ... /> geçirir.
+import Workspace from "./components/workspace";
 import { slugifyTitle } from "../../../../lib/questionMeta";
-import { findQuestion, fetchAllQuestions, slugifyTitle as csvSlugify, type ApiQuestion } from "../../../../lib/api";
+import { findQuestion, slugifyTitle as csvSlugify } from "../../../../lib/api/questionAPI";
+import type { ApiQuestion, ApiQuestionTests } from "../../../../lib/api/types";
+import { getQuestionTests } from "../../../../lib/api/questionAPI";
 
 // Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
 
@@ -46,9 +50,9 @@ interface SEOQuestion {
 // 📌 SSR test case formatı: input / expected / actual / description.
 //    Misafirler de okuyabilsin diye public — auth gerekmez.
 interface SSRTestCase {
-  input: any;
-  expected: any;
-  actual?: any;
+  input: unknown;
+  expected: unknown;
+  actual?: unknown;
   description?: string;
 }
 interface SSRQuestionTests {
@@ -60,7 +64,7 @@ interface SSRQuestionTests {
 // ─── CSV → DB Question normalizasyonu ─────────────────────────
 function csvToSEOQuestion(q: ApiQuestion, actualId: number, slug: string): SEOQuestion {
   // DB-FIRST: test_cases ayrı endpoint'ten geliyor (burada [] geçici)
-  const testCases: any[] = [];
+  const testCases: unknown[] = [];
   // hints API zaten array dönüyor (string değil)
   const hints: string[] = q.hints || [];
 
@@ -80,23 +84,19 @@ function csvToSEOQuestion(q: ApiQuestion, actualId: number, slug: string): SEOQu
 
 // ─── Server-side test cases fetch (SSR: misafirler de okuyabilsin) ─────
 async function fetchQuestionTests(category: string, slugOrId: string): Promise<SSRQuestionTests | null> {
-  // DB-FIRST mimari: backend /by-slug/{cat}/{slug}/tests endpoint'i
-  const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+  // DB-FIRST mimari: lib/api/questionAPI.ts → getQuestionTests()
   try {
     // Önce meta + slug al
     const metaQ = await findQuestion(category, slugOrId);
     if (!metaQ) return null;
     // Sonra test cases (slug üzerinden — ID de kabul eder backend)
     const slug = metaQ.slug || slugOrId;
-    const res = await fetch(`${API}/api/v2/questions/by-slug/${category}/${slug}/tests`, {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return null;
-    const data = await res.json();
+    const data: ApiQuestionTests | null = await getQuestionTests(category, slug);
+    if (!data) return null;
     return {
       question_id: data.question_id ?? metaQ.id,
       function_name: data.function_name ?? "",
-      test_cases: (data.test_cases || []).map((c: any) => ({
+      test_cases: (data.test_cases || []).map((c) => ({
         input: c.input,
         expected: c.expected,
         // description undefined ise spread ile hiç ekleme (Next.js $undefined bug önleme)
@@ -317,30 +317,27 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  // DB-FIRST mimari: API'den çek (2 paralel fetch — question meta + test cases)
-  const [mobile, apiQ, testsRes] = await Promise.all([
+  // DB-FIRST mimari: lib/api/questionAPI.ts üzerinden çek
+  // (2 paralel fetch — question meta + test cases)
+  const [mobile, apiQ, ssrTestsRaw] = await Promise.all([
     isMobileDevice(),
     findQuestion(resolvedParams.category, resolvedParams.id),
-    fetch(
-      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/questions/by-slug/${resolvedParams.category}/${resolvedParams.id}/tests`,
-      { next: { revalidate: 3600 } }
-    ).catch(() => null),
+    getQuestionTests(resolvedParams.category, resolvedParams.id),
   ]);
   // Resolve seoQ + ssrTests aynı request'ten (cache + tutarlı)
   const csvQ = apiQ;
   const seoQ = csvQ ? csvToSEOQuestion(csvQ, csvQ.id, csvSlugify(csvQ.title)) : null;
-  const ssrTests = csvQ && testsRes && testsRes.ok ? (async () => {
-    const data = await testsRes.json();
-    return {
-      question_id: data.question_id ?? csvQ.id,
-      function_name: data.function_name ?? "",
-      test_cases: (data.test_cases || []).map((c: any) => ({
-        input: c.input,
-        expected: c.expected,
-        ...(c.description ? { description: c.description } : {}),
-      })),
-    };
-  })() : null;
+  const ssrTests: SSRQuestionTests | null = csvQ && ssrTestsRaw
+    ? {
+        question_id: ssrTestsRaw.question_id ?? csvQ.id,
+        function_name: ssrTestsRaw.function_name ?? "",
+        test_cases: (ssrTestsRaw.test_cases || []).map((c) => ({
+          input: c.input,
+          expected: c.expected,
+          ...(c.description ? { description: c.description } : {}),
+        })),
+      }
+    : null;
 
   // 📌 Guide (DB-backed analiz) var mı? Sadece DB'den gelirse CTA göster,
   // CSV metadata fallback yetersiz.
@@ -348,7 +345,9 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   // Workspace client kendi fetch'ini yapıyor; burada sadece SEO schema'ları için kullanıyoruz.
   // 📌 SSR: initial data'yı server'da geçiriyoruz — client'ta loading state atlanıyor.
-  const Component = mobile ? WorkspaceMobileClient : WorkspaceClient;
+  // Code splitting: <Workspace variant="mobile|desktop" /> kendi içinde
+  //   uygun client'ı React.lazy ile mount eder (Suspense fallback korunur).
+  const variant: "mobile" | "desktop" = mobile ? "mobile" : "desktop";
   const initialInterview = seoQ ? {
     id: seoQ.id,
     title: seoQ.title,
@@ -481,7 +480,8 @@ export default async function Page({ params, searchParams }: PageProps) {
       </div>
 
       <div data-client-workspace>
-        <Component
+        <Workspace
+          variant={variant}
           initialParams={resolvedParams}
           readonly={readonly}
           initialInterview={initialInterview as any}

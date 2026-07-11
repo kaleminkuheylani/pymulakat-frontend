@@ -14,6 +14,8 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { listCategories } from "../../lib/api/questionAPI";
+import type { ApiCategory } from "../../lib/api/types";
 
 interface Category {
   slug: string;
@@ -22,9 +24,6 @@ interface Category {
   icon?: string;
   question_count: number;
 }
-
-// 📌 DB-FIRST mimari: backend API'den kategori listesi çekilir.
-const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
 // Kategori label ve icon mapping (backend bu alanları DB'de tutuyordu;
 // CSV'de olmadığı için burada static tanımlı)
@@ -77,22 +76,19 @@ const CATEGORY_META: Record<string, { label: string; icon: string; description: 
 };
 
 // parseCSV kaldırıldı (DB-FIRST mimari, 2026-07-11).
-// /interviews artık backend API'sinden kategori listesi çekiyor (lib/api.ts).
+// /interviews artık backend API'sinden kategori listesi çekiyor
+// (lib/api/questionAPI.ts → questionAPI.listCategories()).
 
-async function fetchCategoriesFromCSV(): Promise<Category[]> {
+async function fetchCategoriesFromAPI(): Promise<Category[]> {
   // DB-FIRST: backend /api/v2/categories endpoint'i
   try {
-    const r = await fetch(`${API_BASE}/api/v2/categories`, { cache: "no-store" });
-    if (!r.ok) throw new Error(`API error: ${r.status}`);
-    const data = await r.json();
-    // Backend [{category, label, count}] veya {items:[]} döner; shape normalize et
-    const items = Array.isArray(data) ? data : (data.items || []);
-    return items.map((row: any) => {
-      const slug = row.category || row.slug;
+    const items: ApiCategory[] = await listCategories();
+    return items.map((row) => {
+      const slug = row.category || row.slug || "";
       return {
         slug,
         label: CATEGORY_META[slug]?.label || row.label || slug,
-        icon: CATEGORY_META[slug]?.icon || "📘",
+        icon: CATEGORY_META[slug]?.icon || row.icon || "📘",
         description: CATEGORY_META[slug]?.description || row.description || "",
         question_count: row.count ?? row.question_count ?? 0,
       };
@@ -149,8 +145,8 @@ export default function InterviewsPage() {
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    // Önce CSV'den dene (yayın push ile anında güncellenir)
-    fetchCategoriesFromCSV()
+    // Backend API'den kategorileri çek (DB-FIRST)
+    fetchCategoriesFromAPI()
       .then((list) => {
         if (controller.signal.aborted) return;
         setCategories(list);

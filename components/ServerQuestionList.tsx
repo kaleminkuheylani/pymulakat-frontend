@@ -8,7 +8,7 @@
 // Bu server component, tüm pillar sayfalarında (python-temelleri,
 // python-dinamik-programlama, ...) paylaşılır — DRY.
 
-import { listQuestionsByCategory, slugifyTitle as csvSlugify } from "../lib/api";
+import { listQuestionsByCategory, slugifyTitle as csvSlugify } from "../lib/api/questionAPI";
 import QuestionListClient from "./QuestionListClient";
 
 interface Props {

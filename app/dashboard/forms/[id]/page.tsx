@@ -5,6 +5,7 @@
 import { useState, useEffect } from "react";
 import { useUser } from "../../../../hooks/useUser";
 import { useRouter } from "next/navigation";
+import { getForm, submitReply } from "../../../../lib/api/formAPI";
 
 export default function FormDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { user } = useUser();
@@ -22,27 +23,22 @@ export default function FormDetailPage({ params }: { params: Promise<{ id: strin
   useEffect(() => {
     if (formId === null) return;
     setLoading(true);
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms/${formId}`)
-      .then((r) => r.json())
-      .then((d) => setForm(d.data || null))
+    getForm(formId)
+      .then((d) => setForm(d as any))
       .catch(() => setForm(null))
       .finally(() => setLoading(false));
   }, [formId]);
 
-  async function submitReply() {
+  async function submitReplyHandler() {
     if (!form || replyText.length < 2) return;
     setSubmitting(true);
     try {
-      await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms/${form.id}/reply`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ body: replyText }),
-      });
-      const refreshed = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms/${form.id}`).then((r) => r.json());
-      setForm(refreshed.data);
+      // formAPI.submitReply — typed + auth header otomatik
+      await submitReply(form.id, { body: replyText });
+      const refreshed = await getForm(form.id);
+      setForm(refreshed as any);
       setReplyText("");
-    } catch (e) {
+    } catch {
       // yoksay
     } finally {
       setSubmitting(false);
@@ -113,7 +109,7 @@ export default function FormDetailPage({ params }: { params: Promise<{ id: strin
             <div className="flex justify-between items-center mt-2">
               <span className="text-xs text-white/30">{replyText.length}/2000</span>
               <button
-                onClick={submitReply}
+                onClick={submitReplyHandler}
                 disabled={submitting || replyText.length < 2}
                 className="px-4 py-1.5 bg-indigo-500 hover:bg-indigo-400 disabled:opacity-50 text-white text-sm font-bold rounded-lg"
               >

@@ -7,6 +7,8 @@ import { useUser } from "../../../hooks/useUser";
 import { useRouter, useSearchParams } from "next/navigation";
 import FormCategoryTabs from "../../../components/forms/FormCategoryTabs";
 import FormCard from "../../../components/forms/FormCard";
+import { listForms, listFormCategories, createForm } from "../../../lib/api/formAPI";
+import type { ApiFormCategory } from "../../../lib/api/types";
 
 export default function FormsPage() {
   const { user } = useUser();
@@ -23,11 +25,10 @@ export default function FormsPage() {
 
   // 📌 Backend'ten forms kategori metadata'sı (tek seferlik fetch)
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms/categories`)
-      .then((r) => r.json())
-      .then((d) => {
+    listFormCategories()
+      .then((cats: ApiFormCategory[]) => {
         const map: Record<string, { label: string; icon: string; color: string }> = {};
-        (d.data || []).forEach((c: any) => {
+        cats.forEach((c) => {
           map[c.slug] = { label: c.label, icon: c.icon, color: c.color };
         });
         setCategories(map);
@@ -45,12 +46,8 @@ export default function FormsPage() {
 
   useEffect(() => {
     setLoading(true);
-    const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms${active ? `?category=${active}` : ""}`, {
-      headers: token ? { Authorization: `Bearer ${token}` } : {},
-    })
-      .then((r) => r.json())
-      .then((d) => setForms(d.data || []))
+    listForms(active || undefined)
+      .then((list) => setForms(list as any[]))
       .catch(() => setForms([]))
       .finally(() => setLoading(false));
   }, [active]);
@@ -102,12 +99,10 @@ export default function FormsPage() {
           onClose={() => setShowCreate(false)}
           onCreated={() => {
             setShowCreate(false);
-            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-            fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms${active ? `?category=${active}` : ""}`, {
-              headers: token ? { Authorization: `Bearer ${token}` } : {},
-            })
-              .then((r) => r.json())
-              .then((d) => setForms(d.data || []));
+            // formAPI.listForms ile taze liste çek
+            listForms(active || undefined)
+              .then((list) => setForms(list as any[]))
+              .catch(() => {/* silent */});
             if (typeof window !== "undefined") {
               window.dispatchEvent(new CustomEvent("pm:form-created"));
             }
@@ -145,23 +140,11 @@ function CreateFormModal({
     setSubmitting(true);
     setError(null);
     try {
-      const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms`, {
-        method: "POST",
-        credentials: "include",
-        headers: {
-          "Content-Type": "application/json",
-          ...(token ? { Authorization: `Bearer ${token}` } : {}),
-        },
-        body: JSON.stringify({ category, title, body }),
-      });
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}));
-        throw new Error(err.detail || "Paylaşım oluşturulamadı");
-      }
+      // formAPI.createForm — typed + auth header otomatik
+      await createForm({ category, title, body });
       onCreated();
     } catch (e: any) {
-      setError(e.message);
+      setError(e?.message || "Paylaşım oluşturulamadı");
     } finally {
       setSubmitting(false);
     }

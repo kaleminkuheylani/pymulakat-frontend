@@ -5,9 +5,13 @@ import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import Link from "next/link";
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+import {
+  register as authRegister,
+  verifyEmail,
+  resendCode,
+} from "../../lib/api/authAPI";
+import { ApiError } from "../../lib/api";
+import type { ApiMessageResponse } from "../../lib/api/types";
 
 interface RegisterPayload {
   username: string;
@@ -16,88 +20,23 @@ interface RegisterPayload {
   privacy_policy_consent?: boolean;
 }
 
-interface MessageResponse {
-  ok: boolean;
-  message?: string;
-  verified?: boolean;
-  expires_in_minutes?: number;
-}
-
-interface AuthResponse {
-  ok: boolean;
-  message?: string;
-  verified?: boolean;
-  access_token?: string;
-  refresh_token?: string;
-  expires_at?: number;
-  user?: { id: string; email: string; username?: string; is_verified?: boolean };
-}
-
-function extractErrorMessage(data: any, fallback: string): string {
-  if (typeof data?.detail === "string") return data.detail;
-  if (Array.isArray(data?.detail)) {
-    return data.detail
-      .map((err: any) => {
-        const field = (err.loc || []).join(".");
-        return field ? `${field}: ${err.msg}` : err.msg;
-      })
-      .join(" | ");
-  }
-  if (typeof data?.message === "string") return data.message;
+// lib/api/authAPI.ts + ApiError üzerinden standart error mesajı çıkar
+function extractErrorMessage(e: unknown, fallback: string): string {
+  if (e instanceof ApiError) return e.message;
+  if (e instanceof Error) return e.message;
+  if (typeof e === "string") return e;
   return fallback;
 }
 
 const authAPI = {
-  async register(payload: RegisterPayload): Promise<MessageResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(extractErrorMessage(data, `Kayıt başarısız: ${res.status}`));
-    }
-    return data;
+  async register(payload: RegisterPayload): Promise<ApiMessageResponse> {
+    return authRegister(payload);
   },
-
-  async verifyEmail(payload: { email: string; code: number }): Promise<MessageResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/verify-email`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(extractErrorMessage(data, `Doğrulama başarısız: ${res.status}`));
-    }
-    return data;
+  async verifyEmail(payload: { email: string; code: number }): Promise<ApiMessageResponse> {
+    return verifyEmail(payload);
   },
-
-  async resendCode(email: string): Promise<MessageResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/resend-code`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(extractErrorMessage(data, `Kod gönderilemedi: ${res.status}`));
-    }
-    return data;
-  },
-
-  async login(payload: { email: string; password: string }): Promise<AuthResponse> {
-    const res = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-    const data = await res.json().catch(() => ({}));
-    if (!res.ok) {
-      throw new Error(extractErrorMessage(data, `Giriş başarısız: ${res.status}`));
-    }
-    return data;
+  async resendCode(email: string): Promise<ApiMessageResponse> {
+    return resendCode(email);
   },
 };
 

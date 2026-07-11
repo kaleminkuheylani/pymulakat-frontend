@@ -1,16 +1,16 @@
 import type { MetadataRoute } from "next";
-import { fetchAllQuestions, slugifyTitle } from "../lib/api";
+import { fetchAllQuestions, slugifyTitle } from "../lib/api/questionAPI";
 
 const BASE = "https://pythonmulakat.com";
 
 // Soru listesi: build sırasında CSV'den çekilir (CSV = source of truth).
 // CSV-only mimari: backend DB'ye hiç bağlanmıyoruz.
-async function fetchQuestionsFromCSV(): Promise<Array<{ category: string; slug: string }>> {
+async function fetchQuestionsFromAPI(): Promise<Array<{ category: string; slug: string }>> {
   try {
     const rows = await fetchAllQuestions();
     return rows
       .filter((q) => q.category && q.title)
-      .map((q) => ({ category: q.category, slug: slugifyTitle(q.title) }));
+      .map((q) => ({ category: q.category, slug: q.slug || slugifyTitle(q.title) }));
   } catch {
     return [];
   }
@@ -55,9 +55,10 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE}/dashboard/recommendations`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
-  // 2. Soru listesi — CSV'den. /interviews/[category] artık redirect olduğu için
-  //    kategori sayfaları sitemap'e EKLENMIYOR (sadece yeni pillar URL'leri yukarıda).
-  const questions = await fetchQuestionsFromCSV();
+  // 2. Soru listesi — backend API'den (DB-FIRST). /interviews/[category] artık
+  //    redirect olduğu için kategori sayfaları sitemap'e EKLENMIYOR (sadece yeni
+  //    pillar URL'leri yukarıda).
+  const questions = await fetchQuestionsFromAPI();
   const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
     url: `${BASE}/interviews/${q.category}/${q.slug}`,
     lastModified: now,

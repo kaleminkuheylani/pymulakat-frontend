@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import { findQuestion } from "../../../../lib/api/questionAPI";
+import { getMe } from "../../../../lib/api/authAPI";
 
 type Props = {
   params: Promise<{ category: string; id: string }>;
@@ -13,13 +15,16 @@ async function getInterview(
   description?: string;
   level?: string;
 } | null> {
+  // questionAPI.findQuestion — slug/ID unified resolver (lib/api/questionAPI.ts)
   try {
-    const res = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/interviews/${category}/${id}`,
-      { next: { revalidate: 86400 } }
-    );
-    if (!res.ok) return null;
-    return await res.json();
+    const q = await findQuestion(category, id);
+    if (!q) return null;
+    return {
+      question: q.title,
+      topic: q.title,
+      description: q.description,
+      level: q.level,
+    };
   } catch {
     return null;
   }
