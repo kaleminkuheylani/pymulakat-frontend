@@ -25,6 +25,8 @@ export const metadata: Metadata = {
     "python dersleri türkçe",
     "python örnekleri",
     "python playground",
+    "python ne işe yarar",
+    "python öğrenme",
   ],
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
   creator: "Python Mülakat",

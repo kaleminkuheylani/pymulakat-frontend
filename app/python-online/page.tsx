@@ -8,12 +8,13 @@ import PythonOnlineEditor from "./PythonOnlineEditor";
 import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCategories";
 
 export const metadata: Metadata = {
-  title: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
+  title: "Python Online Compiler — Tarayıcıda Ücretsiz Kod Editörü",
   description:
-    "Python öğren — online tarayıcı editörü. Python 3.12 kodunu Pyodide ile anında çalıştır. Kurulum yok, hesap yok. Öğrenmek için ideal playground. Python örnekleri ile pratik yap.",
+    "Python online compiler ve editör — Python 3.12 kodunu Pyodide ile tarayıcıda anında çalıştır. Kurulum yok, hesap yok. Python öğrenmek için ideal playground. Python örnekleri ile pratik yap.",
   keywords: [
     "python online",
     "python online editör",
+    "python online compiler",
     "python compiler",
     "python kodu çalıştırma",
     "tarayıcıda python",
@@ -26,7 +27,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
-    description: "Kurulum yok, hesap yok. Tarayıcıda Python yaz ve anında çalıştır. Python örnekleri ile pratik yap.",
+    description: "Python online compiler — kurulum yok, hesap yok. Tarayıcıda Python yaz ve anında çalıştır. Python örnekleri ile pratik yap.",
     url: "https://pythonmulakat.com/python-online",
     siteName: "PythonMulakat",
     locale: "tr_TR",
