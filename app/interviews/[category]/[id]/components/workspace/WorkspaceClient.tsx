@@ -13,8 +13,8 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useUser } from "../../../../hooks/useUser";
-import { usePyodide, TestRunResult } from "../../../../hooks/usePyodide";
+import { useUser } from "../../../../../../hooks/useUser";
+import { usePyodide, TestRunResult } from "../../../../../../hooks/usePyodide";
 import { CodeEditorRef } from "../../../../../components/CodeEditor";
 import { GuestBanner } from "../../../../../components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "../../../../../api/v2/questions";
