@@ -16,11 +16,11 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useUser } from "../../../../../../hooks/useUser";
 import { usePyodide } from "../../../../../../hooks/usePyodide";
-import { questionsAPI, Question, QuestionTests } from "../../../../../api/v2/questions";
-import { slugifyTitle } from "../../../../../lib/questionMeta";
-import { GuestBanner } from "../../../../../components/GuestBanner";
-import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "../../../../../lib/api/authAPI";
-import type { CodeEditorRef } from "../../../../../components/CodeEditor";
+import { questionsAPI, Question, QuestionTests } from "../../../../../../api/v2/questions";
+import { slugifyTitle } from "../../../../../../lib/questionMeta";
+import { GuestBanner } from "../../../../../../components/GuestBanner";
+import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "../../../../../../lib/api/authAPI";
+import type { CodeEditorRef } from "../../../../../../components/CodeEditor";
 import CodeEditorPanel from "./CodeEditor";
 import QuestionDescriptionPanel from "./QuestionDescriptionPanel";
 import TestPanel from "./TestPanel";
@@ -209,7 +209,7 @@ export default function WorkspaceMobileClient({
       if (!user || !interview) return;
       // authAPI.submitAttempt — typed + auth header otomatik (lib/api/authAPI.ts)
       // Token varlığını lib/auth.ts üzerinden kontrol et
-      const { getAccessToken } = await import("../../../../../lib/auth");
+      const { getAccessToken } = await import("../../../../../../lib/auth");
       const token = getAccessToken();
       if (!token) return;
       try {

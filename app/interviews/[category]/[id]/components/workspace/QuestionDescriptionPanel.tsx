@@ -10,7 +10,7 @@
 // 📌 Kural: Her modül kendi state'ini izole etsin → burada hiçbir state yok,
 //   sadece prop passthrough. Hints/içerik state'i parent'ta (useHints hook'u).
 
-import { Question, QuestionTests } from "../../../../../api/v2/questions";
+import { Question, QuestionTests } from "../../../../../../api/v2/questions";
 import QuestionDescriptionContent from "../QuestionDescriptionContent";
 import WorkspaceSidebar from "../WorkspaceSidebar";
 import { WorkspaceSidebarMobile } from "../WorkspaceSidebarMobile";

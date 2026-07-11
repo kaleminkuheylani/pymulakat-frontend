@@ -17,7 +17,7 @@
 // iletişim prop callback (context API YASAK şimdilik).
 
 import { Suspense, lazy } from "react";
-import type { Question, QuestionTests } from "../../../../../api/v2/questions";
+import type { Question, QuestionTests } from "../../../../../../api/v2/questions";
 
 // ─── Public Types ────────────────────────────────────────
 export interface WorkspaceProps {

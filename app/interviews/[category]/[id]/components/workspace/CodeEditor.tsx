@@ -7,13 +7,13 @@
 // paketini ayrı chunk'a taşır — page hydration hızlanır.
 
 import dynamic from "next/dynamic";
-import type { CodeEditorRef } from "../../../../../components/CodeEditor";
+import type { CodeEditorRef } from "../../../../../../components/CodeEditor";
 
 // 📌 ssr: false → sayfa hydration sırasında CodeMirror modüllerini
 // yüklemeye çalışmaz. İlk render'da fallback gösterilir, sonra
 // kendi chunk'ından mount olur.
 const Editor = dynamic(
-  () => import("../../../../../components/CodeEditor").then((m) => m.CodeEditorMonaco),
+  () => import("../../../../../../components/CodeEditor").then((m) => m.CodeEditorMonaco),
   {
     ssr: false,
     loading: () => (

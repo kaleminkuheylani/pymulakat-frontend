@@ -15,16 +15,16 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "../../../../../../hooks/useUser";
 import { usePyodide, TestRunResult } from "../../../../../../hooks/usePyodide";
-import { CodeEditorRef } from "../../../../../components/CodeEditor";
-import { GuestBanner } from "../../../../../components/GuestBanner";
-import { questionsAPI, Question, QuestionTests } from "../../../../../api/v2/questions";
-import { useHints } from "../../../../../lib/hints";
-import CodeShareModal from "../../../../../components/CodeShareModal";
+import { CodeEditorRef } from "../../../../../../components/CodeEditor";
+import { GuestBanner } from "../../../../../../components/GuestBanner";
+import { questionsAPI, Question, QuestionTests } from "../../../../../../api/v2/questions";
+import { useHints } from "../../../../../../lib/hints";
+import CodeShareModal from "../../../../../../components/CodeShareModal";
 import WorkspaceHeader from "../WorkspaceHeader";
 import CodeEditorPanel from "./CodeEditor";
 import QuestionDescriptionPanel from "./QuestionDescriptionPanel";
 import TestPanel from "./TestPanel";
-import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "../../../../../lib/api/authAPI";
+import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "../../../../../../lib/api/authAPI";
 
 // ─── Constants ────────────────────────────────────────────
 const LEVEL_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {
@@ -468,7 +468,7 @@ function GuestEditorFallback({
 async function sendAttempt(payload: AttemptPayload): Promise<void> {
   // authAPI.submitAttempt — typed + auth header otomatik (lib/api/authAPI.ts)
   // Token varlığını lib/auth.ts üzerinden kontrol et
-  const { getAccessToken } = await import("../../../../../lib/auth");
+  const { getAccessToken } = await import("../../../../../../lib/auth");
   const token = getAccessToken();
   if (!token) {
     console.warn("[Attempt] Token yok, attempt gönderilmedi");

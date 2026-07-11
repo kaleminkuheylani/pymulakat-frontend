@@ -12,15 +12,15 @@
 // (Mevcut işlevsellik korunur — toggle off default'ta davranış değişmez.)
 
 import { useCallback, useEffect, useState } from "react";
-import { QuestionTests, TestCase } from "../../../../../api/v2/questions";
+import { QuestionTests, TestCase } from "../../../../../../api/v2/questions";
 import { TestRunResult, PyodideStatus } from "../../../../../../hooks/usePyodide";
-import { getErrorLabel } from "../../../../../lib/errorClassifier";
+import { getErrorLabel } from "../../../../../../lib/errorClassifier";
 import {
   parseFunctionSignature,
   parseUserInput,
   formatValue,
   ParamInfo,
-} from "../../../../../components/parsePython";
+} from "../../../../../../components/parsePython";
 
 // ─── Panel-height (resize) — localStorage'da saklanır ─────
 const PANEL_HEIGHT_KEY = "pymulakat_console_height";
