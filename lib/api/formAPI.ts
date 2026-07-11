@@ -27,7 +27,6 @@ export async function listForms(category?: string): Promise<ApiForm[]> {
   );
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.data)) return data.data as ApiForm[];
-  if (Array.isArray(data?.items)) return data.items as ApiForm[];
   return [];
 }
 
@@ -95,6 +94,14 @@ export async function listFormCategories(): Promise<ApiFormCategory[]> {
   >("/api/v2/forms/categories");
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.data)) return data.data as ApiFormCategory[];
-  if (Array.isArray(data?.items)) return data.items as ApiFormCategory[];
   return [];
 }
+
+/** Namespace export: import { formAPI } from "./formAPI"; formAPI.listForms() */
+export const formAPI = {
+  listForms,
+  getForm,
+  createForm,
+  submitReply,
+  listFormCategories,
+};

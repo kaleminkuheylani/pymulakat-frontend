@@ -75,7 +75,7 @@ function csvToSEOQuestion(q: ApiQuestion, actualId: number, slug: string): SEOQu
     level: q.level,
     category: q.category,
     slug,
-    starter_code: q.starter_code,
+    starter_code: q.starter_code ?? undefined,
     hints,
     // test_cases detay sayfada ayrı çekiliyor, ama yine de hazır
     tags: [],

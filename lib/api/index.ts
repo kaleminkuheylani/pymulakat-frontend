@@ -9,8 +9,9 @@
 // ApiError (types.ts'ten re-export) throw eder — UI katmanı status'a göre handle eder.
 
 import type { ApiErrorBody } from "./types";
+import { ApiError } from "./types";
 
-export { ApiError } from "./types";
+export { ApiError };
 
 // ─── API_BASE ────────────────────────────────────────────────
 /**

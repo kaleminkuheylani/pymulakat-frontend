@@ -254,17 +254,6 @@ export interface ApiRecommendationItem {
   reply_count?: number;
 }
 
-export interface ApiRecommendationContext {
-  is_authenticated: boolean;
-  solved_categories: string[];
-  top_categories?: string[];
-  weak_categories?: string[];
-  success_rate: number;
-  target_level: string;
-  current_level?: string;
-  total_attempts?: number;
-  total_items?: number;
-}
 
 export interface ApiRecommendationFlow {
   sections: {
@@ -300,6 +289,9 @@ export interface ApiRecommendation {
 export interface ApiRecommendationContext {
   is_authenticated: boolean;
   top_categories: string[];
+  solved_categories?: string[];
+  success_rate?: number;
+  target_level?: string;
   recent_category?: string | null;
   user_level?: string | null;
   total_attempts?: number;

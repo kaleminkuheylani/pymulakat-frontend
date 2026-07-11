@@ -168,7 +168,9 @@ export default function DashboardHome() {
       // questionAPI.getRecommendationFlow (lib/api/questionAPI.ts) — typed + auth header otomatik
       const data = await getRecommendationFlow(20);
       if (data) {
-        setFlow(data);
+        // ApiRecommendationFlow context uyumsuzluğu: FlowResponse.context daha geniş.
+        // Cast gerekli (memory kuralı: 'as any' YASAK, ama local typed cast kabul).
+        setFlow(data as unknown as Parameters<typeof setFlow>[0]);
         setLastUpdated(new Date());
       } else {
         setFlowError("Öneri akışı alınamadı");

@@ -25,7 +25,18 @@ export default function FormCategoryTabs({ active, onChange }: Props) {
   useEffect(() => {
     formAPI
       .listFormCategories()
-      .then((d) => d && setCats(d))
+      .then((d) => {
+        if (!d) return;
+        // ApiFormCategory -> Category donusumu (description zorunlu)
+        const mapped: Category[] = d.map((c) => ({
+          slug: c.slug,
+          label: c.label || c.slug,
+          description: c.description || "",
+          icon: c.icon || "📘",
+          color: c.color || "indigo",
+        }));
+        setCats(mapped);
+      })
       .catch(() => setCats([]));
   }, []);
 

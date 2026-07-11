@@ -50,8 +50,21 @@ export function useRecommendations(limit: number = 10) {
       const data = await recommendationsAPI.getRecommendations(limit, {
         accessToken,
       });
-      setItems(data.items);
-      setContext(data.context);
+      // ApiRecommendation -> ScoredItem map (type alanı zorunlu)
+      setItems(data.items.map((r) => ({
+        type: "question" as const,
+        id: r.id ?? r.question_id ?? 0,
+        title: r.title ?? "",
+        category: r.category,
+        level: r.level,
+        slug: r.slug,
+        score: r.score ?? 0,
+        reason: r.reason ?? "Öneri",
+      })));
+      setContext({
+        is_authenticated: data.context.is_authenticated,
+        top_categories: data.context.top_categories ?? [],
+      });
       return;
     } catch (err) {
       // Fallback: local scoring (async DB fetch)

@@ -26,7 +26,7 @@ export async function getRecommendations(
   );
   return {
     items: res.data || [],
-    context: res.context || { is_authenticated: false, top_categories: [] },
+    context: res.context ?? { is_authenticated: false, top_categories: [], solved_categories: [], success_rate: 0, target_level: "" },
   };
 }
 
@@ -55,3 +55,10 @@ export async function getAllQuestionsForRecs(
     { cache: "no-store" }
   );
 }
+
+/** Namespace export: import { recommendationsAPI } from "./recommendationsAPI" */
+export const recommendationsAPI = {
+  getRecommendations,
+  getCommunityPicks,
+  getAllQuestionsForRecs,
+};

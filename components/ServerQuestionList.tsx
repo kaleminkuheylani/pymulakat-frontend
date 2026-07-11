@@ -32,7 +32,7 @@ export default async function ServerQuestionList({
     category: q.category,
     level: q.level,
     description: q.description,
-    function_name: q.function_name,
+    function_name: q.function_name ?? undefined,
   }));
   return (
     <QuestionListClient

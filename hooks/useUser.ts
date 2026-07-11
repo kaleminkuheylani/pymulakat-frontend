@@ -165,10 +165,11 @@ async function fetchMe(): Promise<UserResponse | null> {
     const doFetch = (accessToken: string) =>
       authAPI.getMe();
 
-    let res = await doFetch(token);
+        let res = await doFetch(token);
 
-    // 🆕 401 gelirse refresh_token ile yeni access_token al
-    if (res.status === 401) {
+    // 401 gelirse refresh_token ile yeni access_token al
+    if (res === null) {
+      // null response, refresh deneyebiliriz
       const refreshed = await tryRefreshToken();
       if (refreshed) {
         token = extractAccessToken();
@@ -178,42 +179,10 @@ async function fetchMe(): Promise<UserResponse | null> {
       }
     }
 
-    if (!res.ok) {
-      if (res.status === 401 || res.status === 403) {
-        // Token expired/invalid — Supabase client'ı temizle
-        const supabase = getSupabaseBrowser();
-        if (supabase) {
-          try {
-            await supabase.auth.signOut();
-          } catch {
-            // ignore
-          }
-        }
-        localStorage.removeItem("sb-pymulakat-auth-token");
-        localStorage.removeItem("token");
-        localStorage.removeItem("user");
-        localStorage.removeItem("refresh_token");
-      }
-      return null;
-    }
-
-    const data = await res.json();
-
-    return {
-      id: data.id || "",
-      email: data.email || "",
-      username: data.username || data.email?.split("@")[0] || "user",
-      is_verified: data.is_verified ?? false,
-      points: data.points ?? 0,
-      total_attempts: data.total_attempts ?? 0,
-      success_count: data.success_count ?? 0,
-      fail_count: data.fail_count ?? 0,
-      success_rate: data.success_rate ?? 0,
-      solution_average_time: data.solution_average_time ?? 0,
-      solution_average_time_ms: data.solution_average_time_ms ?? 0,
-    };
-  } catch (err) {
-    console.error("fetchMe error:", err);
+    // res artık ApiUser | null (eski fetch kaldırıldı, authAPI.getMe() kullanılıyor)
+    return res;
+  } catch (e) {
+    console.error("useUser fetch error:", e);
     return null;
   }
 }
