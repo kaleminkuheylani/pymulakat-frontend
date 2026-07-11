@@ -1,5 +1,5 @@
 import type { MetadataRoute } from "next";
-import { fetchCSVQuestions, slugifyTitle } from "../lib/csvSource";
+import { fetchAllQuestions, slugifyTitle } from "../lib/api";
 
 const BASE = "https://pythonmulakat.com";
 
@@ -7,7 +7,7 @@ const BASE = "https://pythonmulakat.com";
 // CSV-only mimari: backend DB'ye hiç bağlanmıyoruz.
 async function fetchQuestionsFromCSV(): Promise<Array<{ category: string; slug: string }>> {
   try {
-    const rows = await fetchCSVQuestions();
+    const rows = await fetchAllQuestions();
     return rows
       .filter((q) => q.category && q.title)
       .map((q) => ({ category: q.category, slug: slugifyTitle(q.title) }));

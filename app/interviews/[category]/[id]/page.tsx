@@ -14,7 +14,7 @@ import type { Metadata } from "next";
 import WorkspaceClient from "./WorkspaceClient";
 import WorkspaceMobileClient from "./WorkspaceMobileClient";
 import { slugifyTitle } from "../../../../lib/questionMeta";
-import { findQuestion, fetchCSVQuestions, slugifyTitle as csvSlugify, type CSVQuestion } from "../../../../lib/csvSource";
+import { findQuestion, fetchAllQuestions, slugifyTitle as csvSlugify, type ApiQuestion } from "../../../../lib/api";
 
 // Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
 
@@ -58,13 +58,11 @@ interface SSRQuestionTests {
 }
 
 // ─── CSV → DB Question normalizasyonu ─────────────────────────
-function csvToSEOQuestion(q: CSVQuestion, actualId: number, slug: string): SEOQuestion {
-  // test_cases JSON string → array
-  let testCases: any[] = [];
-  try { testCases = JSON.parse(q.test_cases || "[]"); } catch { testCases = []; }
-  // hints JSON string → array
-  let hints: string[] = [];
-  try { hints = JSON.parse(q.hints || "[]"); } catch { hints = []; }
+function csvToSEOQuestion(q: ApiQuestion, actualId: number, slug: string): SEOQuestion {
+  // DB-FIRST: test_cases ayrı endpoint'ten geliyor (burada [] geçici)
+  const testCases: any[] = [];
+  // hints API zaten array dönüyor (string değil)
+  const hints: string[] = q.hints || [];
 
   return {
     id: actualId,
@@ -82,16 +80,23 @@ function csvToSEOQuestion(q: CSVQuestion, actualId: number, slug: string): SEOQu
 
 // ─── Server-side test cases fetch (SSR: misafirler de okuyabilsin) ─────
 async function fetchQuestionTests(category: string, slugOrId: string): Promise<SSRQuestionTests | null> {
-  // CSV-only mimari: CSV = tek kaynak, backend'e hiç bağlanmıyoruz.
+  // DB-FIRST mimari: backend /by-slug/{cat}/{slug}/tests endpoint'i
+  const API = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
   try {
-    const csvQ = await findQuestion(category, slugOrId);
-    if (!csvQ) return null;
-    let cases: SSRTestCase[] = [];
-    try { cases = JSON.parse(csvQ.test_cases || "[]"); } catch { cases = []; }
+    // Önce meta + slug al
+    const metaQ = await findQuestion(category, slugOrId);
+    if (!metaQ) return null;
+    // Sonra test cases (slug üzerinden — ID de kabul eder backend)
+    const slug = metaQ.slug || slugOrId;
+    const res = await fetch(`${API}/api/v2/questions/by-slug/${category}/${slug}/tests`, {
+      next: { revalidate: 3600 },
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
     return {
-      question_id: csvQ.id,
-      function_name: csvQ.function_name,
-      test_cases: cases.map((c) => ({
+      question_id: data.question_id ?? metaQ.id,
+      function_name: data.function_name ?? "",
+      test_cases: (data.test_cases || []).map((c: any) => ({
         input: c.input,
         expected: c.expected,
         // description undefined ise spread ile hiç ekleme (Next.js $undefined bug önleme)
@@ -312,29 +317,24 @@ export default async function Page({ params, searchParams }: PageProps) {
     notFound();
   }
 
-  // CSV-only mimari: CSV'yi bir kez çek, seoQ + ssrTests paralel parse et
-  // (Promise.all içinde iki kez fetchCSVQuestions çağırmak race condition yaratıyor)
-  const [mobile, csvRows] = await Promise.all([
+  // DB-FIRST mimari: API'den çek (2 paralel fetch — question meta + test cases)
+  const [mobile, apiQ, testsRes] = await Promise.all([
     isMobileDevice(),
-    fetchCSVQuestions(),
+    findQuestion(resolvedParams.category, resolvedParams.id),
+    fetch(
+      `${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/questions/by-slug/${resolvedParams.category}/${resolvedParams.id}/tests`,
+      { next: { revalidate: 3600 } }
+    ).catch(() => null),
   ]);
-  // Resolve seoQ + ssrTests aynı rows'tan (cache + tutarlı)
-  const idOrSlug = resolvedParams.id;
-  const _isPureId2 = /^\d+$/.test(idOrSlug);
-  const asNum2 = _isPureId2 ? parseInt(idOrSlug, 10) : NaN;
-  const slugKey2 = idOrSlug.toLowerCase();
-  const csvQ = csvRows.find((q) =>
-    q.category === resolvedParams.category &&
-    (q.id === asNum2 || csvSlugify(q.title) === slugKey2)
-  );
+  // Resolve seoQ + ssrTests aynı request'ten (cache + tutarlı)
+  const csvQ = apiQ;
   const seoQ = csvQ ? csvToSEOQuestion(csvQ, csvQ.id, csvSlugify(csvQ.title)) : null;
-  const ssrTests = csvQ ? (() => {
-    let cases: SSRTestCase[] = [];
-    try { cases = JSON.parse(csvQ.test_cases || "[]"); } catch { cases = []; }
+  const ssrTests = csvQ && testsRes && testsRes.ok ? (async () => {
+    const data = await testsRes.json();
     return {
-      question_id: csvQ.id,
-      function_name: csvQ.function_name,
-      test_cases: cases.map((c) => ({
+      question_id: data.question_id ?? csvQ.id,
+      function_name: data.function_name ?? "",
+      test_cases: (data.test_cases || []).map((c: any) => ({
         input: c.input,
         expected: c.expected,
         ...(c.description ? { description: c.description } : {}),

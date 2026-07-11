@@ -1,6 +1,6 @@
 // components/ServerQuestionList.tsx
 //
-// CSV-FIRST mimari uyumu: server tarafında CSV'den soruları çeker,
+// DB-FIRST mimari (2026-07-11): server tarafında backend API'den soruları çeker,
 // initialQuestions prop'uyla QuestionListClient'a geçer. Böylece
 // ilk HTML (SSR, no-JS, Googlebot) tam liste ile gelir; client
 // component sadece hydration + revalidate için tekrar fetch eder.
@@ -8,7 +8,7 @@
 // Bu server component, tüm pillar sayfalarında (python-temelleri,
 // python-dinamik-programlama, ...) paylaşılır — DRY.
 
-import { listQuestionsByCategory, slugifyTitle as csvSlugify } from "../lib/csvSource";
+import { listQuestionsByCategory, slugifyTitle as csvSlugify } from "../lib/api";
 import QuestionListClient from "./QuestionListClient";
 
 interface Props {
