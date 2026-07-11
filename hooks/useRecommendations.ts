@@ -53,16 +53,16 @@ export function useRecommendations(limit: number = 10) {
       setItems(data.items);
       setContext(data.context);
       return;
-      }
-
+    } catch (err) {
       // Fallback: local scoring (async DB fetch)
-      const local = await computeLocalRecommendations(user, limit);
-      setItems(local);
-      setContext({ is_authenticated: !!user, top_categories: [] });
-    } catch (err: any) {
-      setError(err.message);
-      const local = await computeLocalRecommendations(user, limit);
-      setItems(local);
+      setError(err instanceof Error ? err.message : String(err));
+      try {
+        const local = await computeLocalRecommendations(user, limit);
+        setItems(local);
+        setContext({ is_authenticated: !!user, top_categories: [] });
+      } catch {
+        // empty
+      }
     } finally {
       setLoading(false);
     }
