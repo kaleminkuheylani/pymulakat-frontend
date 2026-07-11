@@ -8,6 +8,7 @@ import Link from "next/link";
 
 import { notifyAuthChange } from "../../hooks/useUser";
 import { createClient } from "@supabase/supabase-js";
+import { authAPI } from "../../lib/api/authAPI";
 
 // ═══════════════════════════════════════════════════════════════
 // ─── Inline authAPI — Supabase client ile login ──────────────
@@ -98,11 +99,7 @@ const inlineAuthAPI = {
 
     // Backend profile senkronizasyonu (opsiyonel)
     try {
-      await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${data.session.access_token}`,
-        },
-      });
+      await authAPI.getMe();
     } catch {
       // ignore
     }

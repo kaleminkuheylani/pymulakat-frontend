@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getSupabaseBrowser, clearAuthSentinel } from "./useSupabaseBrowser";
+import { authAPI } from "../lib/api/authAPI";
 
 const AUTH_EVENT = "auth-state-changed";
 
@@ -127,16 +128,10 @@ async function tryRefreshToken(): Promise<boolean> {
     const refreshToken = parsed?.refresh_token;
     if (!refreshToken) return false;
 
-    const res = await fetch(`${API_BASE_URL}/auth/refresh`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ refresh_token: refreshToken }),
-    });
-
-    if (!res.ok) return false;
-    const json = await res.json();
-    const newAccess = json?.access_token;
-    const newRefresh = json?.refresh_token || refreshToken;
+    const json = await authAPI.refreshToken(refreshToken);
+    if (!json) return false;
+    const newAccess = json.access_token;
+    const newRefresh = json.refresh_token || refreshToken;
     if (!newAccess) return false;
 
     const expiresAt = json?.expires_at
@@ -168,12 +163,7 @@ async function fetchMe(): Promise<UserResponse | null> {
 
   try {
     const doFetch = (accessToken: string) =>
-      fetch(`${API_BASE_URL}/auth/me`, {
-        headers: {
-          Authorization: `Bearer ${accessToken}`,
-          "Content-Type": "application/json",
-        },
-      });
+      authAPI.getMe();
 
     let res = await doFetch(token);
 

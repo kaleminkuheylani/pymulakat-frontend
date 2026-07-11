@@ -5,6 +5,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { useUser } from "./useUser";
+import { recommendationsAPI } from "../lib/api/recommendationsAPI";
 
 import {
   scoreQuestion,
@@ -32,16 +33,12 @@ export function useRecommendations(limit: number = 10) {
     setError(null);
 
     try {
-      const res = await fetch(`${API_BASE}/api/v2/recommendations?limit=${limit}`, {
-        credentials: "include",
-        headers: user ? { Authorization: `Bearer ${(user as any).access_token || ""}` } : {},
+      const data = await recommendationsAPI.getRecommendations(limit, {
+        accessToken: (user as any)?.access_token,
       });
-
-      if (res.ok) {
-        const data = await res.json();
-        setItems(data.data || []);
-        setContext(data.context || { is_authenticated: false, top_categories: [] });
-        return;
+      setItems(data.items);
+      setContext(data.context);
+      return;
       }
 
       // Fallback: local scoring (async DB fetch)
@@ -76,11 +73,8 @@ async function computeLocalRecommendations(user: any, limit: number): Promise<Sc
   // DB'den soru listesi çek (fallback — backend recommendations başarısız olursa)
   let all: Array<{ id: number; title: string; category: string; level: string; slug: string }> = [];
   try {
-    const res = await fetch(`${API_BASE}/api/v2/questions/all?limit=200`, { cache: "no-store" });
-    if (res.ok) {
-      const data = await res.json();
-      all = (data?.data || []).filter((q: any) => q && q.slug);
-    }
+    const data = (await recommendationsAPI.getAllQuestionsForRecs(200)) as any;
+    all = (data?.data || []).filter((q: any) => q && q.slug);
   } catch {
     // empty
   }

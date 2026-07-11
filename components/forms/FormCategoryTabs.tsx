@@ -3,6 +3,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { formAPI } from "../../lib/api/formAPI";
 
 interface Category {
   slug: string;
@@ -22,9 +23,9 @@ export default function FormCategoryTabs({ active, onChange }: Props) {
   const [cats, setCats] = useState<Category[]>([]);
 
   useEffect(() => {
-    fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/forms/categories`)
-      .then((r) => r.json())
-      .then((d) => d?.data && setCats(d.data))
+    formAPI
+      .listFormCategories()
+      .then((d) => d && setCats(d))
       .catch(() => setCats([]));
   }, []);
 

@@ -279,3 +279,52 @@ export interface ApiRecommendationFlow {
   next_cursor?: string | null;
   source?: string;
 }
+
+// ═══════════════════════════════════════════════════════════════════
+// ─── Recommendation (basit liste) ────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+
+export interface ApiRecommendation {
+  id?: number;
+  question_id?: number;
+  title?: string;
+  category?: string;
+  level?: string;
+  description?: string;
+  slug?: string;
+  reason?: string;
+  score?: number;
+  url?: string;
+}
+
+export interface ApiRecommendationContext {
+  is_authenticated: boolean;
+  top_categories: string[];
+  recent_category?: string | null;
+  user_level?: string | null;
+  total_attempts?: number;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// ─── Supabase Auth (REST) ────────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════════
+
+export interface ApiSupabaseSession {
+  access_token: string;
+  refresh_token?: string;
+  expires_in?: number;
+  expires_at?: number;
+  token_type?: string;
+  user?: ApiSupabaseUser;
+}
+
+export interface ApiSupabaseUser {
+  id: string;
+  email?: string;
+  phone?: string;
+  role?: string;
+  app_metadata?: Record<string, unknown>;
+  user_metadata?: Record<string, unknown>;
+  created_at?: string;
+  updated_at?: string;
+}
