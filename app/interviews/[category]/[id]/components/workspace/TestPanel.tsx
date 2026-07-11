@@ -13,7 +13,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { QuestionTests, TestCase } from "../../../../../api/v2/questions";
-import { TestRunResult, PyodideStatus } from "../../../../../hooks/usePyodide";
+import { TestRunResult, PyodideStatus } from "../../../../hooks/usePyodide";
 import { getErrorLabel } from "../../../../../lib/errorClassifier";
 import {
   parseFunctionSignature,

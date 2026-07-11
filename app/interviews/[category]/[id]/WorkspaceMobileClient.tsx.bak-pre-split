@@ -1,33 +1,31 @@
 "use client";
 
-// WorkspaceMobileClient — Mobile workspace orchestrator (refactored).
-//
-// 📌 Code splitting (2026-07-11) sonrası bu dosya artık SADECE orchestrator.
-//   - State yönetimi (interview, testCases, code, results, vs.)
-//   - Side-effect'ler (data fetch, attempt submit, editor layout, hydration fix)
-//   - 3 modülü compose (CodeEditor, TestPanel, QuestionDescriptionPanel)
-//
-//   Eski inline ConsoleTab/ResultModal/ExamplesTab → components/workspace/TestPanel'e taşındı.
-//   CodeEditor → lazy load (Pyodide ağırlığı izole).
+// WorkspaceMobileClient — Mobile workspace orchestrator
+// Sub-components: MobileSidebar, MobileTestResults
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import dynamic from "next/dynamic";
+import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useUser } from "../../../../hooks/useUser";
 import { usePyodide } from "../../../../hooks/usePyodide";
-import { questionsAPI, Question, QuestionTests } from "../../../../../api/v2/questions";
-import { slugifyTitle } from "../../../../../lib/questionMeta";
-import { GuestBanner } from "../../../../../components/GuestBanner";
-import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "../../../../../lib/api/authAPI";
-import type { CodeEditorRef } from "../../../../../components/CodeEditor";
-import CodeEditorPanel from "./CodeEditor";
-import QuestionDescriptionPanel from "./QuestionDescriptionPanel";
-import TestPanel from "./TestPanel";
+import { parseFunctionSignature, parseUserInput, formatValue } from "../../../../components/parsePython";
+import { questionsAPI, Question, QuestionTests, TestCase } from "../../../../api/v2/questions";
+import { slugifyTitle } from "../../../../lib/questionMeta";
+import { GuestBanner } from "../../../../components/GuestBanner";
+import { WorkspaceSidebarMobile } from "./components/WorkspaceSidebarMobile";
+
+
+// Code editor sadece client-side
+import type { CodeEditorRef } from "../../../../components/CodeEditor";
+const CodeEditor = dynamic(
+  () => import("../../../../components/CodeEditor").then((m) => m.CodeEditorMonaco),
+  { ssr: false }
+);
 
 export const dynamic_ = "force-dynamic";
-
-type Tab = "question" | "workspace" | "examples" | "console";
 
 interface Props {
   initialParams?: { category: string; id: string };
@@ -36,9 +34,6 @@ interface Props {
   initialTestCases?: QuestionTests | null;
   hasStudy?: boolean;
 }
-
-// ─── Main Component ───────────────────────────────────────
-// 📌 Code splitting sonrası: sadece state + orchestration. UI modüllerde.
 export default function WorkspaceMobileClient({
   initialParams,
   readonly = false,
@@ -66,8 +61,12 @@ export default function WorkspaceMobileClient({
     if (typeof window === "undefined") return;
     if (playCountTimerRef.current) clearTimeout(playCountTimerRef.current);
     playCountTimerRef.current = setTimeout(() => {
-      // authAPI.incrementPlayCount — typed + auth header otomatik (lib/api/authAPI.ts)
-      incrementPlayCount().catch(() => {/* silent fail */});
+      const token = localStorage.getItem("token");
+      if (!token) return;
+      fetch(`${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/users/me/play-count`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${token}` },
+      }).catch(() => {});
     }, 2000);
   }, []);
   useEffect(() => {
@@ -84,10 +83,11 @@ export default function WorkspaceMobileClient({
   const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCases);
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
+  
   const [errorLines, setErrorLines] = useState<string[]>([]);
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
-  const [tab, setTab] = useState<Tab>("workspace");
+  const [tab, setTab] = useState<"question" | "workspace" | "examples" | "console">("workspace");
   const [resultModal, setResultModal] = useState<{ results: any[]; errorLines: string[]; passed: number; total: number } | null>(null);
 
   // ─── Guards ──
@@ -207,21 +207,46 @@ export default function WorkspaceMobileClient({
   const submitAttempt = useCallback(
     async (success: boolean, passed: number, total: number, durationMs: number) => {
       if (!user || !interview) return;
-      // authAPI.submitAttempt — typed + auth header otomatik (lib/api/authAPI.ts)
-      // Token varlığını lib/auth.ts üzerinden kontrol et
-      const { getAccessToken } = await import("../../../../../lib/auth");
-      const token = getAccessToken();
-      if (!token) return;
+      // Supabase token'ı al (desktop sendAttempt ile aynı mantık)
+      const getToken = (): string | null => {
+        if (typeof window === "undefined") return null;
+        try {
+          const raw = localStorage.getItem("sb-pymulakat-auth-token");
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.access_token) return parsed.access_token;
+          }
+        } catch {
+          // ignore
+        }
+        return localStorage.getItem("token");
+      };
+      const token = getToken();
       try {
-        await submitAttemptAPI({
-          question_id: questionId,
-          passed_tests: passed,
-          total_tests: total,
-          success,
-          execution_time_ms: durationMs,
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL || ""}/api/v2/attempts`,
+          {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              ...(token ? { Authorization: `Bearer ${token}` } : {}),
+            },
+            body: JSON.stringify({
+              question_id: questionId,
+              passed_tests: passed,
+              total_tests: total,
+              success,
+              execution_time_ms: durationMs,
+              // user_code gonderilmiyor — KVKK
+            }),
+          }
+        );
+        if (!res.ok) {
+          const txt = await res.text();
+          console.warn("[attempt] non-2xx:", res.status, txt);
+        }
       } catch (e) {
-        console.warn("[attempt] submit error:", e);
+        console.warn("[attempt] fetch error:", e);
       }
     },
     [user, interview, questionId, code]
@@ -302,10 +327,16 @@ export default function WorkspaceMobileClient({
     //    küçülüyor ama container aynı kalıyor; Monaco hit-test'i yanlış
     //    koordinata düşüp cursor'ü istenmeyen yere koyuyordu.
     <div className="h-[100dvh] min-h-screen flex flex-col bg-[#050816]">
-      {(readonly || isGuest) && <GuestBanner feature="kod çalıştırma" />}
-
+      {/* 📌 Readonly önizleme modunda eski "👁 Önizleme" pill'i yerine
+          GuestBanner kullan — kullanıcı hangi kısıtlamalar olduğunu net görsün,
+          CTA butonu tek yerden erişilebilir. */}
+      {(readonly || isGuest) && (
+        <GuestBanner feature="kod çalıştırma" />
+      )}
       {/* 📌 Gerçek SSR içerik bloğu — crawler/SEO için ilk HTML'de mevcut,
-          hydration sonrası yukarıdaki useEffect tarafından kaldırılır. */}
+          hydration sonrası yukarıdaki useEffect tarafından kaldırılır.
+          initialInterview server prop'undan geldiği için client state'e
+          (interview) bağımlı değil, ilk paint'te doğru içerik garanti. */}
       {initialInterview && (
         <div data-ssr-question className="sr-only" aria-hidden="true">
           <h1>{initialInterview.title}</h1>
@@ -314,7 +345,6 @@ export default function WorkspaceMobileClient({
           )}
         </div>
       )}
-
       {/* Top bar */}
       <div className="flex items-center justify-between gap-2 px-3 py-2 bg-[#0a0e1a]">
         <button onClick={handleBackToList} className="text-[10px] text-white/60 hover:text-white">
@@ -355,6 +385,9 @@ export default function WorkspaceMobileClient({
           </button>
         </div>
         {readonly ? null : isGuest ? (
+          // 📌 Misafir için GuestEditorGate zaten CTA'yı gösteriyor. Buradaki
+          // ek butan gereksiz — link ile değiştir, middleware zaten /login'e
+          // /dashboard* üzerinden yönlendiriyor.
           <Link
             href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
             className="px-3 py-1.5 rounded-lg bg-indigo-500 text-white text-[11px] font-bold hover:bg-indigo-400 transition-colors"
@@ -373,57 +406,54 @@ export default function WorkspaceMobileClient({
         )}
       </div>
 
-      {/* Tab content — modülleri compose */}
+      {/* Tab content */}
       <div className="flex-1 min-h-0 overflow-hidden flex flex-col">
         {tab === "question" && (
           <div className="flex-1 overflow-y-auto">
-            <QuestionDescriptionPanel
-              interview={interview}
-              category={category}
-              id={id}
-              testCases={testCases}
-              isGuest={isGuest}
-              hintsList={[]}
-              revealedHints={0}
-              onRevealHint={() => undefined}
-              hasStudy={hasStudy}
-              variant="mobile"
-            />
+            <WorkspaceSidebarMobile interview={interview} isGuest={isGuest} onLogin={handleBackToList} testCases={testCases} hasStudy={hasStudy} />
           </div>
         )}
 
         {tab === "workspace" && (
           <>
-            {/* Mobilde editör — flex-1 min-h 320px (iPhone SE uyumlu) */}
+            {/* 📌 Mobilde editör 150% boyutlandı.
+                vh kullanmıyoruz (iOS Safari URL bar açılıp kapanınca vh değişiyor,
+                Monaco re-layout tetikleyip cursor titremesi yapıyordu).
+                Bunun yerine stable flex zinciri: dış flex-1 + editor flex-1 min-h,
+                + console sabit 180px. Bu kombinasyon önceki 40vh'den ~%50 daha
+                geniş alan (~320px iPhone SE). */}
             <div
               ref={editorContainerRef}
               className="flex-1 min-h-[320px] flex-shrink min-w-0 overflow-hidden"
+              // 📌 Android/iOS cursor fix (gerçek neden): tıklama koordinatı
+              //    yanlış satıra düşüyordu çünkü container boyutu değiştiğinde
+              //    (klavye aç/kapa, tab geçişi, orientation change) Monaco'nun
+              //    kendi hit-test tablosu güncellenmiyordu. Eski kod her
+              //    pointerdown'da editor.focus() çağırıyordu — bu, Monaco'nun
+              //    kendi touch handler'ından ÖNCE cursor'ı son bilinen konuma
+              //    taşıyıp gerçek tıklama noktasıyla çakışıyordu.
+              //    Çözüm: focus() çağırmak yerine, container boyutu her
+              //    değiştiğinde editor.layout() tetikleyip Monaco'nun hit-test
+              //    tablosunu güncel tut. Bkz. aşağıdaki useEffect.
               style={{ touchAction: "manipulation" }}
             >
-              <CodeEditorPanel
-                editorRef={editorRef}
+              <CodeEditor
+                ref={editorRef}
                 value={code}
                 onChange={handleCodeChange}
-                language="python"
                 height="100%"
+                language="python"
                 readOnly={readonly || isGuest}
               />
             </div>
-            {/* Console — TestPanel mobile variantı (ExamplesView) */}
+            {/* Console: sabit 180px, taşarsa iç scroll, alttan taşma yok */}
             <div className="h-[180px] flex-shrink-0 overflow-y-auto border-t border-white/10 bg-[#0a0e1a] p-2">
-              <TestPanel
-                variant="mobile"
-                testCases={testCases}
-                testResults={results}
-                isRunning={running}
-                pyStatus={pyStatus}
-                isGuest={isGuest}
-                category={category}
-                id={id}
-                onRun={handleRun}
-                starterCode={interview?.starter_code || undefined}
-                onCustomRun={handleCustomRun}
+              <ConsoleTabMobile
                 errorLines={errorLines}
+                starterCode={interview?.starter_code || undefined}
+                functionName={testCases?.function_name || undefined}
+                isRunning={running}
+                onCustomRun={handleCustomRun}
               />
             </div>
           </>
@@ -431,38 +461,24 @@ export default function WorkspaceMobileClient({
 
         {tab === "console" && (
           <div className="flex-1 overflow-y-auto">
-            <TestPanel
-              variant="mobile"
-              testCases={testCases}
-              testResults={results}
-              isRunning={running}
-              pyStatus={pyStatus}
-              isGuest={isGuest}
-              category={category}
-              id={id}
-              onRun={handleRun}
-              starterCode={interview?.starter_code || undefined}
-              onCustomRun={handleCustomRun}
+            <ConsoleTabMobile
               errorLines={errorLines}
+              starterCode={interview?.starter_code || undefined}
+              functionName={testCases?.function_name || undefined}
+              isRunning={running}
+              onCustomRun={handleCustomRun}
             />
           </div>
         )}
 
         {tab === "examples" && (
           <div className="flex-1 overflow-y-auto">
-            <TestPanel
-              variant="mobile"
+            <ExamplesTabMobile
               testCases={testCases}
-              testResults={results}
-              isRunning={running}
-              pyStatus={pyStatus}
+              results={results}
               isGuest={isGuest}
               category={category}
               id={id}
-              onRun={handleRun}
-              starterCode={interview?.starter_code || undefined}
-              onCustomRun={handleCustomRun}
-              errorLines={errorLines}
             />
           </div>
         )}
@@ -505,9 +521,158 @@ export default function WorkspaceMobileClient({
   );
 }
 
+function ConsoleTabMobile({
+  errorLines,
+  starterCode,
+  functionName,
+  isRunning,
+  onCustomRun,
+}: {
+  errorLines: string[];
+  starterCode?: string;
+  functionName?: string;
+  isRunning?: boolean;
+  onCustomRun?: (args: any[]) => Promise<{ actual: any; errorLine?: string; errorCategory?: string }>;
+}) {
+  // ── Yardımcılar (desktop ConsoleTab ile aynı parser) ──
+  const params = parseFunctionSignature(starterCode || "", functionName || "");
+  const [inputs, setInputs] = useState<string[]>(
+    Array.from({ length: params.length }, () => "")
+  );
+  const [result, setResult] = useState<any>(undefined);
+  const [resultError, setResultError] = useState<string | null>(null);
+  const [localRunning, setLocalRunning] = useState(false);
+
+  const handleRun = async () => {
+    if (!onCustomRun) return;
+    setLocalRunning(true);
+    setResult(undefined);
+    setResultError(null);
+    try {
+      const parsed = inputs.map((raw) => parseUserInput(raw));
+      const r = await onCustomRun(parsed);
+      setResult(r.actual);
+      setResultError(r.errorLine || null);
+    } catch {
+      setResultError("Çalıştırma hatası");
+    } finally {
+      setLocalRunning(false);
+    }
+  };
+
+  return (
+    <div className="p-3 space-y-3 h-full overflow-y-auto">
+      {/* ── Custom Input paneli (mobil) ── */}
+      {params.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between pb-1">
+            <span className="text-[10px] uppercase tracking-wider text-white/60 font-bold">
+              🧪 Kendi Input'unla Dene
+            </span>
+            <span className="text-[10px] text-white/40">{params.length} parametre</span>
+          </div>
+          {params.map((p, idx) => (
+            <div key={idx} className="space-y-1">
+              <div className="flex items-center justify-between">
+                <label className="text-[11px] font-mono text-white/70">
+                  {p.name}
+                  <span className="text-[10px] text-white/40 ml-2">: {p.type}</span>
+                </label>
+                <span className="text-[9px] text-white/30 font-mono">{p.placeholder}</span>
+              </div>
+              <input
+                type="text"
+                value={inputs[idx] || ""}
+                onChange={(e) => {
+                  const next = [...inputs];
+                  next[idx] = e.target.value;
+                  setInputs(next);
+                }}
+                placeholder={p.placeholder}
+                className="w-full bg-black/40 border border-white/10 rounded px-2 py-1.5 text-xs font-mono text-white placeholder-white/20 focus:border-indigo-500/50 outline-none"
+              />
+            </div>
+          ))}
+          <button
+            onClick={handleRun}
+            disabled={localRunning || isRunning || !onCustomRun}
+            className="w-full mt-1 py-2 rounded bg-indigo-500/20 border border-indigo-500/40 text-indigo-300 text-xs font-bold hover:bg-indigo-500/30 disabled:opacity-40"
+          >
+            {localRunning ? "⏳ Çalışıyor..." : "▶ Çalıştır"}
+          </button>
+
+          {/* ── Sonuç ── */}
+          {result !== undefined && (
+            <div className="space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 font-bold">
+                ✓ Sonuç
+              </div>
+              <pre className="text-xs font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded border border-emerald-500/20 overflow-x-auto">
+                {formatValue(result)}
+              </pre>
+            </div>
+          )}
+          {resultError && (
+            <div className="space-y-1">
+              <div className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+                ✗ Hata
+              </div>
+              <pre className="text-xs font-mono text-rose-300 bg-rose-500/10 p-2 rounded border border-rose-500/30 overflow-x-auto">
+                {resultError}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* ── Run Tests'ten gelen traceback ── */}
+      {errorLines.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between pb-1">
+            <span className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+              ⚠ Traceback
+            </span>
+            <span className="text-[10px] text-white/30 font-mono">
+              {errorLines.length} satır
+            </span>
+          </div>
+          <pre className="text-xs text-rose-200 font-mono whitespace-pre-wrap leading-relaxed">
+            {errorLines.map((line, i) => (
+              <div key={i} className="text-rose-300/90 font-semibold">
+                {line}
+              </div>
+            ))}
+          </pre>
+        </div>
+      )}
+
+      {/* Boş durum (parametre yok + hata yok) */}
+      {params.length === 0 && errorLines.length === 0 ? (
+        <div className="space-y-3">
+          <div className="text-[11px] text-white/40 leading-relaxed p-2 rounded bg-amber-500/5 border border-amber-500/20">
+            <div className="font-bold text-amber-300 mb-1">⚠ Parametre tespit edilemedi</div>
+            Fonksiyon imzası ayrıştırılamadı. <strong>Run Tests</strong> sekmesinden test case'leri incele veya <strong>Examples</strong> sekmesinden hazır inputları kullan.
+          </div>
+          <div className="flex flex-col items-center justify-center gap-2 text-white/30 py-6">
+            <div className="text-3xl">✅</div>
+            <p className="text-sm">Kodun hatasız çalışıyor.</p>
+          </div>
+        </div>
+      ) : params.length === 0 ? (
+        <div className="flex flex-col items-center justify-center gap-2 text-white/30 py-12">
+          <div className="text-3xl">✅</div>
+          <p className="text-sm">Kodun hatasız çalışıyor.</p>
+          <p className="text-[10px] text-white/20 text-center px-4">
+            Buraya Custom Input sonuçları veya hata traceback düşer.
+          </p>
+        </div>
+      ) : null}
+    </div>
+  );
+}
+
+
 // ─── Sonuç Modal — success/fail + comparison ────────────────
-// Mobil-specific — desktop'taki modallar farklı. Test panel sonuçlarını
-// mobil için full-screen modal'da göster.
 function ResultModal({
   results,
   errorLines,
@@ -523,13 +688,6 @@ function ResultModal({
 }) {
   const success = total > 0 && passed === total;
   const failedCases = results.filter((r: any) => !r.passed);
-  // formatValue parsePython'dan — import etmek yerine inline minimal versiyon
-  const fmt = (v: any): string => {
-    if (v === undefined) return "undefined";
-    if (v === null) return "null";
-    if (typeof v === "string") return v;
-    try { return JSON.stringify(v, null, 2); } catch { return String(v); }
-  };
 
   return (
     <div
@@ -550,6 +708,7 @@ function ResultModal({
           </p>
         </div>
 
+        {/* Detaylı karşılaştırma */}
         {failedCases.length > 0 && (
           <div className="space-y-2 mb-4">
             <div className="text-[10px] uppercase tracking-wider text-white/40 font-bold">
@@ -562,13 +721,13 @@ function ResultModal({
                   <div>
                     <div className="text-[9px] text-emerald-300/70 font-bold uppercase">Beklenen</div>
                     <pre className="text-emerald-300 bg-emerald-500/5 p-1.5 rounded overflow-x-auto font-mono">
-                      {fmt(r.expected)}
+                      {formatValue(r.expected)}
                     </pre>
                   </div>
                   <div>
                     <div className="text-[9px] text-rose-300/70 font-bold uppercase">Çıktın</div>
                     <pre className="text-rose-300 bg-rose-500/10 p-1.5 rounded overflow-x-auto font-mono">
-                      {r.error || (r.actual === undefined ? "(boş)" : fmt(r.actual))}
+                      {r.error || (r.actual === undefined ? "(boş)" : formatValue(r.actual))}
                     </pre>
                   </div>
                 </div>
@@ -577,6 +736,7 @@ function ResultModal({
           </div>
         )}
 
+        {/* Hata traceback */}
         {errorLines.length > 0 && (
           <div className="space-y-2 mb-4">
             <div className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
@@ -598,3 +758,142 @@ function ResultModal({
     </div>
   );
 }
+
+// ─── Examples Tab (mobil) — Input | Expected | Actual + 3 modlu render ───
+function ExamplesTabMobile({
+  testCases,
+  results,
+  isGuest,
+  category,
+  id,
+}: {
+  testCases: QuestionTests | null;
+  results: any[];
+  isGuest: boolean;
+  category: string;
+  id: string;
+}) {
+  // 📌 Misafirler de test case'leri (input/expected/actual) okuyabilsin.
+  if (!testCases || testCases.test_cases.length === 0) {
+    return (
+      <div className="h-full flex flex-col items-center justify-center gap-2 text-white/30 px-4 py-12 text-center">
+        <p className="text-xs">Bu soru için örnek test case bulunmuyor.</p>
+        {isGuest && (
+          <a
+            href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
+            className="text-[11px] px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/30 text-amber-400 hover:bg-amber-500/20 transition-colors"
+          >
+            Giriş Yap (Kodu çalıştırmak için)
+          </a>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-3 p-3 pb-20 overflow-y-auto h-full">
+      {testCases.test_cases.map((tc: TestCase, idx: number) => {
+        const result = results[idx];
+        const hasRun = result !== undefined;
+        const isError = hasRun && !!result.errorCategory;
+        const isLogicFail = hasRun && !result.passed && !isError;
+        // Referans çıktı (DB'de tutulan `actual`) misafire/üyeye önizleme olarak gösterilir.
+        const referenceActual = (tc as any).actual !== undefined && (tc as any).actual !== null
+          ? (tc as any).actual
+          : null;
+
+        return (
+          <div
+            key={idx}
+            className={`p-3 rounded-lg border ${
+              hasRun
+                ? result.passed
+                  ? "bg-green-500/5 border-green-500/30"
+                  : "bg-red-500/5 border-red-500/30"
+                : "bg-white/5 border-white/10"
+            }`}
+          >
+            <div className="flex items-center justify-between mb-2">
+              <span className="text-xs font-semibold text-white/60 uppercase tracking-wider">
+                Örnek #{idx + 1}
+              </span>
+              <div className="flex items-center gap-2">
+                {hasRun && result.execution_ms != null && (
+                  <span className="text-[10px] text-white/40 font-mono">
+                    {result.execution_ms}ms
+                  </span>
+                )}
+                {hasRun && (
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold ${
+                    result.passed ? "bg-green-500/20 text-green-400" : "bg-red-500/20 text-red-400"
+                  }`}>
+                    {result.passed ? "✓" : isError ? "✗ Hata" : "✗ Yanlış"}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            {/* Input */}
+            <div className="mb-2">
+              <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1 font-bold">
+                📥 Input
+              </div>
+              <pre className="text-[11px] font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border">
+                {formatValue(tc.input)}
+              </pre>
+            </div>
+
+            {/* HATA: traceback son satırı */}
+            {isError && (
+              <div className="mb-2">
+                <div className="text-[10px] uppercase tracking-wider text-rose-400/80 mb-1 font-bold">
+                  ⚠ Traceback
+                </div>
+                <pre className="text-[11px] font-mono text-rose-300 bg-rose-500/10 p-2 rounded overflow-x-auto border border-rose-500/30">
+                  {result.errorLine || "Bilinmeyen hata"}
+                </pre>
+              </div>
+            )}
+
+            {/* Expected (her zaman gösterilir) */}
+            <div>
+              <div className="text-[10px] uppercase tracking-wider text-emerald-400/80 mb-1 font-bold">
+                ✓ Expected
+              </div>
+              <pre className="text-[11px] font-mono text-emerald-300 bg-emerald-500/5 p-2 rounded overflow-x-auto border border-emerald-500/20 min-h-[2rem]">
+                {formatValue(tc.expected)}
+              </pre>
+            </div>
+
+            {/* Misafirlere: DB'deki referans çıktı (actual) önizleme */}
+            {!hasRun && referenceActual !== null && (
+              <div className="mt-2">
+                <div className="text-[10px] uppercase tracking-wider text-cyan-300/70 mb-1 font-bold">
+                  👁 Actual (referans çıktı)
+                </div>
+                <pre className="text-[11px] font-mono text-cyan-200 bg-cyan-500/5 p-2 rounded overflow-x-auto border border-cyan-500/20 min-h-[2rem]">
+                  {formatValue(referenceActual)}
+                </pre>
+              </div>
+            )}
+
+            {isLogicFail && (
+              <div className="mt-2 space-y-1">
+                <div className="text-[10px] uppercase tracking-wider text-rose-400/80 font-bold">
+                  ✗ Actual (senin kodun)
+                </div>
+                <pre className="text-[11px] font-mono text-rose-300 bg-rose-500/5 p-2 rounded overflow-x-auto border border-rose-500/20 min-h-[2rem]">
+                  {formatValue(result.actual)}
+                </pre>
+                <div className="text-[10px] text-amber-300/80 italic px-1">
+                  💡 Return değeri beklenenle eşleşmiyor — yukarıdaki Actual, senin kodun bu test için ne döndüğü.
+                </div>
+              </div>
+            )}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+// (formatValue + parseUserInput + parseFunctionSignature components/parsePython.ts'ten import)
