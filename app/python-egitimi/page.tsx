@@ -9,7 +9,7 @@ import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCateg
 export const metadata: Metadata = {
   title: "Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
   description:
-    "Python öğren — Türkçe, ücretsiz ve kapsamlı eğitim. Değişkenler, döngüler, fonksiyonlar, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör içerir. Python örnekleri ve playground ile pratik yap.",
+    "Python öğren — Türkçe, şimdilik ücretsiz kapsamlı eğitim. Değişkenler, döngüler, fonksiyonlar, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör içerir. Python örnekleri ve playground ile pratik yap.",
   keywords: [
     "python eğitimi",
     "python dersleri",
@@ -27,6 +27,12 @@ export const metadata: Metadata = {
     "python playground",
     "python ne işe yarar",
     "python öğrenme",
+    "python bootcamp",
+    "python mülakat bootcamp",
+    "python mülakat hazırlık",
+    "python online test çöz",
+    "python online mülakat",
+    "python online sınav",
   ],
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
   creator: "Python Mülakat",

@@ -10,7 +10,7 @@ import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCateg
 export const metadata: Metadata = {
   title: "Python Online Compiler — Tarayıcıda Ücretsiz Kod Editörü",
   description:
-    "Python online compiler ve editör — Python 3.12 kodunu Pyodide ile tarayıcıda anında çalıştır. Kurulum yok, hesap yok. Python öğrenmek için ideal playground. Python örnekleri ile pratik yap.",
+    "Python online compiler ve editör — Python 3.12 kodunu Pyodide ile tarayıcıda anında çalıştır. Kurulum yok, hesap yok. Python öğrenmek için ideal playground. Python örnekleri ile pratik yap. Şimdilik ücretsiz dene.",
   keywords: [
     "python online",
     "python online editör",
@@ -21,13 +21,17 @@ export const metadata: Metadata = {
     "python playground",
     "python öğren",
     "python örnekleri",
+    "python online test çöz",
+    "python online sınav",
+    "python online mülakat",
+    "python tarayıcıda kod yazma",
   ],
   alternates: {
     canonical: "https://pythonmulakat.com/python-online",
   },
   openGraph: {
     title: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
-    description: "Python online compiler — kurulum yok, hesap yok. Tarayıcıda Python yaz ve anında çalıştır. Python örnekleri ile pratik yap.",
+    description: "Python online compiler — kurulum yok, hesap yok. Tarayıcıda Python yaz ve anında çalıştır. Şimdilik ücretsiz dene.",
     url: "https://pythonmulakat.com/python-online",
     siteName: "PythonMulakat",
     locale: "tr_TR",

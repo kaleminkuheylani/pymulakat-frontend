@@ -54,7 +54,7 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Python mülakat soruları, Python algoritma soruları ve dinamik programlama için Türkçe interaktif pratik platformu. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al.",
+    "Python mülakat soruları, Python algoritma soruları ve dinamik programlama için Türkçe interaktif pratik platformu. Python eğitimi, Python kodları ve örneklerle veri tipleri, OOP, SQLite, Pandas sorularını tarayıcıda kodlayarak çöz, yapay zekâdan anında geri bildirim al. Şimdilik ücretsiz dene — ileride ücretli planlar.",
 
   keywords: [
     // Temel / Yeni başlayan
@@ -105,6 +105,25 @@ export const metadata: Metadata = {
     "python online sandbox türkçe",
     "python interaktif öğrenme",
     "yapay zeka destekli python pratiği",
+
+    // Transactional (mimari-uyumlu, geçici ücretsiz tier vurgusu)
+    "python mülakat soruları",
+    "python mülakat soruları ve çözümleri",
+    "yazılım mülakat soruları python",
+    "python mülakat simülasyonu",
+    "python online test çöz",
+    "python online sınav",
+    "python ücretsiz deneme",
+    "python online mülakat",
+    "python tarayıcıda kod yazma",
+    "python mülakat hesap aç",
+    "python pratik kayıt ol",
+    "ücretsiz python hesabı",
+    "python çevrimiçi üye ol",
+    "python bootcamp",
+    "python mülakat bootcamp",
+    "junior python mülakat",
+    "python developer mülakat",
   ],
 
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
