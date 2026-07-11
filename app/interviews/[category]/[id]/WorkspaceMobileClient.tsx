@@ -159,7 +159,7 @@ export default function WorkspaceMobileClient({
   }, [tab]);
 
   useEffect(() => {
-    // CSV-only mimari: SSR'dan gelen initial data varsa skip (DB'de olmayabilir)
+    // DB-FIRST mimari: SSR'dan gelen initial data varsa skip
     if (initialInterview) return;
     let cancelled = false;
     (async () => {
@@ -186,7 +186,7 @@ export default function WorkspaceMobileClient({
   }, [questionId, category, questionSlugOrId]);
 
   useEffect(() => {
-    // CSV-only mimari: SSR'dan gelen initial testCases varsa skip
+    // DB-FIRST mimari: SSR'dan gelen initial testCases varsa skip
     if (initialTestCases) return;
     if (!questionId || isNaN(questionId)) return;
     let cancelled = false;

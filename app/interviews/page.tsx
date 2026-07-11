@@ -23,9 +23,8 @@ interface Category {
   question_count: number;
 }
 
-// 📌 CSV-only mimari: backend'e hiç bağlanmıyoruz. CSV = tek kaynak.
-const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
-const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
+// 📌 DB-FIRST mimari: backend API'den kategori listesi çekilir.
+const API_BASE = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
 // Kategori label ve icon mapping (backend bu alanları DB'de tutuyordu;
 // CSV'de olmadığı için burada static tanımlı)
@@ -77,69 +76,31 @@ const CATEGORY_META: Record<string, { label: string; icon: string; description: 
   },
 };
 
-// CSV parser (QuestionListClient ile aynı logic)
-function parseCSV(text: string): { id: number; category: string; title: string }[] {
-  const rows: string[][] = [];
-  let current: string[] = [];
-  let cell = "";
-  let inQuote = false;
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inQuote) {
-      if (c === '"') {
-        if (text[i + 1] === '"') { cell += '"'; i++; } else inQuote = false;
-      } else cell += c;
-    } else {
-      if (c === '"') inQuote = true;
-      else if (c === ",") { current.push(cell); cell = ""; }
-      else if (c === "\n" || c === "\r") {
-        if (c === "\r" && text[i + 1] === "\n") i++;
-        current.push(cell); cell = "";
-        if (current.length > 1 || current[0] !== "") rows.push(current);
-        current = [];
-      } else cell += c;
-    }
-  }
-  if (cell || current.length) { current.push(cell); rows.push(current); }
-  if (rows.length < 2) return [];
-  const h = rows[0];
-  return rows.slice(1).map((cols) => {
-    const get = (k: string) => {
-      const i = h.indexOf(k);
-      return i >= 0 ? cols[i] || "" : "";
-    };
-    return {
-      id: parseInt(get("id"), 10) || 0,
-      category: get("category"),
-      title: get("title"),
-    };
-  }).filter((q) => q.id > 0);
-}
+// parseCSV kaldırıldı (DB-FIRST mimari, 2026-07-11).
+// /interviews artık backend API'sinden kategori listesi çekiyor (lib/api.ts).
 
 async function fetchCategoriesFromCSV(): Promise<Category[]> {
-  // 1) jsDelivr → 2) raw GitHub → 3) backend fallback
-  let csvText = "";
-  for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
-    try {
-      const r = await fetch(url, { cache: "no-store" });
-      if (r.ok) { csvText = await r.text(); break; }
-    } catch {}
+  // DB-FIRST: backend /api/v2/categories endpoint'i
+  try {
+    const r = await fetch(`${API_BASE}/api/v2/categories`, { cache: "no-store" });
+    if (!r.ok) throw new Error(`API error: ${r.status}`);
+    const data = await r.json();
+    // Backend [{category, label, count}] veya {items:[]} döner; shape normalize et
+    const items = Array.isArray(data) ? data : (data.items || []);
+    return items.map((row: any) => {
+      const slug = row.category || row.slug;
+      return {
+        slug,
+        label: CATEGORY_META[slug]?.label || row.label || slug,
+        icon: CATEGORY_META[slug]?.icon || "📘",
+        description: CATEGORY_META[slug]?.description || row.description || "",
+        question_count: row.count ?? row.question_count ?? 0,
+      };
+    });
+  } catch (e) {
+    console.warn("[InterviewsPage] API'den kategori alınamadı:", e);
+    return [];
   }
-  if (!csvText) throw new Error("CSV alınamadı");
-
-  const rows = parseCSV(csvText);
-  // Kategori bazında sayım + meta birleştirme
-  const byCat: Record<string, number> = {};
-  for (const r of rows) {
-    byCat[r.category] = (byCat[r.category] || 0) + 1;
-  }
-  return Object.entries(byCat).map(([slug, count]) => ({
-    slug,
-    label: CATEGORY_META[slug]?.label || slug,
-    icon: CATEGORY_META[slug]?.icon || "📘",
-    description: CATEGORY_META[slug]?.description || "",
-    question_count: count,
-  }));
 }
 
 // DP sayfasındaki QuestionListClient ile aynı gradient paleti (görsel eşitlik)

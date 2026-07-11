@@ -155,11 +155,10 @@ export default function WorkspaceClient({
   }, []);
 
   // Load question + test cases
-  // 📌 CSV-only mimari: initialInterview SSR'dan geldiyse (CSV-FIRST) skip et.
-  //    Yeni eklenen sorular DB'de olmayabilir, backend by-slug 404 döner.
-  //    SSR'dan gelen initialInterview zaten CSV'den parse edildi, geçerli.
+  // 📌 DB-FIRST mimari: initialInterview SSR'dan geldiyse (API'den) skip et.
+  //    Backend by-slug 404 dönerse client-side fetch'e düş.
   useEffect(() => {
-    // CSV-FIRST: initial data zaten varsa backend'e gitme (DB'de olmayabilir)
+    // DB-FIRST: initial data zaten varsa backend'e gitme
     if (initialInterviewProp || initialTestCasesProp) {
       setLoading(false);
       return;

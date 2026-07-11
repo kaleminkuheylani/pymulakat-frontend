@@ -31,10 +31,11 @@ export interface ApiQuestion {
 /**
  * Tüm soruları backend'den çek (DB-FIRST).
  * revalidate=3600: 1 saat ISR cache.
+ * tags: "questions-list" → on-demand revalidation için (/api/revalidate)
  */
 export async function fetchAllQuestions(): Promise<ApiQuestion[]> {
   const res = await fetch(`${API_BASE}/api/v2/questions`, {
-    next: { revalidate: 3600 },
+    next: { revalidate: 3600, tags: ["questions-list"] },
   });
   if (!res.ok) {
     throw new Error(`API error: ${res.status} ${res.statusText}`);
