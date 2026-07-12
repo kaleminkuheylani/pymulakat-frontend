@@ -351,6 +351,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   }
   
   
+  const mobile = await isMobileDevice();
   // Resolve seoQ + ssrTests aynı request'ten (cache + tutarlı)
   const csvQ = apiQ;
   const seoQ = csvQ ? csvToSEOQuestion(csvQ, csvQ.id, csvSlugify(csvQ.title)) : null;
