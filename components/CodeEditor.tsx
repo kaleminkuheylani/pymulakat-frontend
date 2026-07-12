@@ -256,8 +256,22 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
           setReady(true);
 
           cleanup = () => {
+            // Önce view'i yok et (CodeMirror kendi DOM'unu parent'tan söker)
             try {
               view.destroy();
+            } catch {
+              // ignore — view zaten yoksa yut
+            }
+            // Sonra container'ın içini temizle (artık DOM'da ne varsa)
+            // Bu, React'in unmount sırasında removeChild çağırdığında
+            // hostRef.current zaten boş olduğu için removeChild(container)
+            // her zaman geçerli kalır (parent hâlâ container'ın sahibidir).
+            try {
+              if (hostRef.current) {
+                while (hostRef.current.firstChild) {
+                  hostRef.current.removeChild(hostRef.current.firstChild);
+                }
+              }
             } catch {
               // ignore
             }

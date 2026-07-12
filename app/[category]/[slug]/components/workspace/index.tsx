@@ -100,7 +100,7 @@ export default function Workspace({
 
   return (
     <Suspense
-      key={variant}
+      key={`${variant}-${initialParams.id}`}
       fallback={<WorkspaceSkeleton variant={variant} />}
     >
       {variant === "mobile" ? (

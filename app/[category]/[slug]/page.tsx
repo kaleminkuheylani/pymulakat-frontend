@@ -8,8 +8,7 @@
 // bulamazsak backend DB'ye düşüyoruz. Her iki kaynak aynı şemaya normalize
 // ediliyor, downstream kod değişmiyor.
 import { Check, Download, Eye, Lightbulb, Pin } from "lucide-react";
-import { getCategoryDisplayUrl, getCategoryLabel } from "@/lib/categorySlug";
-import { DISPLAY_URL_TO_INTERNAL } from "@/lib/categorySlug";
+import { getCategoryDisplayUrl, getCategoryLabel, DISPLAY_URL_TO_INTERNAL } from "@/lib/categorySlug";
 
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -18,6 +17,7 @@ import type { Metadata } from "next";
 // switch'i kendi içinde yapıyor. page.tsx server-side isMobileDevice() ile
 // variant'ı hesaplayıp <Workspace variant="mobile|desktop" ... /> geçirir.
 import Workspace from "./components/workspace";
+import WorkspaceErrorBoundary from "@/components/workspace/WorkspaceErrorBoundary";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { findQuestion, slugifyTitle as csvSlugify } from "@/lib/api/questionAPI";
 import type { ApiQuestion, ApiQuestionTests } from "../../../lib/api/types";
@@ -511,14 +511,17 @@ export default async function Page({ params, searchParams }: PageProps) {
       </div>
 
       <div data-client-workspace>
-        <Workspace
-          variant={variant}
-          initialParams={{ ...resolvedParams, id: resolvedParams.slug }}
-          readonly={readonly}
-          initialInterview={initialInterview as any}
-          initialTestCases={initialTests}
-          hasStudy={initialHasStudy}
-        />
+        <WorkspaceErrorBoundary categoryUrl={`/${resolvedParams.category}`}>
+          <Workspace
+            key={resolvedParams.slug}
+            variant={variant}
+            initialParams={{ ...resolvedParams, id: resolvedParams.slug }}
+            readonly={readonly}
+            initialInterview={initialInterview as any}
+            initialTestCases={initialTests}
+            hasStudy={initialHasStudy}
+          />
+        </WorkspaceErrorBoundary>
       </div>
 
       {/* <Pin className="w-3 h-3 inline" /> JS yoksa: üstteki description paneli zaten SSR ile geliyor.
