@@ -3,15 +3,16 @@
 // Supports BOTH slug-based URLs (/interviews/python-basics/palindrom-kontrol)
 // AND legacy ID URLs (/interviews/python-basics/3) — slug gelirse ID'ye resolve eder
 //
-// 📌 CSV-FIRST: Yeni eklenen sorular henüz DB'de olmayabilir (Railway deploy
+// <Pin className="w-3 h-3 inline" /> CSV-FIRST: Yeni eklenen sorular henüz DB'de olmayabilir (Railway deploy
 // gecikebilir). Bu yüzden önce CSV'den (jsDelivr CDN, GitHub main) çekiyoruz,
 // bulamazsak backend DB'ye düşüyoruz. Her iki kaynak aynı şemaya normalize
 // ediliyor, downstream kod değişmiyor.
+import { Check, Download, Eye, Lightbulb, Pin } from "lucide-react";
 
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-// 📌 Code splitting (2026-07-11, kalıcı): Workspace artık mobile/desktop
+// <Pin className="w-3 h-3 inline" /> Code splitting (2026-07-11, kalıcı): Workspace artık mobile/desktop
 // switch'i kendi içinde yapıyor. page.tsx server-side isMobileDevice() ile
 // variant'ı hesaplayıp <Workspace variant="mobile|desktop" ... /> geçirir.
 import Workspace from "./components/workspace";
@@ -47,7 +48,7 @@ interface SEOQuestion {
   starter_code?: string;
 }
 
-// 📌 SSR test case formatı: input / expected / actual / description.
+// <Pin className="w-3 h-3 inline" /> SSR test case formatı: input / expected / actual / description.
 //    Misafirler de okuyabilsin diye public — auth gerekmez.
 interface SSRTestCase {
   input: unknown;
@@ -233,7 +234,7 @@ async function isMobileDevice(): Promise<boolean> {
 }
 
 // ─── FAQ schema builder — her soru sayfasında page-specific Q&A ──
-// 📌 Long-tail yakalama: "X sorusu nasıl çözülür?", "X Python'da ne işe yarar?"
+// <Pin className="w-3 h-3 inline" /> Long-tail yakalama: "X sorusu nasıl çözülür?", "X Python'da ne işe yarar?"
 //     gibi sorular için rich result şansı.
 function buildFaqSchema(q: SEOQuestion, baseUrl: string) {
   const slug = q.slug || slugifyTitle(q.title);
@@ -288,11 +289,11 @@ function buildFaqSchema(q: SEOQuestion, baseUrl: string) {
 // ─── Page ─────────────────────────────────────────────────
 export default async function Page({ params, searchParams }: PageProps) {
   const [resolvedParams, resolvedSearch] = await Promise.all([params, searchParams]);
-  // 📌 ?readonly=true → mobile client'ta editör kilitli + Run butonu yok
+  // <Pin className="w-3 h-3 inline" /> ?readonly=true → mobile client'ta editör kilitli + Run butonu yok
   //    Demo/embed/paylaşım linkleri için.
   const readonly = resolvedSearch?.readonly === "true";
 
-  // ✅ Canonical routing middleware tarafindan yonetiliyor:
+  // <Check className="w-3.5 h-3.5 inline" /> Canonical routing middleware tarafindan yonetiliyor:
   //   - /interviews/{cat}/{slug}  → burada render (canonical, indexlenir)
   //   - /interviews/{cat}/{id}    → middleware slug URL'e yonlendirir (308)
   // Burada slug'in gecerli oldugunu dogrulayip fetch ediyoruz.
@@ -301,7 +302,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   //    isNaN(0) === false → slug olarak davranmiyor → 404.
   //    Cozum: sadece /^\d+$/ ise ID kabul et, aksi halde slug.
   //
-  // 📌 CSV-only mimari: resolvedId sadece URL /^\d+$/ ise set edilir.
+  // <Pin className="w-3 h-3 inline" /> CSV-only mimari: resolvedId sadece URL /^\d+$/ ise set edilir.
   //    Slug geliyorsa resolvedId null kalır → fetchQuestionSEO CSV'den
   //    slug'ı bulur, notFound() tetiklenmez.
   let resolvedId: number | null = null;
@@ -339,12 +340,12 @@ export default async function Page({ params, searchParams }: PageProps) {
       }
     : null;
 
-  // 📌 Guide (DB-backed analiz) var mı? Sadece DB'den gelirse CTA göster,
+  // <Pin className="w-3 h-3 inline" /> Guide (DB-backed analiz) var mı? Sadece DB'den gelirse CTA göster,
   // CSV metadata fallback yetersiz.
   const initialHasStudy = seoQ?.id ? await fetchHasStudy(seoQ.id) : false;
 
   // Workspace client kendi fetch'ini yapıyor; burada sadece SEO schema'ları için kullanıyoruz.
-  // 📌 SSR: initial data'yı server'da geçiriyoruz — client'ta loading state atlanıyor.
+  // <Pin className="w-3 h-3 inline" /> SSR: initial data'yı server'da geçiriyoruz — client'ta loading state atlanıyor.
   // Code splitting: <Workspace variant="mobile|desktop" /> kendi içinde
   //   uygun client'ı React.lazy ile mount eder (Suspense fallback korunur).
   const variant: "mobile" | "desktop" = mobile ? "mobile" : "desktop";
@@ -366,7 +367,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     ? buildBreadcrumbSchema(resolvedParams.category, resolvedParams.id, seoQ.title, baseUrl)
     : null;
 
-  // 📌 SSR Content — Googlebot ve JS olmadan da içeriği görsün
+  // <Pin className="w-3 h-3 inline" /> SSR Content — Googlebot ve JS olmadan da içeriği görsün
   // description + starter_code + test_cases + hints server-side HTML'e basılıyor.
   const ssrTitle = seoQ?.title ?? `Soru #${resolvedId}`;
   const ssrDescription = seoQ?.description ?? "";
@@ -391,7 +392,7 @@ export default async function Page({ params, searchParams }: PageProps) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
       )}
-      {/* 📌 SEO: FAQ schema — page-specific Q&A, Google rich results + long-tail capture.
+      {/* <Pin className="w-3 h-3 inline" /> SEO: FAQ schema — page-specific Q&A, Google rich results + long-tail capture.
           Her soru sayfasında "Bu Python sorusu hangi konuları kapsar?" / "Hangi
           fonksiyon imzası bekleniyor?" gibi doğal sorularla hedefliyoruz. */}
       {seoQ && (
@@ -401,7 +402,7 @@ export default async function Page({ params, searchParams }: PageProps) {
         />
       )}
 
-      {/* 📌 SSR Content Block — JS yüklenmeden de Googlebot + kullanıcı görsün
+      {/* <Pin className="w-3 h-3 inline" /> SSR Content Block — JS yüklenmeden de Googlebot + kullanıcı görsün
           Hem desktop hem mobile için responsive: küçük ekranda padding/font azalır.
           JS yüklenince script ile gizlenir (client component kendi UI'ini gösterir).
           JS yoksa (Googlebot ilk crawl, no-JS kullanıcı) içerik görünür kalır. */}
@@ -450,7 +451,7 @@ export default async function Page({ params, searchParams }: PageProps) {
                   </div>
                   <div className="space-y-1.5">
                     <div>
-                      <div className="text-[10px] text-white/40 uppercase tracking-wider font-bold">📥 Input</div>
+                      <div className="text-[10px] text-white/40 uppercase tracking-wider font-bold"><Download className="w-3.5 h-3.5 inline" /> Input</div>
                       <pre className="font-mono text-white/80 bg-black/30 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.input)}</pre>
                     </div>
                     <div>
@@ -459,7 +460,7 @@ export default async function Page({ params, searchParams }: PageProps) {
                     </div>
                     {tc.actual !== undefined && tc.actual !== null && (
                       <div>
-                        <div className="text-[10px] text-cyan-300/70 uppercase tracking-wider font-bold">👁 Actual (referans çıktı)</div>
+                        <div className="text-[10px] text-cyan-300/70 uppercase tracking-wider font-bold"><Eye className="w-3.5 h-3.5 inline" /> Actual (referans çıktı)</div>
                         <pre className="font-mono text-cyan-200 bg-cyan-500/5 p-1.5 rounded overflow-x-auto">{JSON.stringify(tc.actual)}</pre>
                       </div>
                     )}
@@ -468,13 +469,13 @@ export default async function Page({ params, searchParams }: PageProps) {
               ))}
             </div>
             <p className="mt-3 text-[11px] text-white/40 italic">
-              💡 Kodu çalıştırmak ve gerçek çıktılarını görmek için üye girişi yapıp editöre geçebilirsin.
+              <Lightbulb className="w-3.5 h-3.5 inline" /> Kodu çalıştırmak ve gerçek çıktılarını görmek için üye girişi yapıp editöre geçebilirsin.
             </p>
           </div>
         )}
         <noscript>
           <p className="mt-6 text-amber-300 text-sm">
-            💡 İnteraktif editör için JavaScript gerekiyor. İçerik yine de görünür durumda.
+            <Lightbulb className="w-3.5 h-3.5 inline" /> İnteraktif editör için JavaScript gerekiyor. İçerik yine de görünür durumda.
           </p>
         </noscript>
       </div>
@@ -490,19 +491,19 @@ export default async function Page({ params, searchParams }: PageProps) {
         />
       </div>
 
-      {/* 📌 JS yoksa: üstteki description paneli zaten SSR ile geliyor.
+      {/* <Pin className="w-3 h-3 inline" /> JS yoksa: üstteki description paneli zaten SSR ile geliyor.
           "Soru yükleniyor" loading JS olmadan takılı kalır, gizle. */}
       <noscript>
         <style>{`[data-client-workspace]{display:none!important}`}</style>
         <div className="max-w-3xl mx-auto px-4 py-8 sm:px-6 text-center">
           <p className="text-white/60 text-sm">
-            💡 İnteraktif editör ve kod çalıştırma için JavaScript gerekiyor.
+            <Lightbulb className="w-3.5 h-3.5 inline" /> İnteraktif editör ve kod çalıştırma için JavaScript gerekiyor.
             Soru açıklamasını yukarıda görebilirsiniz.
           </p>
         </div>
       </noscript>
 
-      {/* 📌 JS yüklenince SSR bloğu useEffect ile kaldırılır (WorkspaceClient / MobileClient)
+      {/* <Pin className="w-3 h-3 inline" /> JS yüklenince SSR bloğu useEffect ile kaldırılır (WorkspaceClient / MobileClient)
           — hem desktop hem mobile için aynı davranış. Bu sayede React hydration
           sırasında duplicate render oluşmuyor. */}
     </>

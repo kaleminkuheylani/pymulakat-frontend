@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 "use client";
 
 // WorkspaceClient — desktop orchestrator (refactored).
@@ -230,7 +231,7 @@ export default function WorkspaceClient({
           if (shareTimerRef.current) clearTimeout(shareTimerRef.current);
           shareTimerRef.current = setTimeout(() => setShowShareModal(true), 1500);
         } else {
-          toast.error("❌ Bazı testler başarısız", {
+          toast.error("Bazı testler başarısız", {
             description: "Kodunu gözden geçirip tekrar dene.",
           });
         }
@@ -456,7 +457,7 @@ function GuestEditorFallback({
           href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-gradient-to-r from-amber-500 to-amber-400 text-slate-950 text-sm font-bold hover:from-amber-400 hover:to-amber-300 transition-all shadow-md shadow-amber-500/20"
         >
-          🔐 Giriş Yap
+          <Lock className="w-4 h-4" /> Giriş Yap
         </a>
       </div>
     </div>
