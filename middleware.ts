@@ -199,6 +199,27 @@ export async function middleware(request: NextRequest) {
 
   let [, category, idOrSlug] = match;
 
+  // 2a) /interviews/{internal-slug} -> /{display-slug} (308 Permanent)
+  // Detay sayfa breadcrumb/canonical internal slug kullanıyor, kullanıcı
+  // /interviews/python-basics (Türkçe yerine İngilizce slug) tıklarsa
+  // doğrudan /python-temelleri display URL'ine yönlendir.
+  const INTERVIEW_TO_DISPLAY: Record<string, string> = {
+    "python-basics": "/python-temelleri",
+    "data-structures": "/python-veri-yapilari",
+    "pandas": "/python-pandas",
+    "list-dict": "/python-liste-sozluk",
+    "heap": "/python-heap",
+    "stack": "/python-stack",
+    "queue": "/python-queue",
+    "algorithms": "/python-algoritma-sorulari",
+    "dynamic-programming": "/python-dinamik-programlama",
+  };
+  if (INTERVIEW_TO_DISPLAY[category]) {
+    const url = request.nextUrl.clone();
+    url.pathname = INTERVIEW_TO_DISPLAY[category];
+    return NextResponse.redirect(url, 308);
+  }
+
   // Legacy/deprecated category alias'lar (eski URL'leri canlı kategoriye yönlendir)
   const CATEGORY_ALIASES: Record<string, string> = {
     strings: "python-basics",        // strings → python-basics (deprecated)
