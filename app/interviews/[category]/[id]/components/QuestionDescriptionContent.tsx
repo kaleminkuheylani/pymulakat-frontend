@@ -1,5 +1,6 @@
 "use client";
 import { Eye, Lightbulb, MessageSquare } from "lucide-react";
+import { slugifyCategory } from "../../../../../lib/questionMeta";
 
 // QuestionDescriptionContent — desktop sidebar + mobile "Soru" tab'ı için
 // TEK KAYNAK. Aynı data, aynı görsel hiyerarşi; sadece parent'ta padding/spacing farkı var.
@@ -21,17 +22,6 @@ interface Props {
   onRevealHint: () => void;
   hasStudy?: boolean;
 }
-
-const slugifyCategory = (cat: string): string => {
-  const map: Record<string, string> = {
-    "python-basics": "python-basics",
-    "data-structures": "data-structures",
-    "list-dict": "list-dict",
-    "pandas": "pandas",
-    "algorithms": "algorithms",
-  };
-  return map[cat] || cat.toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
-};
 
 export default function QuestionDescriptionContent({
   interview,

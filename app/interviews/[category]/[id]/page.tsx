@@ -358,6 +358,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     starter_code: (seoQ as any).starter_code || "",
     tags: seoQ.tags || [],
     hints: seoQ.hints || [],
+    slug: seoQ.slug || csvSlugify(seoQ.title),
   } : null;
   // SSR'dan gelen test case verisi — her iki client da prop olarak alır (misafirler dahil).
   const initialTests: any = ssrTests;
