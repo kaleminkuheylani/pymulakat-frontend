@@ -197,7 +197,10 @@ export async function getQuestionTests(
  */
 export async function listCategories(): Promise<ApiCategory[]> {
   const data = await apiFetch<ApiPagination | ApiCategory[]>(
-    "/api/v2/categories"
+    "/api/v2/categories",
+    {
+      next: { revalidate: 3600, tags: ["categories-list"] },
+    }
   );
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.data)) return data.data as ApiCategory[];

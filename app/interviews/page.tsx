@@ -3,6 +3,13 @@
 // her kategori kendi "kartı" içinde gösterilir (icon, başlangıç seviyesi badge, soru
 // sayısı, başlık, açıklama, slug, "Keşfet" linki).
 //
+// 📌 SERVER COMPONENT (DB-FIRST, 2026-07-12): useEffect fetch kaldırıldı, server-side
+// listCategories() ile initial HTML'e (SSR) kategoriler basılıyor. Böylece:
+//   - JS yokken / Googlebot / yavaş network'te bile 9 kategori görünür
+//   - 0 soru görünme (race condition, fetch timeout) bug'ı ortadan kalkar
+//   - Vercel ISR 1h cache ile backend yükü azalır
+// Önceki client-side useEffect mantığı client component'lere taşınmadı — gerek yok.
+//
 // DP sayfasıyla eşitlenen bölümler:
 //   - H1 + subtitle + tag chip'leri (indigo)
 //   - "Mülakat Kategorileri Nedir?" context bölümü (beforeRelated)
@@ -10,10 +17,7 @@
 //   - Soru kartı şablonu (kategori için uyarlandı: icon + seviye badge + count)
 //   - 3-col grid, sm:2-col, lg:3-col
 
-"use client";
-
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import { listCategories } from "../../lib/api/questionAPI";
 import type { ApiCategory } from "../../lib/api/types";
 
@@ -75,12 +79,8 @@ const CATEGORY_META: Record<string, { label: string; icon: string; description: 
   },
 };
 
-// parseCSV kaldırıldı (DB-FIRST mimari, 2026-07-11).
-// /interviews artık backend API'sinden kategori listesi çekiyor
-// (lib/api/questionAPI.ts → questionAPI.listCategories()).
-
+// Server-side: API'den kategorileri çek (DB-FIRST)
 async function fetchCategoriesFromAPI(): Promise<Category[]> {
-  // DB-FIRST: backend /api/v2/categories endpoint'i
   try {
     const items: ApiCategory[] = await listCategories();
     return items.map((row) => {
@@ -94,6 +94,8 @@ async function fetchCategoriesFromAPI(): Promise<Category[]> {
       };
     });
   } catch (e) {
+    // Hata logla, boş array dön. Hata durumunda 0 kategori gösterilir
+    // (hata UI'ı client-side useEffect varken anlamlıydı, server'da boş array yeterli).
     console.warn("[InterviewsPage] API'den kategori alınamadı:", e);
     return [];
   }
@@ -136,36 +138,9 @@ const SLUG_TO_PILLAR: Record<string, string> = {
   "dynamic-programming": "/python-dinamik-programlama",
 };
 
-export default function InterviewsPage() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 8000);
-
-    // Backend API'den kategorileri çek (DB-FIRST)
-    fetchCategoriesFromAPI()
-      .then((list) => {
-        if (controller.signal.aborted) return;
-        setCategories(list);
-      })
-      .catch((err) => {
-        // CSV-only mimari: backend'e fallback yok.
-        if (err?.name !== "AbortError") {
-          console.warn("[InterviewsPage] fetch error:", err);
-          setError(err?.message || "Kategoriler yüklenemedi");
-        }
-      })
-      .finally(() => {
-        clearTimeout(timeoutId);
-        setLoading(false);
-      });
-
-    return () => controller.abort();
-  }, []);
-
+export default async function InterviewsPage() {
+  // Server-side: API'den kategorileri çek. ISR 1h cache (listCategories revalidate).
+  const categories = await fetchCategoriesFromAPI();
   const totalQuestions = categories.reduce((sum, c) => sum + (c.question_count || 0), 0);
   const totalCategories = categories.length;
 
@@ -205,36 +180,19 @@ export default function InterviewsPage() {
 
       {/* ─── ANA İÇERİK (DP sayfasıyla eş: max-w-6xl, py-10) ─── */}
       <main className="max-w-6xl mx-auto px-6 py-10">
-        {loading ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {[...Array(9)].map((_, i) => (
-              <div
-                key={i}
-                className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 h-44 animate-pulse"
-              />
-            ))}
-          </div>
-        ) : categories.length === 0 ? (
+        {categories.length === 0 ? (
           <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-            <div className="text-5xl mb-4">{error ? "⚠️" : "📭"}</div>
-            <h2 className="text-xl font-semibold mb-2">
-              {error ? "Kategoriler yüklenemedi" : "Henüz kategori yok"}
-            </h2>
+            <div className="text-5xl mb-4">📭</div>
+            <h2 className="text-xl font-semibold mb-2">Henüz kategori yok</h2>
             <p className="text-white/50 text-sm mb-6 max-w-md mx-auto">
-              {error ? (
-                <>
-                  Backend&apos;e bağlanılamadı ({error}). Birkaç saniye sonra tekrar deneyebilirsin.
-                </>
-              ) : (
-                "Backend&apos;de henüz kategori yok. Biraz sonra tekrar dene."
-              )}
+              Backend&apos;den kategori yüklenemedi. Biraz sonra tekrar dene.
             </p>
-            <button
-              onClick={() => window.location.reload()}
-              className="px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold transition-colors"
+            <Link
+              href="/"
+              className="inline-block px-5 py-2.5 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 text-sm font-bold transition-colors"
             >
-              Tekrar Dene
-            </button>
+              Ana Sayfa
+            </Link>
           </div>
         ) : (
           <>
@@ -397,9 +355,8 @@ export default function InterviewsPage() {
               <div className="text-3xl mb-3">📖</div>
               <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">Python Kodları</h3>
               <p className="text-sm text-white/50 leading-relaxed">
-                Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar. Kopyala, çalıştır, öğren.
+                Sık kullanılan pattern&apos;ler, snippet&apos;ler ve idiomatic Python örnekleri. Mülakatlarda hızlı çözüm için referans.
               </p>
-              <div className="mt-3 text-sm text-amber-400 group-hover:translate-x-1 transition-transform">Keşfet →</div>
             </Link>
             <Link
               href="/python-egitimi"
@@ -408,32 +365,21 @@ export default function InterviewsPage() {
               <div className="text-3xl mb-3">🎓</div>
               <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">Python Eğitimi</h3>
               <p className="text-sm text-white/50 leading-relaxed">
-                Sıfırdan ileri seviyeye, 6 ders + 6 rehber. İnteraktif editörde pratik yaparak öğren.
+                Konu anlatımları, kavram açıklamaları ve örneklerle sıfırdan ileri seviyeye Python.
               </p>
-              <div className="mt-3 text-sm text-amber-400 group-hover:translate-x-1 transition-transform">Keşfet →</div>
             </Link>
             <Link
               href="/python-online"
               className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
             >
-              <div className="text-3xl mb-3">🖥️</div>
+              <div className="text-3xl mb-3">⚡</div>
               <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">Python Online</h3>
               <p className="text-sm text-white/50 leading-relaxed">
-                Tarayıcıda kurulum sız Python 3.12 editörü. Pyodide WASM ile 100ms&apos;de başlar.
+                Kurulum yok, tarayıcıda anında Python kodu yaz ve çalıştır. Gerçek zamanlı geri bildirim.
               </p>
-              <div className="mt-3 text-sm text-amber-400 group-hover:translate-x-1 transition-transform">Keşfet →</div>
             </Link>
           </div>
         </section>
-
-        {/* Alt bilgi */}
-        {!loading && categories.length > 0 && (
-          <div className="mt-12 text-center text-xs text-white/40">
-            Toplam <span className="text-white/70 font-semibold">{totalQuestions}</span>{" "}
-            soru · <span className="text-white/70 font-semibold">{totalCategories}</span>{" "}
-            kategori
-          </div>
-        )}
       </main>
     </div>
   );
