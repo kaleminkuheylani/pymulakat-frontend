@@ -8,7 +8,7 @@
 // görsel sunum dekoratif.
 
 import Link from "next/link";
-import { ArrowRight, Sparkles, Zap, Code2 } from "lucide-react";
+import { ArrowRight, Sparkles, Check, Code2 } from "lucide-react";
 import TerminalMock from "./TerminalMock";
 
 export default function Hero() {
@@ -46,42 +46,41 @@ export default function Hero() {
             <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-xl mb-7">
               132 gerçek mülakat sorusu, kategorize ve zorluk seviyeli.
               Tarayıcıda kod yaz, anında test et, yapay zekâdan geri bildirim al.
-              Kurulum yok, hesap zorunluluğu yok — sadece pratik yap.
             </p>
 
-            {/* CTA buttons */}
-            <div className="flex flex-wrap gap-3 mb-8">
+            {/* CTA: Hesap aç, hemen başla */}
+            <div className="flex flex-wrap gap-3 mb-6">
               <Link
-                href="/interviews"
+                href="/register"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition-colors shadow-lg shadow-amber-500/20"
               >
-                Soruları Keşfet
+                Hesap Aç, Hemen Başla
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/python-online"
+                href="/interviews"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-colors"
               >
                 <Code2 className="w-4 h-4" />
-                Önce Kod Yaz
+                Misafir Olarak Dene
               </Link>
             </div>
 
-            {/* Real-world stat strip */}
-            <div className="flex flex-wrap gap-x-6 gap-y-2 text-sm text-white/50">
+            {/* Kurulum yok strip */}
+            <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/50 mb-2">
               <span className="flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>9 kategori</span>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Kurulum yok</span>
               </span>
               <span className="text-white/20">·</span>
               <span className="flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>132 soru</span>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span>5 dakikada hesap</span>
               </span>
               <span className="text-white/20">·</span>
               <span className="flex items-center gap-1.5">
-                <Zap className="w-3.5 h-3.5 text-amber-400" />
-                <span>Otomatik test</span>
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                <span>Anında kod yazmaya başla</span>
               </span>
             </div>
           </div>

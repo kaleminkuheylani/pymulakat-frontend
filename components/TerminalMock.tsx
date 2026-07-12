@@ -1,23 +1,30 @@
 // components/TerminalMock.tsx
 //
-// Server-render, JS yok. Statik Python kodu satırları sırayla
-// fade-in (CSS keyframe). Cursor blink animasyonu.
+// Server-render, JS yok. **Typewriter animasyonlu** Python terminal:
+// - Her satır sırayla typewriter ile yazılıyor (CSS keyframe width 0→100%)
+// - Cursor blink (yanıp sönen imleç)
+// - Kod yazıldıktan sonra test çıktıları sırayla görünür
+// - Loop: animasyon bittikten sonra reset, baştan tekrar yazar
 // Pyodide yüklendi hissi — "Running test 1/4..." gibi çıktı.
-//
-// Kural: "Görsel sunum güncellenebilir" → public SEO sayfa içeriği
-// değişmez, sadece görsel. Bu mock metin/sıra dekoratiftir.
 
-const lines: Array<{ type: "code" | "output" | "blank"; parts: Array<{ syn?: string; text: string }> }> = [
-  // Line 1: def merge_dicts(d1, d2):
+const lines: Array<{
+  type: "code" | "output" | "blank";
+  parts: Array<{ syn?: string; text: string }>;
+  // Typewriter speed: yazılma süresi (ms)
+  speed?: number;
+}> = [
+  // ── Prompt satırı: prompt + kod ─────────────────────────────
   {
     type: "code",
     parts: [
+      { syn: "syn-prompt", text: ">>> " },
       { syn: "syn-kw", text: "def" },
       { syn: "syn-fn", text: " merge_dicts" },
       { syn: "syn-var", text: "(d1, d2):" },
     ],
+    speed: 1200,
   },
-  // Line 2: result = d1.copy()
+  // ── Kod satırları (girintili) ──────────────────────────────
   {
     type: "code",
     parts: [
@@ -25,8 +32,8 @@ const lines: Array<{ type: "code" | "output" | "blank"; parts: Array<{ syn?: str
       { syn: "syn-fn", text: "copy" },
       { syn: "syn-var", text: "()" },
     ],
+    speed: 900,
   },
-  // Line 3: for k, v in d2.items():
   {
     type: "code",
     parts: [
@@ -37,8 +44,8 @@ const lines: Array<{ type: "code" | "output" | "blank"; parts: Array<{ syn?: str
       { syn: "syn-fn", text: "items" },
       { syn: "syn-var", text: "():" },
     ],
+    speed: 1200,
   },
-  // Line 4: result[k] = result.get(k, 0) + v
   {
     type: "code",
     parts: [
@@ -46,47 +53,75 @@ const lines: Array<{ type: "code" | "output" | "blank"; parts: Array<{ syn?: str
       { syn: "syn-fn", text: "get" },
       { syn: "syn-var", text: "(k, 0) + v" },
     ],
+    speed: 1100,
   },
-  // Line 5: return result
   {
     type: "code",
     parts: [
       { syn: "syn-kw", text: "    return" },
       { syn: "syn-var", text: " result" },
     ],
+    speed: 800,
   },
-  // Blank
-  { type: "blank", parts: [{ text: "" }] },
-  // Output line 1
+  // ── Boşluk + test çalıştır simülasyonu ────────────────────
+  { type: "blank", parts: [{ text: "" }], speed: 300 },
   {
     type: "output",
-    parts: [{ syn: "syn-out", text: "▶ Test 1/4 passed ✓" }],
+    parts: [{ syn: "syn-out", text: "▶ Test 1/4..." }],
+    speed: 600,
   },
-  // Output line 2
   {
     type: "output",
-    parts: [{ syn: "syn-out", text: "▶ Test 2/4 passed ✓" }],
+    parts: [{ syn: "syn-out", text: "  ✓ passed (2ms)" }],
+    speed: 400,
   },
-  // Output line 3
   {
     type: "output",
-    parts: [{ syn: "syn-out", text: "▶ Test 3/4 passed ✓" }],
+    parts: [{ syn: "syn-out", text: "▶ Test 2/4..." }],
+    speed: 500,
   },
-  // Output line 4
   {
     type: "output",
-    parts: [{ syn: "syn-out", text: "▶ Test 4/4 passed ✓" }],
+    parts: [{ syn: "syn-out", text: "  ✓ passed (3ms)" }],
+    speed: 400,
   },
-  // Output line 5 — final result
+  {
+    type: "output",
+    parts: [{ syn: "syn-out", text: "▶ Test 3/4..." }],
+    speed: 500,
+  },
+  {
+    type: "output",
+    parts: [{ syn: "syn-out", text: "  ✓ passed (2ms)" }],
+    speed: 400,
+  },
+  {
+    type: "output",
+    parts: [{ syn: "syn-out", text: "▶ Test 4/4..." }],
+    speed: 500,
+  },
+  {
+    type: "output",
+    parts: [{ syn: "syn-out", text: "  ✓ passed (3ms)" }],
+    speed: 400,
+  },
   {
     type: "output",
     parts: [
-      { syn: "syn-str", text: "✓ Tüm testler geçti · 12ms" },
+      { syn: "syn-success", text: "✓ Tüm testler geçti · 10ms · +10 puan" },
     ],
+    speed: 700,
   },
 ];
 
+// Toplam animasyon süresi (CSS animation-delay ile hesaplanır)
+function getTotalDuration(): number {
+  return lines.reduce((acc, l) => acc + (l.speed || 400), 0) + 1500;
+}
+
 export default function TerminalMock() {
+  const total = getTotalDuration();
+
   return (
     <div className="relative w-full max-w-xl mx-auto">
       {/* Glow effect behind */}
@@ -110,28 +145,56 @@ export default function TerminalMock() {
               ~/interviews/list-dict · python 3.12
             </span>
           </div>
+          <div className="flex items-center gap-1.5 text-white/30 text-[10px] font-mono">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span>live</span>
+          </div>
         </div>
 
-        {/* Code body */}
-        <div className="px-5 py-4 font-mono text-[13px] leading-relaxed">
+        {/* Code body — animasyonlu */}
+        <div
+          className="px-5 py-4 font-mono text-[13px] leading-relaxed min-h-[280px] terminal-loop"
+          style={
+            {
+              // CSS custom property: animasyon döngü süresi
+              "--loop-duration": `${total}ms`,
+            } as React.CSSProperties
+          }
+        >
           {lines.map((line, idx) => {
-            if (line.type === "blank") {
-              return <div key={idx} className="h-2" aria-hidden />;
-            }
             const animClass =
               idx <= 4
-                ? `anim-fade-up`
-                : `anim-fade-in`;
-            const delayMs = idx * 100;
+                ? `anim-typewriter`
+                : `anim-output-pop`;
+            // Cumulative delay (her satır önceki tamamlanır)
+            let delayMs = 0;
+            for (let i = 0; i < idx; i++) {
+              delayMs += lines[i].speed || 400;
+            }
+
+            if (line.type === "blank") {
+              return (
+                <div
+                  key={idx}
+                  className={animClass}
+                  style={{
+                    animationDelay: `${delayMs}ms`,
+                    animationDuration: "0ms",
+                  }}
+                  aria-hidden
+                />
+              );
+            }
+
             return (
               <div
                 key={idx}
                 className={animClass}
-                style={{ animationDelay: `${delayMs}ms` }}
+                style={{
+                  animationDelay: `${delayMs}ms`,
+                  animationDuration: `${line.speed || 400}ms`,
+                }}
               >
-                {line.type === "output" && (
-                  <span className="text-white/30 mr-2">$</span>
-                )}
                 {line.parts.map((p, i) => (
                   <span key={i} className={p.syn || "syn-var"}>
                     {p.text}
@@ -143,6 +206,14 @@ export default function TerminalMock() {
               </div>
             );
           })}
+
+          {/* Running indicator (her zaman sonda) */}
+          <div
+            className="anim-running-pulse text-white/30 text-[11px] mt-1"
+            style={{ animationDelay: `${total - 1500}ms` }}
+          >
+            <span className="cursor-blink">▌</span>
+          </div>
         </div>
       </div>
     </div>

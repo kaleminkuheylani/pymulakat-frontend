@@ -163,3 +163,74 @@ h2, .h2 {
 .syn-com { color: #71717a; font-style: italic; } /* comment */
 .syn-var { color: #f1f5f9; }   /* variable */
 .syn-out { color: #fb923c; }   /* output: print */
+.syn-prompt { color: #f59e0b; font-weight: 600; } /* >>> prompt */
+.syn-success { color: #4ade80; font-weight: 600; } /* ✓ success */
+
+/* ════════════════════════════════════════════════════════════════
+   TERMINAL ANIMATIONS (typewriter, output pop, infinite loop)
+   ════════════════════════════════════════════════════════════════ */
+
+/* Typewriter: monospace karakter karakter görünür (width 0 → 100%) */
+@keyframes typewriter {
+  0% {
+    width: 0;
+    opacity: 1;
+  }
+  90% {
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
+}
+.anim-typewriter {
+  display: inline-block;
+  overflow: hidden;
+  white-space: nowrap;
+  border-right: 0;
+  width: 0;
+  opacity: 0;
+  animation: typewriter 1.2s steps(40) forwards;
+}
+
+/* Output pop: fade + slide (kodun ardından gelen çıktılar için) */
+@keyframes outputPop {
+  0% {
+    opacity: 0;
+    transform: translateX(-8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+.anim-output-pop {
+  opacity: 0;
+  animation: outputPop 0.3s ease-out forwards;
+}
+
+/* Running cursor pulse (her zaman sonda) */
+@keyframes runningPulse {
+  0%, 50% { opacity: 0.4; }
+  51%, 100% { opacity: 1; }
+}
+.anim-running-pulse {
+  opacity: 0;
+  animation: runningPulse 0.8s step-end infinite, fadeIn 0.3s linear forwards;
+}
+
+/* Terminal loop: tüm animasyon bittikten sonra reset ve baştan */
+.terminal-loop {
+  position: relative;
+}
+
+/* Bütün animasyon döngüsü: sonsuz loop (test hissi için) */
+@keyframes terminalReset {
+  0%, 95% {
+    /* animasyon normal akar */
+  }
+  98%, 100% {
+    /* son anda hafif karart */
+  }
+}
