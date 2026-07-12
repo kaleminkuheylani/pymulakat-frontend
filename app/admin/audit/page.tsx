@@ -50,7 +50,17 @@ export default function AuditPage() {
       setQuestions(data);
       setStats(stat);
     } catch (e: any) {
-      setError(e?.message || "Liste yüklenemedi");
+      // Akıllı hata mesajı
+      const status = e?.status || 0;
+      let msg = e?.message || "Liste yüklenemedi";
+      if (status === 404) {
+        msg = "Backend endpoint 404 — Railway henüz deploy olmamış olabilir. 2-3 dakika bekle.";
+      } else if (status === 503) {
+        msg = "DB migration gerekli. Supabase SQL Editor'de scripts/add_audit_columns.sql çalıştır, 5dk bekle.";
+      } else if (status === 500) {
+        msg = `Backend hatası: ${e?.message || "bilinmiyor"}. Railway log'larını kontrol et.`;
+      }
+      setError(msg);
     } finally {
       setLoading((l) => ({ ...l, list: false }));
     }
