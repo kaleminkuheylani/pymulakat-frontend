@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { findQuestion } from "../../../../lib/api/questionAPI";
 import { getMe } from "../../../../lib/api/authAPI";
+import { getCategoryDisplayUrl, getCategoryLabel } from "../../../../lib/categorySlug";
 
 type Props = {
   params: Promise<{ category: string; id: string }>;
@@ -238,7 +239,7 @@ async function WorkspaceLayout({
           "@type": "ListItem",
           position: 2,
           name: `${libLabel} Soruları`,
-          item: `https://pythonmulakat.com/interviews/${libKey}`,
+          item: `https://pythonmulakat.com${getCategoryDisplayUrl(libKey)}`,
         },
         { "@type": "ListItem", position: 3, name: topic, item: url },
       ],

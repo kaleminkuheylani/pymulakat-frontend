@@ -8,6 +8,7 @@
 // bulamazsak backend DB'ye düşüyoruz. Her iki kaynak aynı şemaya normalize
 // ediliyor, downstream kod değişmiyor.
 import { Check, Download, Eye, Lightbulb, Pin } from "lucide-react";
+import { getCategoryDisplayUrl, getCategoryLabel } from "../../../../lib/categorySlug";
 
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -210,13 +211,17 @@ function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
 
 // ─── Breadcrumb schema ────────────────────────────────────
 function buildBreadcrumbSchema(category: string, id: string, title: string, baseUrl: string) {
+  // Truth of source: breadcrumb display URL kullanır, internal slug değil.
+  // /interviews/python-basics (internal) yerine /python-temelleri (display) gösterilir.
+  const categoryUrl = `${baseUrl}${getCategoryDisplayUrl(category)}`;
+  const categoryLabel = getCategoryLabel(category);
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: baseUrl },
       { "@type": "ListItem", position: 2, name: "Sorular", item: `${baseUrl}/interviews` },
-      { "@type": "ListItem", position: 3, name: category, item: `${baseUrl}/interviews/${category}` },
+      { "@type": "ListItem", position: 3, name: categoryLabel, item: categoryUrl },
       { "@type": "ListItem", position: 4, name: title, item: `${baseUrl}/interviews/${category}/${id}` },
     ],
   };
