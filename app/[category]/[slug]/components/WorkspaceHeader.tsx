@@ -1,6 +1,6 @@
 // WorkspaceHeader — üst bar: geri dön, başlık, timer, pyodide status, user badge
 
-import { Question } from "../../../../api/v2/questions";
+import { Question } from "@/lib/api/types";
 import { UserResponse } from "@/hooks/useUser";
 
 interface HeaderProps {

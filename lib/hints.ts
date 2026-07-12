@@ -7,7 +7,7 @@
 // Counter + reveal-next pattern (desktop + mobile aynı).
 
 import { useCallback, useMemo, useState } from "react";
-import type { Question } from "../api/v2/questions";
+import type { Question } from "@/lib/api/types";
 
 const HINT_RE = /💡\s*İpucu\s*\d+:.*?(?=💡|$)/g;
 

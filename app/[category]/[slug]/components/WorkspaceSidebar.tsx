@@ -4,7 +4,7 @@
 // (title, description, complexity, hints, explanation, related...)
 // ortak <QuestionDescriptionContent />'dan gelir — mobile ile birebir aynı.
 
-import { Question, QuestionTests } from "../../../../api/v2/questions";
+import { Question, QuestionTests } from "@/lib/api/types";
 import QuestionDescriptionContent from "./QuestionDescriptionContent";
 
 interface SidebarProps {

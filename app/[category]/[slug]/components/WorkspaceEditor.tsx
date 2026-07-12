@@ -4,7 +4,7 @@ import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2 } from "luci
 import { useState, useRef, useCallback, useEffect } from "react";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "@/components/CodeEditor";
 import { TestRunResult } from "@/hooks/usePyodide";
-import { QuestionTests } from "../../../../api/v2/questions";
+import { QuestionTests } from "@/lib/api/types";
 import { getErrorLabel } from "@/lib/errorClassifier";
 import GuestEditorGate from "./GuestEditorGate";
 

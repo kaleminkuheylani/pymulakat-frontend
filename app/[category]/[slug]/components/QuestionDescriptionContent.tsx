@@ -8,7 +8,7 @@ import { slugifyCategory } from "@/lib/questionMeta";
 
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
-import { Question, QuestionTests } from "../../../../api/v2/questions";
+import { Question, QuestionTests } from "@/lib/api/types";
 import { toQuestionMetaView } from "@/lib/questionMeta";
 import MarkdownLite from "./MarkdownLite";
 

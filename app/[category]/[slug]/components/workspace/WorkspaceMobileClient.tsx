@@ -18,7 +18,7 @@ import Link from "next/link";
 import { toast } from "sonner";
 import { useUser } from "../../../../../hooks/useUser";
 import { usePyodide } from "../../../../../hooks/usePyodide";
-import { questionsAPI, Question, QuestionTests } from "../../../../../api/v2/questions";
+import { questionsAPI, Question, QuestionTests } from "@/lib/api";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { GuestBanner } from "@/components/GuestBanner";
 import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "../../../../../lib/api/authAPI";

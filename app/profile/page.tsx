@@ -6,7 +6,7 @@ import { useUser } from "../../hooks/useUser";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { interviewsAPI, AttemptResponse } from "../../api/v2/questions";
+import type { AttemptResponse } from "@/lib/api";
 import { slugifyTitle } from "../../lib/questionMeta";
 import { deleteAccount, getMyAttempts } from "../../lib/api/authAPI";
 

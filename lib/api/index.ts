@@ -202,3 +202,29 @@ function extractTokenForAuth(): string | null {
   }
   return null;
 }
+
+// ─── Re-exports (backward compat) ────────────────────────────
+export {
+  fetchAllQuestions,
+  getAllQuestions,
+  getById,
+  getBySlug,
+  findQuestion,
+  listQuestionsByCategory,
+  getQuestionTestsBySlug,
+  getQuestionTests,
+  listCategories,
+  getCategories,
+  getCategoryDetail,
+  getRecommendationFlow,
+  getCommunityRecommendations,
+  slugifyTitle,
+  getTotalQuestionCount,
+  getCategoryCount,
+} from "./questionAPI";
+// type aliases: Question, QuestionTests, TestCase (eski import'lar icin)
+export type { Question, QuestionTests, TestCase } from "./types";
+// type aliases
+export type { AttemptResponse } from "./types";
+// ─── questionsAPI object (backward compat) ───────────────────
+export { questionsAPI } from "./questionAPI";

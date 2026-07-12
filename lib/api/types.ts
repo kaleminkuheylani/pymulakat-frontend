@@ -389,3 +389,17 @@ export interface ApiAuditStats {
   failed: number;
   pending: number;
 }
+
+
+// ═══════════════════════════════════════════════════════════════
+// ─── Aliases (eski api/v2/questions import'ları için) ────────
+// ═══════════════════════════════════════════════════════════════
+
+/** @deprecated Use ApiQuestion */
+export type Question = ApiQuestion;
+/** @deprecated Use ApiQuestionTests */
+export type QuestionTests = ApiQuestionTests;
+/** @deprecated Use ApiTestCase */
+export type TestCase = ApiTestCase;
+/** @deprecated Use ApiAttemptResponse */
+export type AttemptResponse = import("./authAPI").ApiAttemptResponse;

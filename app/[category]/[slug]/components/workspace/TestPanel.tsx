@@ -13,7 +13,7 @@ import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play } from
 // (Mevcut işlevsellik korunur — toggle off default'ta davranış değişmez.)
 
 import { useCallback, useEffect, useState } from "react";
-import { QuestionTests, TestCase } from "../../../../../api/v2/questions";
+import { QuestionTests, TestCase } from "@/lib/api/types";
 import { TestRunResult, PyodideStatus } from "../../../../../hooks/usePyodide";
 import { getErrorLabel } from "@/lib/errorClassifier";
 import {

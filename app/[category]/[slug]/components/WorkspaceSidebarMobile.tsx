@@ -1,6 +1,6 @@
 "use client";
 
-import type { Question, QuestionTests } from "../../../../api/v2/questions";
+import type { Question, QuestionTests } from "@/lib/api/types";
 import { useHints } from "@/lib/hints";
 import QuestionDescriptionContent from "./QuestionDescriptionContent";
 

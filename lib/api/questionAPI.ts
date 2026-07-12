@@ -318,3 +318,22 @@ export async function getCategoryCount(category: string): Promise<number> {
     return 0;
   }
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ─── Backward compat object (eski questionsAPI) ──────────────
+// ═══════════════════════════════════════════════════════════════
+// Eski import: import { questionsAPI } from "@/lib/api"
+// Yeni named export'lar yukarida. Bu object kullananlar icin facade.
+export const questionsAPI = {
+  getBySlug: (category: string, slugOrId: string, opts?: { includeStarter?: boolean }) =>
+    getBySlug(category, slugOrId, opts ?? {}),
+  getById: (id: number, opts?: { includeStarter?: boolean }) =>
+    getById(id, opts ?? {}),
+  getTests: (questionId: number) => getQuestionTests("", String(questionId)),
+  listAll: (params?: Parameters<typeof getAllQuestions>[0]) => getAllQuestions(params),
+  listByCategory: (category: string) => listQuestionsByCategory(category),
+  getCategoryCount: (category: string) => getCategoryCount(category),
+  getTotalCount: () => getTotalQuestionCount(),
+  find: (category: string, idOrSlug: string) => findQuestion(category, idOrSlug),
+  listCategories: () => listCategories(),
+};
