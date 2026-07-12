@@ -15,6 +15,8 @@ const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-bac
 export interface QuestionListClientProps {
   /** Filtrelenecek kategori (örn. "python-basics", "dynamic-programming") */
   category: string;
+  /** Çoklu kategori (yeni: birleşik liste için) — filter'ı genişletir */
+  categories?: string[];
   /** URL'de gösterilecek kategori slug'ı (örn. "python-temelleri") */
   urlSlug: string;
   /** Kartlarda gösterilecek kategori label'ı (örn. "python-temelleri") */
@@ -162,6 +164,7 @@ async function fetchCSV(): Promise<{ items: Question[]; source: FetchSource }> {
 
 export default function QuestionListClient({
   category,
+  categories,
   urlSlug,
   displaySlug,
   skeletonCount = 6,
@@ -187,7 +190,10 @@ export default function QuestionListClient({
       .then((result) => {
         if (cancelled) return;
         setSource(result.source);
-        const filtered = result.items.filter((q) => q.category === category);
+        const filterSet = categories && categories.length > 0 ? new Set(categories) : null;
+        const filtered = filterSet
+          ? result.items.filter((q) => filterSet.has(q.category))
+          : result.items.filter((q) => q.category === category);
         setQuestions(filtered);
       })
       .catch((err) => {
@@ -205,7 +211,7 @@ export default function QuestionListClient({
       cancelled = true;
       controller.abort();
     };
-  }, [category]);
+  }, [category, categories ? categories.join(',') : '']);
 
   if (loading) {
     return (

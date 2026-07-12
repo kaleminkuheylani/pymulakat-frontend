@@ -161,19 +161,11 @@ export default function PythonAlgoritmaSorulariPage() {
       >
         {/* algorithms + dynamic-programming — iki kategorinin tamamı algoritma kapsamında */}
         <ServerQuestionList
-          category="algorithms"
+          categories={["algorithms", "dynamic-programming"]}
           urlSlug="python-algoritma-sorulari"
-          displaySlug="algorithms"
+          displaySlug="algorithms, dynamic-programming"
           skeletonCount={9}
         />
-        <div className="mt-8 pt-8 border-t border-white/10">
-          <ServerQuestionList
-            category="dynamic-programming"
-            urlSlug="python-dinamik-programlama"
-            displaySlug="dynamic-programming"
-            skeletonCount={6}
-          />
-        </div>
       </CategoryPageTemplate>
     </>
   );
