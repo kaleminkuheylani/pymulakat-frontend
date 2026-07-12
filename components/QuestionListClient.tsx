@@ -273,7 +273,7 @@ export default function QuestionListClient({
             <Link
               key={q.id}
               href={href}
-              className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-white/20 transition-all overflow-hidden"
+              className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-white/20 transition-colors overflow-hidden"
             >
               <div
                 className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity"
@@ -304,7 +304,7 @@ export default function QuestionListClient({
                   )}
                 </div>
 
-                <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
+                <h3 className="text-lg font-bold mb-2 ">
                   {q.title}
                 </h3>
 
@@ -321,12 +321,12 @@ export default function QuestionListClient({
                 <div className="flex items-center justify-between text-xs pt-3 mt-2 border-t border-white/5">
                   {displaySlug || q.category}
                   <span
-                    className="flex items-center gap-1.5 transition-colors group-hover:text-amber-400"
+                    className="flex items-center gap-1.5 text-white/50"
                     style={{ color: DEFAULT_ACCENT }}
                   >
                     Çöz
                     <svg
-                      className="w-3 h-3 transition-transform group-hover:translate-x-1"
+                      className="w-3 h-3 "
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
