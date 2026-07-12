@@ -1,4 +1,5 @@
 // WorkspaceEditor — sağ panel: Monaco editor + test results
+import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2 } from "lucide-react";
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "../../../../../components/CodeEditor";
@@ -277,7 +278,7 @@ export default function WorkspaceEditor({
                   </span>
                 ) : (
                   <span className="flex items-center gap-2">
-                    🖨️ Konsol
+                    <Printer className="w-3.5 h-3.5 inline" /> Konsol
                     {errorLines.length > 0 && (
                       <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                     )}
@@ -430,7 +431,7 @@ function ExamplesTab({
               {/* Input */}
               <div>
                 <div className="text-[10px] uppercase tracking-wider text-white/40 mb-1 font-bold">
-                  📥 Input
+                  <Download className="w-3.5 h-3.5 inline" /> Input
                 </div>
                 <pre className="text-xs font-mono text-white/80 bg-black/30 p-2 rounded overflow-x-auto border">
                   {formatValue(tc.input)}
@@ -451,7 +452,7 @@ function ExamplesTab({
               {!hasRun && referenceActual !== null && (
                 <div>
                   <div className="text-[10px] uppercase tracking-wider text-cyan-300/70 mb-1 font-bold">
-                    👁 Actual (referans çıktı)
+                    <Eye className="w-3.5 h-3.5 inline" /> Actual (referans çıktı)
                   </div>
                   <pre className="text-xs font-mono text-cyan-200 bg-cyan-500/5 p-2 rounded overflow-x-auto border border-cyan-500/20 min-h-[2.5rem]">
                     {formatValue(referenceActual)}
@@ -481,7 +482,7 @@ function ExamplesTab({
                     {formatValue(result.actual)}
                   </pre>
                   <div className="text-[10px] text-amber-300/80 italic px-1 mt-1">
-                    💡 Return değeri beklenenle eşleşmiyor — yukarıdaki Actual, senin kodun bu test için ne döndüğü.
+                    <Lightbulb className="w-3.5 h-3.5 inline" /> Return değeri beklenenle eşleşmiyor — yukarıdaki Actual, senin kodun bu test için ne döndüğü.
                   </div>
                 </div>
               )}
@@ -542,7 +543,7 @@ function ConsoleTab({
         <div className="space-y-2">
           <div className="flex items-center justify-between">
             <span className="text-[10px] uppercase tracking-wider text-white/60 font-bold">
-              🧪 Kendi Input'unla Dene
+              <TestTube className="w-3.5 h-3.5 inline" /> Kendi Input'unla Dene
             </span>
             <span className="text-[10px] text-white/40">
               {params.length} parametre

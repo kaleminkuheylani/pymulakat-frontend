@@ -1,4 +1,5 @@
 "use client";
+import { PartyPopper, ListTree, Check, FileText, LinkIcon, Code2, User, MessageSquare } from "lucide-react";
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -156,7 +157,7 @@ export default function CodeShareModal({
             <div className="flex items-center justify-between px-6 py-4 flex-shrink-0">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500 to-amber-400 flex items-center justify-center flex-shrink-0">
-                  <span className="text-lg">🎉</span>
+                  <PartyPopper className="w-5 h-5 text-amber-400" />
                 </div>
                 <div className="min-w-0">
                   <h2 className="text-lg font-bold text-white truncate">
@@ -242,7 +243,7 @@ export default function CodeShareModal({
                   onClick={handleCopyTweet}
                   className="px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl text-white text-sm font-medium transition-colors flex items-center justify-center gap-2"
                 >
-                  📋 Metni Kopyala
+                  <ListTree className="w-3.5 h-3.5 inline" /> Metni Kopyala
                 </button>
                 <button
                   onClick={handleTweet}

@@ -1,4 +1,5 @@
 "use client";
+import { Eye, Lightbulb, MessageSquare } from "lucide-react";
 
 // QuestionDescriptionContent — desktop sidebar + mobile "Soru" tab'ı için
 // TEK KAYNAK. Aynı data, aynı görsel hiyerarşi; sadece parent'ta padding/spacing farkı var.
@@ -210,7 +211,7 @@ export default function QuestionDescriptionContent({
       {isGuest && (
         <div className="p-3 rounded-lg bg-indigo-500/5 border border-indigo-500/20">
           <div className="text-[10px] uppercase tracking-wider text-indigo-300 mb-1.5">
-            👁 Misafir Modu
+            <Eye className="w-3.5 h-3.5 inline" /> Misafir Modu
           </div>
           <p className="text-xs text-indigo-200/80 leading-relaxed">
             Soru açıklamasını ve{" "}
@@ -331,7 +332,7 @@ function AskCommunityButton({
             href={href}
             className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all shadow-md shadow-emerald-500/30 active:scale-95"
           >
-            <span>💬</span>
+            <MessageSquare className="w-3.5 h-3.5" />
             <span>Toplulukta Sor</span>
             <span>→</span>
           </a>

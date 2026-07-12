@@ -1,5 +1,5 @@
 "use client";
-import { Lock } from "lucide-react";
+import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle } from "lucide-react";
 
 // WorkspaceMobileClient — Mobile workspace orchestrator (refactored).
 //
@@ -361,7 +361,7 @@ export default function WorkspaceMobileClient({
             className="px-3 py-1.5 rounded-lg bg-indigo-500 text-white text-[11px] font-bold hover:bg-indigo-400 transition-colors"
             title="Giriş yapıp kodu çalıştır"
           >
-            🔐 Giriş Yap & Çalıştır
+            <Lock className="w-4 h-4 inline" /> Giriş Yap & Çalıştır
           </Link>
         ) : (
           <button
