@@ -159,11 +159,12 @@ export default function PythonAlgoritmaSorulariPage() {
         backLabel="Tüm Kategoriler"
         related={related}
       >
-        {/* algorithms + dynamic-programming — iki kategorinin tamamı algoritma kapsamında */}
+        {/* algorithms — bu sayfa sadece algorithms kategorisini gösterir (26 soru).
+            dynamic-programming ayrı /python-dinamik-programlama sayfasında. */}
         <ServerQuestionList
-          categories={["algorithms", "dynamic-programming"]}
+          category="algorithms"
           urlSlug="python-algoritma-sorulari"
-          displaySlug="algorithms, dynamic-programming"
+          displaySlug="algorithms"
           skeletonCount={9}
         />
       </CategoryPageTemplate>
