@@ -146,18 +146,18 @@ export default function AuditPage() {
   const allPassed = testResults && passedCount === totalTests && totalTests > 0;
 
   return (
-    <main className="min-h-screen bg-slate-950 text-slate-100">
-      <div className="mx-auto max-w-7xl px-6 py-12">
-        {/* Header */}
-        <header className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">
-            Soru Denetim Aracı
-          </h1>
-          <p className="mt-2 text-slate-400">
-            Mavis API ile üretilen kodu test case'lerde çalıştır, tüm testler
-            geçerse soruyu denetlenmiş olarak işaretle.
-          </p>
-        </header>
+    <div className="p-6 md:p-8 max-w-7xl">
+      <div className="mb-6">
+        <div className="flex items-center gap-2 text-amber-300 text-xs font-mono uppercase tracking-widest mb-2">
+          <Sparkles className="w-4 h-4" />
+          Question Audit
+        </div>
+        <h1 className="text-2xl font-bold mb-2">Soru Denetim Aracı</h1>
+        <p className="text-white/60 text-sm">
+          Mavis API ile üretilen kodu test case&apos;lerde çalıştır, tüm testler
+          geçerse soruyu denetlenmiş olarak işaretle.
+        </p>
+      </div>
 
         {/* Stats Banner */}
         {stats && (
@@ -394,8 +394,8 @@ export default function AuditPage() {
           </div>
         </div>
       </div>
-    </main>
   );
+
 }
 
 // ─── Sub Components ───────────────────────────────────────
