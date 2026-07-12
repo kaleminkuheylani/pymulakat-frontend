@@ -5,9 +5,11 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../hooks/useUser";
+import { usePageView } from "../hooks/usePageView";
 
 export default function GlobalNav() {
   const { user, loading, logout } = useUser();
+  usePageView();
   const router = useRouter();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
