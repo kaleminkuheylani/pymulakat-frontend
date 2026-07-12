@@ -1,9 +1,10 @@
+"use client";
+
 // components/QuestionListClient.tsx
 // TÜM kategori sayfalarında paylaşılan soru listesi client component.
 // 📌 CSV-ONLY mimari: GitHub'daki public CSV'yi çeker (raw primary, jsDelivr fallback).
 // Backend DB'ye hiç bağlanmıyoruz — CSV = tek kaynak.
 
-"use client";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -125,6 +126,7 @@ function parseCSV(text: string): Question[] {
       return {
         id: parseInt(get("id"), 10) || 0,
         title: get("title"),
+        slug: get("slug") || slugifyTitleLocal(get("title")),
         category: get("category"),
         level: get("level") || "beginner",
         description: get("description"),
@@ -351,3 +353,18 @@ export default function QuestionListClient({
 }
 
 // EOF
+
+
+// ─── Title → URL-safe slug (CSV'de slug kolonu varsa kullan, yoksa fallback) ──
+const trMap: Record<string, string> = {
+  "ç": "c", "ğ": "g", "ı": "i", "ö": "o", "ş": "s", "ü": "u",
+  "Ç": "c", "Ğ": "g", "İ": "i", "Ö": "o", "Ş": "s", "Ü": "u",
+};
+function slugifyTitleLocal(title: string): string {
+  return title
+    .toLowerCase()
+    .trim()
+    .replace(/[çğıöşüÇĞİÖŞÜ]/g, (c) => trMap[c] || c)
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}

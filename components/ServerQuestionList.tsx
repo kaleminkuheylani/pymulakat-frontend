@@ -13,7 +13,7 @@
 // Bu server component, tüm pillar sayfalarında (python-temelleri,
 // python-dinamik-programlama, ...) paylaşılır — DRY.
 
-import { listQuestionsByCategory, slugifyTitle as csvSlugify } from "../lib/api/questionAPI";
+import { listQuestionsByCategory } from "../lib/api/questionAPI";
 import QuestionListClient from "./QuestionListClient";
 
 interface Props {
@@ -55,7 +55,7 @@ export default async function ServerQuestionList({
   const initialQuestions = items.map((q) => ({
     id: q.id,
     title: q.title,
-    slug: csvSlugify(q.title),
+    slug: q.slug ?? "",  // DB slugify_title kaldirildi, DB slug kolonu kullanilir
     category: q.category,
     level: q.level,
     description: q.description,
