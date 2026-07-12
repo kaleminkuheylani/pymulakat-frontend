@@ -33,6 +33,13 @@ export interface ApiFetchOptions extends Omit<RequestInit, "body"> {
   params?: Record<string, string | number | boolean | undefined | null>;
   /** Auth header otomatik eklensin mi (default: false, server endpoint'leri için) */
   auth?: boolean;
+  /**
+   * Fetch credentials modu. Default 'include' (cross-origin cookie gerekli).
+   * - 'include': cross-origin cookie'ler (admin session) — production
+   * - 'same-origin': same-origin only
+   * - 'omit': cookie gönderme
+   */
+  credentials?: RequestCredentials;
 }
 
 // ─── apiFetch<T>() generic helper ────────────────────────────
@@ -98,6 +105,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   // 5) Next.js fetch init
   const init: RequestInit & { next?: ApiFetchOptions["next"] } = {
     ...rest,
+    credentials: options.credentials ?? "include",
     headers: finalHeaders,
   };
   if (body !== undefined && body !== null) init.body = finalBody;

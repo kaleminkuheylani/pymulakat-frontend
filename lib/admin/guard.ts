@@ -1,164 +1,115 @@
 // lib/admin/guard.ts
-// Supabase admin guard — server-side, tüm /admin/* rotalarını korur.
+// Admin guard — backend session cookie tabanlı (2FA destekli).
 //
-// KURAL (KESİN):
-// - Admin kontrolü SADECE Supabase `app_metadata.role === "admin"` ile yapılır.
-// - Cookie/localStorage'la kontrol YASAK (client tarafında bypass edilebilir).
-// - Server component'lerde (admin layout) çalışır; service_role kullanmaz
-//   (RLS zaten app_metadata.role üzerinden filtreliyor).
+// MİMARİ (2FA, session-based, production-grade):
+// - Eski: Supabase cookies + app_metadata.role (sadece password)
+// - Yeni: Backend /api/v2/admin/auth/me + HttpOnly session cookie
+//   - Login: email + password → mfa_token (5dk)
+//   - MFA: mfa_token + TOTP → session cookie (8 saat)
+//   - Session: HttpOnly, Secure, SameSite=Strict
+//   - Audit log: her login attempt + her admin action
+//   - Lockout: 5 fail → 15dk
+//   - IP allowlist: env bazlı (opsiyonel)
+//
+// AVANTAJ:
+// - Supabase bağımlılığı yok (daha az saldırı yüzeyi)
+// - 2FA zorunlu (Mavis API maliyetli, DB-FIRST kritik)
+// - Audit trail: kim ne zaman ne yaptı
+// - Session revoke: çalınan cookie geçersiz kılınabilir
+// - IP binding: farklı IP'den kullanım reddedilir
 //
 // KULLANIM:
-//   // Server component
 //   import { requireAdmin } from "@/lib/admin/guard";
-//   const user = await requireAdmin();  // admin değilse redirect to /
-//
-//   // API route
-//   import { checkAdmin } from "@/lib/admin/guard";
-//   const isAdmin = await checkAdmin();
+//   const user = await requireAdmin();  // /admin/login'e redirect
 
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
-import { createServerClient } from "@supabase/ssr";
-import type { SupabaseClient, User } from "@supabase/supabase-js";
 
-// Supabase URL'ler
-const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-const SUPABASE_ANON_KEY = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "";
+const API_BASE =
+  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
 
-async function makeServerClient(): Promise<SupabaseClient> {
-  const cookieStore = await cookies();
-  return createServerClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-    cookies: {
-      getAll() {
-        return cookieStore.getAll();
-      },
-      setAll(cookiesToSet) {
-        try {
-          cookiesToSet.forEach(({ name, value, options }) => {
-            cookieStore.set(name, value, options);
-          });
-        } catch {
-          // Server component'te set çalışmaz (read-only) — ignore
-        }
-      },
-    },
-  });
+export interface AdminUser {
+  id: string;
+  email: string;
+  role: "admin";
+  expires_at?: string;
 }
 
 /**
- * Supabase admin mi? Sadece app_metadata.role === "admin" kabul edilir.
- * RLS: profiles tablosunda admin policy bu role'ü kontrol eder.
+ * Server component'te admin guard. Session yoksa /admin/login'e redirect.
+ *
+ * @returns Admin user (session validate edildi)
  */
-export async function isSupabaseAdmin(supabase: SupabaseClient, user: User): Promise<boolean> {
-  // 1) app_metadata.role === "admin" (en güvenilir — kullanıcı değiştiremez)
-  const appRole = (user.app_metadata as Record<string, unknown> | undefined)?.role;
-  if (appRole === "admin") return true;
+export async function requireAdmin(): Promise<AdminUser> {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
 
-  // 2) user_metadata.role === "admin" (fallback — ilk kurulumda app_metadata boş olabilir)
-  const userRole = (user.user_metadata as Record<string, unknown> | undefined)?.role;
-  if (userRole === "admin") return true;
-
-  // 3) Fresh fallback: backend API'den dogrula (service_role-backed, Supabase admin)
-  // Supabase auth.getUser() JWT token cache'leyebilir; logout sonrasi bile
-  // eski JWT yeni metadata ile yenilenmemis olabilir. Backend'de her zaman
-  // fresh role dondurur.
+  // Session yoksa cookie header bos olur → 401 → redirect login
+  let user: AdminUser | null = null;
   try {
-    const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-    const cookieHeader = (await cookies())
-      .getAll()
-      .map((c) => `${c.name}=${c.value}`)
-      .join("; ");
-    const res = await fetch(`${apiBase}/api/v2/admin/users/me`, {
-      headers: { Cookie: cookieHeader, Accept: "application/json" },
+    const res = await fetch(`${API_BASE}/api/v2/admin/auth/me`, {
+      headers: {
+        Cookie: cookieHeader,
+        Accept: "application/json",
+      },
       cache: "no-store",
     });
     if (res.ok) {
-      const data = (await res.json()) as { role?: string };
-      if (data.role === "admin") return true;
+      user = (await res.json()) as AdminUser;
+    } else if (res.status === 401) {
+      // Session yok veya süresi dolmuş
+      user = null;
+    } else {
+      // Backend 5xx veya başka hata — fail-closed
+      user = null;
     }
   } catch (e) {
-    // Backend unreachable — fall through
+    // Backend unreachable — fail-closed
+    user = null;
   }
 
-  // 4) DB'de profiles tablosunda is_admin = true kontrol (RLS service_role açık)
-  // Bu kontrol service_role gerektirir, burada yapamayız. UI tarafında
-  // /api/v2/admin/me endpoint'i ile kontrol edilebilir.
-  return false;
-}
-
-/**
- * Server component'lerde admin guard. Admin değilse /'ya redirect.
- *
- * @returns Supabase user (admin)
- */
-export async function requireAdmin(): Promise<User> {
-  const cookieStore = await cookies();
-
-  // DEBUG BYPASS: NEXT_PUBLIC_ADMIN_BYPASS=1 ise env okumadan devam et
-  // Production'da KAPATILMALI (sadece debug icin)
-  if (process.env.NEXT_PUBLIC_ADMIN_BYPASS === "1") {
-    process.stderr.write("[admin/guard] BYPASS mode active (NEXT_PUBLIC_ADMIN_BYPASS=1)\n");
-    return {
-      id: "bypass",
-      email: "bypass@local",
-      app_metadata: { role: "admin", provider: "bypass" },
-      user_metadata: {},
-      aud: "authenticated",
-      created_at: new Date().toISOString(),
-    } as unknown as User;
-  }
-
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    process.stderr.write(
-      `[admin/guard] SUPABASE_URL=${SUPABASE_URL ? "set" : "MISSING"} ANON_KEY=${SUPABASE_ANON_KEY ? "set" : "MISSING"}\n`
-    );
-    redirect("/");
-  }
-
-  // Supabase client (cookie-based session)
-  const supabase = await makeServerClient();
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
-
-  if (!user) {
-    // debug: returnUrl ile redirect (yapildi)
-    redirect("/login?returnUrl=/admin");
-  }
-
-  const admin = await isSupabaseAdmin(supabase, user);
-  if (!admin) {
-    // DEBUG: Production'da loglama (mimari kural: console.* YASAK)
-    // Sadece Vercel runtime log icin stderr yaziyoruz
-    if (process.env.NODE_ENV !== "production" || process.env.VERCEL === "1") {
-      const appRole = (user.app_metadata as Record<string, unknown> | undefined)?.role;
-      const userRole = (user.user_metadata as Record<string, unknown> | undefined)?.role;
-      process.stderr.write(`[admin/guard] DENY ${user.email} app_meta=${JSON.stringify(user.app_metadata)} user_meta=${JSON.stringify(user.user_metadata)}\n`);
-    }
-    // Admin değil — ana sayfaya yönlendir (KVKK uyumu, iç yönlendirme yapma)
-    redirect("/");
+  if (!user || user.role !== "admin") {
+    redirect("/admin/login");
   }
 
   return user;
 }
 
 /**
- * Sadece kontrol — redirect etmez. UI/API route'larında kullanılır.
+ * API route veya client component'te admin kontrol (redirect etmez).
  */
-export async function checkAdmin(): Promise<{ isAdmin: boolean; user: User | null }> {
+export async function checkAdmin(): Promise<{ isAdmin: boolean; user: AdminUser | null }> {
+  const cookieStore = await cookies();
+  const cookieHeader = cookieStore
+    .getAll()
+    .map((c) => `${c.name}=${c.value}`)
+    .join("; ");
+
   try {
-    const supabase = await makeServerClient();
-
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) return { isAdmin: false, user: null };
-
-    const admin = await isSupabaseAdmin(supabase, user);
-    return { isAdmin: admin, user };
+    const res = await fetch(`${API_BASE}/api/v2/admin/auth/me`, {
+      headers: {
+        Cookie: cookieHeader,
+        Accept: "application/json",
+      },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const user = (await res.json()) as AdminUser;
+      return { isAdmin: user.role === "admin", user };
+    }
+    return { isAdmin: false, user: null };
   } catch {
     return { isAdmin: false, user: null };
   }
+}
+
+/**
+ * BYPASS mode — Vercel env NEXT_PUBLIC_ADMIN_BYPASS=1 ise herkes admin.
+ * Sadece acil durum / debug için. Production'da KAPALI olmalı.
+ */
+export function isBypassEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_ADMIN_BYPASS === "1";
 }
