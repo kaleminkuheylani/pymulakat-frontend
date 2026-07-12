@@ -90,7 +90,7 @@ async function fetchCategoriesFromAPI(): Promise<Category[]> {
         label: CATEGORY_META[slug]?.label || row.label || slug,
         icon: CATEGORY_META[slug]?.icon || row.icon || "📘",
         description: CATEGORY_META[slug]?.description || row.description || "",
-        question_count: row.count ?? 0,
+        question_count: row.question_count ?? row.count ?? 0,
       };
     });
   } catch (e) {

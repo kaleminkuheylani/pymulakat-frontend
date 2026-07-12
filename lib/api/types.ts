@@ -72,7 +72,10 @@ export interface ApiCategory {
   label?: string;
   description?: string;
   icon?: string;
-  count: number;
+  /** Backend 2026-07-12'de 'count' → 'question_count' olarak değişti. CSV-DB senkron kuralı: type da güncel. */
+  question_count: number;
+  /** Geriye uyumluluk: eski response'larda 'count' field'ı. */
+  count?: number;
   color?: string;
 }
 
