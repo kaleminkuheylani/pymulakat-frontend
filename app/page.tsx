@@ -54,7 +54,7 @@ const CATEGORIES: Array<{
     desc: "Stack, queue, linked list, tree, graph, hash table.",
     icon: Layers,
     count: 21,
-    href: "/python-veri-yapilari",
+    href: "/veri-yapilari",
     level: "advanced",
   },
   {
@@ -63,7 +63,7 @@ const CATEGORIES: Array<{
     desc: "List, dict, tuple, set, comprehension, sorting.",
     icon: ListTree,
     count: 8,
-    href: "/python-liste-sozluk",
+    href: "/liste-sozluk",
     level: "beginner",
   },
   {
@@ -72,7 +72,7 @@ const CATEGORIES: Array<{
     desc: "DataFrame, Series, groupby, merge, filter, agg.",
     icon: Database,
     count: 13,
-    href: "/python-pandas",
+    href: "/pandas",
     level: "intermediate",
   },
   {
@@ -81,7 +81,7 @@ const CATEGORIES: Array<{
     desc: "Sıralama, arama, graf, string algoritmaları.",
     icon: Cpu,
     count: 26,
-    href: "/python-algoritma-sorulari",
+    href: "/algoritma-sorulari",
     level: "advanced",
   },
   {
@@ -90,7 +90,7 @@ const CATEGORIES: Array<{
     desc: "Memoization, tabulation, fibonacci, knapsack, edit distance.",
     icon: Brain,
     count: 12,
-    href: "/python-dinamik-programlama",
+    href: "/dinamik-programlama",
     level: "advanced",
   },
   {
@@ -99,7 +99,7 @@ const CATEGORIES: Array<{
     desc: "heapq modülü, min-heap, max-heap, priority queue.",
     icon: Mountain,
     count: 8,
-    href: "/python-heap",
+    href: "/heap",
     level: "intermediate",
   },
   {
@@ -108,7 +108,7 @@ const CATEGORIES: Array<{
     desc: "LIFO, push/pop, parantez dengesi, undo/redo, DFS.",
     icon: Layers,
     count: 5,
-    href: "/python-stack",
+    href: "/stack",
     level: "intermediate",
   },
   {
@@ -117,7 +117,7 @@ const CATEGORIES: Array<{
     desc: "FIFO, enqueue/dequeue, BFS, deque, circular queue.",
     icon: ListOrdered,
     count: 5,
-    href: "/python-queue",
+    href: "/queue",
     level: "intermediate",
   },
 ];

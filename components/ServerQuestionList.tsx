@@ -11,7 +11,7 @@
 //   (Promise.all ile paralel fetch), displaySlug başlık olarak kullanılır.
 //
 // Bu server component, tüm pillar sayfalarında (python-temelleri,
-// python-dinamik-programlama, ...) paylaşılır — DRY.
+// dinamik-programlama, ...) paylaşılır — DRY.
 
 import { listQuestionsByCategory } from "../lib/api/questionAPI";
 import QuestionListClient from "./QuestionListClient";

@@ -1,4 +1,4 @@
-// /python-algoritma-sorulari — Python algoritma soruları kataloğu sayfası.
+// /algoritma-sorulari — Python algoritma soruları kataloğu sayfası.
 // Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
 import { BookOpen, Brain, Layers } from "lucide-react";
 import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
@@ -37,17 +37,17 @@ export const metadata: Metadata = {
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
   alternates: {
-    canonical: "https://pythonmulakat.com/python-algoritma-sorulari",
+    canonical: "https://pythonmulakat.com/algoritma-sorulari",
     languages: {
-      "tr-TR": "https://pythonmulakat.com/python-algoritma-sorulari",
-      "x-default": "https://pythonmulakat.com/python-algoritma-sorulari",
+      "tr-TR": "https://pythonmulakat.com/algoritma-sorulari",
+      "x-default": "https://pythonmulakat.com/algoritma-sorulari",
     },
   },
   openGraph: {
     title: "Python Algoritma Soruları — Pratik Yap, Anında Geri Bildirim Al",
     description:
       "Python algoritma soruları — tarayıcı tabanlı, AI feedback'li interaktif pratik.",
-    url: "https://pythonmulakat.com/python-algoritma-sorulari",
+    url: "https://pythonmulakat.com/algoritma-sorulari",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
@@ -75,18 +75,18 @@ const breadcrumbJsonLd = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://pythonmulakat.com/" },
     { "@type": "ListItem", position: 2, name: "Mülakat Soruları", item: "https://pythonmulakat.com/interviews" },
-    { "@type": "ListItem", position: 3, name: "Python Algoritma Soruları", item: "https://pythonmulakat.com/python-algoritma-sorulari" },
+    { "@type": "ListItem", position: 3, name: "Python Algoritma Soruları", item: "https://pythonmulakat.com/algoritma-sorulari" },
   ],
 };
 
 const learningResourceJsonLd = {
   "@context": "https://schema.org",
   "@type": "LearningResource",
-  "@id": "https://pythonmulakat.com/python-algoritma-sorulari#learning-resource",
+  "@id": "https://pythonmulakat.com/algoritma-sorulari#learning-resource",
   name: "Python Algoritma Soruları — İnteraktif Pratik Koleksiyonu",
   description:
     "Python algoritma soruları için tarayıcı tabanlı, otomatik puanlanan, AI geri bildirimli interaktif pratik koleksiyonu. Sıralama, arama, dinamik programlama, graf ve string algoritmalarını kapsar.",
-  url: "https://pythonmulakat.com/python-algoritma-sorulari",
+  url: "https://pythonmulakat.com/algoritma-sorulari",
   educationalUse: "practice",
   learningResourceType: "interactive tutorial",
   audience: {
@@ -107,7 +107,7 @@ const learningResourceJsonLd = {
 // Bu sayfada gösterilecek ilgili kategoriler — DP, tüm kategoriler, kodlar
 const related: RelatedCategory[] = [
   {
-    href: "/python-dinamik-programlama",
+    href: "/dinamik-programlama",
     icon: Brain,
     title: "Python Dinamik Programlama",
     description:
@@ -165,10 +165,10 @@ export default async function PythonAlgoritmaSorulariPage() {
         related={related}
       >
         {/* algorithms — bu sayfa sadece algorithms kategorisini gösterir (26 soru).
-            dynamic-programming ayrı /python-dinamik-programlama sayfasında. */}
+            dynamic-programming ayrı /dinamik-programlama sayfasında. */}
         <ServerQuestionList
           category="algorithms"
-          urlSlug="python-algoritma-sorulari"
+          urlSlug="algoritma-sorulari"
           displaySlug="algorithms"
           skeletonCount={9}
         />

@@ -1,4 +1,4 @@
-// /python-heap — Python Heap / Priority Queue soruları.
+// /heap — Python Heap / Priority Queue soruları.
 import { Cpu, GraduationCap, Layers, ListOrdered } from "lucide-react";
 import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
   alternates: {
-    canonical: "https://pythonmulakat.com/python-heap",
-    languages: { "tr-TR": "https://pythonmulakat.com/python-heap", "x-default": "https://pythonmulakat.com/python-heap" },
+    canonical: "https://pythonmulakat.com/heap",
+    languages: { "tr-TR": "https://pythonmulakat.com/heap", "x-default": "https://pythonmulakat.com/heap" },
   },
   openGraph: {
     title: "Python Heap Soruları — heapq, Priority Queue",
     description: "heapq, min-heap, max-heap — {countHeap}+ interaktif soru.",
-    url: "https://pythonmulakat.com/python-heap",
+    url: "https://pythonmulakat.com/heap",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
@@ -57,8 +57,8 @@ const breadcrumbJsonLd = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://pythonmulakat.com/" },
-    { "@type": "ListItem", position: 2, name: "Veri Yapıları", item: "https://pythonmulakat.com/python-veri-yapilari" },
-    { "@type": "ListItem", position: 3, name: "Python Heap", item: "https://pythonmulakat.com/python-heap" },
+    { "@type": "ListItem", position: 2, name: "Veri Yapıları", item: "https://pythonmulakat.com/veri-yapilari" },
+    { "@type": "ListItem", position: 3, name: "Python Heap", item: "https://pythonmulakat.com/heap" },
   ],
 };
 
@@ -141,10 +141,10 @@ export default async function PythonHeapPage() {
 
 
   const related: RelatedCategory[] = [
-    { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları: stack, queue, tree, linked list.", gradient: "indigo-amber" },
-    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için {countStack}+ soru.", gradient: "amber-indigo" },
-    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için {countQueue}+ soru.", gradient: "indigo-amber" },
-    { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
+    { href: "/veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları: stack, queue, tree, linked list.", gradient: "indigo-amber" },
+    { href: "/stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için {countStack}+ soru.", gradient: "amber-indigo" },
+    { href: "/queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için {countQueue}+ soru.", gradient: "indigo-amber" },
+    { href: "/algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "indigo-amber" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
   ];
@@ -160,7 +160,7 @@ export default async function PythonHeapPage() {
           </>
         }
         tags={["heapq", "min-heap", "max-heap", "priority queue", "heappush", "heappop"]}
-        backHref="/python-veri-yapilari"
+        backHref="/veri-yapilari"
         backLabel="Veri Yapıları"
         related={related}
         beforeRelated={
@@ -168,13 +168,13 @@ export default async function PythonHeapPage() {
             category="Python Heap"
             blocks={contextBlocks}
             furtherReading={[
-              { label: "Veri Yapıları", href: "/python-veri-yapilari" },
-              { label: "Algoritma Soruları", href: "/python-algoritma-sorulari" },
+              { label: "Veri Yapıları", href: "/veri-yapilari" },
+              { label: "Algoritma Soruları", href: "/algoritma-sorulari" },
             ]}
           />
         }
       >
-        <ServerQuestionList category="heap" urlSlug="python-heap" displaySlug="heap" skeletonCount={6} />
+        <ServerQuestionList category="heap" urlSlug="heap" displaySlug="heap" skeletonCount={6} />
       </CategoryPageTemplate>
     </>
   );

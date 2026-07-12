@@ -1,4 +1,4 @@
-// /python-pandas — Pandas soruları kataloğu sayfası.
+// /pandas — Pandas soruları kataloğu sayfası.
 import { BookOpen, Code2, GraduationCap, Layers, ListTree, Terminal } from "lucide-react";
 import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
@@ -31,13 +31,13 @@ export const metadata: Metadata = {
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
   alternates: {
-    canonical: "https://pythonmulakat.com/python-pandas",
-    languages: { "tr-TR": "https://pythonmulakat.com/python-pandas", "x-default": "https://pythonmulakat.com/python-pandas" },
+    canonical: "https://pythonmulakat.com/pandas",
+    languages: { "tr-TR": "https://pythonmulakat.com/pandas", "x-default": "https://pythonmulakat.com/pandas" },
   },
   openGraph: {
     title: "Python Pandas Soruları ve Çözümleri",
     description: "DataFrame, Series, groupby, merge — {countPandas}+ interaktif soru.",
-    url: "https://pythonmulakat.com/python-pandas",
+    url: "https://pythonmulakat.com/pandas",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
@@ -60,7 +60,7 @@ const breadcrumbJsonLd = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://pythonmulakat.com/" },
     { "@type": "ListItem", position: 2, name: "Mülakat Soruları", item: "https://pythonmulakat.com/interviews" },
-    { "@type": "ListItem", position: 3, name: "Python Pandas", item: "https://pythonmulakat.com/python-pandas" },
+    { "@type": "ListItem", position: 3, name: "Python Pandas", item: "https://pythonmulakat.com/pandas" },
   ],
 };
 
@@ -143,7 +143,7 @@ export default async function PythonPandasPage() {
 
   const related: RelatedCategory[] = [
     { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
-    { href: "/python-liste-sozluk", icon: ListTree, title: "Liste & Sözlük", description: "List, dict, tuple, set işlemleri.", gradient: "amber-indigo" },
+    { href: "/liste-sozluk", icon: ListTree, title: "Liste & Sözlük", description: "List, dict, tuple, set işlemleri.", gradient: "amber-indigo" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "indigo-amber" },
     { href: "/python-kodlari", icon: BookOpen, title: "Python Kodları", description: "Pandas dahil hazır kod örnekleri.", gradient: "amber-indigo" },
     { href: "/python-online", icon: Terminal, title: "Python Online", description: "Tarayıcıda Python 3.12 çalıştır.", gradient: "indigo-amber" },
@@ -170,13 +170,13 @@ export default async function PythonPandasPage() {
             blocks={contextBlocks}
             furtherReading={[
               { label: "Python Temelleri", href: "/python-temelleri" },
-              { label: "Python Liste & Sözlük", href: "/python-liste-sozluk" },
+              { label: "Python Liste & Sözlük", href: "/liste-sozluk" },
               { label: "Python Kodları", href: "/python-kodlari" },
             ]}
           />
         }
       >
-        <ServerQuestionList category="pandas" urlSlug="python-pandas" displaySlug="pandas" skeletonCount={6} />
+        <ServerQuestionList category="pandas" urlSlug="pandas" displaySlug="pandas" skeletonCount={6} />
       </CategoryPageTemplate>
     </>
   );

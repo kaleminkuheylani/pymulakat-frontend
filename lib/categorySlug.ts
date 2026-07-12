@@ -1,17 +1,21 @@
 // lib/categorySlug.ts
 // TEK KAYNAK: internal slug ↔ display slug mapping
-// Tüm breadcrumb, redirect, internal link bu mapping'i kullanmalı.
+// python-temelleri HARIC tum URL'ler "python-" oneksiz (kisa, internal = display).
+//
+// Cozum: routing dilemma (internal slug + display URL = 2 set) yok, sadece
+// tek URL var. /interviews/{internal-slug} 308 redirect ile /{display-url}
+// otomatik tutarlilik.
 
 export const CATEGORY_DISPLAY_URL: Record<string, string> = {
-  "python-basics": "/python-temelleri",
-  "data-structures": "/python-veri-yapilari",
-  "list-dict": "/python-liste-sozluk",
-  "pandas": "/python-pandas",
-  "algorithms": "/python-algoritma-sorulari",
-  "heap": "/python-heap",
-  "stack": "/python-stack",
-  "queue": "/python-queue",
-  "dynamic-programming": "/python-dinamik-programlama",
+  "python-basics": "/temelleri",
+  "data-structures": "/veri-yapilari",
+  "list-dict": "/liste-sozluk",
+  "pandas": "/pandas",
+  "algorithms": "/algoritma-sorulari",
+  "heap": "/heap",
+  "stack": "/stack",
+  "queue": "/queue",
+  "dynamic-programming": "/dinamik-programlama",
 };
 
 export const CATEGORY_LABEL: Record<string, string> = {
@@ -26,12 +30,17 @@ export const CATEGORY_LABEL: Record<string, string> = {
   "dynamic-programming": "Dinamik Programlama",
 };
 
-/** Internal slug → display URL (canonical). Yoksa internal slug döner. */
+/** Internal slug → display URL. */
 export function getCategoryDisplayUrl(internalSlug: string): string {
   return CATEGORY_DISPLAY_URL[internalSlug] ?? `/interviews/${internalSlug}`;
 }
 
-/** Internal slug → display label. Yoksa slug döner. */
+/** Internal slug → display label. */
 export function getCategoryLabel(internalSlug: string): string {
   return CATEGORY_LABEL[internalSlug] ?? internalSlug;
 }
+
+/** Ters mapping: display URL → internal slug (middleware redirect icin). */
+export const DISPLAY_URL_TO_INTERNAL: Record<string, string> = Object.fromEntries(
+  Object.entries(CATEGORY_DISPLAY_URL).map(([internal, url]) => [url, internal])
+);

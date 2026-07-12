@@ -54,20 +54,20 @@ interface CategoryInfo {
   key: string;
   /** Görüntülenecek label (örn. "Dinamik Programlama") */
   label: string;
-  /** URL prefix (örn. "/python-dinamik-programlama") */
+  /** URL prefix (örn. "/dinamik-programlama") */
   urlPrefix: string;
 }
 
 const ALL_CATEGORIES: CategoryInfo[] = [
   { key: "python-basics",       label: "Python Temelleri",      urlPrefix: "/python-temelleri" },
-  { key: "data-structures",     label: "Veri Yapıları",         urlPrefix: "/python-veri-yapilari" },
-  { key: "pandas",              label: "Pandas",                urlPrefix: "/python-pandas" },
-  { key: "list-dict",           label: "Liste / Sözlük",        urlPrefix: "/python-liste-sozluk" },
-  { key: "heap",                label: "Heap",                  urlPrefix: "/python-heap" },
-  { key: "stack",               label: "Stack",                 urlPrefix: "/python-stack" },
-  { key: "queue",               label: "Queue",                 urlPrefix: "/python-queue" },
-  { key: "algorithms",          label: "Algoritmalar",          urlPrefix: "/python-algoritma-sorulari" },
-  { key: "dynamic-programming", label: "Dinamik Programlama",   urlPrefix: "/python-dinamik-programlama" },
+  { key: "data-structures",     label: "Veri Yapıları",         urlPrefix: "/veri-yapilari" },
+  { key: "pandas",              label: "Pandas",                urlPrefix: "/pandas" },
+  { key: "list-dict",           label: "Liste / Sözlük",        urlPrefix: "/liste-sozluk" },
+  { key: "heap",                label: "Heap",                  urlPrefix: "/heap" },
+  { key: "stack",               label: "Stack",                 urlPrefix: "/stack" },
+  { key: "queue",               label: "Queue",                 urlPrefix: "/queue" },
+  { key: "algorithms",          label: "Algoritmalar",          urlPrefix: "/algoritma-sorulari" },
+  { key: "dynamic-programming", label: "Dinamik Programlama",   urlPrefix: "/dinamik-programlama" },
 ];
 
 // CSV-only: backend'e hiç gitmiyoruz

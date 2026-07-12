@@ -1,4 +1,4 @@
-// /python-veri-yapilari — Veri yapıları soruları kataloğu sayfası.
+// /veri-yapilari — Veri yapıları soruları kataloğu sayfası.
 import { Code2, GraduationCap, Layers, ListOrdered, Mountain } from "lucide-react";
 import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
@@ -32,13 +32,13 @@ export const metadata: Metadata = {
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
   alternates: {
-    canonical: "https://pythonmulakat.com/python-veri-yapilari",
-    languages: { "tr-TR": "https://pythonmulakat.com/python-veri-yapilari", "x-default": "https://pythonmulakat.com/python-veri-yapilari" },
+    canonical: "https://pythonmulakat.com/veri-yapilari",
+    languages: { "tr-TR": "https://pythonmulakat.com/veri-yapilari", "x-default": "https://pythonmulakat.com/veri-yapilari" },
   },
   openGraph: {
     title: "Python Veri Yapıları Soruları — Stack, Queue, Tree, Linked List",
     description: "Stack, queue, linked list, tree, graph — {countDataStructures}+ interaktif soru.",
-    url: "https://pythonmulakat.com/python-veri-yapilari",
+    url: "https://pythonmulakat.com/veri-yapilari",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
@@ -61,7 +61,7 @@ const breadcrumbJsonLd = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://pythonmulakat.com/" },
     { "@type": "ListItem", position: 2, name: "Mülakat Soruları", item: "https://pythonmulakat.com/interviews" },
-    { "@type": "ListItem", position: 3, name: "Python Veri Yapıları", item: "https://pythonmulakat.com/python-veri-yapilari" },
+    { "@type": "ListItem", position: 3, name: "Python Veri Yapıları", item: "https://pythonmulakat.com/veri-yapilari" },
   ],
 };
 
@@ -144,9 +144,9 @@ export default async function PythonVeriYapilariPage() {
 
 
   const related: RelatedCategory[] = [
-    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için {countStack}+ soru.", gradient: "indigo-amber" },
-    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için {countQueue}+ soru.", gradient: "amber-indigo" },
-    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "Heap / priority queue için {countHeap}+ soru.", gradient: "indigo-amber" },
+    { href: "/stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için {countStack}+ soru.", gradient: "indigo-amber" },
+    { href: "/queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için {countQueue}+ soru.", gradient: "amber-indigo" },
+    { href: "/heap", icon: Mountain, title: "Python Heap", description: "Heap / priority queue için {countHeap}+ soru.", gradient: "indigo-amber" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "amber-indigo" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "indigo-amber" },
     { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "amber-indigo" },
@@ -171,14 +171,14 @@ export default async function PythonVeriYapilariPage() {
             category="Python Veri Yapıları"
             blocks={contextBlocks}
             furtherReading={[
-              { label: "Python Stack", href: "/python-stack" },
-              { label: "Python Queue", href: "/python-queue" },
-              { label: "Python Heap", href: "/python-heap" },
+              { label: "Python Stack", href: "/stack" },
+              { label: "Python Queue", href: "/queue" },
+              { label: "Python Heap", href: "/heap" },
             ]}
           />
         }
       >
-        <ServerQuestionList category="data-structures" urlSlug="python-veri-yapilari" displaySlug="veri-yapilari" skeletonCount={9} />
+        <ServerQuestionList category="data-structures" urlSlug="veri-yapilari" displaySlug="veri-yapilari" skeletonCount={9} />
       </CategoryPageTemplate>
     </>
   );

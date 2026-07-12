@@ -1,4 +1,4 @@
-// /python-queue — Python Queue soruları.
+// /queue — Python Queue soruları.
 import { Cpu, GraduationCap, Layers, Mountain } from "lucide-react";
 import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
@@ -29,13 +29,13 @@ export const metadata: Metadata = {
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
   alternates: {
-    canonical: "https://pythonmulakat.com/python-queue",
-    languages: { "tr-TR": "https://pythonmulakat.com/python-queue", "x-default": "https://pythonmulakat.com/python-queue" },
+    canonical: "https://pythonmulakat.com/queue",
+    languages: { "tr-TR": "https://pythonmulakat.com/queue", "x-default": "https://pythonmulakat.com/queue" },
   },
   openGraph: {
     title: "Python Queue Soruları — FIFO, BFS, Circular Queue",
     description: "FIFO, BFS, circular queue, deque — {countQueue}+ interaktif soru.",
-    url: "https://pythonmulakat.com/python-queue",
+    url: "https://pythonmulakat.com/queue",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
@@ -57,8 +57,8 @@ const breadcrumbJsonLd = {
   "@type": "BreadcrumbList",
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://pythonmulakat.com/" },
-    { "@type": "ListItem", position: 2, name: "Veri Yapıları", item: "https://pythonmulakat.com/python-veri-yapilari" },
-    { "@type": "ListItem", position: 3, name: "Python Queue", item: "https://pythonmulakat.com/python-queue" },
+    { "@type": "ListItem", position: 2, name: "Veri Yapıları", item: "https://pythonmulakat.com/veri-yapilari" },
+    { "@type": "ListItem", position: 3, name: "Python Queue", item: "https://pythonmulakat.com/queue" },
   ],
 };
 
@@ -170,10 +170,10 @@ export default async function PythonQueuePage() {
 
 
   const related: RelatedCategory[] = [
-    { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları.", gradient: "indigo-amber" },
-    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "LIFO stack için {countStack}+ soru.", gradient: "amber-indigo" },
-    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "heapq, priority queue için {countHeap}+ soru.", gradient: "indigo-amber" },
-    { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
+    { href: "/veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları.", gradient: "indigo-amber" },
+    { href: "/stack", icon: Layers, title: "Python Stack", description: "LIFO stack için {countStack}+ soru.", gradient: "amber-indigo" },
+    { href: "/heap", icon: Mountain, title: "Python Heap", description: "heapq, priority queue için {countHeap}+ soru.", gradient: "indigo-amber" },
+    { href: "/algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "indigo-amber" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
   ];
@@ -189,7 +189,7 @@ export default async function PythonQueuePage() {
           </>
         }
         tags={["FIFO", "enqueue", "dequeue", "BFS", "deque", "circular"]}
-        backHref="/python-veri-yapilari"
+        backHref="/veri-yapilari"
         backLabel="Veri Yapıları"
         related={related}
         beforeRelated={
@@ -197,14 +197,14 @@ export default async function PythonQueuePage() {
             category="Python Queue"
             blocks={contextBlocks}
             furtherReading={[
-              { label: "Python Stack", href: "/python-stack" },
-              { label: "Veri Yapıları", href: "/python-veri-yapilari" },
-              { label: "Algoritma Soruları", href: "/python-algoritma-sorulari" },
+              { label: "Python Stack", href: "/stack" },
+              { label: "Veri Yapıları", href: "/veri-yapilari" },
+              { label: "Algoritma Soruları", href: "/algoritma-sorulari" },
             ]}
           />
         }
       >
-        <ServerQuestionList category="queue" urlSlug="python-queue" displaySlug="queue" skeletonCount={5} />
+        <ServerQuestionList category="queue" urlSlug="queue" displaySlug="queue" skeletonCount={5} />
       </CategoryPageTemplate>
     </>
   );

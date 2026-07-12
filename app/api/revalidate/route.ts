@@ -67,14 +67,14 @@ export async function POST(req: NextRequest) {
       "/",
       "/interviews",
       "/python-temelleri",
-      "/python-veri-yapilari",
-      "/python-pandas",
-      "/python-liste-sozluk",
-      "/python-heap",
-      "/python-stack",
-      "/python-queue",
-      "/python-algoritma-sorulari",
-      "/python-dinamik-programlama",
+      "/veri-yapilari",
+      "/pandas",
+      "/liste-sozluk",
+      "/heap",
+      "/stack",
+      "/queue",
+      "/algoritma-sorulari",
+      "/dinamik-programlama",
     ];
     for (const p of DEFAULT_PATHS) {
       revalidatePath(p);

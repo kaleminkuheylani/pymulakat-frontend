@@ -6,14 +6,14 @@ import { permanentRedirect } from "next/navigation";
 
 const CATEGORY_MAP: Record<string, string> = {
   "python-basics": "/python-temelleri",
-  "data-structures": "/python-veri-yapilari",
-  "pandas": "/python-pandas",
-  "list-dict": "/python-liste-sozluk",
-  "heap": "/python-heap",
-  "stack": "/python-stack",
-  "queue": "/python-queue",
-  "algorithms": "/python-algoritma-sorulari",
-  "dynamic-programming": "/python-dinamik-programlama",
+  "data-structures": "/veri-yapilari",
+  "pandas": "/pandas",
+  "list-dict": "/liste-sozluk",
+  "heap": "/heap",
+  "stack": "/stack",
+  "queue": "/queue",
+  "algorithms": "/algoritma-sorulari",
+  "dynamic-programming": "/dinamik-programlama",
 };
 
 interface PageProps {

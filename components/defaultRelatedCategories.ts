@@ -6,7 +6,7 @@ import type { RelatedCategory } from "./CategoryPageTemplate";
 
 export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
   {
-    href: "/python-algoritma-sorulari",
+    href: "/algoritma-sorulari",
     icon: Cpu,
     title: "Python Algoritma Soruları",
     description:
@@ -14,7 +14,7 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
     gradient: "indigo-amber",
   },
   {
-    href: "/python-dinamik-programlama",
+    href: "/dinamik-programlama",
     icon: Brain,
     title: "Python Dinamik Programlama",
     description:

@@ -1,4 +1,4 @@
-// /python-dinamik-programlama — Python dinamik programlama soruları kataloğu sayfası.
+// /dinamik-programlama — Python dinamik programlama soruları kataloğu sayfası.
 // Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
 // CSV-FIRST: server-side CSV fetch, initialQuestions ile SSR HTML'e 22 DP basılıyor
 // (Googlebot + no-JS kullanıcı için).
@@ -42,17 +42,17 @@ export const metadata: Metadata = {
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
   alternates: {
-    canonical: "https://pythonmulakat.com/python-dinamik-programlama",
+    canonical: "https://pythonmulakat.com/dinamik-programlama",
     languages: {
-      "tr-TR": "https://pythonmulakat.com/python-dinamik-programlama",
-      "x-default": "https://pythonmulakat.com/python-dinamik-programlama",
+      "tr-TR": "https://pythonmulakat.com/dinamik-programlama",
+      "x-default": "https://pythonmulakat.com/dinamik-programlama",
     },
   },
   openGraph: {
     title: "Python Dinamik Programlama Soruları ve Çözümleri",
     description:
       "Python dinamik programlama — Fibonacci, Knapsack, Coin Change, LCS. Tarayıcıda interaktif pratik, AI feedback.",
-    url: "https://pythonmulakat.com/python-dinamik-programlama",
+    url: "https://pythonmulakat.com/dinamik-programlama",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
@@ -80,19 +80,19 @@ const breadcrumbJsonLd = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://pythonmulakat.com/" },
     { "@type": "ListItem", position: 2, name: "Mülakat Soruları", item: "https://pythonmulakat.com/interviews" },
-    { "@type": "ListItem", position: 3, name: "Python Algoritma Soruları", item: "https://pythonmulakat.com/python-algoritma-sorulari" },
-    { "@type": "ListItem", position: 4, name: "Python Dinamik Programlama", item: "https://pythonmulakat.com/python-dinamik-programlama" },
+    { "@type": "ListItem", position: 3, name: "Python Algoritma Soruları", item: "https://pythonmulakat.com/algoritma-sorulari" },
+    { "@type": "ListItem", position: 4, name: "Python Dinamik Programlama", item: "https://pythonmulakat.com/dinamik-programlama" },
   ],
 };
 
 const learningResourceJsonLd = {
   "@context": "https://schema.org",
   "@type": "LearningResource",
-  "@id": "https://pythonmulakat.com/python-dinamik-programlama#learning-resource",
+  "@id": "https://pythonmulakat.com/dinamik-programlama#learning-resource",
   name: "Python Dinamik Programlama — İnteraktif Pratik Koleksiyonu",
   description:
     "Python dinamik programlama soruları için tarayıcı tabanlı, otomatik puanlanan, AI geri bildirimli interaktif pratik koleksiyonu. Memoization ve tabulation teknikleri, klasik DP problemleri.",
-  url: "https://pythonmulakat.com/python-dinamik-programlama",
+  url: "https://pythonmulakat.com/dinamik-programlama",
   educationalUse: "practice",
   learningResourceType: "interactive tutorial",
   audience: {
@@ -115,7 +115,7 @@ const learningResourceJsonLd = {
 
 const related: RelatedCategory[] = [
   {
-    href: "/python-algoritma-sorulari",
+    href: "/algoritma-sorulari",
     icon: Cpu,
     title: "Python Algoritma Soruları",
     description:
@@ -168,7 +168,7 @@ export default async function PythonDinamikProgramlamaPage() {
           </>
         }
         tags={["Memoization", "Tabulation", "Fibonacci", "Knapsack", "Edit Distance", "LCS", "Climbing Stairs", "House Robber"]}
-        backHref="/python-algoritma-sorulari"
+        backHref="/algoritma-sorulari"
         backLabel="Python Algoritma Soruları"
         tagStyle="amber"
         related={related}
@@ -211,7 +211,7 @@ export default async function PythonDinamikProgramlamaPage() {
       >
         <ServerQuestionList
           category="dynamic-programming"
-          urlSlug="python-dinamik-programlama"
+          urlSlug="dinamik-programlama"
           displaySlug="dynamic-programming"
           skeletonCount={6}
         />

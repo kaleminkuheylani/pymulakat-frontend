@@ -1,4 +1,4 @@
-// /python-liste-sozluk — Liste & Sözlük soruları kataloğu sayfası.
+// /liste-sozluk — Liste & Sözlük soruları kataloğu sayfası.
 import { BookOpen, Code2, Database, GraduationCap, Layers } from "lucide-react";
 import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
@@ -30,13 +30,13 @@ export const metadata: Metadata = {
   creator: "Python Mülakat",
   publisher: "Python Mülakat",
   alternates: {
-    canonical: "https://pythonmulakat.com/python-liste-sozluk",
-    languages: { "tr-TR": "https://pythonmulakat.com/python-liste-sozluk", "x-default": "https://pythonmulakat.com/python-liste-sozluk" },
+    canonical: "https://pythonmulakat.com/liste-sozluk",
+    languages: { "tr-TR": "https://pythonmulakat.com/liste-sozluk", "x-default": "https://pythonmulakat.com/liste-sozluk" },
   },
   openGraph: {
     title: "Python Liste ve Sözlük Soruları",
     description: "List, dict, tuple, set — {countListDict}+ interaktif soru.",
-    url: "https://pythonmulakat.com/python-liste-sozluk",
+    url: "https://pythonmulakat.com/liste-sozluk",
     siteName: "PythonMulakat",
     locale: "tr_TR",
     type: "website",
@@ -59,7 +59,7 @@ const breadcrumbJsonLd = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: "https://pythonmulakat.com/" },
     { "@type": "ListItem", position: 2, name: "Mülakat Soruları", item: "https://pythonmulakat.com/interviews" },
-    { "@type": "ListItem", position: 3, name: "Python Liste & Sözlük", item: "https://pythonmulakat.com/python-liste-sozluk" },
+    { "@type": "ListItem", position: 3, name: "Python Liste & Sözlük", item: "https://pythonmulakat.com/liste-sozluk" },
   ],
 };
 
@@ -135,8 +135,8 @@ export default async function PythonListeSozlukPage() {
 
   const related: RelatedCategory[] = [
     { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
-    { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Stack, queue, linked list, tree.", gradient: "amber-indigo" },
-    { href: "/python-pandas", icon: Database, title: "Python Pandas", description: "DataFrame, Series, groupby, merge.", gradient: "indigo-amber" },
+    { href: "/veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Stack, queue, linked list, tree.", gradient: "amber-indigo" },
+    { href: "/pandas", icon: Database, title: "Python Pandas", description: "DataFrame, Series, groupby, merge.", gradient: "indigo-amber" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "amber-indigo" },
     { href: "/python-kodlari", icon: BookOpen, title: "Python Kodları", description: "Hazır Python kodu örnekleri.", gradient: "indigo-amber" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
@@ -162,13 +162,13 @@ export default async function PythonListeSozlukPage() {
             blocks={contextBlocks}
             furtherReading={[
               { label: "Python Temelleri", href: "/python-temelleri" },
-              { label: "Python Veri Yapıları", href: "/python-veri-yapilari" },
-              { label: "Python Pandas", href: "/python-pandas" },
+              { label: "Python Veri Yapıları", href: "/veri-yapilari" },
+              { label: "Python Pandas", href: "/pandas" },
             ]}
           />
         }
       >
-        <ServerQuestionList category="list-dict" urlSlug="python-liste-sozluk" displaySlug="list-dict" skeletonCount={6} />
+        <ServerQuestionList category="list-dict" urlSlug="liste-sozluk" displaySlug="list-dict" skeletonCount={6} />
       </CategoryPageTemplate>
     </>
   );

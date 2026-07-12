@@ -1,7 +1,7 @@
 // components/CategoryPageTemplate.tsx
 // TÜM kategori sayfaları için paylaşılan görsel iskelet.
-// python-kodlari, python-egitimi, python-online, python-algoritma-sorulari,
-// python-dinamik-programlama — hepsi bu template'i kullanır.
+// python-kodlari, python-egitimi, python-online, algoritma-sorulari,
+// dinamik-programlama — hepsi bu template'i kullanır.
 
 import Link from "next/link";
 import type { ReactNode } from "react";

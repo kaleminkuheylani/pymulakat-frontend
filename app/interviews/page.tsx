@@ -129,14 +129,14 @@ function inferLevel(slug: string, count: number): string {
 // Backend slug'ı yeni pillar URL'ine map et (var olan 9 yeni sayfa)
 const SLUG_TO_PILLAR: Record<string, string> = {
   "python-basics": "/python-temelleri",
-  "data-structures": "/python-veri-yapilari",
-  "pandas": "/python-pandas",
-  "list-dict": "/python-liste-sozluk",
-  "heap": "/python-heap",
-  "stack": "/python-stack",
-  "queue": "/python-queue",
-  "algorithms": "/python-algoritma-sorulari",
-  "dynamic-programming": "/python-dinamik-programlama",
+  "data-structures": "/veri-yapilari",
+  "pandas": "/pandas",
+  "list-dict": "/liste-sozluk",
+  "heap": "/heap",
+  "stack": "/stack",
+  "queue": "/queue",
+  "algorithms": "/algoritma-sorulari",
+  "dynamic-programming": "/dinamik-programlama",
 };
 
 export default async function InterviewsPage() {
