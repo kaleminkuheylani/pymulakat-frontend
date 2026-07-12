@@ -58,7 +58,29 @@ export async function isSupabaseAdmin(supabase: SupabaseClient, user: User): Pro
   const userRole = (user.user_metadata as Record<string, unknown> | undefined)?.role;
   if (userRole === "admin") return true;
 
-  // 3) DB'de profiles tablosunda is_admin = true kontrol (RLS service_role açık)
+  // 3) Fresh fallback: backend API'den dogrula (service_role-backed, Supabase admin)
+  // Supabase auth.getUser() JWT token cache'leyebilir; logout sonrasi bile
+  // eski JWT yeni metadata ile yenilenmemis olabilir. Backend'de her zaman
+  // fresh role dondurur.
+  try {
+    const apiBase = process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+    const cookieHeader = (await cookies())
+      .getAll()
+      .map((c) => `${c.name}=${c.value}`)
+      .join("; ");
+    const res = await fetch(`${apiBase}/api/v2/admin/users/me`, {
+      headers: { Cookie: cookieHeader, Accept: "application/json" },
+      cache: "no-store",
+    });
+    if (res.ok) {
+      const data = (await res.json()) as { role?: string };
+      if (data.role === "admin") return true;
+    }
+  } catch (e) {
+    // Backend unreachable — fall through
+  }
+
+  // 4) DB'de profiles tablosunda is_admin = true kontrol (RLS service_role açık)
   // Bu kontrol service_role gerektirir, burada yapamayız. UI tarafında
   // /api/v2/admin/me endpoint'i ile kontrol edilebilir.
   return false;
