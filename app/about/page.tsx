@@ -1,24 +1,45 @@
-"use client";
+// app/about/page.tsx
+// Hakkımızda sayfası — SERVER COMPONENT (kural: public SEO sayfası ASLA client).
+// Animation: framer-motion YERİNE CSS @keyframes (server-render, no JS, no flicker).
+// "use client" YASAK — useState/useEffect yok, framer-motion kaldırıldı.
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import type { Metadata } from "next";
 
-// ─── Yardımcı: yumuşak görünüm transition'ları ──────────────
-const fadeUp = {
-  initial: { opacity: 0, y: 24 },
-  whileInView: { opacity: 1, y: 0 },
-  viewport: { once: true },
-  transition: { duration: 0.6 },
+export const metadata: Metadata = {
+  title: "Hakkımızda | Python Mülakat",
+  description:
+    "İki kişilik bir ekip, bir amacı paylaşıyoruz: Python öğretmek için yapay zekâ ile üretilmiş sorular, idealist pedagojik yaklaşım ve sıfır bütçe.",
 };
+
+// ─── Stiller (server component'te <style> tag'i inline) ────────
+// Tailwind animasyonu "animate-fade-up" globalde yoksa, burada
+// tanımlıyoruz. CSS-only, JS yok, hydration flash yok.
+const styleBlock = `
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  .anim-fade-up {
+    opacity: 0;
+    animation: fadeUp 0.6s ease-out forwards;
+  }
+  .anim-fade-up-1 { animation-delay: 0.05s; }
+  .anim-fade-up-2 { animation-delay: 0.15s; }
+  .anim-fade-up-3 { animation-delay: 0.25s; }
+  .anim-fade-up-4 { animation-delay: 0.35s; }
+`;
 
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-[#050816] text-white">
+      <style dangerouslySetInnerHTML={{ __html: styleBlock }} />
+
       {/* ─── HERO ─────────────────────────────────────────── */}
       <section className="relative overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_-20%,rgba(245,158,11,0.12),transparent_60%)]" />
         <div className="relative max-w-3xl mx-auto px-6 pt-24 pb-16 text-center">
-          <motion.div {...fadeUp}>
+          <div className="anim-fade-up">
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/5 border border-white/10 mb-8">
               <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
               <span className="font-mono text-[11px] tracking-widest text-white/60">
@@ -38,13 +59,13 @@ export default function AboutPage() {
               yaklaşım ve sıfır bütçe. Hiçbir öğrencinin tek başına öğrenmek
               zorunda kalmaması için.
             </p>
-          </motion.div>
+          </div>
         </div>
       </section>
 
       {/* ─── VİZYON ──────────────────────────────────────── */}
       <section className="max-w-3xl mx-auto px-6 py-12">
-        <motion.div {...fadeUp}>
+        <div className="anim-fade-up anim-fade-up-1">
           <h2 className="text-2xl md:text-3xl font-bold mb-6 text-amber-400">
             Vizyon
           </h2>
@@ -64,12 +85,12 @@ export default function AboutPage() {
               İkisine de sahibiz.
             </p>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ─── NASIL / NEDEN ──────────────────────────────── */}
       <section className="max-w-3xl mx-auto px-6 py-12">
-        <motion.div {...fadeUp} className="grid md:grid-cols-2 gap-4">
+        <div className="anim-fade-up anim-fade-up-2 grid md:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="text-3xl mb-3">🎯</div>
             <h3 className="text-lg font-semibold mb-2 text-white">Saf Python</h3>
@@ -120,12 +141,12 @@ export default function AboutPage() {
               <span aria-hidden>→</span>
             </a>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ─── MANIFESTO ──────────────────────────────────── */}
       <section className="max-w-3xl mx-auto px-6 py-12">
-        <motion.div {...fadeUp}>
+        <div className="anim-fade-up anim-fade-up-3">
           <div className="relative overflow-hidden rounded-3xl border border-amber-500/20 bg-gradient-to-br from-amber-500/[0.07] via-indigo-500/[0.05] to-transparent p-8 md:p-12">
             <div className="absolute -right-12 -top-12 w-48 h-48 bg-amber-500/20 rounded-full blur-3xl" />
             <div className="absolute -left-12 -bottom-12 w-48 h-48 bg-indigo-500/20 rounded-full blur-3xl" />
@@ -157,12 +178,12 @@ export default function AboutPage() {
               </div>
             </div>
           </div>
-        </motion.div>
+        </div>
       </section>
 
       {/* ─── CTA / GAZA GETİREN ────────────────────────── */}
       <section className="max-w-3xl mx-auto px-6 py-16 text-center">
-        <motion.div {...fadeUp}>
+        <div className="anim-fade-up anim-fade-up-4">
           <p className="text-white/50 text-sm uppercase tracking-widest mb-4">
             Bir sonraki adım
           </p>
@@ -207,7 +228,7 @@ export default function AboutPage() {
               Eğitim Yol Haritası
             </Link>
           </div>
-        </motion.div>
+        </div>
       </section>
     </main>
   );
