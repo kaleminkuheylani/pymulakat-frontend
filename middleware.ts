@@ -249,8 +249,13 @@ export async function middleware(request: NextRequest) {
       "dynamic-programming": "/dinamik-programlama",
     };
     if (slugRedirectMap[category]) {
+      const target = `${slugRedirectMap[category]}/${idOrSlug}`;
+      // Self-redirect skip (display URL zaten canonical)
+      if (pathname === target) {
+        return NextResponse.next();
+      }
       const url = request.nextUrl.clone();
-      url.pathname = `${slugRedirectMap[category]}/${idOrSlug}`;
+      url.pathname = target;
       return NextResponse.redirect(url, 308);
     }
     return NextResponse.next();
