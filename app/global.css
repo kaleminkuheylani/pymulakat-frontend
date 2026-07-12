@@ -6,27 +6,160 @@
 @source "../lib/**/*.{ts,tsx,js,jsx}";
 @source "../public/**/*.{html,svg}";
 
+/* ════════════════════════════════════════════════════════════════
+   DESIGN TOKENS (2026-07-12 redesign)
+   Tek kaynak — tüm component'ler buradaki CSS var'larını okur.
+   ════════════════════════════════════════════════════════════════ */
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ── Brand & accent (amber — mevcut renk) ───────────────────── */
+  --brand-amber: #f59e0b;
+  --brand-amber-soft: rgba(245, 158, 11, 0.12);
+  --brand-amber-border: rgba(245, 158, 11, 0.28);
+  --brand-amber-glow: rgba(245, 158, 11, 0.4);
+
+  /* ── Editorial accent (kategori badge, h2 underline) ──────── */
+  --accent-blue: #3776ab; /* python.org mavi */
+  --accent-indigo: #6366f1;
+  --accent-emerald: #4ade80;
+  --accent-amber: var(--brand-amber);
+
+  /* ── Zemin (dark mode default) ─────────────────────────────── */
+  --bg-base: #050816;
+  --bg-surface: #0a0e1a;
+  --bg-elevated: #0f1420;
+  --bg-card: rgba(255, 255, 255, 0.02);
+  --bg-card-hover: rgba(255, 255, 255, 0.05);
+
+  /* ── Border ────────────────────────────────────────────────── */
+  --border-subtle: rgba(255, 255, 255, 0.06);
+  --border-default: rgba(255, 255, 255, 0.1);
+  --border-hover: rgba(255, 255, 255, 0.2);
+  --border-amber: var(--brand-amber-border);
+
+  /* ── Text ──────────────────────────────────────────────────── */
+  --text-primary: #ffffff;
+  --text-secondary: rgba(255, 255, 255, 0.7);
+  --text-muted: rgba(255, 255, 255, 0.4);
+  --text-amber: var(--brand-amber);
+
+  /* ── Tipografi ─────────────────────────────────────────────── */
+  --font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
+  --font-mono: var(--font-geist-mono), "JetBrains Mono", ui-monospace, monospace;
+
+  /* ── Spacing & radius ──────────────────────────────────────── */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-background: var(--bg-base);
+  --color-foreground: var(--text-primary);
+  --color-brand: var(--brand-amber);
+  --color-accent-blue: var(--accent-blue);
+  --color-accent-indigo: var(--accent-indigo);
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
+/* ════════════════════════════════════════════════════════════════
+   GLOBAL TYPOGRAPHY
+   ════════════════════════════════════════════════════════════════ */
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--bg-base);
+  color: var(--text-primary);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
+
+/* Editorial h1 — python.org tarzı */
+h1, .h1 {
+  letter-spacing: -0.02em;
+  font-weight: 800;
+}
+
+h2, .h2 {
+  letter-spacing: -0.01em;
+  font-weight: 700;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   ANIMATIONS (server-render, no JS)
+   ════════════════════════════════════════════════════════════════ */
+
+/* Fade-in (hero) */
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-in { animation: fadeIn 0.5s ease-out forwards; }
+
+/* Fade-up (sections) */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.anim-fade-up {
+  opacity: 0;
+  animation: fadeUp 0.6s ease-out forwards;
+}
+.anim-delay-1 { animation-delay: 0.1s; }
+.anim-delay-2 { animation-delay: 0.2s; }
+.anim-delay-3 { animation-delay: 0.3s; }
+.anim-delay-4 { animation-delay: 0.4s; }
+
+/* Cursor blink (terminal mock) */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+.cursor-blink { animation: blink 1s step-end infinite; }
+
+/* Typewriter (terminal satırları sırayla görünür) */
+@keyframes typewriter {
+  from { width: 0; }
+  to { width: 100%; }
+}
+
+/* Pulse (loading dots) */
+@keyframes pulse-dot {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 1; }
+}
+.pulse-dot { animation: pulse-dot 1.4s ease-in-out infinite; }
+.pulse-dot-2 { animation-delay: 0.2s; }
+.pulse-dot-3 { animation-delay: 0.4s; }
+
+/* Subtle lift on hover (cards) */
+.card-hover {
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+}
+.card-hover:hover {
+  border-color: var(--border-amber);
+  background: var(--bg-card-hover);
+  transform: translateY(-2px);
+}
+
+/* Editorial accent line (h2 altı) */
+.accent-line {
+  display: inline-block;
+  width: 2.5rem;
+  height: 2px;
+  background: var(--brand-amber);
+  vertical-align: middle;
+  margin-right: 0.5rem;
+}
+
+/* Syntax highlight (terminal) */
+.syn-kw { color: #c084fc; }    /* keyword: def, return */
+.syn-fn { color: #60a5fa; }    /* function name */
+.syn-str { color: #4ade80; }   /* string */
+.syn-num { color: #facc15; }   /* number */
+.syn-com { color: #71717a; font-style: italic; } /* comment */
+.syn-var { color: #f1f5f9; }   /* variable */
+.syn-out { color: #fb923c; }   /* output: print */
