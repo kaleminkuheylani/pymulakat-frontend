@@ -323,3 +323,69 @@ export interface ApiSupabaseUser {
   created_at?: string;
   updated_at?: string;
 }
+
+// ═══════════════════════════════════════════════════════════════
+// ─── Audit (admin question denetim) ──────────────────────────
+// ═══════════════════════════════════════════════════════════════
+
+export interface ApiQuestionAudit {
+  id: number;
+  title: string;
+  category: string;
+  level: string;
+  slug?: string | null;
+  is_audited: boolean;
+  audit_status: "pending" | "passed" | "failed";
+  audited_at?: string | null;
+}
+
+export interface ApiAuditGenerateRequest {
+  question_id: number;
+  description: string;
+  function_name: string;
+  test_cases: ApiTestCase[];
+  starter_code?: string;
+}
+
+export interface ApiAuditGenerateResponse {
+  code: string;
+  model: string;
+  tokens_used: number;
+  elapsed_ms: number;
+}
+
+export interface ApiAuditTestResult {
+  input: unknown;
+  expected: unknown;
+  actual: unknown;
+  passed: boolean;
+  error?: string;
+}
+
+export interface ApiAuditRunRequest {
+  question_id: number;
+  code: string;
+  test_cases: ApiTestCase[];
+  function_name: string;
+}
+
+export interface ApiAuditRunResponse {
+  passed_count: number;
+  failed_count: number;
+  total: number;
+  results: ApiAuditTestResult[];
+  stderr?: string;
+  elapsed_ms: number;
+}
+
+export interface ApiAuditMarkRequest {
+  question_id: number;
+  passed: boolean;
+}
+
+export interface ApiAuditStats {
+  total: number;
+  passed: number;
+  failed: number;
+  pending: number;
+}
