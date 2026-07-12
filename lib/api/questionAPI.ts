@@ -122,14 +122,23 @@ export async function findQuestion(
 }
 
 /**
- * Kategoriye göre soruları filtrele.
- * Mevcut CSV-FIRST davranışıyla uyumlu: tüm listeyi çek, client filtre.
+ * Kategoriye göre soruları backend'den çek (sadece o kategori).
+ * SSR için optimize: 132 soru yerine sadece kategori sayısı (~5-34).
+ * Limit 100 çünkü hiçbir kategori 100'ü geçmiyor.
  */
 export async function listQuestionsByCategory(
   category: string
 ): Promise<ApiQuestion[]> {
-  const all = await fetchAllQuestions();
-  return all.filter((q) => q.category === category);
+  const data = await apiFetch<ApiPagination | ApiQuestion[]>(
+    `/api/v2/questions?category=${encodeURIComponent(category)}&limit=100`,
+    {
+      next: { revalidate: 3600, tags: ["questions-list", `category-${category}`] },
+    }
+  );
+  if (Array.isArray(data)) return data;
+  if (Array.isArray(data?.items)) return data.items as ApiQuestion[];
+  if (Array.isArray(data?.data)) return data.data as ApiQuestion[];
+  return [];
 }
 
 // ═══════════════════════════════════════════════════════════════
