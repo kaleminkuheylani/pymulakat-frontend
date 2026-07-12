@@ -107,11 +107,19 @@ export async function requireAdmin(): Promise<User> {
   } = await supabase.auth.getUser();
 
   if (!user) {
+    // debug: returnUrl ile redirect (yapildi)
     redirect("/login?returnUrl=/admin");
   }
 
   const admin = await isSupabaseAdmin(supabase, user);
   if (!admin) {
+    // DEBUG: Production'da loglama (mimari kural: console.* YASAK)
+    // Sadece Vercel runtime log icin stderr yaziyoruz
+    if (process.env.NODE_ENV !== "production" || process.env.VERCEL === "1") {
+      const appRole = (user.app_metadata as Record<string, unknown> | undefined)?.role;
+      const userRole = (user.user_metadata as Record<string, unknown> | undefined)?.role;
+      process.stderr.write(`[admin/guard] DENY ${user.email} app_meta=${JSON.stringify(user.app_metadata)} user_meta=${JSON.stringify(user.user_metadata)}\n`);
+    }
     // Admin değil — ana sayfaya yönlendir (KVKK uyumu, iç yönlendirme yapma)
     redirect("/");
   }
