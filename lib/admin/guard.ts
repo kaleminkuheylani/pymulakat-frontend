@@ -92,10 +92,26 @@ export async function isSupabaseAdmin(supabase: SupabaseClient, user: User): Pro
  * @returns Supabase user (admin)
  */
 export async function requireAdmin(): Promise<User> {
-  const cookieStore = cookies();
+  const cookieStore = await cookies();
+
+  // DEBUG BYPASS: NEXT_PUBLIC_ADMIN_BYPASS=1 ise env okumadan devam et
+  // Production'da KAPATILMALI (sadece debug icin)
+  if (process.env.NEXT_PUBLIC_ADMIN_BYPASS === "1") {
+    process.stderr.write("[admin/guard] BYPASS mode active (NEXT_PUBLIC_ADMIN_BYPASS=1)\n");
+    return {
+      id: "bypass",
+      email: "bypass@local",
+      app_metadata: { role: "admin", provider: "bypass" },
+      user_metadata: {},
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+    } as unknown as User;
+  }
 
   if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
-    console.error("[admin/guard] NEXT_PUBLIC_SUPABASE_URL veya SUPABASE_ANON_KEY tanımsız");
+    process.stderr.write(
+      `[admin/guard] SUPABASE_URL=${SUPABASE_URL ? "set" : "MISSING"} ANON_KEY=${SUPABASE_ANON_KEY ? "set" : "MISSING"}\n`
+    );
     redirect("/");
   }
 
