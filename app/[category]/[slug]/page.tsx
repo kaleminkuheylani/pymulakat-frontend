@@ -349,8 +349,8 @@ export default async function Page({ params, searchParams }: PageProps) {
   } catch (e: any) {
     console.error("[detay] getQuestionTests ERR:", e?.message ?? e);
   }
-  const mobile = await isMobileDevice();
-  const mobile = await isMobileDevice();
+  
+  
   // Resolve seoQ + ssrTests aynı request'ten (cache + tutarlı)
   const csvQ = apiQ;
   const seoQ = csvQ ? csvToSEOQuestion(csvQ, csvQ.id, csvSlugify(csvQ.title)) : null;
