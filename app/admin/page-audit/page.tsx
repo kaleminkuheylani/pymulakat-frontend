@@ -13,6 +13,7 @@
 // - KVKK: kullanıcı verisi YOK, sadece public sayfa metrikleri
 
 import { listCategories } from "@/lib/api/questionAPI";
+import { CATEGORY_DISPLAY_URL, CATEGORY_LABEL } from "@/lib/categorySlug";
 import { FileText, Search, Activity } from "lucide-react";
 import PageAuditTable from "./PageAuditTable";
 
@@ -27,17 +28,6 @@ interface PageInfo {
 export default async function PageAuditPage() {
   // 9 pillar + her kategoriden 1 örnek detay sayfa
   const categories = await listCategories();
-  const PILLAR_URLS: Record<string, string> = {
-    "python-basics": "/python-temelleri",
-    "data-structures": "/veri-yapilari",
-    "list-dict": "/liste-sozluk",
-    "pandas": "/pandas",
-    "algorithms": "/algoritma-sorulari",
-    "heap": "/heap",
-    "stack": "/stack",
-    "queue": "/queue",
-    "dynamic-programming": "/dinamik-programlama",
-  };
 
   const pages: PageInfo[] = [
     { url: "/", title: "Ana Sayfa", type: "system" },
@@ -45,8 +35,9 @@ export default async function PageAuditPage() {
     { url: "/about", title: "Hakkımızda", type: "system" },
     { url: "/python-egitimi", title: "Python Eğitimi", type: "system" },
     ...categories.map((c) => ({
-      url: PILLAR_URLS[c.category] || `/${c.category}`,
-      title: c.label || c.category,
+      // lib/categorySlug.ts tek truth of source
+      url: CATEGORY_DISPLAY_URL[c.category] || `/${c.category}`,
+      title: CATEGORY_LABEL[c.category] || c.label || c.category,
       type: "pillar" as const,
     })),
   ];
