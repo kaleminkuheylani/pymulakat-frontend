@@ -233,10 +233,26 @@ export async function middleware(request: NextRequest) {
   }
 
   // ⚠️ parseInt('0-1-knapsack') === 0, isNaN(0) === false → ID gibi davranip 404.
-  //    Sadece /^\d+$/ ise ID kabul et, aksi halde slug (canonical, render).
+  //    Sadece /^\d+$/ ise ID kabul et, aksi halde slug — display URL'e yönlendir.
   const isPureId = /^\d+$/.test(idOrSlug);
   if (!isPureId) {
-    // Slug ise — canonical, geç
+    // Slug ise — top-level /{display}/{slug} canonical
+    const slugRedirectMap: Record<string, string> = {
+      "python-basics": "/python-temelleri",
+      "data-structures": "/veri-yapilari",
+      "list-dict": "/liste-sozluk",
+      "pandas": "/pandas",
+      "heap": "/heap",
+      "stack": "/stack",
+      "queue": "/queue",
+      "algorithms": "/algoritma-sorulari",
+      "dynamic-programming": "/dinamik-programlama",
+    };
+    if (slugRedirectMap[category]) {
+      const url = request.nextUrl.clone();
+      url.pathname = `${slugRedirectMap[category]}/${idOrSlug}`;
+      return NextResponse.redirect(url, 308);
+    }
     return NextResponse.next();
   }
 
