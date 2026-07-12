@@ -1,4 +1,5 @@
 // /python-liste-sozluk — Liste & Sözlük soruları kataloğu sayfası.
+import { BookOpen, Code2, Database, GraduationCap, Layers } from "lucide-react";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -62,12 +63,12 @@ const breadcrumbJsonLd = {
 };
 
 const related: RelatedCategory[] = [
-  { href: "/python-temelleri", icon: "🐍", title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
-  { href: "/python-veri-yapilari", icon: "🗂️", title: "Veri Yapıları", description: "Stack, queue, linked list, tree.", gradient: "amber-indigo" },
-  { href: "/python-pandas", icon: "🐼", title: "Python Pandas", description: "DataFrame, Series, groupby, merge.", gradient: "indigo-amber" },
-  { href: "/interviews", icon: "📚", title: "Tüm Mülakat Kategorileri", description: "9 kategori, 132 soru.", gradient: "amber-indigo" },
-  { href: "/python-kodlari", icon: "📖", title: "Python Kodları", description: "Hazır Python kodu örnekleri.", gradient: "indigo-amber" },
-  { href: "/python-egitimi", icon: "🎓", title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
+  { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
+  { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Stack, queue, linked list, tree.", gradient: "amber-indigo" },
+  { href: "/python-pandas", icon: Database, title: "Python Pandas", description: "DataFrame, Series, groupby, merge.", gradient: "indigo-amber" },
+  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 132 soru.", gradient: "amber-indigo" },
+  { href: "/python-kodlari", icon: BookOpen, title: "Python Kodları", description: "Hazır Python kodu örnekleri.", gradient: "indigo-amber" },
+  { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
 ];
 
 const contextBlocks: ContextBlock[] = [

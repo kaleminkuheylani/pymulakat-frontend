@@ -16,7 +16,8 @@
 //   - 3 related kart (kodlar, eğitim, online)
 //   - Soru kartı şablonu (kategori için uyarlandı: icon + seviye badge + count)
 //   - 3-col grid, sm:2-col, lg:3-col
-
+import { BookOpen, Brain, Code2, Cpu, Database, GraduationCap, Layers, Lightbulb, ListOrdered, ListTree, Mountain, Target } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { listCategories } from "../../lib/api/questionAPI";
 import type { ApiCategory } from "../../lib/api/types";
@@ -25,56 +26,56 @@ interface Category {
   slug: string;
   label: string;
   description?: string;
-  icon?: string;
+  icon?: LucideIcon;
   question_count: number;
 }
 
 // Kategori label ve icon mapping (backend bu alanları DB'de tutuyordu;
 // CSV'de olmadığı için burada static tanımlı)
-const CATEGORY_META: Record<string, { label: string; icon: string; description: string }> = {
+const CATEGORY_META: Record<string, { label: string; icon: LucideIcon; description: string }> = {
   "python-basics": {
     label: "Python Temelleri",
-    icon: "🐍",
+    icon: Code2,
     description: "Değişkenler, veri tipleri, string, döngüler, fonksiyonlar.",
   },
   "data-structures": {
     label: "Veri Yapıları",
-    icon: "🗂️",
+    icon: Layers,
     description: "Stack, queue, linked list, tree, graph, hash table.",
   },
   "pandas": {
     label: "Pandas",
-    icon: "🐼",
+    icon: Database,
     description: "DataFrame, Series, groupby, merge, filter, agg.",
   },
   "list-dict": {
     label: "Liste & Sözlük",
-    icon: "📋",
+    icon: ListTree,
     description: "List, dict, tuple, set, comprehension, sorting.",
   },
   "heap": {
     label: "Heap / Priority Queue",
-    icon: "⛰️",
+    icon: Mountain,
     description: "heapq modülü, min-heap, max-heap, priority queue.",
   },
   "stack": {
     label: "Stack",
-    icon: "📚",
+    icon: Layers,
     description: "LIFO, push/pop, parantez dengesi, undo/redo, DFS.",
   },
   "queue": {
     label: "Queue",
-    icon: "🚶",
+    icon: ListOrdered,
     description: "FIFO, enqueue/dequeue, BFS, deque, circular queue.",
   },
   "algorithms": {
     label: "Algoritmalar",
-    icon: "⚡",
+    icon: Cpu,
     description: "Sıralama, arama, graf, string algoritmaları.",
   },
   "dynamic-programming": {
     label: "Dinamik Programlama",
-    icon: "🧠",
+    icon: Brain,
     description: "Memoization, tabulation, fibonacci, knapsack, edit distance.",
   },
 };
@@ -236,7 +237,7 @@ export default async function InterviewsPage() {
                               border: `1px solid ${DEFAULT_ACCENT}50`,
                             }}
                           >
-                            {cat.icon || "📘"}
+                            {cat.icon ? <cat.icon className="w-5 h-5" /> : <BookOpen className="w-5 h-5" />}
                           </div>
                           <span
                             className={`text-[10px] uppercase tracking-wider font-semibold px-2 py-0.5 rounded border ${

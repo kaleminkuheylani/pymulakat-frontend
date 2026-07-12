@@ -1,5 +1,6 @@
 // /python-egitimi — Python eğitim rehberi index sayfası.
 // Statik; her lesson ayrı component. Auth gerektirmez.
+import { Lightbulb, Target } from "lucide-react";
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -360,7 +361,9 @@ export default function PythonEgitimiPage() {
                   href={r.href}
                   className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
                 >
-                  <div className="text-3xl mb-3">{r.icon}</div>
+                  <div className="w-11 h-11 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 mb-3">
+                    <r.icon className="w-5 h-5" />
+                  </div>
                   <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">
                     {r.title}
                   </h3>

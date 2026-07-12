@@ -5,10 +5,12 @@
 
 import Link from "next/link";
 import type { ReactNode } from "react";
+import type { LucideIcon } from "lucide-react";
 
 export interface RelatedCategory {
   href: string;
-  icon: string;
+  /** Lucide icon component (2026-07-12 redesign: emoji yerine) */
+  icon: LucideIcon;
   title: string;
   description: string;
   /** Renk gradyanı: 'indigo-amber' | 'amber-indigo' */
@@ -113,13 +115,16 @@ export default function CategoryPageTemplate({
                     href={r.href}
                     className={`group rounded-2xl border border-white/10 bg-white/[0.02] p-6 transition-all ${g.card}`}
                   >
-                    <div className="text-3xl mb-3">{r.icon}</div>
+                    <div className="w-11 h-11 rounded-lg flex items-center justify-center text-amber-400 bg-amber-500/10 border border-amber-500/20 mb-3">
+                  <r.icon className="w-5 h-5" />
+                </div>
                     <h3 className={`text-lg font-bold mb-2 transition-colors text-white ${g.text}`}>
                       {r.title}
                     </h3>
                     <p className="text-sm text-white/50 leading-relaxed">{r.description}</p>
-                    <div className={`mt-3 text-sm ${g.arrow} group-hover:translate-x-1 transition-transform`}>
-                      Keşfet →
+                    <div className={`mt-3 text-sm ${g.arrow} flex items-center gap-1.5 group-hover:translate-x-1 transition-transform`}>
+                      <span>Keşfet</span>
+                      <span aria-hidden>→</span>
                     </div>
                   </Link>
                 );

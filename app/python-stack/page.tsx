@@ -1,4 +1,5 @@
 // /python-stack — Python Stack soruları.
+import { Cpu, GraduationCap, Layers, ListOrdered, Mountain } from "lucide-react";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -60,12 +61,12 @@ const breadcrumbJsonLd = {
 };
 
 const related: RelatedCategory[] = [
-  { href: "/python-veri-yapilari", icon: "🗂️", title: "Veri Yapıları", description: "Tüm veri yapıları.", gradient: "indigo-amber" },
-  { href: "/python-queue", icon: "🚶", title: "Python Queue", description: "FIFO queue için 5+ soru.", gradient: "amber-indigo" },
-  { href: "/python-heap", icon: "⛰️", title: "Python Heap", description: "heapq, priority queue için 8+ soru.", gradient: "indigo-amber" },
-  { href: "/python-algoritma-sorulari", icon: "⚡", title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
-  { href: "/interviews", icon: "📚", title: "Tüm Mülakat Kategorileri", description: "9 kategori, 132 soru.", gradient: "indigo-amber" },
-  { href: "/python-egitimi", icon: "🎓", title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
+  { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları.", gradient: "indigo-amber" },
+  { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "FIFO queue için 5+ soru.", gradient: "amber-indigo" },
+  { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "heapq, priority queue için 8+ soru.", gradient: "indigo-amber" },
+  { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
+  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 132 soru.", gradient: "indigo-amber" },
+  { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
 ];
 
 const contextBlocks: ContextBlock[] = [

@@ -1,12 +1,13 @@
 // components/defaultRelatedCategories.ts
 // 5 kategori sayfasında paylaşılan "İlgili Kategoriler" listesi.
 
+import { BookOpen, Brain, Cpu, GraduationCap, Layers, Terminal } from "lucide-react";
 import type { RelatedCategory } from "./CategoryPageTemplate";
 
 export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
   {
     href: "/python-algoritma-sorulari",
-    icon: "⚡",
+    icon: Cpu,
     title: "Python Algoritma Soruları",
     description:
       "Sıralama, arama, dinamik programlama, graf ve string algoritmaları için 26+ interaktif soru.",
@@ -14,7 +15,7 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
   },
   {
     href: "/python-dinamik-programlama",
-    icon: "🧠",
+    icon: Brain,
     title: "Python Dinamik Programlama",
     description:
       "Fibonacci memoization, 0/1 Knapsack, Coin Change, Edit Distance, LCS — 12+ klasik DP sorusu.",
@@ -22,7 +23,7 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
   },
   {
     href: "/interviews",
-    icon: "📚",
+    icon: Layers,
     title: "Tüm Mülakat Kategorileri",
     description:
       "Python mülakat soruları kataloğu: OOP, SQLite, Pandas, veri yapıları, dinamik programlama ve daha fazlası.",
@@ -30,7 +31,7 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
   },
   {
     href: "/python-kodlari",
-    icon: "📖",
+    icon: BookOpen,
     title: "Python Kodları",
     description:
       "Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar. Kopyala, çalıştır, öğren.",
@@ -38,7 +39,7 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
   },
   {
     href: "/python-egitimi",
-    icon: "🎓",
+    icon: GraduationCap,
     title: "Python Eğitimi",
     description:
       "Sıfırdan ileri seviyeye, 6 ders + 6 rehber. İnteraktif editörde pratik yaparak öğren.",
@@ -46,7 +47,7 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
   },
   {
     href: "/python-online",
-    icon: "🖥️",
+    icon: Terminal,
     title: "Python Online Editör",
     description:
       "Kurulum yok, hesap yok. Tarayıcıda Python 3.12 kodu yaz, Pyodide ile anında çalıştır.",

@@ -1,5 +1,6 @@
 // /python-algoritma-sorulari — Python algoritma soruları kataloğu sayfası.
 // Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
+import { BookOpen, Brain, Layers } from "lucide-react";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -106,7 +107,7 @@ const learningResourceJsonLd = {
 const related: RelatedCategory[] = [
   {
     href: "/python-dinamik-programlama",
-    icon: "🧠",
+    icon: Brain,
     title: "Python Dinamik Programlama",
     description:
       "Dinamik programlama soruları: fibonacci memoization, knapsack, edit distance, longest common subsequence.",
@@ -114,7 +115,7 @@ const related: RelatedCategory[] = [
   },
   {
     href: "/interviews",
-    icon: "📚",
+    icon: Layers,
     title: "Tüm Mülakat Kategorileri",
     description:
       "Python mülakat soruları kataloğu: OOP, SQLite, Pandas, veri yapıları ve daha fazlası.",
@@ -122,7 +123,7 @@ const related: RelatedCategory[] = [
   },
   {
     href: "/python-kodlari",
-    icon: "📖",
+    icon: BookOpen,
     title: "Python Kodları",
     description:
       "Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar. Kopyala, çalıştır, öğren.",

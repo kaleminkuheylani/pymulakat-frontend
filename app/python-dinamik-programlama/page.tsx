@@ -2,6 +2,7 @@
 // Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
 // CSV-FIRST: server-side CSV fetch, initialQuestions ile SSR HTML'e 22 DP basılıyor
 // (Googlebot + no-JS kullanıcı için).
+import { BookOpen, Cpu, Layers } from "lucide-react";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -114,7 +115,7 @@ const learningResourceJsonLd = {
 const related: RelatedCategory[] = [
   {
     href: "/python-algoritma-sorulari",
-    icon: "⚡",
+    icon: Cpu,
     title: "Python Algoritma Soruları",
     description:
       "Sıralama, arama, DP, graf ve string algoritmaları için 26+ interaktif soru.",
@@ -122,7 +123,7 @@ const related: RelatedCategory[] = [
   },
   {
     href: "/interviews",
-    icon: "📚",
+    icon: Layers,
     title: "Tüm Mülakat Kategorileri",
     description:
       "Python mülakat soruları kataloğu: OOP, SQLite, Pandas, veri yapıları.",
@@ -130,7 +131,7 @@ const related: RelatedCategory[] = [
   },
   {
     href: "/python-kodlari",
-    icon: "📖",
+    icon: BookOpen,
     title: "Python Kodları",
     description:
       "Hazır Python kodu örnekleri: liste, dict, OOP, Pandas, Algoritmalar.",
