@@ -198,8 +198,8 @@ export default async function InterviewsPage() {
         ) : (
           <>
             <div className="text-sm text-white/50 mb-4">
-              <span className="text-white font-semibold">{totalCategories}</span> kategori ·{" "}
-              <span className="text-white font-semibold">{totalQuestions}</span> soru listeleniyor
+              {totalCategories} kategori ·{" "}
+              {totalQuestions} soru listeleniyor
             </div>
             {/* DP sayfasındaki soru kartı şablonu — kategoriye uyarlandı */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
@@ -267,17 +267,17 @@ export default async function InterviewsPage() {
 
                       {/* function_name alanı yerine slug (DP şablonu) */}
                       <div className="mt-3 text-xs text-white/40 font-mono">
-                        <span className="text-indigo-300">def</span>{" "}
+                        def{" "}
                         practice_{cat.slug.replace(/-/g, "_")}()
                       </div>
 
                       <div className="flex items-center justify-between text-xs pt-3 mt-2 border-t border-white/5">
-                        <span className="text-white/40 font-mono">{cat.slug}</span>
+                        {cat.slug}
                         <span
                           className="flex items-center gap-1.5 text-white/50"
                           style={{ color: DEFAULT_ACCENT }}
                         >
-                          <span>Keşfet</span>
+                          Keşfet
                           <svg
                             className="w-3 h-3 transition-transform group-hover:translate-x-1"
                             fill="none"
@@ -321,7 +321,7 @@ export default async function InterviewsPage() {
         <section className="mt-8">
           <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
             <div className="flex gap-3">
-              <span className="text-amber-300 flex-shrink-0 mt-0.5">💡</span>
+              💡
               <div>
                 <div className="font-semibold text-amber-300 mb-1">Hızlı Başlangıç İpucu</div>
                 <div className="text-sm text-white/70">

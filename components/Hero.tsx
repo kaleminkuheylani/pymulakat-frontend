@@ -31,16 +31,14 @@ export default function Hero() {
             {/* Tag pill */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium mb-6">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>Şimdilik ücretsiz · Kurulum yok</span>
+              Şimdilik ücretsiz · Kurulum yok
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5">
               Tarayıcıda Python
               <br />
               mülakatına{" "}
-              <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-                hazırlan.
-              </span>
+              <mark className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">hazırlan.</mark>
             </h1>
 
             <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-xl mb-7">
@@ -70,17 +68,17 @@ export default function Hero() {
             <div className="flex flex-wrap gap-x-5 gap-y-2 text-sm text-white/50 mb-2">
               <span className="flex items-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Kurulum yok</span>
+                Kurulum yok
               </span>
-              <span className="text-white/20">·</span>
+              ·
               <span className="flex items-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span>5 dakikada hesap</span>
+                5 dakikada hesap
               </span>
-              <span className="text-white/20">·</span>
+              ·
               <span className="flex items-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Anında kod yazmaya başla</span>
+                Anında kod yazmaya başla
               </span>
             </div>
           </div>

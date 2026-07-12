@@ -66,9 +66,9 @@ export default function FormDetailPage({ params }: { params: Promise<{ id: strin
       <div className="bg-white/[0.03] border border-white/10 rounded-xl p-6">
         <h1 className="text-2xl font-bold mb-2">{form.title}</h1>
         <div className="flex items-center gap-3 text-xs text-white/40 mb-4">
-          <span>{form.category}</span>
-          <span>•</span>
-          <span>{new Date(form.created_at).toLocaleString("tr-TR")}</span>
+          {form.category}
+          •
+          {new Date(form.created_at).toLocaleString("tr-TR")}
         </div>
         <div className="text-white/80 whitespace-pre-wrap">{form.body}</div>
         {form.tags?.length > 0 && (

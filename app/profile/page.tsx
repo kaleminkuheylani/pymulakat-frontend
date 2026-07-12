@@ -63,8 +63,8 @@ function ProgressBar({ label, value, total, color }: { label: string; value: num
   return (
     <div>
       <div className="flex justify-between text-sm mb-1">
-        <span className="text-slate-300">{label}</span>
-        <span className="text-slate-400 font-mono">{value} / {total} (%{percent})</span>
+        {label}
+        {value} / {total} (%{percent})
       </div>
       <div className="h-2 w-full bg-slate-800 rounded-full overflow-hidden">
         <div
@@ -159,9 +159,9 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
                   }`}>
                     {attempt.question_title || `Soru #${attempt.question_id}`}
                   </span>
-                  <span className="text-white/30 text-xs font-mono flex-shrink-0">
+                  
                     #{attempt.question_id}
-                  </span>
+                  
                   {isOrphaned && (
                     <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-700/40 text-slate-500 border border-slate-700/50 font-medium tracking-wide">
                       ESKİ
@@ -169,11 +169,11 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
                   )}
                 </div>
                 <div className="flex items-center gap-3 mt-0.5 text-xs text-slate-500">
-                  <span>{timeAgo(attempt.created_at)}</span>
-                  <span>•</span>
-                  <span>{attempt.passed_tests}/{attempt.total_tests} test</span>
-                  <span>•</span>
-                  <span>{formatDuration(attempt.execution_time_ms)}</span>
+                  {timeAgo(attempt.created_at)}
+                  •
+                  {attempt.passed_tests}/{attempt.total_tests} test
+                  •
+                  {formatDuration(attempt.execution_time_ms)}
                 </div>
               </div>
 
@@ -323,9 +323,9 @@ export default function ProfilePage() {
             </h2>
            
             <div className="mt-6 pt-4 border-slate-800 flex justify-between text-sm text-slate-400">
-              <span>Başarı:</span>
+              Başarı:
               <span className="font-mono text-green-400">{user.success_count}</span>
-              <span>Başarısız:</span>
+              Başarısız:
               <span className="font-mono text-red-400">{user.fail_count}</span>
             </div>
           </div>
@@ -451,7 +451,7 @@ export default function ProfilePage() {
               <div className="text-sm font-semibold text-white">Soru Çöz</div>
               <div className="text-[11px] text-white/40 mt-0.5">Pratik yapmaya devam et</div>
             </div>
-            <span className="text-amber-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
+            →
           </Link>
           <Link
             href="/interviews/python-basics"
@@ -461,7 +461,7 @@ export default function ProfilePage() {
               <div className="text-sm font-semibold text-white">🐍 Temel Sorular</div>
               <div className="text-[11px] text-white/40 mt-0.5">Python temelleri ile başla</div>
             </div>
-            <span className="text-indigo-400 text-xl group-hover:translate-x-1 transition-transform">→</span>
+            →
           </Link>
         </div>
 

@@ -147,8 +147,8 @@ export default function PythonOnlineEditor() {
           <div className="min-w-0">
             <div className="flex items-center gap-2 text-[10px] text-white/40">
               <Link href="/" className="hover:text-white/70">Ana Sayfa</Link>
-              <span>/</span>
-              <span className="text-white/60">Python Online</span>
+              /
+              Python Online
             </div>
             <h1 className="text-xl sm:text-2xl font-bold mt-0.5 leading-tight truncate">
               Python Online — Tarayıcıda Kod Yaz, Çalıştır
@@ -310,8 +310,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   return (
     <details className="p-3 rounded-lg bg-white/[0.03] border border-white/10 group">
       <summary className="cursor-pointer text-white/90 font-medium list-none flex items-center justify-between">
-        <span>{q}</span>
-        <span className="text-white/40 group-open:rotate-180 transition-transform">▾</span>
+        {q}
+        ▾
       </summary>
       <p className="mt-2 text-white/70 leading-relaxed">{a}</p>
     </details>

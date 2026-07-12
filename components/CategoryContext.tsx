@@ -64,7 +64,7 @@ export default function CategoryContext({
             {b.tip && (
               <div className="rounded-xl border border-amber-500/20 bg-amber-500/[0.04] p-4">
                 <div className="flex gap-3">
-                  <span className="text-amber-300 flex-shrink-0 mt-0.5">💡</span>
+                  💡
                   <div>
                     {b.tip.title && (
                       <div className="font-semibold text-amber-300 mb-1">{b.tip.title}</div>

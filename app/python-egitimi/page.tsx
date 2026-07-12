@@ -221,7 +221,7 @@ export default function PythonEgitimiPage() {
             </Link>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Eğitimi</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
-              Başlangıçtan ileri seviyeye, <span className="text-amber-300">Türkçe ve ücretsiz</span> Python dersleri.
+              Başlangıçtan ileri seviyeye, Türkçe ve ücretsiz Python dersleri.
               Her ders çalıştırılabilir kod örneği, kısa açıklama ve pratik ödev içerir.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -287,9 +287,9 @@ export default function PythonEgitimiPage() {
                   </h3>
                   <p className="text-sm text-white/60 leading-relaxed line-clamp-3">{l.description}</p>
                   <div className="mt-3 flex items-center gap-3 text-[11px] text-white/40">
-                    <span>⏱ {l.duration}</span>
-                    <span>•</span>
-                    <span>{l.topics.length} konu</span>
+                    ⏱ {l.duration}
+                    •
+                    {l.topics.length} konu
                   </div>
                 </Link>
               ))}
@@ -382,8 +382,8 @@ function FaqItem({ q, a }: { q: string; a: string }) {
   return (
     <details className="p-3 rounded-lg bg-white/[0.03] border border-white/10 group">
       <summary className="cursor-pointer text-white/90 font-medium list-none flex items-center justify-between">
-        <span>{q}</span>
-        <span className="text-white/40 group-open:rotate-180 transition-transform">▾</span>
+        {q}
+        ▾
       </summary>
       <p className="mt-2 text-white/70 leading-relaxed">{a}</p>
     </details>

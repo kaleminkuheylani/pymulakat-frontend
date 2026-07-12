@@ -41,9 +41,9 @@ export default function GlobalNav() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-indigo-500 to-amber-400 flex items-center justify-center shadow-md group-hover:shadow-amber-400/30 transition-shadow">
-            <span className="text-white font-bold text-xs">PM</span>
+            PM
           </div>
-          <span className="text-white font-bold text-base hidden sm:block">PythonMulakat</span>
+          PythonMulakat
         </Link>
 
         {/* Right side — /interviews her zaman görünür (misafir + üye).
@@ -53,7 +53,7 @@ export default function GlobalNav() {
             href="/interviews"
             className="hidden sm:flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
           >
-            <span>Sorular</span>
+            Sorular
           </Link>
         </div>
 

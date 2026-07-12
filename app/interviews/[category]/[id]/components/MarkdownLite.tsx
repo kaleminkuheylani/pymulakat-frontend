@@ -53,7 +53,7 @@ export default function MarkdownLite({ content }: { content: string }) {
     if (numMatch) {
       blocks.push(
         <div key={idx} className="flex gap-2.5 my-1.5 leading-relaxed">
-          <span className="text-indigo-400 font-mono text-xs mt-1 flex-shrink-0">{numMatch[1]}.</span>
+          {numMatch[1]}.
           <span className="flex-1">{formatInline(numMatch[2])}</span>
         </div>
       );
@@ -63,7 +63,7 @@ export default function MarkdownLite({ content }: { content: string }) {
     if (line.startsWith("- ") || line.startsWith("* ")) {
       blocks.push(
         <div key={idx} className="flex gap-2 my-1 leading-relaxed">
-          <span className="text-white/40 mt-1.5">•</span>
+          •
           <span className="flex-1">{formatInline(line.slice(2))}</span>
         </div>
       );

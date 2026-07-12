@@ -76,8 +76,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                         : "text-white/60 hover:bg-white/5 hover:text-white"
                     }`}
                   >
-                    <span>{item.icon}</span>
-                    <span>{item.label}</span>
+                    {item.icon}
+                    {item.label}
                   </Link>
                 );
               })}

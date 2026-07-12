@@ -108,7 +108,7 @@ export default function PythonOnlinePage() {
             </Link>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Online</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
-              Tarayıcıda <span className="text-amber-300">Python 3.12</span> kodunu yaz, Pyodide ile anında çalıştır.
+              Tarayıcıda Python 3.12 kodunu yaz, Pyodide ile anında çalıştır.
               Kurulum yok, hesap yok. Öğrenmek için ideal playground.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">

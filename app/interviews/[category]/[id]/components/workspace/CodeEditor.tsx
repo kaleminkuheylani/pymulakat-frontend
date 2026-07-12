@@ -23,7 +23,7 @@ const Editor = dynamic(
       >
         <div className="flex flex-col items-center gap-2">
           <div className="w-6 h-6 border-[3px] border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-          <span>Editör yükleniyor...</span>
+          Editör yükleniyor...
         </div>
       </div>
     ),

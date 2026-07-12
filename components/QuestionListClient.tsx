@@ -252,7 +252,7 @@ export default function QuestionListClient({
     <>
       <div className="flex items-center justify-between mb-4">
         <div className="text-sm text-white/50">
-          <span className="text-white font-semibold">{questions.length}</span> soru listeleniyor
+          {questions.length} soru listeleniyor
         </div>
         {source && (
           <div className="text-[10px] uppercase tracking-wider text-white/30 font-mono">
@@ -314,17 +314,17 @@ export default function QuestionListClient({
 
                 {q.function_name && (
                   <div className="mt-3 text-xs text-white/40 font-mono">
-                    <span className="text-indigo-300">def</span> {q.function_name}(...)
+                    def {q.function_name}(...)
                   </div>
                 )}
 
                 <div className="flex items-center justify-between text-xs pt-3 mt-2 border-t border-white/5">
-                  <span className="text-white/40 font-mono">{displaySlug || q.category}</span>
+                  {displaySlug || q.category}
                   <span
                     className="flex items-center gap-1.5 transition-colors group-hover:text-amber-400"
                     style={{ color: DEFAULT_ACCENT }}
                   >
-                    <span>Çöz</span>
+                    Çöz
                     <svg
                       className="w-3 h-3 transition-transform group-hover:translate-x-1"
                       fill="none"

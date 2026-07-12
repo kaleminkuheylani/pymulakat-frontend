@@ -87,20 +87,20 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-white/50">
               <li className="flex items-center gap-2">
-                <span>⚡</span>
-                <span>Pyodide (WASM)</span>
+                ⚡
+                Pyodide (WASM)
               </li>
               <li className="flex items-center gap-2">
-                <span>🧠</span>
-                <span>Gemini AI</span>
+                🧠
+                Gemini AI
               </li>
               <li className="flex items-center gap-2">
-                <span>🗄️</span>
-                <span>Supabase</span>
+                🗄️
+                Supabase
               </li>
               <li className="flex items-center gap-2">
-                <span>🚀</span>
-                <span>Next.js 14</span>
+                🚀
+                Next.js 14
               </li>
             </ul>
           </div>
@@ -115,8 +115,8 @@ export default function Footer() {
             <a href="mailto:mkemal@pythonmulakat.com" className="hover:text-white/70 transition-colors">
               mkemal@pythonmulakat.com
             </a>
-            <span className="text-white/20">·</span>
-            <span>İki kişi · saf niyet · saf Python · test kullanıcıları arıyoruz</span>
+            ·
+            İki kişi · saf niyet · saf Python · test kullanıcıları arıyoruz
           </div>
         </div>
       </div>

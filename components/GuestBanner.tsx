@@ -24,14 +24,14 @@ export function GuestBanner({ feature }: GuestBannerProps) {
       className="border-amber-400/20 bg-gradient-to-r from-amber-500/5 via-amber-400/10 to-amber-500/5 px-4 py-2.5 flex items-center justify-between gap-3"
     >
       <div className="flex items-center gap-2 text-sm">
-        <span className="text-amber-400">🔒</span>
+        🔒
         <span className="text-amber-100/90">
           Soru açıklamasını ve test case'leri{" "}
           <span className="font-bold text-amber-300">inceleyebilirsin</span>.
           {feature && (
             <>
               {" "}
-              <span className="text-amber-200/70">"{feature}" için</span>{" "}
+              "{feature}" için{" "}
               <Link
                 href={`/login?returnUrl=${returnUrl}`}
                 className="underline font-semibold text-amber-300 hover:text-amber-200"

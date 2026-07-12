@@ -113,10 +113,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           <div className="max-w-4xl mx-auto px-4 py-6">
             <div className="flex items-center gap-2 text-[10px] text-white/40 mb-3">
               <Link href="/" className="hover:text-white/70">Ana Sayfa</Link>
-              <span>/</span>
+              /
               <Link href="/python-egitimi" className="hover:text-white/70">Python Eğitimi</Link>
-              <span>/</span>
-              <span className="text-white/60">{lesson.title}</span>
+              /
+              {lesson.title}
             </div>
             <div className="flex items-start gap-4">
               <span className="text-5xl">{lesson.icon}</span>

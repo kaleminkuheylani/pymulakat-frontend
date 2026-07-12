@@ -173,11 +173,11 @@ export default async function StudyPage({
             {/* Breadcrumb */}
             <nav className="flex items-center gap-2 text-[10px] text-white/40 mb-4">
               <Link href="/" className="hover:text-white/70">Ana Sayfa</Link>
-              <span>/</span>
+              /
               <Link href="/interviews" className="hover:text-white/70">Sorular</Link>
-              <span>/</span>
+              /
               <Link href={questionUrl} className="hover:text-white/70">{q?.title || "Soru"}</Link>
-              <span>/</span>
+              /
               <span className="text-purple-300 font-semibold">Etüt</span>
             </nav>
 
@@ -192,7 +192,7 @@ export default async function StudyPage({
               <span className="px-2 py-1 rounded-md bg-white/5 text-white/60 uppercase tracking-wide">
                 {guide.level}
               </span>
-              <span className="text-white/40">⏱ {guide.estimated_read_time_min} dk okuma</span>
+              ⏱ {guide.estimated_read_time_min} dk okuma
             </div>
 
             {/* Keywords */}
@@ -300,14 +300,14 @@ export default async function StudyPage({
                 href={questionUrl}
                 className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-slate-950 text-sm font-bold rounded-lg transition-all shadow-md shadow-amber-500/30"
               >
-                <span>💻</span>
-                <span>Soruyu Çöz</span>
+                💻
+                Soruyu Çöz
               </Link>
               <Link
                 href="/interviews"
                 className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 text-white/80 hover:border-white/40 hover:text-white text-sm font-medium rounded-lg transition-all"
               >
-                <span>← Tüm Sorular</span>
+                ← Tüm Sorular
               </Link>
             </div>
           </section>
@@ -351,8 +351,8 @@ function ApproachCard({ idx, approach }: { idx: number; approach: Guide["approac
       </div>
       {approach.complexity && (
         <div className="mb-3 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-mono bg-white/5 border border-white/10 text-indigo-300">
-          <span>⏱</span>
-          <span>{approach.complexity}</span>
+          ⏱
+          {approach.complexity}
         </div>
       )}
       {approach.code && (

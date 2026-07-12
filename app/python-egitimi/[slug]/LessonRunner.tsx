@@ -121,12 +121,12 @@ export default function LessonRunner({ code: initialCode, label = "kod.py" }: { 
       {/* 📌 Misafir için: kodun altında net CTA. Çalıştırma, save, AI yok. */}
       {isGuest && (
         <div className="bg-amber-500/5 border-t border-amber-500/20 px-3 py-3 flex flex-col sm:flex-row items-start sm:items-center gap-2 text-xs">
-          <span className="text-amber-300 font-bold flex-shrink-0">
+          
             🔒 Üye ol & çalıştır
-          </span>
-          <span className="text-white/60 flex-1">
+          
+          
             Tarayıcıda anında çalıştır, AI feedback al, ilerlemeni kaydet.
-          </span>
+          
           <div className="flex items-center gap-2 flex-shrink-0">
             <button
               onClick={() => router.push("/register")}

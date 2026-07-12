@@ -229,7 +229,7 @@ export default function PythonKodlariPage() {
             </Link>
             <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Kodları</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
-              Sık kullanılan <span className="text-amber-300">Python kod örnekleri</span>.
+              Sık kullanılan Python kod örnekleri.
               Kopyala, tarayıcıda çalıştır, öğren. Toplam <span className="font-bold text-white">{total}</span> örnek.
             </p>
             <div className="mt-4 flex flex-wrap gap-2">
@@ -304,20 +304,20 @@ export default function PythonKodlariPage() {
                         <div className="mb-3 space-y-2 text-[11px] text-white/55">
                           {s.useCase && (
                             <div className="flex gap-2">
-                              <span className="text-amber-300 flex-shrink-0">🎯 Ne Zaman Kullanılır:</span>
-                              <span>{s.useCase}</span>
+                              🎯 Ne Zaman Kullanılır:
+                              {s.useCase}
                             </div>
                           )}
                           {s.realWorld && (
                             <div className="flex gap-2">
-                              <span className="text-indigo-300 flex-shrink-0">🌍 Gerçek Dünya:</span>
-                              <span>{s.realWorld}</span>
+                              🌍 Gerçek Dünya:
+                              {s.realWorld}
                             </div>
                           )}
                           {s.commonMistakes && (
                             <div className="flex gap-2">
-                              <span className="text-rose-300 flex-shrink-0">⚠️ Yaygın Hatalar:</span>
-                              <span>{s.commonMistakes}</span>
+                              ⚠️ Yaygın Hatalar:
+                              {s.commonMistakes}
                             </div>
                           )}
                         </div>

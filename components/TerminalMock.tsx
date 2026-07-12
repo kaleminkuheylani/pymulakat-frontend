@@ -147,7 +147,7 @@ export default function TerminalMock() {
           </div>
           <div className="flex items-center gap-1.5 text-white/30 text-[10px] font-mono">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>live</span>
+            live
           </div>
         </div>
 

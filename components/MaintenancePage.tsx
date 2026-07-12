@@ -38,13 +38,13 @@ export default function MaintenancePage() {
         <div className="max-w-5xl mx-auto px-6 py-3 flex items-center justify-between text-xs">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-            <span className="text-white/60 uppercase tracking-wider font-semibold">
+            
               Maintenance
-            </span>
+            
           </div>
           {now && (
             <span className="text-white/30 font-mono">
-              {now} <span className="text-white/20">TR</span>
+              {now} TR
             </span>
           )}
         </div>
@@ -117,7 +117,7 @@ export default function MaintenancePage() {
                   d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
                 />
               </svg>
-              <span>Çalışmalar sürüyor. Sabrınız için teşekkürler.</span>
+              Çalışmalar sürüyor. Sabrınız için teşekkürler.
             </div>
           </div>
 

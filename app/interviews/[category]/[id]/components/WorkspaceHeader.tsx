@@ -49,8 +49,8 @@ export default function WorkspaceHeader({
           </svg>
           <span className="text-sm">Sorular</span>
         </button>
-        <span className="text-white/20">/</span>
-        <span className="text-white/40 text-sm font-mono">#{interview.id}</span>
+        /
+        #{interview.id}
         <span
           className="px-2.5 py-0.5 rounded-md text-[11px] font-semibold border"
           style={{ background: levelBg, color: levelColor, borderColor: levelBorder }}
@@ -90,7 +90,7 @@ export default function WorkspaceHeader({
                 : "bg-red-400"
             }`}
           />
-          <span className="text-white/60">
+          
             {pyStatus === "ready"
               ? "Python Hazır"
               : pyStatus === "loading"
@@ -98,7 +98,7 @@ export default function WorkspaceHeader({
               : pyStatus === "running"
               ? "Çalışıyor..."
               : "Hata"}
-          </span>
+          
         </div>
 
         {user && (

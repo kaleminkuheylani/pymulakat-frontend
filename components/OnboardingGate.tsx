@@ -131,15 +131,15 @@ export default function OnboardingGate({ userId, children }: Props) {
             <ul className="space-y-1.5 text-sm">
               <li className="flex items-center gap-2">
                 <Waves className="w-3.5 h-3.5 inline" />
-                <span>Akışım — sıralı sorular + rehberler</span>
+                Akışım — sıralı sorular + rehberler
               </li>
               <li className="flex items-center gap-2">
                 <Sparkles className="w-3.5 h-3.5 inline" />
-                <span>Öneriler — senin seviyene uygun</span>
+                Öneriler — senin seviyene uygun
               </li>
               <li className="flex items-center gap-2">
                 <MessageSquare className="w-4 h-4 inline" />
-                <span>Topluluk — soru sor, paylaş</span>
+                Topluluk — soru sor, paylaş
               </li>
             </ul>
           </div>

@@ -112,7 +112,7 @@ export default function QuestionDescriptionContent({
               Bu sorunun 3 farklı çözüm yaklaşımını (brute force → optimize → optimal) ve karşılaşılan edge case'leri öğren.
             </p>
             <div className="mt-1.5 inline-flex items-center gap-1 text-[11px] text-purple-300 group-hover:text-purple-200 font-semibold">
-              <span>Etüdü Oku</span>
+              Etüdü Oku
               <span className="group-hover:translate-x-1 transition-transform">→</span>
             </div>
           </div>
@@ -164,8 +164,8 @@ export default function QuestionDescriptionContent({
           <p className="text-[10px] text-white/40 mt-2 leading-relaxed">
             {/* 📌 Misafirler de test case'leri okuyabilsin (Input/Expected/Actual). */}
             Örnek input / expected çıktılar için{" "}
-            <span className="text-amber-300/80">Testler</span> tab'ına, istediğin input ile denemek için{" "}
-            <span className="text-amber-300/80">Konsol</span> tab'ına bak.
+            Testler tab'ına, istediğin input ile denemek için{" "}
+            Konsol tab'ına bak.
           </p>
         </div>
       )}
@@ -199,7 +199,7 @@ export default function QuestionDescriptionContent({
                 exit={{ opacity: 0, height: 0 }}
                 className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 text-sm text-amber-100/80 leading-relaxed"
               >
-                <span className="text-amber-400 font-semibold mr-1.5">#{idx + 1}</span>
+                #{idx + 1}
                 {hint.replace(/^💡\s*İpucu\s*\d+:\s*/i, "")}
               </motion.div>
             ))}
@@ -333,8 +333,8 @@ function AskCommunityButton({
             className="mt-2 inline-flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-slate-950 text-xs font-bold rounded-lg transition-all shadow-md shadow-emerald-500/30 active:scale-95"
           >
             <MessageSquare className="w-3.5 h-3.5" />
-            <span>Toplulukta Sor</span>
-            <span>→</span>
+            Toplulukta Sor
+            →
           </a>
         </div>
       </div>

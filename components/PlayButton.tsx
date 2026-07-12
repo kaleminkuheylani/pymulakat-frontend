@@ -43,7 +43,7 @@ export default function PlayButton({ snippetSlug, className = "" }: Props) {
       }
     >
       <span aria-hidden>▶</span>
-      <span>{user ? "Online editörde çalıştır" : "Çalıştırmak için giriş"}</span>
+      {user ? "Online editörde çalıştır" : "Çalıştırmak için giriş"}
     </Link>
   );
 }

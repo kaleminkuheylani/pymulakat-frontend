@@ -63,8 +63,8 @@ export default function FormCategoryTabs({ active, onChange }: Props) {
           }`}
           title={c.description}
         >
-          <span>{c.icon}</span>
-          <span>{c.label}</span>
+          {c.icon}
+          {c.label}
         </button>
       ))}
     </div>

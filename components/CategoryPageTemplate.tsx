@@ -123,7 +123,7 @@ export default function CategoryPageTemplate({
                     </h3>
                     <p className="text-sm text-white/50 leading-relaxed">{r.description}</p>
                     <div className={`mt-3 text-sm ${g.arrow} flex items-center gap-1.5 `}>
-                      <span>Keşfet</span>
+                      Keşfet
                       <span aria-hidden>→</span>
                     </div>
                   </Link>
