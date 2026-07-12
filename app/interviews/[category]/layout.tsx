@@ -18,8 +18,12 @@ interface LayoutProps {
 export default async function CategoryLayout({ children, params }: LayoutProps) {
   const { category } = await params;
   // Category adını validate et (SEO + hata önleme)
-  const validCategories = ["python-basics", "data-structures", "list-dict", "pandas", "algorithms"];
-  const cat = validCategories.includes(category) ? category : "python-basics";
+  // TÜM 9 pillar kategori: heap, stack, queue, dynamic-programming dahil.
+  const validCategories = [
+    "python-basics", "data-structures", "list-dict", "pandas", "algorithms",
+    "heap", "stack", "queue", "dynamic-programming",
+  ];
+  const cat = validCategories.includes(category) ? category : null;
 
   // Metadata tüm sayfalara uygulansın (SEO için)
   // (page.tsx'te override edilebilir)
