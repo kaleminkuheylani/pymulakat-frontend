@@ -333,21 +333,21 @@ export default async function Page({ params, searchParams }: PageProps) {
   // DB-FIRST mimari: lib/api/questionAPI.ts üzerinden çek
   // (2 paralel fetch — question meta + test cases)
   const internalCat = displayToInternal(resolvedParams.category);
-  console.log("[detay] URL", resolvedParams.category, "/", resolvedParams.id, "-> internal", internalCat);
+  process.stderr.write(`[detay] URL ${resolvedParams.category}/${resolvedParams.id} -> internal ${internalCat}\n`);
   let apiQ = null;
   let ssrTestsRaw = null;
   let findError = null;
   try {
     apiQ = await findQuestion(internalCat, resolvedParams.id);
-    console.log("[detay] apiQ:", apiQ ? `id=${apiQ.id} title=${apiQ.title}` : "null");
+    process.stderr.write(`[detay] apiQ: ${apiQ ? `id=${apiQ.id} title=${apiQ.title}` : "null"}\n`);
   } catch (e: any) {
     findError = e?.message ?? String(e);
-    console.error("[detay] findQuestion ERR:", findError, "stack:", e?.stack?.slice(0, 500));
+    process.stderr.write(`[detay] findQuestion ERR: ${findError} stack: ${e?.stack?.slice(0, 500)}\n`);
   }
   try {
     ssrTestsRaw = await getQuestionTests(internalCat, resolvedParams.id);
   } catch (e: any) {
-    console.error("[detay] getQuestionTests ERR:", e?.message ?? e);
+    process.stderr.write(`[detay] getQuestionTests ERR: ${e?.message ?? e}\n`);
   }
   
   
