@@ -260,11 +260,6 @@ export default function QuestionListClient({
         <div className="text-sm text-white/50">
           {questions.length} soru listeleniyor
         </div>
-        {source && (
-          <div className="text-[10px] uppercase tracking-wider text-white/30 font-mono">
-            {source === "primary" ? "📄 CSV (raw GitHub)" : source === "fallback" ? "📄 CSV (jsDelivr)" : "📄 CSV"}
-          </div>
-        )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
         {questions.map((q) => {

@@ -314,7 +314,7 @@ export default function CategoryFetchTest({
         {/* CSV status */}
         <div className={`rounded-xl border p-4 mb-6 ${STATUS_COLORS[csvStatus]}`}>
           <div className="flex items-center gap-3 text-sm flex-wrap">
-            <span className="font-semibold">📄 CSV</span>
+            CSV durumu
             <span>{STATUS_LABELS[csvStatus]}</span>
             {csvMs !== undefined && <span className="text-white/50">&middot; {csvMs}ms</span>}
             {csvCount !== undefined && <span className="text-white/50">&middot; {csvCount} satır</span>}
