@@ -2,16 +2,13 @@
 
 // components/QuestionListClient.tsx
 // TÜM kategori sayfalarında paylaşılan soru listesi client component.
-// 📌 CSV-ONLY mimari: GitHub'daki public CSV'yi çeker (raw primary, jsDelivr fallback).
-// Backend DB'ye hiç bağlanmıyoruz — CSV = tek kaynak.
+// 📌 DB-FIRST mimari: Soruları backend API'den çeker (DB = tek kaynak).
+// CSV sadece seed/migration aracı (fallback değil).
 
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-
-// CSV kaynakları (raw GitHub primary, jsDelivr fallback)
-const CSV_PRIMARY = "https://raw.githubusercontent.com/kaleminkuheylani/pymulakat-backend/main/data/QUESTIONS-v3.csv";
-const CSV_FALLBACK = "https://cdn.jsdelivr.net/gh/kaleminkuheylani/pymulakat-backend@main/data/QUESTIONS-v3.csv";
+import { listQuestionsByCategory } from "@/lib/api/questionAPI";
 
 export interface QuestionListClientProps {
   /** Filtrelenecek kategori (örn. "python-basics", "dynamic-programming") */
@@ -37,12 +34,12 @@ export interface QuestionListClientProps {
 interface Question {
   id: number;
   title: string;
-  slug?: string;
+  slug?: string | null;
   category: string;
   level: string;
   description: string;
-  complexity?: string;
-  function_name?: string;
+  complexity?: string | null;
+  function_name?: string | null;
 }
 
 interface QuestionsResponse {
@@ -59,109 +56,26 @@ const DEFAULT_GRADIENT_FROM = "#6366f1";
 const DEFAULT_GRADIENT_TO = "#f59e0b";
 const DEFAULT_ACCENT = "#fbbf24";
 
-// ─── Title → URL-safe slug ────────────────────────────────
-// Server-side csvSource.ts ile aynı kural seti — DRY için paylaşılabilir,
-// ama burada kısa bir kopyası (build'de tree-shake eder).
-function slugifyTitle(title: string): string {
-  return title
-    .toLowerCase()
-    .replace(/ı/g, "i").replace(/ü/g, "u").replace(/ö/g, "o")
-    .replace(/ş/g, "s").replace(/ç/g, "c").replace(/ğ/g, "g")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "");
-}
 
 // ─── CSV Parser (RFC 4180 mini) ──────────────────────────────
 // 9 kolon CSV: category,title,level,description,starter_code,test_cases,hints,id,function_name
-function parseCSV(text: string): Question[] {
-  const rows: string[][] = [];
-  let current: string[] = [];
-  let cell = "";
-  let inQuote = false;
+// parseCSV kaldırıldı (artık DB'den API ile çekiliyor)
 
-  for (let i = 0; i < text.length; i++) {
-    const c = text[i];
-    if (inQuote) {
-      if (c === '"') {
-        // Çift tırnak escape: ""
-        if (text[i + 1] === '"') {
-          cell += '"';
-          i++;
-        } else {
-          inQuote = false;
-        }
-      } else {
-        cell += c;
-      }
-    } else {
-      if (c === '"') {
-        inQuote = true;
-      } else if (c === ",") {
-        current.push(cell);
-        cell = "";
-      } else if (c === "\n" || c === "\r") {
-        if (c === "\r" && text[i + 1] === "\n") i++;
-        current.push(cell);
-        cell = "";
-        if (current.length > 1 || current[0] !== "") rows.push(current);
-        current = [];
-      } else {
-        cell += c;
-      }
-    }
+
+type FetchSource = "api";
+
+// DB-FIRST mimari: Soruları backend API'den çek (DB = tek kaynak).
+// CSV sadece seed/migration aracı, runtime'da kullanılmaz.
+// Hata durumunda exception fırlatır (caller handle eder).
+async function fetchQuestionsFromAPI(
+  cats: string[],
+): Promise<{ items: Question[]; source: string }> {
+  const results = await Promise.all(cats.map((c) => listQuestionsByCategory(c)));
+  const items = results.flat();
+  if (items.length === 0) {
+    throw new Error("API'den soru yüklenemedi (boş sonuç)");
   }
-  if (cell || current.length) {
-    current.push(cell);
-    rows.push(current);
-  }
-
-  if (rows.length < 2) return [];
-  const header = rows[0];
-  const idx = (name: string) => header.indexOf(name);
-
-  return rows
-    .slice(1)
-    .map((cols) => {
-      const get = (k: string) => cols[idx(k)] || "";
-      return {
-        id: parseInt(get("id"), 10) || 0,
-        title: get("title"),
-        slug: get("slug") || slugifyTitleLocal(get("title")),
-        category: get("category"),
-        level: get("level") || "beginner",
-        description: get("description"),
-        function_name: get("function_name") || undefined,
-      };
-    })
-    .filter((q) => q.id > 0 && q.title);
-}
-
-type FetchSource = "primary" | "fallback";
-
-// CSV-only mimari: CSV = tek kaynak, backend DB'ye hiç bağlanmıyoruz.
-// raw GitHub primary, jsDelivr fallback. Hata durumunda sonucu döner (boş array değil — caller'a haber).
-async function fetchCSV(): Promise<{ items: Question[]; source: FetchSource }> {
-  const errors: string[] = [];
-  for (const url of [CSV_PRIMARY, CSV_FALLBACK]) {
-    try {
-      const r = await fetch(url, { cache: "no-store" });
-      if (r.ok) {
-        const text = await r.text();
-        const parsed = parseCSV(text);
-        if (parsed.length > 0) {
-          return {
-            items: parsed,
-            source: url === CSV_PRIMARY ? "primary" : "fallback",
-          };
-        }
-      } else {
-        errors.push(`${url}: HTTP ${r.status}`);
-      }
-    } catch (e: any) {
-      errors.push(`${url}: ${e?.message || "fetch error"}`);
-    }
-  }
-  throw new Error(`CSV kaynaklarına erişilemedi: ${errors.join("; ")}`);
+  return { items, source: "api" };
 }
 
 export default function QuestionListClient({
@@ -179,7 +93,7 @@ export default function QuestionListClient({
   const [questions, setQuestions] = useState<Question[]>(initialQuestions ?? []);
   const [loading, setLoading] = useState<boolean>(initialQuestions === undefined);
   const [error, setError] = useState<string | null>(null);
-  const [source, setSource] = useState<"primary" | "fallback" | null>(initialSource ?? null);
+  const [source, setSource] = useState<string | null>(initialSource ?? null);
 
   useEffect(() => {
     // Initial veri zaten varsa (SSR'dan geldi) tekrar fetch etme.
@@ -188,17 +102,29 @@ export default function QuestionListClient({
     const controller = new AbortController();
     const timeoutId = setTimeout(() => controller.abort(), 8000);
 
-    fetchCSV()
+    const cats = categories && categories.length > 0 ? categories : [category];
+    fetchQuestionsFromAPI(cats)
       .then((result) => {
         if (cancelled) return;
         setSource(result.source);
         const filterSet = categories && categories.length > 0 ? new Set(categories) : null;
+        // ApiQuestion → Question dönüşümü (slug: null → undefined)
+        const mapped: Question[] = result.items.map((q) => ({
+          id: q.id,
+          title: q.title,
+          slug: q.slug ?? undefined,
+          category: q.category,
+          level: q.level,
+          description: q.description,
+          complexity: q.complexity ?? undefined,
+          function_name: q.function_name ?? undefined,
+        }));
         const filtered = filterSet
-          ? result.items.filter((q) => filterSet.has(q.category))
-          : result.items.filter((q) => q.category === category);
+          ? mapped.filter((q) => filterSet.has(q.category))
+          : mapped.filter((q) => q.category === category);
         setQuestions(filtered);
       })
-      .catch((err) => {
+      .catch((err: any) => {
         if (cancelled || err?.name === "AbortError") return;
         console.warn(`[QuestionListClient:${category}] fetch error:`, err);
         setError(err?.message || "Sorular yüklenemedi");
@@ -268,7 +194,7 @@ export default function QuestionListClient({
           const lvl = (q.level || "beginner").toLowerCase();
           // Slug-URL tercih edilir: /interviews/[category]/[slug]
           // Title yoksa ID'ye fallback.
-          const slug = q.title ? slugifyTitle(q.title) : null;
+          const slug = q.slug ?? "";
           const href = slug
             ? `/interviews/${q.category}/${slug}`
             : `/interviews/${q.category}/${q.id}`;
