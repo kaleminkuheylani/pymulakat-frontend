@@ -332,11 +332,17 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   // DB-FIRST mimari: lib/api/questionAPI.ts üzerinden çek
   // (2 paralel fetch — question meta + test cases)
-  const [mobile, apiQ, ssrTestsRaw] = await Promise.all([
-    isMobileDevice(),
-    findQuestion(displayToInternal(resolvedParams.category), resolvedParams.id),
-    getQuestionTests(displayToInternal(resolvedParams.category), resolvedParams.id),
-  ]);
+  const internalCat = displayToInternal(resolvedParams.category);
+  console.log("[detay] category=", resolvedParams.category, "internal=", internalCat, "id=", resolvedParams.id);
+  let apiQ = null;
+  let ssrTestsRaw = null;
+  try {
+    apiQ = await findQuestion(internalCat, resolvedParams.id);
+    ssrTestsRaw = await getQuestionTests(internalCat, resolvedParams.id);
+  } catch (e: any) {
+    console.error("[detay] findQuestion error:", e?.message ?? e);
+  }
+  const mobile = await isMobileDevice();
   // Resolve seoQ + ssrTests aynı request'ten (cache + tutarlı)
   const csvQ = apiQ;
   const seoQ = csvQ ? csvToSEOQuestion(csvQ, csvQ.id, csvSlugify(csvQ.title)) : null;
