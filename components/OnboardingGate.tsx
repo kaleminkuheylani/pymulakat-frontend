@@ -1,8 +1,10 @@
+"use client";
+
 // components/dashboard/OnboardingGate.tsx
 // İlk giriş algılama — kullanıcının onboarded_at yoksa wizard göster.
 // localStorage + user.id hash'li key, yanlış user'da false dönmez.
+import { MessageSquare, Sparkles, Waves } from "lucide-react";
 
-"use client";
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
@@ -128,15 +130,15 @@ export default function OnboardingGate({ userId, children }: Props) {
             <div className="text-xs text-white/60 mb-2">📊 Önerilerin:</div>
             <ul className="space-y-1.5 text-sm">
               <li className="flex items-center gap-2">
-                <span>🌊</span>
+                <Waves className="w-3.5 h-3.5 inline" />
                 <span>Akışım — sıralı sorular + rehberler</span>
               </li>
               <li className="flex items-center gap-2">
-                <span>✨</span>
+                <Sparkles className="w-3.5 h-3.5 inline" />
                 <span>Öneriler — senin seviyene uygun</span>
               </li>
               <li className="flex items-center gap-2">
-                <span>💬</span>
+                <MessageSquare className="w-4 h-4 inline" />
                 <span>Topluluk — soru sor, paylaş</span>
               </li>
             </ul>

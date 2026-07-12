@@ -1,5 +1,7 @@
 "use client";
 
+import { Cookie } from "lucide-react";
+
 // components/CookieConsent.tsx
 // KVKK md. 5/1 + md. 7 uyumu: kullanıcıya çerez / yerel depolama kullanımı
 // hakkında açık bilgilendirme + onay/ret seçeneği.
@@ -64,7 +66,7 @@ export default function CookieConsent() {
       className="fixed bottom-4 left-4 right-4 md:left-6 md:right-auto md:max-w-md z-50 rounded-2xl border border-white/10 bg-slate-900/95 backdrop-blur-md shadow-2xl shadow-black/50 p-4"
     >
       <div className="flex items-start gap-3 mb-3">
-        <div className="text-2xl flex-shrink-0">🍪</div>
+        <div className="text-2xl flex-shrink-0"><Cookie className="w-3.5 h-3.5 inline" /></div>
         <div className="flex-1 min-w-0">
           <h3 className="text-sm font-bold text-white mb-1">Çerez ve Veri Bildirimi</h3>
           <p className="text-xs text-white/70 leading-relaxed">

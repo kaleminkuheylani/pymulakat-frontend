@@ -1,5 +1,5 @@
-import { Lock } from "lucide-react";
 "use client";
+import { Lock } from "lucide-react";
 
 // WorkspaceMobileClient — Mobile workspace orchestrator (refactored).
 //

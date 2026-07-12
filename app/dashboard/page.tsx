@@ -1,8 +1,11 @@
+"use client";
+
+
 // app/dashboard/page.tsx
 // Dashboard ana sayfa — direkt 2-tab'li akış (kişiselleştirilmiş + topluluk).
 // 4 bölüm, her biri max 5 item, canlı tutarlı renkler.
+import { Hand } from "lucide-react";
 
-"use client";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
@@ -241,7 +244,7 @@ export default function DashboardHome() {
             <div className="flex items-center justify-between flex-wrap gap-3">
               <div>
                 <h1 className="text-xl md:text-2xl font-bold">
-                  Merhaba, {user.username} <span className="text-amber-400">👋</span>
+                  Merhaba, {user.username} <span className="text-amber-400"><Hand className="w-3.5 h-3.5 inline" /></span>
                 </h1>
                 <p className="text-white/50 text-xs">
                   {lastUpdated ? `Son güncelleme: ${lastUpdated.toLocaleTimeString("tr-TR")}` : "Yükleniyor..."}

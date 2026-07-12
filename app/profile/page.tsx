@@ -1,5 +1,6 @@
-// app/profile/page.tsx
 "use client";
+// app/profile/page.tsx
+import { FileText } from "lucide-react";
 
 import { useUser } from "../../hooks/useUser";
 import { useRouter } from "next/navigation";
@@ -98,7 +99,7 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
   if (attempts.length === 0) {
     return (
       <div className="text-center py-8">
-        <span className="text-4xl mb-3 block">📝</span>
+        <span className="text-4xl mb-3 block"><FileText className="w-3.5 h-3.5 inline" /></span>
         <p className="text-slate-400 text-sm">Henüz deneme yapmadın.</p>
         <Link
           href="/interviews/python-basics"

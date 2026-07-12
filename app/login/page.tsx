@@ -1,4 +1,5 @@
 "use client";
+import { Lock, Mail } from "lucide-react";
 
 import { Suspense, useState, FormEvent } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -316,7 +317,7 @@ function LoginFormInner() {
             transition={{ type: "spring", duration: 0.5 }}
             className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-indigo-500 to-amber-400 mb-6"
           >
-            <span className="text-4xl">📧</span>
+            <span className="text-4xl"><Mail className="w-3.5 h-3.5 inline" /></span>
           </motion.div>
 
           <h2 className="text-2xl font-bold text-white mb-3">
@@ -544,12 +545,12 @@ function LoginFormInner() {
           >
             {mode === "password" ? (
               <>
-                <span className="text-lg">📧</span>
+                <span className="text-lg"><Mail className="w-3.5 h-3.5 inline" /></span>
                 Şifresiz Giriş (Magic Link)
               </>
             ) : (
               <>
-                <span className="text-lg">🔒</span>
+                <span className="text-lg"><Lock className="w-3.5 h-3.5 inline" /></span>
                 Şifre ile Giriş
               </>
             )}

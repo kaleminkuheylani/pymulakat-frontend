@@ -1,5 +1,5 @@
-import { Lock } from "lucide-react";
 "use client";
+import { Lock } from "lucide-react";
 
 // WorkspaceClient — desktop orchestrator (refactored).
 //
