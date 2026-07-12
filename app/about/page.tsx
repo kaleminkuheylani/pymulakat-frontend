@@ -4,6 +4,7 @@
 // "use client" YASAK — useState/useEffect yok, framer-motion kaldırıldı.
 
 import Link from "next/link";
+import { Target } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -92,7 +93,7 @@ export default function AboutPage() {
       <section className="max-w-3xl mx-auto px-6 py-12">
         <div className="anim-fade-up anim-fade-up-2 grid md:grid-cols-2 gap-4">
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
-            <div className="text-3xl mb-3">🎯</div>
+            <Target className="w-7 h-7 text-amber-400 mb-3" />
             <h3 className="text-lg font-semibold mb-2 text-white">Saf Python</h3>
             <p className="text-sm text-white/60 leading-relaxed">
               Framework yetiştirmiyoruz. Döngü, koşul, fonksiyon, veri yapıları —

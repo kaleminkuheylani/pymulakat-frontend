@@ -4,6 +4,7 @@
 // "This page couldn't load" Vercel fallback'i yerine anlamlı UI.
 
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import { useEffect } from "react";
 
 export default function GlobalError({
@@ -20,7 +21,7 @@ export default function GlobalError({
   return (
     <div className="min-h-screen bg-[#050816] text-white flex items-center justify-center px-6">
       <div className="max-w-md w-full text-center">
-        <div className="text-5xl mb-4">⚠️</div>
+        <AlertTriangle className="w-12 h-12 text-rose-400 mb-4" />
         <h1 className="text-2xl font-bold mb-2">Bir şeyler ters gitti</h1>
         <p className="text-white/60 text-sm mb-6">
           Beklenmeyen bir hata oluştu. Sayfayı yenilemeyi ya da ana sayfaya

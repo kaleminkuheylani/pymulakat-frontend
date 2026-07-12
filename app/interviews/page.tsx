@@ -96,8 +96,7 @@ async function fetchCategoriesFromAPI(): Promise<Category[]> {
     });
   } catch (e) {
     // Hata logla, boş array dön. Hata durumunda 0 kategori gösterilir
-    // (hata UI'ı client-side useEffect varken anlamlıydı, server'da boş array yeterli).
-    console.warn("[InterviewsPage] API'den kategori alınamadı:", e);
+    // (hata UI'ı client-side useEffect varken anlamlıydı, server'da boş array yeterli).;
     return [];
   }
 }
@@ -335,7 +334,7 @@ export default async function InterviewsPage() {
         {/* ─── NE ZAMAN KULLANILIR (DP sayfasıyla eş: whenToUse list) ─── */}
         <section className="mt-8">
           <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/[0.04] p-4">
-            <div className="font-semibold text-indigo-300 mb-2">🎯 Mülakat Kategorilerini Ne Zaman Kullanmalısın?</div>
+            <div className="font-semibold text-indigo-300 mb-2"><Target className="w-4 h-4 inline mr-1.5" /> Mülakat Kategorilerini Ne Zaman Kullanmalısın?</div>
             <ul className="text-sm text-white/70 space-y-1.5 list-disc pl-5">
               <li>Python mülakatına 2-4 hafta kala sistematik hazırlık yapmak istiyorsan</li>
               <li>Hangi kategoride ne kadar soru çözdüğünü görmek ve zayıf olduğun konuyu tespit etmek istiyorsan</li>

@@ -1,5 +1,6 @@
 "use client";
 import { Lock } from "lucide-react";
+import { errorMessage } from "@/lib/errorMessage";
 import { getCategoryDisplayUrl } from "@/lib/categorySlug";
 
 // WorkspaceClient — desktop orchestrator (refactored).
@@ -194,10 +195,9 @@ export default function WorkspaceClient({
         try {
           const tc = await questionsAPI.getTests(questionId);
           if (!cancelled && tc) setTestCases(tc);
-        } catch (tcErr) {
-          console.warn("[Workspace] test cases yüklenemedi:", tcErr);
+        } catch (tcErr) {;
         }
-      } catch (e: any) {
+      } catch (e) {
         if (!cancelled) setError("Soru yüklenemedi — bağlantını kontrol et.");
       } finally {
         if (!cancelled) setLoading(false);
@@ -236,10 +236,9 @@ export default function WorkspaceClient({
             description: "Kodunu gözden geçirip tekrar dene.",
           });
         }
-      } catch (e: any) {
-        console.warn("Attempt submission failed", e);
+      } catch (e) {;
         toast.error("Attempt kaydedilemedi", {
-          description: e?.message || "Token veya sunucu hatası olabilir.",
+          description: errorMessage(e) || "Token veya sunucu hatası olabilir.",
         });
       } finally {
         inFlightRef.current = false;
@@ -270,7 +269,7 @@ export default function WorkspaceClient({
         // Tüm testler geçti → paylaşım modalı (1.5 sn gecikmeyle daha okunaklı)
         setTimeout(() => setShowShareModal(true), 1500);
       }
-    } catch (e: any) {
+    } catch (e) {
       // 📌 Raw error sızmaz — sabit hardcoded mesaj
       toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
     } finally {
@@ -482,8 +481,7 @@ async function sendAttempt(payload: AttemptPayload): Promise<void> {
   // Token varlığını lib/auth.ts üzerinden kontrol et
   const { getAccessToken } = await import("@/lib/auth");
   const token = getAccessToken();
-  if (!token) {
-    console.warn("[Attempt] Token yok, attempt gönderilmedi");
+  if (!token) {;
     return;
   }
   try {
@@ -495,8 +493,8 @@ async function sendAttempt(payload: AttemptPayload): Promise<void> {
       execution_time_ms: payload.execution_time_ms,
       hints_used: payload.hints_used,
     });
-  } catch (e: any) {
-    throw new Error(`Attempt gönderilemedi: ${e?.message || "bilinmeyen hata"}`);
+  } catch (e) {
+    throw new Error(`Attempt gönderilemedi: ${errorMessage(e) || "bilinmeyen hata"}`);
   }
 
   // 📌 Flow sayfası dinliyor — otomatik yenileme tetikler

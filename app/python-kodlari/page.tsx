@@ -1,6 +1,6 @@
 // /python-kodlari — Python kod örnekleri kataloğu.
 // Statik snippet'ler; her biri tarayıcıda çalıştırılabilir.
-import { Layers, Lightbulb, Target } from "lucide-react";
+import { Layers, Lightbulb, Target, BookOpen} from "lucide-react";
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -252,7 +252,7 @@ export default function PythonKodlariPage() {
         <section className="max-w-4xl mx-auto px-4 -mt-4 mb-12">
           <article className="p-6 md:p-8 rounded-2xl border border-purple-500/20 bg-gradient-to-br from-purple-500/8 via-indigo-500/3 to-transparent">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">📚</span>
+              <BookOpen className="w-6 h-6 text-cyan-300" />
               <h2 className="text-xl md:text-2xl font-bold text-white">
                 Yeni başlıyorsan bu sayfa neden önemli?
               </h2>

@@ -179,8 +179,7 @@ export default function DashboardHome() {
         setFlowError("Öneri akışı alınamadı");
         setFlow(null);
       }
-    } catch (e: any) {
-      console.warn("[flow] fetch error:", e);
+    } catch (e: any) {;
       setFlowError(e?.message || "Bağlantı hatası");
       setFlow(null);
     }

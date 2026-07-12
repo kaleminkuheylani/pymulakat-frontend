@@ -214,8 +214,7 @@ export default function ProfilePage() {
       .then((data) => {
         if (!cancelled) setAttempts(data as AttemptResponse[]);
       })
-      .catch((err) => {
-        console.warn("Attempts yüklenemedi:", err);
+      .catch((err) => {;
       })
       .finally(() => {
         if (!cancelled) setAttemptsLoading(false);

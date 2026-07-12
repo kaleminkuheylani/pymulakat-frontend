@@ -5,6 +5,7 @@
 // "This page couldn't reload" Vercel fallback'i yerine diagnostik bilgi gösterir.
 
 import { useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
 
 export default function GlobalError({
   error,
@@ -38,7 +39,7 @@ export default function GlobalError({
         }}
       >
         <div style={{ maxWidth: "640px", margin: "0 auto", textAlign: "center" }}>
-          <div style={{ fontSize: "3rem", marginBottom: "1rem" }}>⚠️</div>
+          <AlertTriangle style={{ width: "3rem", height: "3rem", color: "#fb7185", marginBottom: "1rem" }} />
           <h1 style={{ fontSize: "1.5rem", marginBottom: "0.5rem" }}>
             Sayfa yüklenemedi
           </h1>

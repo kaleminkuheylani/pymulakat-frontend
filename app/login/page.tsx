@@ -14,10 +14,6 @@ import { authAPI } from "../../lib/api/authAPI";
 // ═══════════════════════════════════════════════════════════════
 // ─── Inline authAPI — Supabase client ile login ──────────────
 // ═══════════════════════════════════════════════════════════════
-
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-
 interface LoginResponse {
   access_token: string;
   refresh_token?: string;

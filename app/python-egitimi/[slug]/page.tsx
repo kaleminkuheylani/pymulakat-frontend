@@ -1,6 +1,7 @@
 // /python-egitimi/[slug] — Tek bir dersin detay sayfası.
 
 import type { Metadata } from "next";
+import { BookOpen } from "lucide-react";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LESSONS, getLesson } from "../lessons";
@@ -145,7 +146,7 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
           </section>
 
           <section className="mb-8">
-            <h2 className="text-xl font-bold mb-4">📚 Konu Başlıkları</h2>
+            <h2 className="text-xl font-bold mb-4"><BookOpen className="w-5 h-5 inline mr-2 text-amber-300" /> Konu Başlıkları</h2>
             <div className="space-y-6">
               {lesson.sections.map((s, i) => (
                 <article key={i} className="p-5 rounded-xl bg-white/[0.03] border border-white/10">

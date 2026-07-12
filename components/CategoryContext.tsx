@@ -3,6 +3,7 @@
 // Her kategori için özgün, faydalı, özgün içerik (SEO + kullanıcı değeri).
 
 import { ReactNode } from "react";
+import { Target } from "lucide-react";
 
 export interface ContextBlock {
   /** Bölüm başlığı (örn. "Python Temelleri Nedir?") */
@@ -76,7 +77,7 @@ export default function CategoryContext({
             )}
             {b.whenToUse && (
               <div className="rounded-xl border border-indigo-500/20 bg-indigo-500/[0.04] p-4">
-                <div className="font-semibold text-indigo-300 mb-2">🎯 {b.whenToUse.title}</div>
+                <div className="font-semibold text-indigo-300 mb-2"><Target className="w-4 h-4 inline mr-1.5" /> {b.whenToUse.title}</div>
                 <ul className="text-sm text-white/70 space-y-1.5 list-disc pl-5">
                   {b.whenToUse.items.map((it, k) => (
                     <li key={k}>{it}</li>

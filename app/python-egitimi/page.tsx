@@ -245,7 +245,7 @@ export default async function PythonEgitimiPage() {
         <section className="max-w-4xl mx-auto px-4 -mt-4 mb-12">
           <article className="p-6 md:p-8 rounded-2xl border border-amber-500/20 bg-gradient-to-br from-amber-500/8 via-amber-500/3 to-transparent">
             <div className="flex items-center gap-2 mb-4">
-              <span className="text-2xl">🎯</span>
+              <Target className="w-6 h-6 text-amber-300" />
               <h2 className="text-xl md:text-2xl font-bold text-white">
                 Yeni başlıyorsan bu sayfa neden önemli?
               </h2>

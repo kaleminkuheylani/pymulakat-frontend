@@ -1,5 +1,6 @@
 "use client";
 import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play } from "lucide-react";
+import { errorMessage } from "@/lib/errorMessage";
 
 // TestPanel.tsx — test case'leri göster + çalıştır + custom input + geç/kal durumu.
 //
@@ -468,8 +469,8 @@ function ConsoleView({
       const r = await onCustomRun(parsed);
       setResult(r.actual);
       setResultError(r.errorLine || null);
-    } catch (e: any) {
-      setResultError(e?.message || "Çalıştırma hatası");
+    } catch (e) {
+      setResultError(errorMessage(e) || "Çalıştırma hatası");
     } finally {
       setRunning(false);
     }

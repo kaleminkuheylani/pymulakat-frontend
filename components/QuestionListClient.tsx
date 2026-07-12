@@ -7,6 +7,7 @@
 
 
 import Link from "next/link";
+import { AlertTriangle } from "lucide-react";
 import { useEffect, useState } from "react";
 import { listQuestionsByCategory } from "@/lib/api/questionAPI";
 
@@ -125,8 +126,7 @@ export default function QuestionListClient({
         setQuestions(filtered);
       })
       .catch((err: any) => {
-        if (cancelled || err?.name === "AbortError") return;
-        console.warn(`[QuestionListClient:${category}] fetch error:`, err);
+        if (cancelled || err?.name === "AbortError") return;;
         setError(err?.message || "Sorular yüklenemedi");
       })
       .finally(() => {
@@ -157,7 +157,7 @@ export default function QuestionListClient({
   if (error) {
     return (
       <div className="rounded-2xl border border-white/10 bg-white/5 p-12 text-center">
-        <div className="text-5xl mb-4">⚠️</div>
+        <AlertTriangle className="w-12 h-12 text-rose-400 mb-4" />
         <h2 className="text-xl font-semibold mb-2">Sorular yüklenemedi</h2>
         <p className="text-white/50 text-sm mb-6 max-w-md mx-auto">
           CSV ve backend&apos;e bağlanılamadı ({error}). Birkaç saniye sonra tekrar deneyebilirsin.

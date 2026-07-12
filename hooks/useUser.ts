@@ -28,9 +28,6 @@ export function notifyAuthChange() {
 }
 
 // ═══════════════════════════════════════════════════════════════
-const API_BASE_URL =
-  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
-
 /**
  * Supabase'in kullandığı storage key'leri dahil tüm olası konumlardan access_token çıkar.
  * @supabase/ssr hem localStorage hem cookie kullanabilir; biz her iki kaynağı da tarıyoruz.
@@ -312,8 +309,7 @@ export function useUser() {
     if (supabase) {
       try {
         await supabase.auth.signOut();
-      } catch (err) {
-        console.warn("Supabase signOut error:", err);
+      } catch (err) {;
       }
     }
 

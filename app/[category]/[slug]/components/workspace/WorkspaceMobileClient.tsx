@@ -1,5 +1,6 @@
 "use client";
 import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle } from "lucide-react";
+import { errorMessage } from "@/lib/errorMessage";
 import { getCategoryDisplayUrl } from "@/lib/categorySlug";
 
 // WorkspaceMobileClient — Mobile workspace orchestrator (refactored).
@@ -178,7 +179,7 @@ export default function WorkspaceMobileClient({
         setInterview(q);
         setCode(q.starter_code || "");
         if (q.id) questionId = q.id;
-      } catch (e: any) {
+      } catch (e) {
         if (!cancelled) toast.error("Soru yüklenemedi", { description: "Bağlantını kontrol et." });
       }
     })();
@@ -196,7 +197,7 @@ export default function WorkspaceMobileClient({
       try {
         const tc = await questionsAPI.getTests(questionId);
         if (!cancelled) setTestCases(tc);
-      } catch (e: any) {
+      } catch (e) {
         toast.error("Test caseleri yüklenemedi", { description: "Bağlantını kontrol et." });
       }
     })();
@@ -222,8 +223,7 @@ export default function WorkspaceMobileClient({
           success,
           execution_time_ms: durationMs,
         });
-      } catch (e) {
-        console.warn("[attempt] submit error:", e);
+      } catch (e) {;
       }
     },
     [user, interview, questionId, code]
@@ -247,7 +247,7 @@ export default function WorkspaceMobileClient({
       await submitAttempt(success, passed, total, result.execution_ms);
       // Sonuç modal'ı aç (success/fail comparison)
       setResultModal({ results: result.results, errorLines: result.error_lines || [], passed, total });
-    } catch (e: any) {
+    } catch (e) {
       // 📌 Raw error sızmaz — sabit hardcoded mesaj
       toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
     } finally {

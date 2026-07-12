@@ -1,5 +1,6 @@
 // WorkspaceEditor — sağ panel: Monaco editor + test results
 import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2 } from "lucide-react";
+import { errorMessage } from "@/lib/errorMessage";
 
 import { useState, useRef, useCallback, useEffect } from "react";
 import { CodeEditorMonaco as CodeEditor, CodeEditorRef } from "@/components/CodeEditor";
@@ -529,8 +530,8 @@ function ConsoleTab({
       const r = await onCustomRun(parsed);
       setResult(r.actual);
       setResultError(r.errorLine || null);
-    } catch (e: any) {
-      setResultError(e?.message || "Çalıştırma hatası");
+    } catch (e) {
+      setResultError(errorMessage(e) || "Çalıştırma hatası");
     } finally {
       setRunning(false);
     }

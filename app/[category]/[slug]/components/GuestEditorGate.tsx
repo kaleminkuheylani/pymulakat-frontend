@@ -5,6 +5,7 @@
 // description ve starter_code'un önizlemesi görünür (HTML escape ile).
 
 import { useRouter } from "next/navigation";
+import { Target } from "lucide-react";
 
 interface Props {
   category: string;
@@ -78,7 +79,7 @@ export default function GuestEditorGate({ category, id, starterCode }: Props) {
           <li>⚡ Pyodide ile tarayıcıda anında çalıştır</li>
           <li>🤖 Yapay zekâ destekli kod review</li>
           <li>📊 İlerleme + leaderboard takibi</li>
-          <li>🎯 50+ kategori, 100+ mülakat sorusu</li>
+          <li><Target className="w-4 h-4 inline mr-1.5 text-amber-300" /> 50+ kategori, 100+ mülakat sorusu</li>
         </ul>
       </div>
     </div>
