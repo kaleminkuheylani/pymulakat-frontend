@@ -137,12 +137,12 @@ h2, .h2 {
 
 /* Subtle lift on hover (cards) */
 .card-hover {
-  transition: border-color 0.2s ease, background 0.2s ease, transform 0.2s ease;
+  /* Sade — sadece border ve background değişimi. Transform yok. */
+  transition: border-color 200ms ease, background-color 200ms ease;
 }
 .card-hover:hover {
-  border-color: var(--border-amber);
+  border-color: var(--border-default);
   background: var(--bg-card-hover);
-  transform: translateY(-2px);
 }
 
 /* Editorial accent line (h2 altı) */

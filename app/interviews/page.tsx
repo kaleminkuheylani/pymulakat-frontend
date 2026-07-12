@@ -211,7 +211,7 @@ export default async function InterviewsPage() {
                   <Link
                     key={cat.slug}
                     href={pillarHref}
-                    className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-white/20 transition-all overflow-hidden"
+                    className="group relative rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-white/20 transition-colors"
                   >
                     <div
                       className="absolute inset-0 opacity-0 group-hover:opacity-15 transition-opacity"
@@ -255,7 +255,7 @@ export default async function InterviewsPage() {
                         </div>
                       </div>
 
-                      <h3 className="text-lg font-bold mb-2 group-hover:text-amber-400 transition-colors">
+                      <h3 className="text-lg font-bold mb-2 ">
                         {cat.label}
                       </h3>
 
@@ -274,7 +274,7 @@ export default async function InterviewsPage() {
                       <div className="flex items-center justify-between text-xs pt-3 mt-2 border-t border-white/5">
                         <span className="text-white/40 font-mono">{cat.slug}</span>
                         <span
-                          className="flex items-center gap-1.5 transition-colors group-hover:text-amber-400"
+                          className="flex items-center gap-1.5 text-white/50"
                           style={{ color: DEFAULT_ACCENT }}
                         >
                           <span>Keşfet</span>
@@ -354,7 +354,7 @@ export default async function InterviewsPage() {
               className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
             >
               <div className="text-3xl mb-3">📖</div>
-              <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">Python Kodları</h3>
+              <h3 className="text-lg font-bold mb-2 text-white ">Python Kodları</h3>
               <p className="text-sm text-white/50 leading-relaxed">
                 Sık kullanılan pattern&apos;ler, snippet&apos;ler ve idiomatic Python örnekleri. Mülakatlarda hızlı çözüm için referans.
               </p>
@@ -364,7 +364,7 @@ export default async function InterviewsPage() {
               className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
             >
               <div className="text-3xl mb-3">🎓</div>
-              <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">Python Eğitimi</h3>
+              <h3 className="text-lg font-bold mb-2 text-white ">Python Eğitimi</h3>
               <p className="text-sm text-white/50 leading-relaxed">
                 Konu anlatımları, kavram açıklamaları ve örneklerle sıfırdan ileri seviyeye Python.
               </p>
@@ -374,7 +374,7 @@ export default async function InterviewsPage() {
               className="group rounded-2xl border border-white/10 bg-white/[0.02] p-6 hover:border-amber-400/40 transition-all"
             >
               <div className="text-3xl mb-3">⚡</div>
-              <h3 className="text-lg font-bold mb-2 text-white group-hover:text-amber-400 transition-colors">Python Online</h3>
+              <h3 className="text-lg font-bold mb-2 text-white ">Python Online</h3>
               <p className="text-sm text-white/50 leading-relaxed">
                 Kurulum yok, tarayıcıda anında Python kodu yaz ve çalıştır. Gerçek zamanlı geri bildirim.
               </p>

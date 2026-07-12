@@ -47,12 +47,12 @@ const TAG_STYLES = {
 
 const GRADIENTS = {
   "indigo-amber": {
-    card: "hover:border-amber-400/40",
+    card: "hover:border-white/20",
     text: "group-hover:text-amber-400",
     arrow: "text-amber-400",
   },
   "amber-indigo": {
-    card: "hover:border-indigo-400/40",
+    card: "hover:border-white/20",
     text: "group-hover:text-amber-400",
     arrow: "text-indigo-400",
   },
@@ -122,7 +122,7 @@ export default function CategoryPageTemplate({
                       {r.title}
                     </h3>
                     <p className="text-sm text-white/50 leading-relaxed">{r.description}</p>
-                    <div className={`mt-3 text-sm ${g.arrow} flex items-center gap-1.5 group-hover:translate-x-1 transition-transform`}>
+                    <div className={`mt-3 text-sm ${g.arrow} flex items-center gap-1.5 `}>
                       <span>Keşfet</span>
                       <span aria-hidden>→</span>
                     </div>

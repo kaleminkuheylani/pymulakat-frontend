@@ -187,7 +187,7 @@ export default function HomePage() {
                     <span className="text-xs text-white/40 font-mono">
                       {cat.count} soru
                     </span>
-                    <ArrowRight className="w-3.5 h-3.5 text-amber-400 transition-transform group-hover:translate-x-1" />
+                    <ArrowRight className="w-3.5 h-3.5 text-amber-400 " />
                   </div>
                 </div>
               </Link>
