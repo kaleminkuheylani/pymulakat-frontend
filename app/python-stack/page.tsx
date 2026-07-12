@@ -1,6 +1,6 @@
 // /python-stack — Python Stack soruları.
 import { Cpu, GraduationCap, Layers, ListOrdered, Mountain } from "lucide-react";
-import { getTotalQuestionCount } from "@/lib/api/questionAPI";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -10,7 +10,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Stack Soruları — LIFO, Parantez Dengesi",
   description:
-    "Python stack soruları: LIFO, parantez dengesi, undo/redo, eval. 5+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python stack soruları: LIFO, parantez dengesi, undo/redo, eval. {countStack}+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
   keywords: [
     "python stack",
     "python yığın",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Stack Soruları — LIFO, Parantez Dengesi",
-    description: "LIFO, parantez dengesi, undo/redo — 5+ interaktif soru.",
+    description: "LIFO, parantez dengesi, undo/redo — {countStack}+ interaktif soru.",
     url: "https://pythonmulakat.com/python-stack",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -43,7 +43,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Stack",
-    description: "LIFO, parantez dengesi. 5+ soru.",
+    description: "LIFO, parantez dengesi. {countStack} soru.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -136,11 +136,17 @@ print(is_balanced("({[})"))    # False`,
 
 export default async function PythonStackPage() {
   const totalCount = await getTotalQuestionCount();
+  const countAlgorithms = await getCategoryCount("algorithms");
+  const countDataStructures = await getCategoryCount("data-structures");
+  const countHeap = await getCategoryCount("heap");
+  const countQueue = await getCategoryCount("queue");
+  const countStack = await getCategoryCount("stack");
+
 
   const related: RelatedCategory[] = [
     { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları.", gradient: "indigo-amber" },
-    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "FIFO queue için 5+ soru.", gradient: "amber-indigo" },
-    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "heapq, priority queue için 8+ soru.", gradient: "indigo-amber" },
+    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "FIFO queue için {countQueue}+ soru.", gradient: "amber-indigo" },
+    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "heapq, priority queue için {countHeap}+ soru.", gradient: "indigo-amber" },
     { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "indigo-amber" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
@@ -153,7 +159,7 @@ export default async function PythonStackPage() {
         subtitle={
           <>
             Python stack (yığın) soruları ile mülakata hazırlan. LIFO prensibi, parantez dengesi, undo/redo, expression evaluation için{" "}
-            <strong className="text-amber-400">5+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
+            <strong className="text-amber-400">{countStack}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
           </>
         }
         tags={["LIFO", "push", "pop", "parantez dengesi", "undo/redo"]}

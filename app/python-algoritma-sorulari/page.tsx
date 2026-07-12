@@ -1,6 +1,7 @@
 // /python-algoritma-sorulari — Python algoritma soruları kataloğu sayfası.
 // Paylaşılan CategoryPageTemplate + QuestionListClient kullanır.
 import { BookOpen, Brain, Layers } from "lucide-react";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -62,7 +63,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Algoritma Soruları — İnteraktif Pratik",
-    description: "Sıralama, arama, DP, graf, string algoritmaları için 26+ soru. Tarayıcıda çöz.",
+    description: "Sıralama, arama, DP, graf, string algoritmaları için {countAlgorithms} soru. Tarayıcıda çöz.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -131,7 +132,11 @@ const related: RelatedCategory[] = [
   },
 ];
 
-export default function PythonAlgoritmaSorulariPage() {
+export default async function PythonAlgoritmaSorulariPage() {
+  const totalCount = await getTotalQuestionCount();
+  const countAlgorithms = await getCategoryCount("algorithms");
+  const countDynamicProgramming = await getCategoryCount("dynamic-programming");
+
   return (
     <>
       {/* JSON-LD: BreadcrumbList + LearningResource */}
@@ -150,7 +155,7 @@ export default function PythonAlgoritmaSorulariPage() {
           <>
             Python algoritma soruları ile mülakata hazırlan. Sıralama, arama, dinamik programlama, graf ve string
             algoritmaları için{" "}
-            <strong className="text-amber-400">26+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test
+            <strong className="text-amber-400">{countAlgorithms}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test
             et, yapay zekâdan anında geri bildirim al.
           </>
         }

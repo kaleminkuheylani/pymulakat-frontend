@@ -1,6 +1,6 @@
 // /python-queue — Python Queue soruları.
 import { Cpu, GraduationCap, Layers, Mountain } from "lucide-react";
-import { getTotalQuestionCount } from "@/lib/api/questionAPI";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -10,7 +10,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Queue Soruları — FIFO, BFS, Circular Queue",
   description:
-    "Python queue soruları: FIFO, BFS, circular queue, deque. 5+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python queue soruları: FIFO, BFS, circular queue, deque. {countQueue}+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
   keywords: [
     "python queue",
     "python kuyruk",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Queue Soruları — FIFO, BFS, Circular Queue",
-    description: "FIFO, BFS, circular queue, deque — 5+ interaktif soru.",
+    description: "FIFO, BFS, circular queue, deque — {countQueue}+ interaktif soru.",
     url: "https://pythonmulakat.com/python-queue",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Queue",
-    description: "FIFO, BFS, circular queue. 5+ soru.",
+    description: "FIFO, BFS, circular queue. {countQueue} soru.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -162,11 +162,17 @@ class CircularQueue:
 
 export default async function PythonQueuePage() {
   const totalCount = await getTotalQuestionCount();
+  const countAlgorithms = await getCategoryCount("algorithms");
+  const countDataStructures = await getCategoryCount("data-structures");
+  const countHeap = await getCategoryCount("heap");
+  const countQueue = await getCategoryCount("queue");
+  const countStack = await getCategoryCount("stack");
+
 
   const related: RelatedCategory[] = [
     { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları.", gradient: "indigo-amber" },
-    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "LIFO stack için 5+ soru.", gradient: "amber-indigo" },
-    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "heapq, priority queue için 8+ soru.", gradient: "indigo-amber" },
+    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "LIFO stack için {countStack}+ soru.", gradient: "amber-indigo" },
+    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "heapq, priority queue için {countHeap}+ soru.", gradient: "indigo-amber" },
     { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "indigo-amber" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
@@ -179,7 +185,7 @@ export default async function PythonQueuePage() {
         subtitle={
           <>
             Python queue (kuyruk) soruları ile mülakata hazırlan. FIFO prensibi, BFS, circular queue, deque için{" "}
-            <strong className="text-amber-400">5+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
+            <strong className="text-amber-400">{countQueue}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
           </>
         }
         tags={["FIFO", "enqueue", "dequeue", "BFS", "deque", "circular"]}

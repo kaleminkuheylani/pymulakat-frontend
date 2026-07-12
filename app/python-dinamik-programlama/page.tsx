@@ -3,6 +3,7 @@
 // CSV-FIRST: server-side CSV fetch, initialQuestions ile SSR HTML'e 22 DP basılıyor
 // (Googlebot + no-JS kullanıcı için).
 import { BookOpen, Cpu, Layers } from "lucide-react";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -118,7 +119,7 @@ const related: RelatedCategory[] = [
     icon: Cpu,
     title: "Python Algoritma Soruları",
     description:
-      "Sıralama, arama, DP, graf ve string algoritmaları için 26+ interaktif soru.",
+      "Sıralama, arama, DP, graf ve string algoritmaları için {countDynamicProgramming}+ interaktif soru.",
     gradient: "indigo-amber",
   },
   {
@@ -139,7 +140,10 @@ const related: RelatedCategory[] = [
   },
 ];
 
-export default function PythonDinamikProgramlamaPage() {
+export default async function PythonDinamikProgramlamaPage() {
+  const totalCount = await getTotalQuestionCount();
+  const countDynamicProgramming = await getCategoryCount("dynamic-programming");
+
   return (
     <>
       {/* JSON-LD: BreadcrumbList + LearningResource */}

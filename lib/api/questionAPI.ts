@@ -303,3 +303,18 @@ export async function getTotalQuestionCount(): Promise<number> {
     return 0;  // Hata durumunda 0 (UI "yükleniyor" yerine gizler)
   }
 }
+
+
+/**
+ * Belirli bir kategorideki soru sayısını DB'den dinamik çek.
+ * 9 pillar sayfa description ve related kartları hardcoded rakam
+ * yerine bu fonksiyonu kullanır (DB-FIRST mimari).
+ */
+export async function getCategoryCount(category: string): Promise<number> {
+  try {
+    const all = await getAllQuestions({ category, limit: 200 });
+    return all.length;
+  } catch {
+    return 0;
+  }
+}

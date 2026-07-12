@@ -1,6 +1,6 @@
 // /python-pandas — Pandas soruları kataloğu sayfası.
 import { BookOpen, Code2, GraduationCap, Layers, ListTree, Terminal } from "lucide-react";
-import { getTotalQuestionCount } from "@/lib/api/questionAPI";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -10,7 +10,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Pandas Soruları ve Çözümleri",
   description:
-    "Python pandas soruları: DataFrame, Series, groupby, merge, filter, agg. 13+ interaktif soru, AI feedback.",
+    "Python pandas soruları: DataFrame, Series, groupby, merge, filter, agg. {countPandas}+ interaktif soru, AI feedback.",
   keywords: [
     "python pandas",
     "pandas soruları",
@@ -36,7 +36,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Pandas Soruları ve Çözümleri",
-    description: "DataFrame, Series, groupby, merge — 13+ interaktif soru.",
+    description: "DataFrame, Series, groupby, merge — {countPandas}+ interaktif soru.",
     url: "https://pythonmulakat.com/python-pandas",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Pandas — İnteraktif Pratik",
-    description: "DataFrame, Series, groupby, merge. 13+ soru.",
+    description: "DataFrame, Series, groupby, merge. {countPandas} soru.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -136,6 +136,10 @@ df["yas"].fillna(df["yas"].mean())`,
 
 export default async function PythonPandasPage() {
   const totalCount = await getTotalQuestionCount();
+  const countListDict = await getCategoryCount("list-dict");
+  const countPandas = await getCategoryCount("pandas");
+  const countPythonBasics = await getCategoryCount("python-basics");
+
 
   const related: RelatedCategory[] = [
     { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
@@ -153,7 +157,7 @@ export default async function PythonPandasPage() {
         subtitle={
           <>
             Python pandas soruları ile mülakata hazırlan. DataFrame, Series, groupby, merge, filter, agg için{" "}
-            <strong className="text-amber-400">13+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
+            <strong className="text-amber-400">{countPandas}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
           </>
         }
         tags={["DataFrame", "Series", "groupby", "merge", "filter", "agg", "apply"]}

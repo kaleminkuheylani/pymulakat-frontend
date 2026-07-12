@@ -1,6 +1,6 @@
 // /python-veri-yapilari — Veri yapıları soruları kataloğu sayfası.
 import { Code2, GraduationCap, Layers, ListOrdered, Mountain } from "lucide-react";
-import { getTotalQuestionCount } from "@/lib/api/questionAPI";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -10,7 +10,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Veri Yapıları Soruları",
   description:
-    "Python veri yapıları soruları: stack, queue, linked list, tree, graph, hash table. 21+ interaktif soru, AI feedback.",
+    "Python veri yapıları soruları: stack, queue, linked list, tree, graph, hash table. {countDataStructures}+ interaktif soru, AI feedback.",
   keywords: [
     "python veri yapıları",
     "python data structures",
@@ -37,7 +37,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Veri Yapıları Soruları — Stack, Queue, Tree, Linked List",
-    description: "Stack, queue, linked list, tree, graph — 21+ interaktif soru.",
+    description: "Stack, queue, linked list, tree, graph — {countDataStructures}+ interaktif soru.",
     url: "https://pythonmulakat.com/python-veri-yapilari",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -47,7 +47,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Veri Yapıları — İnteraktif Pratik",
-    description: "Stack, queue, linked list, tree. 21+ soru.",
+    description: "Stack, queue, linked list, tree. {countDataStructures} soru.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -136,11 +136,17 @@ graph["a"].append("b")`,
 
 export default async function PythonVeriYapilariPage() {
   const totalCount = await getTotalQuestionCount();
+  const countDataStructures = await getCategoryCount("data-structures");
+  const countHeap = await getCategoryCount("heap");
+  const countPythonBasics = await getCategoryCount("python-basics");
+  const countQueue = await getCategoryCount("queue");
+  const countStack = await getCategoryCount("stack");
+
 
   const related: RelatedCategory[] = [
-    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için 5+ soru.", gradient: "indigo-amber" },
-    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için 5+ soru.", gradient: "amber-indigo" },
-    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "Heap / priority queue için 8+ soru.", gradient: "indigo-amber" },
+    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için {countStack}+ soru.", gradient: "indigo-amber" },
+    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için {countQueue}+ soru.", gradient: "amber-indigo" },
+    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "Heap / priority queue için {countHeap}+ soru.", gradient: "indigo-amber" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "amber-indigo" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "indigo-amber" },
     { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "amber-indigo" },
@@ -153,7 +159,7 @@ export default async function PythonVeriYapilariPage() {
         subtitle={
           <>
             Python veri yapıları soruları ile mülakata hazırlan. Stack, queue, linked list, tree, graph için{" "}
-            <strong className="text-amber-400">21+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
+            <strong className="text-amber-400">{countDataStructures}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
           </>
         }
         tags={["Stack", "Queue", "Linked List", "Tree", "Graph", "Hash Table"]}

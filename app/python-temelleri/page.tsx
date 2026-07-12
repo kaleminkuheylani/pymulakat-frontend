@@ -1,6 +1,6 @@
 // /python-temelleri — Python temelleri soruları kataloğu sayfası.
 import { BookOpen, Cpu, GraduationCap, Layers, ListTree } from "lucide-react";
-import { getTotalQuestionCount } from "@/lib/api/questionAPI";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -41,7 +41,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Temelleri Soruları ve Çözümleri",
-    description: "Değişkenler, veri tipleri, string, döngüler, fonksiyonlar — 34+ interaktif soru.",
+    description: "Değişkenler, veri tipleri, string, döngüler, fonksiyonlar — {countPythonBasics}+ interaktif soru.",
     url: "https://pythonmulakat.com/python-temelleri",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -58,7 +58,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Temelleri — İnteraktif Pratik",
-    description: "Değişkenler, veri tipleri, string, döngüler, fonksiyonlar. 34+ soru.",
+    description: "Değişkenler, veri tipleri, string, döngüler, fonksiyonlar. {countPythonBasics} soru.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -137,10 +137,15 @@ x, y, z = 1, 2, 3`,
 
 export default async function PythonTemelleriPage() {
   const totalCount = await getTotalQuestionCount();
+  const countAlgorithms = await getCategoryCount("algorithms");
+  const countDataStructures = await getCategoryCount("data-structures");
+  const countListDict = await getCategoryCount("list-dict");
+  const countPythonBasics = await getCategoryCount("python-basics");
+
 
   const related: RelatedCategory[] = [
-    { href: "/python-liste-sozluk", icon: ListTree, title: "Liste & Sözlük", description: "Python list, dict, tuple, set işlemleri için 8+ soru.", gradient: "indigo-amber" },
-    { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Stack, queue, linked list, tree için 21+ soru.", gradient: "amber-indigo" },
+    { href: "/python-liste-sozluk", icon: ListTree, title: "Liste & Sözlük", description: "Python list, dict, tuple, set işlemleri için {countListDict}+ soru.", gradient: "indigo-amber" },
+    { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Stack, queue, linked list, tree için {countDataStructures}+ soru.", gradient: "amber-indigo" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru. Otomatik test + AI koç.`, gradient: "indigo-amber" },
     { href: "/python-kodlari", icon: BookOpen, title: "Python Kodları", description: "Hazır Python kodu örnekleri. Kopyala, çalıştır, öğren.", gradient: "amber-indigo" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "indigo-amber" },
@@ -158,7 +163,7 @@ export default async function PythonTemelleriPage() {
         subtitle={
           <>
             Python temelleri soruları ile mülakata hazırlan. Değişkenler, veri tipleri, string işlemleri, kontrol yapıları, döngüler, fonksiyonlar için{" "}
-            <strong className="text-amber-400">34+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
+            <strong className="text-amber-400">{countPythonBasics}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
           </>
         }
         tags={["Değişkenler", "Veri Tipleri", "String", "Döngüler", "Fonksiyonlar", "Kontrol Yapıları"]}

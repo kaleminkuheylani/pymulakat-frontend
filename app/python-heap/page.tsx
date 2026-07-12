@@ -1,6 +1,6 @@
 // /python-heap — Python Heap / Priority Queue soruları.
 import { Cpu, GraduationCap, Layers, ListOrdered } from "lucide-react";
-import { getTotalQuestionCount } from "@/lib/api/questionAPI";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -10,7 +10,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Heap Soruları — heapq, Priority Queue",
   description:
-    "Python heap soruları: heapq, min-heap, max-heap, priority queue. 8+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python heap soruları: heapq, min-heap, max-heap, priority queue. {countHeap}+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
   keywords: [
     "python heap",
     "python heapq",
@@ -34,7 +34,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Heap Soruları — heapq, Priority Queue",
-    description: "heapq, min-heap, max-heap — 8+ interaktif soru.",
+    description: "heapq, min-heap, max-heap — {countHeap}+ interaktif soru.",
     url: "https://pythonmulakat.com/python-heap",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -44,7 +44,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Heap",
-    description: "heapq, min-heap, max-heap. 8+ soru.",
+    description: "heapq, min-heap, max-heap. {countHeap} soru.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -133,11 +133,17 @@ print(heapq.nsmallest(3, nums))  # [1, 1, 2]`,
 
 export default async function PythonHeapPage() {
   const totalCount = await getTotalQuestionCount();
+  const countAlgorithms = await getCategoryCount("algorithms");
+  const countDataStructures = await getCategoryCount("data-structures");
+  const countHeap = await getCategoryCount("heap");
+  const countQueue = await getCategoryCount("queue");
+  const countStack = await getCategoryCount("stack");
+
 
   const related: RelatedCategory[] = [
     { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Tüm veri yapıları: stack, queue, tree, linked list.", gradient: "indigo-amber" },
-    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için 5+ soru.", gradient: "amber-indigo" },
-    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için 5+ soru.", gradient: "indigo-amber" },
+    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için {countStack}+ soru.", gradient: "amber-indigo" },
+    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için {countQueue}+ soru.", gradient: "indigo-amber" },
     { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
     { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "indigo-amber" },
     { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
@@ -150,7 +156,7 @@ export default async function PythonHeapPage() {
         subtitle={
           <>
             Python heap soruları ile mülakata hazırlan. <code className="text-amber-300">heapq</code> modülü, min-heap, max-heap, priority queue için{" "}
-            <strong className="text-amber-400">8+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
+            <strong className="text-amber-400">{countHeap}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
           </>
         }
         tags={["heapq", "min-heap", "max-heap", "priority queue", "heappush", "heappop"]}

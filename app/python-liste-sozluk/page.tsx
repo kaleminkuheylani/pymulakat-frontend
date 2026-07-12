@@ -1,6 +1,6 @@
 // /python-liste-sozluk — Liste & Sözlük soruları kataloğu sayfası.
 import { BookOpen, Code2, Database, GraduationCap, Layers } from "lucide-react";
-import { getTotalQuestionCount } from "@/lib/api/questionAPI";
+import { getTotalQuestionCount, getCategoryCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -10,7 +10,7 @@ import CategoryContext, { type ContextBlock } from "../../components/CategoryCon
 export const metadata: Metadata = {
   title: "Python Liste ve Sözlük Soruları — List, Dict, Tuple, Set",
   description:
-    "Python liste ve sözlük soruları: list, dict, tuple, set işlemleri. 8+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
+    "Python liste ve sözlük soruları: list, dict, tuple, set işlemleri. {countListDict}+ interaktif soru. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan geri bildirim al.",
   keywords: [
     "python liste sözlük",
     "python list",
@@ -35,7 +35,7 @@ export const metadata: Metadata = {
   },
   openGraph: {
     title: "Python Liste ve Sözlük Soruları",
-    description: "List, dict, tuple, set — 8+ interaktif soru.",
+    description: "List, dict, tuple, set — {countListDict}+ interaktif soru.",
     url: "https://pythonmulakat.com/python-liste-sozluk",
     siteName: "PythonMulakat",
     locale: "tr_TR",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Python Liste & Sözlük",
-    description: "List, dict, tuple, set. 8+ soru.",
+    description: "List, dict, tuple, set. {countListDict} soru.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -127,6 +127,11 @@ benzersiz = set([1, 2, 2, 3, 3, 3])
 
 export default async function PythonListeSozlukPage() {
   const totalCount = await getTotalQuestionCount();
+  const countDataStructures = await getCategoryCount("data-structures");
+  const countListDict = await getCategoryCount("list-dict");
+  const countPandas = await getCategoryCount("pandas");
+  const countPythonBasics = await getCategoryCount("python-basics");
+
 
   const related: RelatedCategory[] = [
     { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
@@ -144,7 +149,7 @@ export default async function PythonListeSozlukPage() {
         subtitle={
           <>
             Python liste ve sözlük soruları ile mülakata hazırlan. List, dict, tuple, set işlemleri için{" "}
-            <strong className="text-amber-400">8+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
+            <strong className="text-amber-400">{countListDict}+ interaktif soru</strong>. Tarayıcıda kod yaz, otomatik test et, yapay zekâdan anında geri bildirim al.
           </>
         }
         tags={["list", "dict", "tuple", "set", "comprehension", "sorting"]}

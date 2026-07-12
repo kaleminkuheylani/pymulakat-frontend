@@ -10,7 +10,7 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
     icon: Cpu,
     title: "Python Algoritma Soruları",
     description:
-      "Sıralama, arama, dinamik programlama, graf ve string algoritmaları için 26+ interaktif soru.",
+      "Sıralama, arama, dinamik programlama, graf ve string algoritmaları için 21+ interaktif soru.",
     gradient: "indigo-amber",
   },
   {
