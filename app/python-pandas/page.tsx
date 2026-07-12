@@ -1,5 +1,6 @@
 // /python-pandas — Pandas soruları kataloğu sayfası.
 import { BookOpen, Code2, GraduationCap, Layers, ListTree, Terminal } from "lucide-react";
+import { getTotalQuestionCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -63,14 +64,6 @@ const breadcrumbJsonLd = {
   ],
 };
 
-const related: RelatedCategory[] = [
-  { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
-  { href: "/python-liste-sozluk", icon: ListTree, title: "Liste & Sözlük", description: "List, dict, tuple, set işlemleri.", gradient: "amber-indigo" },
-  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 85 soru.", gradient: "indigo-amber" },
-  { href: "/python-kodlari", icon: BookOpen, title: "Python Kodları", description: "Pandas dahil hazır kod örnekleri.", gradient: "amber-indigo" },
-  { href: "/python-online", icon: Terminal, title: "Python Online", description: "Tarayıcıda Python 3.12 çalıştır.", gradient: "indigo-amber" },
-  { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
-];
 
 const contextBlocks: ContextBlock[] = [
   {
@@ -141,8 +134,18 @@ df["yas"].fillna(df["yas"].mean())`,
   },
 ];
 
-export default function PythonPandasPage() {
-  return (
+export default async function PythonPandasPage() {
+  const totalCount = await getTotalQuestionCount();
+
+  const related: RelatedCategory[] = [
+    { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "indigo-amber" },
+    { href: "/python-liste-sozluk", icon: ListTree, title: "Liste & Sözlük", description: "List, dict, tuple, set işlemleri.", gradient: "amber-indigo" },
+    { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "indigo-amber" },
+    { href: "/python-kodlari", icon: BookOpen, title: "Python Kodları", description: "Pandas dahil hazır kod örnekleri.", gradient: "amber-indigo" },
+    { href: "/python-online", icon: Terminal, title: "Python Online", description: "Tarayıcıda Python 3.12 çalıştır.", gradient: "indigo-amber" },
+    { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
+  ];
+    return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <CategoryPageTemplate

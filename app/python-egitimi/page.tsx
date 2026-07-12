@@ -1,6 +1,7 @@
 // /python-egitimi — Python eğitim rehberi index sayfası.
 // Statik; her lesson ayrı component. Auth gerektirmez.
 import { Lightbulb, Target } from "lucide-react";
+import { getTotalQuestionCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import Link from "next/link";
@@ -197,13 +198,14 @@ const faqJsonLd = {
       name: "Eğitimden sonra ne yapmalıyım?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Üç adım: 1) /interviews sayfasındaki 85 sorudan kendi seviyene uygun olanları çöz (başlangıç: python-basics). 2) Bir mini proje yap (örn: hava durumu CLI, todo API, basit web scraper). 3) GitHub'da paylaş ve açık kaynak projelere katkıda bulunmaya başla. Junior pozisyonu için 3-6 aylık pratik yeterli olabilir.",
+        text: "Üç adım: 1) /interviews sayfasındaki ${totalCount} sorudan kendi seviyene uygun olanları çöz (başlangıç: python-basics). 2) Bir mini proje yap (örn: hava durumu CLI, todo API, basit web scraper). 3) GitHub'da paylaş ve açık kaynak projelere katkıda bulunmaya başla. Junior pozisyonu için 3-6 aylık pratik yeterli olabilir.",
       },
     },
   ],
 };
 
-export default function PythonEgitimiPage() {
+export default async function PythonEgitimiPage() {
+  const totalCount = await getTotalQuestionCount();
   return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
@@ -347,7 +349,7 @@ export default function PythonEgitimiPage() {
               <FaqItem q="Hangi editör/IDE kullanmalıyım?" a="VS Code (ücretsiz, Python extension ile) veya PyCharm Community. Kurulum istemiyorsan bu sitedeki /python-online tarayıcıda çalışır." />
               <FaqItem q="Mülakat hazırlığı için hangi sırayla ilerlemeliyim?" a="6 dersi sırayla bitir → /interviews'da 5 ilgili soruyu çöz. Her ders + pratik döngüsü en etkili yol." />
               <FaqItem q="Python ile ne yapabilirim?" a="Web (Django, FastAPI), veri bilimi (Pandas, NumPy), ML (PyTorch), otomasyon, scraping, DevOps, oyun. Hangi alan olursa olsun temeller aynı." />
-              <FaqItem q="Eğitimden sonra ne yapmalıyım?" a="1) /interviews'da 85 sorudan seviyene uygun olanları çöz. 2) Mini proje yap. 3) GitHub'da paylaş." />
+              <FaqItem q="Eğitimden sonra ne yapmalıyım?" a="1) /interviews'da ${totalCount} sorudan seviyene uygun olanları çöz. 2) Mini proje yap. 3) GitHub'da paylaş." />
             </div>
           </section>
 

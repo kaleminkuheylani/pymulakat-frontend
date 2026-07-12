@@ -1,5 +1,6 @@
 // /python-veri-yapilari — Veri yapıları soruları kataloğu sayfası.
 import { Code2, GraduationCap, Layers, ListOrdered, Mountain } from "lucide-react";
+import { getTotalQuestionCount } from "@/lib/api/questionAPI";
 
 import type { Metadata } from "next";
 import CategoryPageTemplate, { type RelatedCategory } from "../../components/CategoryPageTemplate";
@@ -64,14 +65,6 @@ const breadcrumbJsonLd = {
   ],
 };
 
-const related: RelatedCategory[] = [
-  { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için 5+ soru.", gradient: "indigo-amber" },
-  { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için 5+ soru.", gradient: "amber-indigo" },
-  { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "Heap / priority queue için 8+ soru.", gradient: "indigo-amber" },
-  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 85 soru.", gradient: "amber-indigo" },
-  { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "indigo-amber" },
-  { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "amber-indigo" },
-];
 
 const contextBlocks: ContextBlock[] = [
   {
@@ -141,8 +134,18 @@ graph["a"].append("b")`,
   },
 ];
 
-export default function PythonVeriYapilariPage() {
-  return (
+export default async function PythonVeriYapilariPage() {
+  const totalCount = await getTotalQuestionCount();
+
+  const related: RelatedCategory[] = [
+    { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için 5+ soru.", gradient: "indigo-amber" },
+    { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için 5+ soru.", gradient: "amber-indigo" },
+    { href: "/python-heap", icon: Mountain, title: "Python Heap", description: "Heap / priority queue için 8+ soru.", gradient: "indigo-amber" },
+    { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: `9 kategori, ${totalCount} soru.`, gradient: "amber-indigo" },
+    { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "indigo-amber" },
+    { href: "/python-temelleri", icon: Code2, title: "Python Temelleri", description: "Değişkenler, veri tipleri, döngüler, fonksiyonlar.", gradient: "amber-indigo" },
+  ];
+    return (
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd) }} />
       <CategoryPageTemplate

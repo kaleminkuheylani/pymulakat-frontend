@@ -288,3 +288,18 @@ export function slugifyTitle(title: string): string {
   s = s.replace(/\s+/g, "-").replace(/-+/g, "-").replace(/^-|-$/g, "");
   return s;
 }
+
+
+/**
+ * Toplam soru sayısını DB'den dinamik çek (hardcoded değer yerine).
+ * 9 pillar sayfa + Hero + python-egitimi FAQ bu fonksiyonu kullanır.
+ * ISR cache 60s (revalidate).
+ */
+export async function getTotalQuestionCount(): Promise<number> {
+  try {
+    const all = await getAllQuestions({ limit: 200 });
+    return all.length;
+  } catch {
+    return 0;  // Hata durumunda 0 (UI "yükleniyor" yerine gizler)
+  }
+}

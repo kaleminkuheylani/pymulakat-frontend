@@ -10,8 +10,10 @@
 import Link from "next/link";
 import { ArrowRight, Sparkles, Check, Code2 } from "lucide-react";
 import TerminalMock from "./TerminalMock";
+import { getTotalQuestionCount } from "@/lib/api/questionAPI";
 
-export default function Hero() {
+export default async function Hero() {
+  const total = await getTotalQuestionCount();
   return (
     <section className="relative overflow-hidden">
       {/* Background gradient */}
@@ -42,7 +44,7 @@ export default function Hero() {
             </h1>
 
             <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-xl mb-7">
-              85 gerçek mülakat sorusu, kategorize ve zorluk seviyeli.
+              {total} gerçek mülakat sorusu, kategorize ve zorluk seviyeli.
               Tarayıcıda kod yaz, anında test et, yapay zekâdan geri bildirim al.
             </p>
 
