@@ -28,7 +28,9 @@ import { getQuestionTests } from "@/lib/api/questionAPI";
 export const dynamic = "force-dynamic";
 
 interface PageProps {
-  params: Promise<{ category: string; id: string }>;
+  // Yeni top-level route: /{display}/{slug} (ör: /temelleri/palindrome-checker)
+  // category = display URL, slug = soru slug
+  params: Promise<{ category: string; slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
 }
 
@@ -141,8 +143,8 @@ async function fetchHasStudy(_questionId: number): Promise<boolean> {
 
 // ─── generateMetadata (SEO) ───────────────────────────────
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
-  const { category, id } = await params;
-  const q = await fetchQuestionSEO(category, id);
+  const { category, slug } = await params;
+  const q = await fetchQuestionSEO(category, slug);
   if (!q) {
     return { title: "Soru bulunamadı | PythonMulakat" };
   }
@@ -307,7 +309,7 @@ export default async function Page({ params, searchParams }: PageProps) {
 
   // <Check className="w-3.5 h-3.5 inline" /> Canonical routing middleware tarafindan yonetiliyor:
   //   - /interviews/{cat}/{slug}  → burada render (canonical, indexlenir)
-  //   - /interviews/{cat}/{id}    → middleware slug URL'e yonlendirir (308)
+  //   - /{display}/{slug}    → middleware slug URL'e yonlendirir (308)
   // Burada slug'in gecerli oldugunu dogrulayip fetch ediyoruz.
   //
   // ⚠️ parseInt('0-1-knapsack') === 0 (parseInt leading digit'i alir),
@@ -318,9 +320,9 @@ export default async function Page({ params, searchParams }: PageProps) {
   //    Slug geliyorsa resolvedId null kalır → fetchQuestionSEO CSV'den
   //    slug'ı bulur, notFound() tetiklenmez.
   let resolvedId: number | null = null;
-  const _isPureId = /^\d+$/.test(resolvedParams.id);
+  const _isPureId = /^\d+$/.test(resolvedParams.slug);
   if (_isPureId) {
-    resolvedId = parseInt(resolvedParams.id, 10);  // Eski ID URL
+    resolvedId = parseInt(resolvedParams.slug, 10);  // Eski ID URL
   }
   // (Eski backend by-slug çözümlemesi kaldırıldı — CSV-only mimari.)
   // Slug ile geldiyse resolvedId null olabilir — bu durumda WorkspaceClient
@@ -333,19 +335,19 @@ export default async function Page({ params, searchParams }: PageProps) {
   // DB-FIRST mimari: lib/api/questionAPI.ts üzerinden çek
   // (2 paralel fetch — question meta + test cases)
   const internalCat = displayToInternal(resolvedParams.category);
-  process.stderr.write(`[detay] URL ${resolvedParams.category}/${resolvedParams.id} -> internal ${internalCat}\n`);
+  process.stderr.write(`[detay] URL ${resolvedParams.category}/${resolvedParams.slug} -> internal ${internalCat}\n`);
   let apiQ = null;
   let ssrTestsRaw = null;
   let findError = null;
   try {
-    apiQ = await findQuestion(internalCat, resolvedParams.id);
+    apiQ = await findQuestion(internalCat, resolvedParams.slug);
     process.stderr.write(`[detay] apiQ: ${apiQ ? `id=${apiQ.id} title=${apiQ.title}` : "null"}\n`);
   } catch (e: any) {
     findError = e?.message ?? String(e);
     process.stderr.write(`[detay] findQuestion ERR: ${findError} stack: ${e?.stack?.slice(0, 500)}\n`);
   }
   try {
-    ssrTestsRaw = await getQuestionTests(internalCat, resolvedParams.id);
+    ssrTestsRaw = await getQuestionTests(internalCat, resolvedParams.slug);
   } catch (e: any) {
     process.stderr.write(`[detay] getQuestionTests ERR: ${e?.message ?? e}\n`);
   }
@@ -392,7 +394,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const baseUrl = "https://pythonmulakat.com";
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
-    ? buildBreadcrumbSchema(resolvedParams.category, resolvedParams.id, seoQ.title, baseUrl)
+    ? buildBreadcrumbSchema(resolvedParams.category, resolvedParams.slug, seoQ.title, baseUrl)
     : null;
 
   // <Pin className="w-3 h-3 inline" /> SSR Content — Googlebot ve JS olmadan da içeriği görsün
@@ -511,7 +513,7 @@ export default async function Page({ params, searchParams }: PageProps) {
       <div data-client-workspace>
         <Workspace
           variant={variant}
-          initialParams={resolvedParams}
+          initialParams={{ ...resolvedParams, id: resolvedParams.slug }}
           readonly={readonly}
           initialInterview={initialInterview as any}
           initialTestCases={initialTests}
