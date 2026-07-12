@@ -66,7 +66,7 @@ const related: RelatedCategory[] = [
   { href: "/python-stack", icon: Layers, title: "Python Stack", description: "Stack veri yapısı için 5+ soru.", gradient: "amber-indigo" },
   { href: "/python-queue", icon: ListOrdered, title: "Python Queue", description: "Queue veri yapısı için 5+ soru.", gradient: "indigo-amber" },
   { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf.", gradient: "amber-indigo" },
-  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 132 soru.", gradient: "indigo-amber" },
+  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 85 soru.", gradient: "indigo-amber" },
   { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "amber-indigo" },
 ];
 

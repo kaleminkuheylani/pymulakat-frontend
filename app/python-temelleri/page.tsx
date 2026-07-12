@@ -78,7 +78,7 @@ const breadcrumbJsonLd = {
 const related: RelatedCategory[] = [
   { href: "/python-liste-sozluk", icon: ListTree, title: "Liste & Sözlük", description: "Python list, dict, tuple, set işlemleri için 8+ soru.", gradient: "indigo-amber" },
   { href: "/python-veri-yapilari", icon: Layers, title: "Veri Yapıları", description: "Stack, queue, linked list, tree için 21+ soru.", gradient: "amber-indigo" },
-  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 132 soru. Otomatik test + AI koç.", gradient: "indigo-amber" },
+  { href: "/interviews", icon: Layers, title: "Tüm Mülakat Kategorileri", description: "9 kategori, 85 soru. Otomatik test + AI koç.", gradient: "indigo-amber" },
   { href: "/python-kodlari", icon: BookOpen, title: "Python Kodları", description: "Hazır Python kodu örnekleri. Kopyala, çalıştır, öğren.", gradient: "amber-indigo" },
   { href: "/python-egitimi", icon: GraduationCap, title: "Python Eğitimi", description: "Sıfırdan ileri seviyeye Türkçe dersler.", gradient: "indigo-amber" },
   { href: "/python-algoritma-sorulari", icon: Cpu, title: "Python Algoritma Soruları", description: "Sıralama, arama, DP, graf algoritmaları.", gradient: "amber-indigo" },

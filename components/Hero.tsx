@@ -42,7 +42,7 @@ export default function Hero() {
             </h1>
 
             <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-xl mb-7">
-              132 gerçek mülakat sorusu, kategorize ve zorluk seviyeli.
+              85 gerçek mülakat sorusu, kategorize ve zorluk seviyeli.
               Tarayıcıda kod yaz, anında test et, yapay zekâdan geri bildirim al.
             </p>
 
