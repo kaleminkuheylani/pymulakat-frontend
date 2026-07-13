@@ -120,6 +120,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next();
   }
 
+  // 0.5) URL case-insensitive: uppercase varsa → lowercase 308
+  // /ADMIN/LOGIN gibi caps URL'ler Next.js'te 404 verir (case-sensitive).
+  // Tüm path segment'leri lowercase + redirect. Query string korunur.
+  // (2026-07-13: ahmet33589 user 404 aldı /ADMIN/LOGIN'de — cap-sensitive sorun)
+  if (pathname !== pathname.toLowerCase()) {
+    const url = request.nextUrl.clone();
+    url.pathname = pathname.toLowerCase();
+    return NextResponse.redirect(url, 308);
+  }
+
   // 1) www -> apex (308 Permanent)
   if (host.startsWith("www.")) {
     const url = request.nextUrl.clone();
