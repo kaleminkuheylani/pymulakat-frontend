@@ -17,11 +17,11 @@
 //   - DB'den soru + label + description + count
 
 import Link from "next/link";
-import { Code2, ArrowRight } from "lucide-react";
 import { getAllCategories } from "@/lib/api/categoryAPI";
 import { getAllQuestions } from "@/lib/api/questionAPI";
 import type { ApiQuestion } from "@/lib/api/types";
 import FilterButtons from "./FilterButtons";
+import QuestionListItem from "@/components/QuestionListItem";
 
 export const revalidate = 3600; // 1 saat ISR
 
@@ -83,43 +83,22 @@ export default async function InterviewsListPage({ searchParams }: PageProps) {
           active={activeCategory}
         />
 
-        {/* ─── Soru listesi (server-rendered, DB'den) ──────── */}
-        <ul className="space-y-3 mt-6">
+        {/* ─── Soru listesi (DB'den, paylaşılan component) ─── */}
+        <ul className="space-y-3 mt-6" data-ssr-interviews-list>
           {allQuestions.length === 0 ? (
             <li className="text-white/50 text-sm py-8 text-center">
-              Bu kategoride henüz soru yok.
+              {activeCategory === "all"
+                ? "Henüz soru yok."
+                : "Bu kategoride henüz soru yok."}
             </li>
           ) : (
             allQuestions.map((q) => (
-              <li key={q.id}>
-                <Link
-                  href={`/interviews/${q.category}/${q.slug}`}
-                  className="block bg-white/[0.03] border border-white/10 rounded-lg p-4 hover:bg-white/[0.06] hover:border-white/20 transition-colors"
-                >
-                  <div className="flex items-start gap-3">
-                    <Code2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-1" />
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <h2 className="text-base font-semibold text-white truncate">
-                          {q.title}
-                        </h2>
-                        <ArrowRight className="w-4 h-4 text-white/30 flex-shrink-0" />
-                      </div>
-                      <p className="text-xs text-white/50 line-clamp-2">
-                        {q.description?.split("\n")[0] || "Soru açıklaması"}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2 flex-wrap">
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60 uppercase tracking-wider">
-                          {q.level}
-                        </span>
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60">
-                          {categories.find((c) => c.slug === q.category)?.label ?? q.category}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </li>
+              <QuestionListItem
+                key={q.id}
+                question={q}
+                categorySlug={q.category}
+                categoryLabel={categories.find((c) => c.slug === q.category)?.label ?? q.category}
+              />
             ))
           )}
         </ul>

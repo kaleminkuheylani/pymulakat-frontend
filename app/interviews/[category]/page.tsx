@@ -20,9 +20,9 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { Code2, ArrowRight } from "lucide-react";
 import { getCategoryPageData, listAllCategorySlugs } from "@/lib/api/questionAPI";
 import { BASE_URL } from "@/lib/seo";
+import QuestionListItem from "@/components/QuestionListItem";
 
 // ─── ISR config ──────────────────────────────────────────────
 // 1 saat ISR. Tag-based invalidation (/api/revalidate?tag=...)
@@ -224,7 +224,7 @@ export default async function CategoryLandingPage({
           </div>
         </header>
 
-        {/* ─── Soru listesi (DB-FIRST, SSR) ─── */}
+        {/* ─── Soru listesi (DB-FIRST, SSR + paylaşılan component) ─── */}
         <ul className="space-y-3" data-ssr-category-list>
           {questions.length === 0 ? (
             <li className="text-white/50 text-sm py-8 text-center">
@@ -232,34 +232,12 @@ export default async function CategoryLandingPage({
             </li>
           ) : (
             questions.map((q) => (
-              <li key={q.id}>
-                <Link
-                  href={`/interviews/${category}/${q.slug ?? q.id}`}
-                  className="block bg-white/[0.03] border border-white/10 rounded-lg p-4 hover:bg-white/[0.06] hover:border-white/20 transition-colors"
-                >
-                  <div className="flex items-start gap-3">
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between gap-2 mb-1.5">
-                        <div className="flex items-center gap-2 min-w-0">
-                          <Code2 className="w-3.5 h-3.5 text-amber-400 flex-shrink-0" />
-                          <h2 className="text-base font-semibold text-white truncate">
-                            {q.title}
-                          </h2>
-                        </div>
-                        <ArrowRight className="w-4 h-4 text-white/30 flex-shrink-0" />
-                      </div>
-                      <p className="text-xs text-white/50 line-clamp-2">
-                        {q.description?.split("\n")[0] || "Soru açıklaması"}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60 uppercase tracking-wider">
-                          {q.level}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-                </Link>
-              </li>
+              <QuestionListItem
+                key={q.id}
+                question={q}
+                categorySlug={category}
+                // category label göstermeye gerek yok — zaten bu sayfanın konusu
+              />
             ))
           )}
         </ul>
