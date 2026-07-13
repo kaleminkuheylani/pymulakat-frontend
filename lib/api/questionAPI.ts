@@ -238,6 +238,11 @@ export async function getQuestionTests(
  * Tek çağrıda kategori meta + soru listesi (kategori sayfası için).
  * İki ayrı fetch yerine Promise.all ile paralel çek → cold start ~50% azalır.
  *
+ * 2026-07-13 fix (kullanici direktifi): BACKEND /api/v2/questions/all endpoint'i
+ * `category` query param'ını YOKSAYARAK tüm soruları döndürüyor. Bu fonksiyon
+ * /api/v2/questions?category=X&limit=100 (listQuestionsByCategory) kullanır —
+ *   backend .eq('category', X) ile DB-side filtre yapar.
+ *
  * @example
  *   const { meta, questions } = await getCategoryPageData("python-basics");
  */
@@ -249,7 +254,7 @@ export async function getCategoryPageData(
 }> {
   const [allCats, allQs] = await Promise.all([
     listCategories(),
-    getAllQuestions({ category: categorySlug, limit: 200 }),
+    listQuestionsByCategory(categorySlug), // DB-side filtre (heap → sadece heap)
   ]);
   return {
     meta: allCats.find((c) => c.slug === categorySlug) ?? null,
@@ -392,7 +397,9 @@ export async function getTotalQuestionCount(): Promise<number> {
  */
 export async function getCategoryCount(category: string): Promise<number> {
   try {
-    const all = await getAllQuestions({ category, limit: 200 });
+    // listQuestionsByCategory: DB-side .eq('category', X) → sadece o kategori
+    // (getAllQuestions /all endpoint'i category filtresini yoksayıyor)
+    const all = await listQuestionsByCategory(category);
     return all.length;
   } catch {
     return 0;
