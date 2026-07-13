@@ -20,14 +20,14 @@ export const CATEGORY_DISPLAY_URL: Record<string, string> = {
 
 export const CATEGORY_LABEL: Record<string, string> = {
   "python-basics": "Python Temelleri",
-  "data-structures": "Veri Yapıları",
-  "list-dict": "Liste & Sözlük",
-  "pandas": "Pandas",
-  "algorithms": "Algoritma",
-  "heap": "Heap",
-  "stack": "Stack",
-  "queue": "Queue",
-  "dynamic-programming": "Dinamik Programlama",
+  "data-structures": "Python Veri Yapıları",
+  "list-dict": "Python Liste & Sözlük",
+  "pandas": "Python Pandas",
+  "algorithms": "Python Algoritma",
+  "heap": "Python Heap",
+  "stack": "Python Stack",
+  "queue": "Python Queue",
+  "dynamic-programming": "Python Dinamik Programlama",
 };
 
 /** Internal slug → display URL. */
