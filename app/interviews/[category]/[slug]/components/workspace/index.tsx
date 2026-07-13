@@ -27,6 +27,8 @@ export interface WorkspaceProps {
   initialInterview?: Question | null;
   initialTestCases?: QuestionTests | null;
   hasStudy?: boolean;
+  /** DB'den gelen kategori label (breadcrumb için). Opsiyonel. */
+  categoryLabel?: string;
 }
 
 // ─── Lazy imports ────────────────────────────────────────
@@ -89,6 +91,7 @@ export default function Workspace({
   initialInterview,
   initialTestCases,
   hasStudy,
+  categoryLabel,
 }: WorkspaceProps) {
   const commonProps = {
     initialParams,
@@ -96,6 +99,7 @@ export default function Workspace({
     initialInterview,
     initialTestCases,
     hasStudy,
+    categoryLabel,
   };
 
   return (

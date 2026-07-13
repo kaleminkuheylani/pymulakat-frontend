@@ -45,6 +45,7 @@ interface Props {
   initialInterview?: Question | null;
   initialTestCases?: QuestionTests | null;
   hasStudy?: boolean;
+  categoryLabel?: string;
 }
 
 interface AttemptPayload {
@@ -65,6 +66,7 @@ export default function WorkspaceClient({
   initialInterview: initialInterviewProp,
   initialTestCases: initialTestCasesProp,
   hasStudy = false,
+  categoryLabel,
 }: Props) {
   // ✅ Guard
   if (!initialParams || !initialParams.category || !initialParams.id) {
@@ -337,6 +339,7 @@ export default function WorkspaceClient({
       <WorkspaceHeader
         interview={interview}
         category={category}
+        categoryLabel={categoryLabel}
         levelLabel={levelCfg.label}
         levelBg={levelCfg.bg}
         levelColor={levelCfg.color}

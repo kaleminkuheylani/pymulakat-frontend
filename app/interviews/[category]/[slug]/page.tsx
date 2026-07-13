@@ -265,8 +265,9 @@ async function buildBreadcrumbSchema(category: string, slug: string, title: stri
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: baseUrl },
-      { "@type": "ListItem", position: 2, name: categoryLabel, item: categoryUrl },
-      { "@type": "ListItem", position: 3, name: title, item: questionUrl },
+      { "@type": "ListItem", position: 2, name: "Sorular", item: `${baseUrl}/interviews` },
+      { "@type": "ListItem", position: 3, name: categoryLabel, item: categoryUrl },
+      { "@type": "ListItem", position: 4, name: title, item: questionUrl },
     ],
   };
 }
@@ -426,6 +427,9 @@ export default async function Page({ params, searchParams }: PageProps) {
   } : null;
   // SSR'dan gelen test case verisi — her iki client da prop olarak alır (misafirler dahil).
   const initialTests: any = ssrTests;
+  // Kategori label (DB'den) — breadcrumb + Workspace header için
+  const categoryMeta = await getCategoryMeta(internalCat);
+  const categoryLabel = categoryMeta?.label ?? internalCat;
   const baseUrl = BASE_URL;
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
@@ -560,6 +564,7 @@ export default async function Page({ params, searchParams }: PageProps) {
             initialInterview={initialInterview as any}
             initialTestCases={initialTests}
             hasStudy={initialHasStudy}
+            categoryLabel={categoryLabel}
           />
         </WorkspaceErrorBoundary>
       </div>

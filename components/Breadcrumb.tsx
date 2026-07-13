@@ -4,7 +4,11 @@
 // MİMARİ (KESİN, 2026-07-13):
 // - URL: /interviews/{db_category}/{slug} (DB category slug)
 // - DB-FIRST: kategori label'ı DB'den (lib/api/categoryAPI.ts)
-// - 3 seviye: Ana Sayfa > Kategori > Soru
+// - 4 seviye: Ana Sayfa > Sorular > Kategori > Soru
+//   1) Ana Sayfa  → /
+//   2) Sorular    → /interviews (tüm sorular listesi — Dynamic, çalışır)
+//   3) {Kategori} → /{display} (top-level canonical, ISR)
+//   4) {Soru}     → current page (no link)
 // - Lucide icon (span yok, emoji yok)
 
 import Link from "next/link";
@@ -32,8 +36,11 @@ export default async function Breadcrumb({ category, slug, title }: BreadcrumbPr
   const categoryUrl = getCategoryDisplayUrl(category);
   const questionUrl = `/interviews/${category}/${slug}`;
 
+  // 4 seviye: Ana Sayfa > Sorular > {Kategori} > {Soru}
+  // "Sorular" → /interviews (tüm sorular listesi, page.tsx, revalidate=3600)
   const items: BreadcrumbItem[] = [
     { label: "Ana Sayfa", href: "/" },
+    { label: "Sorular", href: "/interviews" },
     { label: categoryLabel, href: categoryUrl },
     { label: title, href: questionUrl },
   ];

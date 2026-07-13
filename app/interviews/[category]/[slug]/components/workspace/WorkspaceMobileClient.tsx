@@ -38,6 +38,7 @@ interface Props {
   initialInterview?: Question | null;
   initialTestCases?: QuestionTests | null;
   hasStudy?: boolean;
+  categoryLabel?: string;
 }
 
 // ─── Main Component ───────────────────────────────────────
@@ -48,6 +49,7 @@ export default function WorkspaceMobileClient({
   initialInterview = null,
   initialTestCases = null,
   hasStudy = false,
+  categoryLabel,
 }: Props) {
   const router = useRouter();
   const { user } = useUser();
