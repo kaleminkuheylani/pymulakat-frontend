@@ -96,6 +96,20 @@ async function getIdToSlug(): Promise<Map<number, string>> {
   return map;
 }
 
+// 2026-07-13 refactor: statik pillar sayfalari silindi → middleware tek canonical'a yonlendirir.
+const TOP_LEVEL_PILLAR_TO_DB: Record<string, string> = {
+  "temelleri": "python-basics",
+  "veri-yapilari": "data-structures",
+  "liste-sozluk": "list-dict",
+  "pandas": "pandas",
+  "algoritma-sorulari": "algorithms",
+  "heap": "heap",
+  "stack": "stack",
+  "queue": "queue",
+  "dinamik-programlama": "dynamic-programming",
+  "python-temelleri": "python-basics",
+};
+
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get("host") || "";
@@ -119,27 +133,16 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  // 1b) Top-level Pillar URL'lerden soru detay URL'lerine yönlendir
-  // (kullanici direktifi 2026-07-13: /pandas/eksik-deger-doldurma 
+  // 1b) Top-level Pillar URL'lerden canonical /interviews/{db}/{slug} URL'lerine yönlendir
+  // (kullanici direktifi 2026-07-13: /pandas/eksik-deger-doldurma
   //  → 308 → /interviews/pandas/eksik-deger-doldurma)
   // TUM 9 pillar icin eski display URL → canonical /interviews/{db}/{slug}
+  // 2026-07-13 refactor: artık tek dynamic route, sadece 308 redirect.
   const topLevelPillarMatch = pathname.match(
     /^\/(temelleri|veri-yapilari|liste-sozluk|pandas|algoritma-sorulari|heap|stack|dinamik-programlama|python-temelleri|queue)\/([a-z0-9-]+)$/i
   );
   if (topLevelPillarMatch) {
     const [, displaySlug, slug] = topLevelPillarMatch;
-    const TOP_LEVEL_PILLAR_TO_DB: Record<string, string> = {
-      "temelleri": "python-basics",
-      "veri-yapilari": "data-structures",
-      "liste-sozluk": "list-dict",
-      "pandas": "pandas",
-      "algoritma-sorulari": "algorithms",
-      "heap": "heap",
-      "stack": "stack",
-      "queue": "queue",
-      "dinamik-programlama": "dynamic-programming",
-      "python-temelleri": "python-basics",
-    };
     const dbCat = TOP_LEVEL_PILLAR_TO_DB[displaySlug];
     if (dbCat) {
       // queue kaldirildi, 404'e yonlendir
@@ -148,6 +151,25 @@ export async function middleware(request: NextRequest) {
       }
       const url = request.nextUrl.clone();
       url.pathname = `/interviews/${dbCat}/${slug}`;
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
+  // 1c) Top-level Pillar URL'leri (sub-segment olmadan) → /interviews/{db} (308)
+  // Ornek: /heap → /interviews/heap, /pandas → /interviews/pandas
+  // 8 statik pillar sayfasi silindi (2026-07-13); canonical = /interviews/{db}
+  const topLevelBarePillarMatch = pathname.match(
+    /^\/(temelleri|veri-yapilari|liste-sozluk|pandas|algoritma-sorulari|heap|stack|dinamik-programlama|python-temelleri|queue)$/i
+  );
+  if (topLevelBarePillarMatch) {
+    const displaySlug = topLevelBarePillarMatch[1];
+    const dbCat = TOP_LEVEL_PILLAR_TO_DB[displaySlug];
+    if (dbCat) {
+      if (dbCat === "queue") {
+        return new NextResponse(null, { status: 404 });
+      }
+      const url = request.nextUrl.clone();
+      url.pathname = `/interviews/${dbCat}`;
       return NextResponse.redirect(url, 308);
     }
   }
@@ -224,45 +246,19 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2) /interviews/{category}/{id} -> slug (308 Permanent)
+  // 2) /interviews/{category}/{id_or_slug} → canonicalize
+  //    - /interviews/{db}/{slug}       → render (canonical)
+  //    - /interviews/{db}/{numeric_id} → 308 → /interviews/{db}/{slug} (legacy ID URL)
+  //    - /interviews/{aliased}/{slug}  → 308 → /interviews/{current}/{slug} (eski kategori)
+  //
+  // 2026-07-13 refactor: TOP_LEVEL_PILLAR_TO_DB artık module-level constant.
+  //    Top-level redirect'ler (1b, 1c) zaten canonicalize etti.
   const match = pathname.match(/^\/interviews\/([a-z0-9-]+)\/([a-z0-9-]+)$/i);
   if (!match) {
     return NextResponse.next();
   }
 
-  let [, category, idOrSlug] = match;
-
-  // 2a) /interviews/{db_category} (eski display URL'lerden)
-  //      /{top-level} → 308 → /interviews/{db_category} (kullanici direktifi 2026-07-13)
-  const isCategoryOnly = !idOrSlug;
-  if (isCategoryOnly) {
-    // Top-level /{display} → /interviews/{db_category}
-    const TOP_LEVEL_TO_DB: Record<string, string> = {
-      "/temelleri": "python-basics",
-      "/veri-yapilari": "data-structures",
-      "/liste-sozluk": "list-dict",
-      "/pandas": "pandas",
-      "/algoritma-sorulari": "algorithms",
-      "/heap": "heap",
-      "/stack": "stack",
-      "/queue": "queue",
-      "/dinamik-programlama": "dynamic-programming",
-      "/python-temelleri": "python-basics",
-    };
-    // pathname /interviews/{db_cat} — canonical zaten, render
-    if (pathname.startsWith("/interviews/")) {
-      return NextResponse.next();
-    }
-    // Top-level {display} → /interviews/{db}
-    const dbCat = TOP_LEVEL_TO_DB[`/${category}`];
-    if (dbCat) {
-      const url = request.nextUrl.clone();
-      url.pathname = `/interviews/${dbCat}`;
-      return NextResponse.redirect(url, 308);
-    }
-    // Eski /interviews/{db} zaten canonical
-    return NextResponse.next();
-  }
+  const [, category, idOrSlug] = match;
 
   // Legacy/deprecated category alias'lar (eski URL'leri canlı kategoriye yönlendir)
   const CATEGORY_ALIASES: Record<string, string> = {
@@ -278,23 +274,7 @@ export async function middleware(request: NextRequest) {
   //    Sadece /^\d+$/ ise ID kabul et, aksi halde slug — display URL'e yönlendir.
   const isPureId = /^\d+$/.test(idOrSlug);
   if (!isPureId) {
-    // Slug ise — zaten canonical /interviews/{db_cat}/{slug}, render et
-    // Eski top-level /{display}/{slug} → 308 → /interviews/{db}/{slug}
-    const TOP_LEVEL_TO_DB_SLUG: Record<string, string> = {
-      "python-basics": "python-basics",
-      "data-structures": "data-structures",
-      "list-dict": "list-dict",
-      "pandas": "pandas",
-      "heap": "heap",
-      "stack": "stack",
-      "queue": "queue",
-      "algorithms": "algorithms",
-      "dynamic-programming": "dynamic-programming",
-    };
-    if (TOP_LEVEL_TO_DB_SLUG[category]) {
-      // /interviews/{db}/{slug} — zaten canonical, render
-      return NextResponse.next();
-    }
+    // Slug ise — zaten canonical /interviews/{db}/{slug}, render et
     return NextResponse.next();
   }
 

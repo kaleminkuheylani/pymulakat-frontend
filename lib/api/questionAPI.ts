@@ -21,6 +21,20 @@ import type {
 } from "./types";
 
 // ═══════════════════════════════════════════════════════════════
+// ─── Cache tag registry (TEK KAYNAK) ─────────────────────────
+// ═══════════════════════════════════════════════════════════════
+// On-demand revalidation (/api/revalidate) bu tag'leri kullanır.
+// Yeni içerik eklendiğinde ilgili tag tetiklenir → Next.js cache'i düşer →
+// sonraki istek taze veriyle gelir.
+
+export const CACHE_TAGS = {
+  ALL_QUESTIONS: "questions-list",
+  ALL_CATEGORIES: "categories-list",
+  CATEGORY: (slug: string) => `category-${slug}`,
+  QUESTION: (cat: string, slug: string) => `question-${cat}-${slug}`,
+} as const;
+
+// ═══════════════════════════════════════════════════════════════
 // ─── Question CRUD ───────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════
 
@@ -51,9 +65,14 @@ export async function getAllQuestions(params?: {
   category?: string;
   limit?: number;
 }): Promise<ApiQuestion[]> {
+  // Tag: kategori verilirse `category-${slug}` da ekle → tek soru eklendiğinde
+  // hem liste hem o kategori sayfası cache'i düşer.
+  const tags = params?.category
+    ? [CACHE_TAGS.ALL_QUESTIONS, CACHE_TAGS.CATEGORY(params.category)]
+    : [CACHE_TAGS.ALL_QUESTIONS];
   const data = await apiFetch<ApiPagination | ApiQuestion[]>(
     "/api/v2/questions/all",
-    { params, next: { revalidate: 60 } }
+    { params, next: { revalidate: 3600, tags } }
   );
   if (Array.isArray(data)) return data;
   if (Array.isArray(data?.data)) return data.data as ApiQuestion[];
@@ -68,8 +87,11 @@ export async function getById(
   id: number,
   options: { includeStarter?: boolean } = {}
 ): Promise<ApiQuestion> {
+  // ID bazlı fetch (legacy URL fallback). Tag yok → eski ID URL'ler düşük öncelikli
+  // cache. Yeni URL'ler (slug) findQuestion() üzerinden question-${cat}-${slug} tag'i alır.
   return apiFetch<ApiQuestion>(`/api/v2/questions/${id}`, {
     params: { include_starter: options.includeStarter ? "true" : undefined },
+    next: { revalidate: 3600, tags: [CACHE_TAGS.ALL_QUESTIONS] },
   });
 }
 
@@ -81,9 +103,21 @@ export async function getBySlug(
   slug: string,
   options: { includeStarter?: boolean } = {}
 ): Promise<ApiQuestion> {
+  // Tag: hem `question-{cat}-{slug}` (tekil sayfa) hem `category-{cat}` (kategori listesi)
+  // hem `questions-list` (global). Yeni cevap/versiyon yüklenince 3 cache birden düşer.
   return apiFetch<ApiQuestion>(
     `/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}`,
-    { params: { include_starter: options.includeStarter ? "true" : undefined } }
+    {
+      params: { include_starter: options.includeStarter ? "true" : undefined },
+      next: {
+        revalidate: 3600,
+        tags: [
+          CACHE_TAGS.QUESTION(category, slug),
+          CACHE_TAGS.CATEGORY(category),
+          CACHE_TAGS.ALL_QUESTIONS,
+        ],
+      },
+    }
   );
 }
 
@@ -156,7 +190,15 @@ export async function getQuestionTestsBySlug(
   try {
     const data = await apiFetch<{ data: ApiQuestionTests } | ApiQuestionTests>(
       `/api/v2/questions/by-slug/${encodeURIComponent(category)}/${encodeURIComponent(slug)}/tests`,
-      { next: { revalidate: 3600 } }
+      {
+        next: {
+          revalidate: 3600,
+          tags: [
+            CACHE_TAGS.QUESTION(category, slug),
+            CACHE_TAGS.CATEGORY(category),
+          ],
+        },
+      }
     );
     if ("data" in data && data.data) return data.data;
     return data as ApiQuestionTests;
@@ -176,7 +218,8 @@ export async function getQuestionTests(
   if (/^\d+$/.test(slugOrId)) {
     try {
       const data = await apiFetch<{ data: ApiQuestionTests } | ApiQuestionTests>(
-        `/api/v2/questions/${slugOrId}/tests`
+        `/api/v2/questions/${slugOrId}/tests`,
+        { next: { revalidate: 3600, tags: [CACHE_TAGS.ALL_QUESTIONS] } }
       );
       if ("data" in data && data.data) return data.data;
       return data as ApiQuestionTests;
@@ -185,6 +228,43 @@ export async function getQuestionTests(
     }
   }
   return getQuestionTestsBySlug(category, slugOrId);
+}
+
+// ═══════════════════════════════════════════════════════════════
+// ─── Category page composite (kategori landing için) ─────────
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Tek çağrıda kategori meta + soru listesi (kategori sayfası için).
+ * İki ayrı fetch yerine Promise.all ile paralel çek → cold start ~50% azalır.
+ *
+ * @example
+ *   const { meta, questions } = await getCategoryPageData("python-basics");
+ */
+export async function getCategoryPageData(
+  categorySlug: string
+): Promise<{
+  meta: Awaited<ReturnType<typeof listCategories>>[number] | null;
+  questions: ApiQuestion[];
+}> {
+  const [allCats, allQs] = await Promise.all([
+    listCategories(),
+    getAllQuestions({ category: categorySlug, limit: 200 }),
+  ]);
+  return {
+    meta: allCats.find((c) => c.slug === categorySlug) ?? null,
+    questions: allQs,
+  };
+}
+
+/**
+ * generateStaticParams için: tüm bilinen kategori slug'larını DB'den döner.
+ * `dynamicParams: true` olduğu için build sonrası eklenen kategoriler de çalışır.
+ */
+export async function listAllCategorySlugs(): Promise<string[]> {
+  const cats = await listCategories();
+  // c.slug string | undefined — filter(Boolean) sonrası tip düzeltmesi gerekiyor
+  return cats.map((c) => c.slug).filter((s): s is string => Boolean(s));
 }
 
 // ═══════════════════════════════════════════════════════════════
