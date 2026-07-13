@@ -11,7 +11,7 @@
 
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { Home, ChevronRight, Code2 } from "lucide-react";
+import { Code2 } from "lucide-react";
 import { getCategoryMeta } from "@/lib/api/categoryAPI";
 import { getAllQuestions } from "@/lib/api/questionAPI";
 import type { ApiQuestion } from "@/lib/api/types";
@@ -37,23 +37,22 @@ export default async function CategoryLandingPage({ params }: PageProps) {
   return (
     <main className="min-h-screen bg-[#050816] text-white">
       <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
-        {/* ─── Breadcrumb (görsel, DB label) ──────────── */}
+        {/* ─── Breadcrumb (DB label, span yasak kurali) ─── */}
         <nav aria-label="Breadcrumb" className="mb-6 text-sm">
           <ol className="flex flex-wrap items-center gap-1 text-white/60">
-            <li className="flex items-center gap-1">
-              <Link href="/" className="flex items-center gap-1 hover:text-white transition-colors">
-                <Home className="w-3.5 h-3.5" />
-                <span>Ana Sayfa</span>
+            <li>
+              <Link href="/" className="hover:text-white transition-colors">
+                Ana Sayfa
               </Link>
             </li>
-            <li className="flex items-center gap-1">
-              <ChevronRight className="w-3 h-3 text-white/30" />
+            <li className="text-white/30">/</li>
+            <li>
               <Link href="/interviews" className="hover:text-white transition-colors">
                 Sorular
               </Link>
             </li>
-            <li className="flex items-center gap-1">
-              <ChevronRight className="w-3 h-3 text-white/30" />
+            <li className="text-white/30">/</li>
+            <li>
               <strong className="text-white font-medium">{meta.label}</strong>
             </li>
           </ol>

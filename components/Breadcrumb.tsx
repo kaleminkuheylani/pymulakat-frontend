@@ -1,15 +1,15 @@
 // components/Breadcrumb.tsx
 // Görsel breadcrumb — soru detay sayfasında H1 üstünde.
 //
-// MİMARİ (KESİN):
-// - Display URL kullanır (canonical), internal slug değil
-// - lib/categorySlug.ts truth of source
+// MİMARİ (KESİN, 2026-07-13):
+// - URL: /interviews/{db_category}/{slug} (DB category slug)
+// - DB-FIRST: kategori label'ı DB'den (lib/api/categoryAPI.ts)
 // - 3 seviye: Ana Sayfa > Kategori > Soru
 // - Lucide icon (span yok, emoji yok)
 
 import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
-import { getCategoryDisplayUrl, getCategoryLabel } from "@/lib/categorySlug";
+import { getCategoryMeta } from "@/lib/api/categoryAPI";
 
 export interface BreadcrumbItem {
   label: string;
@@ -17,19 +17,21 @@ export interface BreadcrumbItem {
 }
 
 export interface BreadcrumbProps {
-  category: string; // internal slug (örn. "python-basics")
+  category: string; // DB category (örn. "python-basics")
   slug: string; // soru slug
   title: string; // soru title
 }
 
-export default function Breadcrumb({ category, slug, title }: BreadcrumbProps) {
-  const displayCat = getCategoryDisplayUrl(category);
-  const categoryLabel = getCategoryLabel(category);
-  const questionUrl = `${displayCat}/${slug}`;
+export default async function Breadcrumb({ category, slug, title }: BreadcrumbProps) {
+  // DB'den label (kullanici direktifi 2026-07-13: hardcoded YOK)
+  const meta = await getCategoryMeta(category);
+  const categoryLabel = meta?.label ?? category;
+  const categoryUrl = `/interviews/${category}`;
+  const questionUrl = `/interviews/${category}/${slug}`;
 
   const items: BreadcrumbItem[] = [
     { label: "Ana Sayfa", href: "/" },
-    { label: categoryLabel, href: displayCat },
+    { label: categoryLabel, href: categoryUrl },
     { label: title, href: questionUrl },
   ];
 
@@ -44,9 +46,9 @@ export default function Breadcrumb({ category, slug, title }: BreadcrumbProps) {
                 <Link
                   href={item.href}
                   className="flex items-center gap-1 hover:text-white transition-colors"
+                  aria-label="Ana Sayfa"
                 >
                   <Home className="w-3.5 h-3.5" />
-                  <span>{item.label}</span>
                 </Link>
               ) : isLast ? (
                 <strong className="text-white font-medium truncate max-w-[200px] sm:max-w-[400px]">
