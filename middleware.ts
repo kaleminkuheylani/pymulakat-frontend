@@ -96,19 +96,12 @@ async function getIdToSlug(): Promise<Map<number, string>> {
   return map;
 }
 
-// 2026-07-13 refactor: statik pillar sayfalari silindi → middleware tek canonical'a yonlendirir.
-const TOP_LEVEL_PILLAR_TO_DB: Record<string, string> = {
-  "temelleri": "python-basics",
-  "veri-yapilari": "data-structures",
-  "liste-sozluk": "list-dict",
-  "pandas": "pandas",
-  "algoritma-sorulari": "algorithms",
-  "heap": "heap",
-  "stack": "stack",
-  "queue": "queue",
-  "dinamik-programlama": "dynamic-programming",
-  "python-temelleri": "python-basics",
-};
+// 2026-07-13 refactor: canonical top-level display URL'ler.
+// app/[display]/page.tsx tek dinamik route, 8 pillar pre-render.
+// /interviews/{db} eski canonical → 308 → /{display}
+// /{display}/[slug] → 308 → /interviews/{db}/{slug} (soru detay hâlâ orada)
+// Mapping tek kaynak: lib/categorySlug (DRY prensibi)
+import { displayToDb, getCategoryDisplayUrl } from "@/lib/categorySlug";
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -133,46 +126,32 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
-  // 1b) Top-level Pillar URL'lerden canonical /interviews/{db}/{slug} URL'lerine yönlendir
-  // (kullanici direktifi 2026-07-13: /pandas/eksik-deger-doldurma
-  //  → 308 → /interviews/pandas/eksik-deger-doldurma)
-  // TUM 9 pillar icin eski display URL → canonical /interviews/{db}/{slug}
-  // 2026-07-13 refactor: artık tek dynamic route, sadece 308 redirect.
-  const topLevelPillarMatch = pathname.match(
-    /^\/(temelleri|veri-yapilari|liste-sozluk|pandas|algoritma-sorulari|heap|stack|dinamik-programlama|python-temelleri|queue)\/([a-z0-9-]+)$/i
+  // 1b) /{display}/{slug} → /interviews/{db}/{slug} (308)
+  // Soru detay URL'i hâlâ /interviews/{db}/{slug} canonical.
+  // /heap/palindrom-kontrol → /interviews/heap/palindrom-kontrol
+  const topLevelPillarSlugMatch = pathname.match(
+    /^\/([a-z0-9-]+)\/([a-z0-9-]+)$/i
   );
-  if (topLevelPillarMatch) {
-    const [, displaySlug, slug] = topLevelPillarMatch;
-    const dbCat = TOP_LEVEL_PILLAR_TO_DB[displaySlug];
+  if (topLevelPillarSlugMatch) {
+    const [, displaySlug, slug] = topLevelPillarSlugMatch;
+    // Skip if path looks like a real top-level route (about, admin, ...)
+    // (Bu sayfalar statik route olarak zaten match etti, middleware'ye gelmedi)
+    // Sadece bilinen display slug'ları redirect et
+    const dbCat = displayToDb(displaySlug);
     if (dbCat) {
-      // queue kaldirildi, 404'e yonlendir
-      if (dbCat === "queue") {
-        return new NextResponse(null, { status: 404 });
-      }
       const url = request.nextUrl.clone();
       url.pathname = `/interviews/${dbCat}/${slug}`;
       return NextResponse.redirect(url, 308);
     }
+    // Bilinmeyen /[display]/[slug] — 404 (deep link olarak işlenmez)
+    return new NextResponse(null, { status: 404 });
   }
 
-  // 1c) Top-level Pillar URL'leri (sub-segment olmadan) → /interviews/{db} (308)
-  // Ornek: /heap → /interviews/heap, /pandas → /interviews/pandas
-  // 8 statik pillar sayfasi silindi (2026-07-13); canonical = /interviews/{db}
-  const topLevelBarePillarMatch = pathname.match(
-    /^\/(temelleri|veri-yapilari|liste-sozluk|pandas|algoritma-sorulari|heap|stack|dinamik-programlama|python-temelleri|queue)$/i
-  );
-  if (topLevelBarePillarMatch) {
-    const displaySlug = topLevelBarePillarMatch[1];
-    const dbCat = TOP_LEVEL_PILLAR_TO_DB[displaySlug];
-    if (dbCat) {
-      if (dbCat === "queue") {
-        return new NextResponse(null, { status: 404 });
-      }
-      const url = request.nextUrl.clone();
-      url.pathname = `/interviews/${dbCat}`;
-      return NextResponse.redirect(url, 308);
-    }
-  }
+  // 1c) /{display} (no sub-segment) → render (app/[display]/page.tsx)
+  // Bilinen 8 display URL + legacy alias → app/[display] catch-all handle eder.
+  // Bilinmeyen top-level path → 404 (statik rotalar about/admin/etc. zaten
+  // kendi sayfalarını render eder; bu kontrol buraya gelmez).
+  // NOT: 1c redirect kaldırıldı — top-level display URL canonical oldu.
 
   // 1.5) Auth-gated sayfalar: misafirler → /login (returnUrl ile geri döner)
   // Merkeziyet: SADECE /dashboard* ve /login member-only.
@@ -246,13 +225,26 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  // 2) /interviews/{category}/{id_or_slug} → canonicalize
-  //    - /interviews/{db}/{slug}       → render (canonical)
+  // 2) /interviews/{category} (no sub-segment) → /{display} (308)
+  // Eski canonical /interviews/{db} → yeni canonical /{display} konsolidasyon.
+  // (Tek bir canonical URL: top-level display, hem SEO hem kullanıcı için.)
+  const interviewCategoryOnly = pathname.match(/^\/interviews\/([a-z0-9-]+)$/i);
+  if (interviewCategoryOnly) {
+    const dbSlug = interviewCategoryOnly[1];
+    const displayUrl = getCategoryDisplayUrl(dbSlug);
+    if (displayUrl && displayUrl !== `/interviews/${dbSlug}`) {
+      const url = request.nextUrl.clone();
+      url.pathname = displayUrl;
+      return NextResponse.redirect(url, 308);
+    }
+    // DB'de olmayan eski kategori → 404
+    return new NextResponse(null, { status: 404 });
+  }
+
+  // 3) /interviews/{category}/{id_or_slug}
+  //    - /interviews/{db}/{slug}       → render (soru detay canonical)
   //    - /interviews/{db}/{numeric_id} → 308 → /interviews/{db}/{slug} (legacy ID URL)
   //    - /interviews/{aliased}/{slug}  → 308 → /interviews/{current}/{slug} (eski kategori)
-  //
-  // 2026-07-13 refactor: TOP_LEVEL_PILLAR_TO_DB artık module-level constant.
-  //    Top-level redirect'ler (1b, 1c) zaten canonicalize etti.
   const match = pathname.match(/^\/interviews\/([a-z0-9-]+)\/([a-z0-9-]+)$/i);
   if (!match) {
     return NextResponse.next();

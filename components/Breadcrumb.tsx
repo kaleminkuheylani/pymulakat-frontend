@@ -10,6 +10,7 @@
 import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
 import { getCategoryMeta } from "@/lib/api/categoryAPI";
+import { getCategoryDisplayUrl } from "@/lib/categorySlug";
 
 export interface BreadcrumbItem {
   label: string;
@@ -26,7 +27,9 @@ export default async function Breadcrumb({ category, slug, title }: BreadcrumbPr
   // DB'den label (kullanici direktifi 2026-07-13: hardcoded YOK)
   const meta = await getCategoryMeta(category);
   const categoryLabel = meta?.label ?? category;
-  const categoryUrl = `/interviews/${category}`;
+  // Canonical category: /{display} (top-level, ISR pre-rendered)
+  // Question detail: /interviews/{db_category}/{slug} (canonical)
+  const categoryUrl = getCategoryDisplayUrl(category);
   const questionUrl = `/interviews/${category}/${slug}`;
 
   const items: BreadcrumbItem[] = [

@@ -1,6 +1,7 @@
 import type { MetadataRoute } from "next";
 import { fetchAllQuestions, listCategories, slugifyTitle } from "../lib/api/questionAPI";
 import { BASE_URL } from "../lib/seo";
+import { getCategoryDisplayUrl } from "../lib/categorySlug";
 
 // Sitemap (2026-07-13 refactor):
 //   - Tüm sayfa URL'leri DB'den (kategori meta + soru listesi)
@@ -55,13 +56,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${BASE_URL}/dashboard/recommendations`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
-  // 2. Kategori landing sayfaları (DB-FIRST). 8 pillar + queue dahil tüm kategoriler.
-  //    Sitemap'e eklemek thin content riskini azaltır (her sayfada DB'den meta + soru listesi var).
+  // 2. Kategori landing sayfaları (DB-FIRST). 8 canonical display URL.
+  //    /{display} top-level canonical (örn. /heap, /pandas, /temelleri).
+  //    app/[display]/page.tsx 8 pre-rendered + ISR 1h.
   const categories = await listCategories().catch(() => []);
   const categoryPages: MetadataRoute.Sitemap = categories
-    .filter((c) => c.slug)
-    .map((c) => ({
-      url: `${BASE_URL}/interviews/${c.slug}`,
+    .map((c) => c.slug)
+    .filter((slug): slug is string => Boolean(slug))
+    .map((slug) => ({
+      url: `${BASE_URL}${getCategoryDisplayUrl(slug)}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.85,
