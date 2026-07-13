@@ -1,6 +1,7 @@
 // app/interviews/layout.tsx
 import { Metadata } from "next";
 import Script from "next/script";
+import { BASE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: {
@@ -59,8 +60,7 @@ export default function InterviewsLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const siteUrl =
-    process.env.NEXT_PUBLIC_SITE_URL || "https://pythonmulakat.com";
+  const siteUrl = BASE_URL;
 
   const collectionSchema = {
     "@context": "https://schema.org",

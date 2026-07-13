@@ -1,16 +1,25 @@
 import type { MetadataRoute } from "next";
-import { fetchAllQuestions, slugifyTitle } from "../lib/api/questionAPI";
+import { fetchAllQuestions, listCategories, slugifyTitle } from "../lib/api/questionAPI";
+import { BASE_URL } from "../lib/seo";
 
-const BASE = "https://pythonmulakat.com";
+// Sitemap (2026-07-13 refactor):
+//   - Tüm sayfa URL'leri DB'den (kategori meta + soru listesi)
+//   - 8 pillar statik sayfa artık yok — sitemap yalnızca canonical /interviews/{db}/...
+//   - Soru + kategori URL'leri dinamik, yeni eklenen içerik otomatik sitemap'e düşer
+//   - robots.ts allow: "/interviews/*" ile tutarlı
 
-// Soru listesi: build sırasında CSV'den çekilir (CSV = source of truth).
-// CSV-only mimari: backend DB'ye hiç bağlanmıyoruz.
-async function fetchQuestionsFromAPI(): Promise<Array<{ category: string; slug: string }>> {
+// Soru listesi: DB'den çekilir (DB-FIRST, 2026-07-11).
+async function fetchQuestionsFromAPI(): Promise<
+  Array<{ category: string; slug: string; updated_at?: string | null }>
+> {
   try {
     const rows = await fetchAllQuestions();
     return rows
-      .filter((q) => q.category && q.title)
-      .map((q) => ({ category: q.category, slug: q.slug || slugifyTitle(q.title) }));
+      .filter((q) => q.category && (q.title || q.slug))
+      .map((q) => ({
+        category: q.category,
+        slug: q.slug || slugifyTitle(q.title || ""),
+      }));
   } catch {
     return [];
   }
@@ -31,48 +40,49 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 1. Statik sayfalar (her zaman)
   const staticPages: MetadataRoute.Sitemap = [
-    { url: `${BASE}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
-    { url: `${BASE}/interviews`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
-    { url: `${BASE}/python-online`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${BASE}/python-egitimi`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${BASE}/python-kodlari`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
-    { url: `${BASE}/python-temelleri`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
-    { url: `${BASE}/veri-yapilari`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
-    { url: `${BASE}/pandas`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
-    { url: `${BASE}/liste-sozluk`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
-    { url: `${BASE}/heap`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
-    { url: `${BASE}/stack`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
-    { url: `${BASE}/queue`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.8 },
-    { url: `${BASE}/algoritma-sorulari`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
-    { url: `${BASE}/dinamik-programlama`, lastModified: now, changeFrequency: "weekly" as const, priority: 0.85 },
-    { url: `${BASE}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
-    { url: `${BASE}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
-    { url: `${BASE}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
-    { url: `${BASE}/profile`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
-    { url: `${BASE}/dashboard`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
-    { url: `${BASE}/dashboard/forms`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
-    { url: `${BASE}/dashboard/recommendations`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
+    { url: `${BASE_URL}/`, lastModified: now, changeFrequency: "daily", priority: 1.0 },
+    { url: `${BASE_URL}/interviews`, lastModified: now, changeFrequency: "daily", priority: 0.9 },
+    { url: `${BASE_URL}/python-online`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${BASE_URL}/python-egitimi`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${BASE_URL}/python-kodlari`, lastModified: now, changeFrequency: "monthly", priority: 0.85 },
+    { url: `${BASE_URL}/about`, lastModified: now, changeFrequency: "monthly", priority: 0.7 },
+    { url: `${BASE_URL}/login`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/register`, lastModified: now, changeFrequency: "monthly", priority: 0.6 },
+    { url: `${BASE_URL}/terms`, lastModified: now, changeFrequency: "yearly", priority: 0.3 },
+    { url: `${BASE_URL}/profile`, lastModified: now, changeFrequency: "monthly", priority: 0.4 },
+    { url: `${BASE_URL}/dashboard`, lastModified: now, changeFrequency: "monthly", priority: 0.5 },
+    { url: `${BASE_URL}/dashboard/forms`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
+    { url: `${BASE_URL}/dashboard/recommendations`, lastModified: now, changeFrequency: "daily", priority: 0.6 },
   ];
 
-  // 2. Soru listesi — backend API'den (DB-FIRST). /interviews/[category] artık
-  //    redirect olduğu için kategori sayfaları sitemap'e EKLENMIYOR (sadece yeni
-  //    pillar URL'leri yukarıda).
+  // 2. Kategori landing sayfaları (DB-FIRST). 8 pillar + queue dahil tüm kategoriler.
+  //    Sitemap'e eklemek thin content riskini azaltır (her sayfada DB'den meta + soru listesi var).
+  const categories = await listCategories().catch(() => []);
+  const categoryPages: MetadataRoute.Sitemap = categories
+    .filter((c) => c.slug)
+    .map((c) => ({
+      url: `${BASE_URL}/interviews/${c.slug}`,
+      lastModified: now,
+      changeFrequency: "weekly" as const,
+      priority: 0.85,
+    }));
+
+  // 3. Soru detay sayfaları (DB-FIRST)
   const questions = await fetchQuestionsFromAPI();
   const questionPages: MetadataRoute.Sitemap = questions.map((q) => ({
-    url: `${BASE}/interviews/${q.category}/${q.slug}`,
+    url: `${BASE_URL}/interviews/${q.category}/${q.slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  // 3. Python eğitim dersleri (statik 6 ders)
+  // 4. Python eğitim dersleri (statik 6 ders)
   const lessonPages: MetadataRoute.Sitemap = LESSON_SLUGS.map((slug) => ({
-    url: `${BASE}/python-egitimi/${slug}`,
+    url: `${BASE_URL}/python-egitimi/${slug}`,
     lastModified: now,
     changeFrequency: "monthly" as const,
     priority: 0.7,
   }));
 
-  return [...staticPages, ...questionPages, ...lessonPages];
+  return [...staticPages, ...categoryPages, ...questionPages, ...lessonPages];
 }

@@ -13,15 +13,53 @@ import { ApiError } from "./types";
 
 export { ApiError };
 
-// ─── API_BASE ────────────────────────────────────────────────
+// ─── API_BASE — server vs client ayrımı ──────────────────────
 /**
- * Production: NEXT_PUBLIC_API_URL env (Vercel dashboard'dan set edilir).
- * Fallback: Railway production URL.
+ * Sunucu tarafı (RSC, generateStaticParams, ISR) → INTERNAL_API_URL
+ *   - Docker/k8s internal network (örn. http://fastapi:8000)
+ *   - Public DNS atlanır, latency düşer + CORS/auth gerekmez
+ *   - Fallback: NEXT_PUBLIC_API_URL
+ *   - Son çare: Railway public URL (local dev için)
+ *
+ * İstemci tarafı (browser fetch, workspace/code runner) → NEXT_PUBLIC_API_URL
+ *   - NEXT_PUBLIC_*: browser bundle'a inline edilir, public olmalı
+ *   - Server component'lerde import edilmemeli
+ *
  * 📌 SADECE burada tanımlı — başka yerde process.env.NEXT_PUBLIC_API_URL
  *    veya hardcoded URL YASAK.
  */
+function resolveServerBase(): string {
+  // RSC'ler server'da çalışır — internal URL tercih et
+  return (
+    process.env.INTERNAL_API_URL ||
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://pymulakat-backend-production.up.railway.app"
+  );
+}
+
+function resolveClientBase(): string {
+  // Browser bundle'da NEXT_PUBLIC_* env'leri inline edilir
+  return (
+    process.env.NEXT_PUBLIC_API_URL ||
+    "https://pymulakat-backend-production.up.railway.app"
+  );
+}
+
+/**
+ * Browser'da (window tanımlı) → public URL, server'da → internal URL.
+ * Server component'ler apiFetch() çağırırken bu base kullanılır; browser
+ * kodundan (useEffect, onClick handler) çağrıldığında public base'e düşer.
+ */
 export const API_BASE: string =
-  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+  typeof window === "undefined" ? resolveServerBase() : resolveClientBase();
+
+/** Hangi base'in seçildiğini debug için (server log). */
+export const API_BASE_KIND: "internal" | "public" | "fallback" =
+  process.env.INTERNAL_API_URL
+    ? "internal"
+    : process.env.NEXT_PUBLIC_API_URL
+    ? "public"
+    : "fallback";
 
 // ─── Request init options ────────────────────────────────────
 export interface ApiFetchOptions extends Omit<RequestInit, "body"> {

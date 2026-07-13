@@ -9,6 +9,17 @@
 //   - DB yeni kategori eklenince UI otomatik guncellenir
 //   - Frontend'te hardcoded string YOK
 //   - ISR cache ile backend yukunu minimumda tutar
+//
+// Cache stratejisi (2026-07-13, refactor):
+//   - 1 saat ISR (`revalidate: 3600`)
+//   - Tag: "categories-list" → on-demand revalidation (/api/revalidate)
+//   - Yeni kategori eklenince /api/revalidate tetiklenir, max 1 saat beklemez
+
+/** Cache tag'leri (TEK KAYNAK). */
+export const CACHE_TAGS = {
+  ALL_CATEGORIES: "categories-list",
+  CATEGORY: (slug: string) => `category-${slug}`,
+} as const;
 
 import { apiFetch } from "./index";
 import type { ApiCategory } from "./types";
@@ -38,7 +49,7 @@ export async function getAllCategories(): Promise<CategoryMeta[]> {
   try {
     const res = await apiFetch<{ data: ApiCategory[] } | ApiCategory[]>(
       "/api/v2/categories",
-      { next: { revalidate: CACHE_TTL } }
+      { next: { revalidate: CACHE_TTL, tags: ["categories-list"] } }
     );
 
     const list = Array.isArray(res) ? res : res.data || [];

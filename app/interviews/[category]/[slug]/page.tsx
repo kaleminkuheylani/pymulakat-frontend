@@ -24,16 +24,46 @@ import { slugifyTitle } from "@/lib/questionMeta";
 import { findQuestion, slugifyTitle as csvSlugify } from "@/lib/api/questionAPI";
 import type { ApiQuestion, ApiQuestionTests } from "@/lib/api/types";
 import { getQuestionTests } from "@/lib/api/questionAPI";
+import { BASE_URL } from "@/lib/seo";
 
 // Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
 
-export const dynamic = "force-dynamic";
+// ISR + on-demand revalidation (2026-07-13 refactor):
+//   - revalidate=3600: 1 saat cache
+//   - dynamicParams=true: build sonrası eklenen slug'lar da çalışır
+//   - Tags: question-{cat}-{slug}, category-{cat}, questions-list →
+//     tek endpoint değişince ilgili tüm cache'ler düşer
+// Not: Bu sayfayı `generateMetadata()` zaten yönetiyor; sayfanın kendisi
+// force-dynamic yerine ISR kullanıyor → build-time pre-render, runtime cache.
+export const revalidate = 3600;
+export const dynamicParams = true;
 
 interface PageProps {
   // Yeni top-level route: /{display}/{slug} (ör: /temelleri/palindrome-checker)
   // category = display URL, slug = soru slug
   params: Promise<{ category: string; slug: string }>;
   searchParams: Promise<{ [key: string]: string | string[] | undefined }>;
+}
+
+// ─── generateStaticParams (build-time pre-render) ────────────
+// İlk 100 soruyu build sırasında pre-render et (sitemap'te en sık crawl
+// edilenler). dynamicParams=true → build sonrası eklenenler on-demand SSR.
+export async function generateStaticParams() {
+  try {
+    // listAllCategorySlugs + getAllQuestions import'a eklemeden inline çekiyoruz
+    // (build sırasında DB bağlantısı başarısız olursa [] döner → tüm sayfalar
+    //  on-demand render'a düşer, build kırılmaz).
+    const { getAllQuestions, listAllCategorySlugs } = await import("@/lib/api/questionAPI");
+    const cats = await listAllCategorySlugs();
+    const allQs = await getAllQuestions({ limit: 200 });
+    return allQs
+      .filter((q) => cats.includes(q.category) && q.slug)
+      .slice(0, 100)
+      .map((q) => ({ category: q.category, slug: q.slug! }));
+  } catch {
+    // DB erişilemezse pre-render atla, tüm sayfalar on-demand ISR'a düşer
+    return [];
+  }
 }
 
 interface SEOQuestion {
@@ -166,22 +196,22 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       ...(q.related_concepts || []),
     ].join(", "),
     alternates: {
-      canonical: `https://pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
+      canonical: `${BASE_URL}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
     },
     openGraph: {
       title,
       description,
-      url: `https://pythonmulakat.com/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
+      url: `${BASE_URL}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
       siteName: "PythonMulakat",
       locale: "tr_TR",
       type: "article",
-      images: [{ url: "https://pythonmulakat.com/og-default.png", width: 1200, height: 630 }],
+      images: [{ url: `${BASE_URL}/og-default.png`, width: 1200, height: 630 }],
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: ["https://pythonmulakat.com/og-default.png"],
+      images: [`${BASE_URL}/og-default.png`],
     },
   };
 }
@@ -394,7 +424,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   } : null;
   // SSR'dan gelen test case verisi — her iki client da prop olarak alır (misafirler dahil).
   const initialTests: any = ssrTests;
-  const baseUrl = "https://pythonmulakat.com";
+  const baseUrl = BASE_URL;
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
     ? await buildBreadcrumbSchema(resolvedParams.category, resolvedParams.slug, seoQ.title, baseUrl)
