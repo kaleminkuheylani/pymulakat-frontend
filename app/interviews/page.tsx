@@ -1,125 +1,128 @@
 // app/interviews/page.tsx
 //
-// 8 KATEGORİ LİSTESİ — DB-FIRST (kullanici direktifi 2026-07-13).
+// TÜM SORULAR — Tek liste + kategori filtreleme.
 //
-// Her şey DB'den gelir:
-//   - label, description, count → /api/v2/categories
-//   - icon → DB emoji'den lucide mapping (lib/icons.ts CATEGORY_ICONS)
-//   - level → DB level agregat (en düşük level)
+// /interviews → tüm 85+ soru, DB'den (kullanici direktifi 2026-07-13).
+//   - Kategori filtresi: butonlar (8 kategori)
+//   - Default: tümü
+//   - Tıklanan kategori: sadece o kategorinin soruları
+//   - URL: ?category=python-basics (deep linking)
+//   - DB-FIRST: server-side fetch, ISR 1h cache
+//   - 8 kategori (queue kaldirildi)
 //
-// Queue kategorisi KALDIRILDI (DB'de 0 soru, kategori yok).
-// 8 kategori: python-basics, data-structures, list-dict, pandas,
-// algorithms, heap, stack, dynamic-programming.
-//
-// Server component, ISR 1h cache, hardcoded label/description YOK.
+// Mimari:
+//   - Server component (initial HTML dolu, JS yok calissin)
+//   - Soru kartlari /interviews/{db_cat}/{slug} link
+//   - Client component (FilterButtons): kategori state + URL sync
+//   - DB'den soru + label + description + count
 
 import Link from "next/link";
-import { ArrowRight } from "lucide-react";
-import { listCategories } from "@/lib/api/questionAPI";
-import { CATEGORY_ICONS } from "@/lib/icons";
+import { Code2, ArrowRight } from "lucide-react";
+import { getAllCategories } from "@/lib/api/categoryAPI";
+import { getAllQuestions } from "@/lib/api/questionAPI";
+import type { ApiQuestion } from "@/lib/api/types";
+import FilterButtons from "./FilterButtons";
 
 export const revalidate = 3600; // 1 saat ISR
 
-interface Category {
-  slug: string;
-  label: string;
-  description: string;
-  question_count: number;
-  level: "beginner" | "intermediate" | "advanced";
+interface PageProps {
+  searchParams: Promise<{ category?: string }>;
 }
 
-const LEVEL_LABEL: Record<string, string> = {
-  beginner: "Başlangıç",
-  intermediate: "Orta",
-  advanced: "İleri",
-};
+export default async function InterviewsListPage({ searchParams }: PageProps) {
+  const params = await searchParams;
+  const activeCategory = params.category ?? "all";
 
-const LEVEL_STYLE: Record<string, string> = {
-  beginner: "bg-emerald-500/15 text-emerald-300 border-emerald-500/30",
-  intermediate: "bg-amber-500/15 text-amber-300 border-amber-500/30",
-  advanced: "bg-rose-500/15 text-rose-300 border-rose-500/30",
-};
+  // DB'den tüm kategoriler (8 kategori, queue yok)
+  const allCategories = await getAllCategories();
+  const categories = allCategories.filter((c) => c.slug !== "queue");
 
-async function fetchCategoriesFromDB(): Promise<Category[]> {
-  try {
-    const items = await listCategories();
-    const filtered = items.filter((c) => c.slug !== "queue" && !!c.slug);
-    return filtered.map((c) => {
-      // Backend su anda level dondurmuyor, default beginner
-      const level: Category["level"] = "beginner";
-      return {
-        slug: c.slug as string,
-        label: c.label ?? c.slug ?? "",
-        description: c.description ?? "",
-        question_count: c.question_count ?? 0,
-        level,
-      };
-    });
-  } catch (e) {
-    console.error("[interviews] listCategories hatasi:", e);
-    return [];
-  }
-}
-
-export default async function InterviewsListPage() {
-  const categories = await fetchCategoriesFromDB();
+  // DB'den tüm sorular (filtre uygulanacak)
+  const allQuestions: ApiQuestion[] =
+    activeCategory === "all"
+      ? await getAllQuestions({ limit: 500 })
+      : await getAllQuestions({ category: activeCategory, limit: 500 });
 
   return (
     <main className="min-h-screen bg-[#050816] text-white">
       <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
         {/* ─── Header ─────────────────────────────────────── */}
-        <header className="mb-10">
+        <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
             Python Mülakat Soruları
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-2xl">
-            Seviyene uygun kategoriyi seç, tarayıcıda kod yaz, anında test et.
-            Tüm kategoriler DB'den beslenir — yeni soru eklendikçe otomatik görünür.
+            {activeCategory === "all"
+              ? "Tüm kategorilerdeki Python mülakat soruları. Filtre ile daraltabilirsin."
+              : categories.find((c) => c.slug === activeCategory)?.description ||
+                "Filtrelenmiş sorular."}
           </p>
+          <div className="mt-3 text-sm text-white/50">
+            {allQuestions.length} soru gösteriliyor
+            {activeCategory !== "all" && (
+              <>
+                {" · "}
+                <Link
+                  href="/interviews"
+                  className="text-amber-400 hover:text-amber-300 underline-offset-2 hover:underline"
+                >
+                  Filtreyi temizle
+                </Link>
+              </>
+            )}
+          </div>
         </header>
 
-        {/* ─── 8 Kategori grid ────────────────────────────── */}
-        <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {categories.map((c) => {
-            const Icon = CATEGORY_ICONS[c.slug] ?? CATEGORY_ICONS["python-basics"];
-            return (
-              <li key={c.slug}>
+        {/* ─── Filtre butonlari (client component) ───────── */}
+        <FilterButtons
+          categories={categories.map((c) => ({
+            slug: c.slug,
+            label: c.label ?? c.slug,
+            count: c.question_count,
+          }))}
+          active={activeCategory}
+        />
+
+        {/* ─── Soru listesi (server-rendered, DB'den) ──────── */}
+        <ul className="space-y-3 mt-6">
+          {allQuestions.length === 0 ? (
+            <li className="text-white/50 text-sm py-8 text-center">
+              Bu kategoride henüz soru yok.
+            </li>
+          ) : (
+            allQuestions.map((q) => (
+              <li key={q.id}>
                 <Link
-                  href={`/interviews/${c.slug}`}
-                  className="block bg-white/[0.03] border border-white/10 rounded-xl p-5 hover:bg-white/[0.06] hover:border-white/20 transition-colors h-full"
+                  href={`/interviews/${q.category}/${q.slug}`}
+                  className="block bg-white/[0.03] border border-white/10 rounded-lg p-4 hover:bg-white/[0.06] hover:border-white/20 transition-colors"
                 >
-                  <div className="flex items-start justify-between mb-3">
-                    <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/30 flex items-center justify-center flex-shrink-0">
-                      <Icon className="w-5 h-5 text-amber-400" />
+                  <div className="flex items-start gap-3">
+                    <Code2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-1" />
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2 mb-1.5">
+                        <h2 className="text-base font-semibold text-white truncate">
+                          {q.title}
+                        </h2>
+                        <ArrowRight className="w-4 h-4 text-white/30 flex-shrink-0" />
+                      </div>
+                      <p className="text-xs text-white/50 line-clamp-2">
+                        {q.description?.split("\n")[0] || "Soru açıklaması"}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2 flex-wrap">
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60 uppercase tracking-wider">
+                          {q.level}
+                        </span>
+                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60">
+                          {categories.find((c) => c.slug === q.category)?.label ?? q.category}
+                        </span>
+                      </div>
                     </div>
-                    <span
-                      className={`text-[10px] px-2 py-0.5 rounded border font-semibold tracking-wider uppercase ${
-                        LEVEL_STYLE[c.level] ?? LEVEL_STYLE.beginner
-                      }`}
-                    >
-                      {LEVEL_LABEL[c.level] ?? c.level}
-                    </span>
-                  </div>
-                  <h2 className="text-lg font-semibold text-white mb-2">
-                    {c.label}
-                  </h2>
-                  <p className="text-sm text-white/50 line-clamp-2 mb-4 min-h-[2.5rem]">
-                    {c.description}
-                  </p>
-                  <div className="flex items-center justify-between text-xs">
-                    <span className="text-white/40">{c.question_count} soru</span>
-                    <ArrowRight className="w-4 h-4 text-amber-400" />
                   </div>
                 </Link>
               </li>
-            );
-          })}
+            ))
+          )}
         </ul>
-
-        {/* ─── Footer notu ────────────────────────────────── */}
-        <p className="mt-10 text-center text-xs text-white/40">
-          8 kategori, toplam {categories.reduce((s, c) => s + c.question_count, 0)} soru
-        </p>
       </div>
     </main>
   );
