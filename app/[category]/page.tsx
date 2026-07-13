@@ -78,17 +78,16 @@ export async function generateMetadata({
     `${label} soru bankası: ${questions.length} açıklamalı Python mülakat sorusu. Tarayıcıda çöz, test case'lerle dene, AI geri bildirim al. Şimdilik ücretsiz.`;
   const canonical = `${BASE_URL}/${category}`;
 
-  // 2026-07-13: Category-specific long-tail keywords (TEK KAYNAK: lib/categorySlug).
-  //   Keşif sorguları ("X soru bankası", "X çözümleri", "X örnekleri") + niyet
-  //   ("X mülakat", "junior X") + spesifik kavramlar (knapsack, memoization).
+  // 2026-07-13 v2 (spam-risk reduction): Base 7 + category-specific 5 = 12 keyword.
+  //   Önceki 18-22 spam eşiğine yakındı. 12 Google/Bing güvenli aralıkta.
   const baseKeywords = [
     label,
     "python mülakat soruları",
     `python ${category}`,
     `${category} soruları`,
     "python pratik",
-    "online python test",
     "ücretsiz python mülakat hazırlık",
+    "online python test",
   ];
   const categoryKeywords = getCategorySeoKeywords(category);
 
@@ -174,13 +173,10 @@ function buildBreadcrumbSchema(
 
 // ─── FAQ schema — category landing (SERP zengin snippet) ───
 //
-// 2026-07-13 kullanıcı direktifi: "algoritma soru bankası", "açıklamalı
-//   algoritma soruları ve çözümleri" gibi intent-yoğun sorgular.
-// FAQPage schema, Google SERP'te "People also ask" kutusunda FAQ zengin
-//   sonucu tetikler. 3-5 soru ideal (spam riski altında).
-//
-// Conversion bağlantısı: Her cevap URL → /{category} veya /register CTA.
-//   Kullanıcı soruyu ararken buradan siteye düşsün, kayıt olsun.
+// 2026-07-13 v2 (spam-risk reduction): 4 soru → 3 soru. Google May 2026
+//   politika değişikliği ile FAQ zengin sonucunu SERP'te göstermiyor.
+//   Schema yine de valid (Bing/LLM crawler'lar için) ama 3 soru yeterli.
+//   Conversion bağlantısı: Her cevap URL → /{category} veya /register CTA.
 function buildFaqSchema(
   category: string,
   label: string,
@@ -197,7 +193,7 @@ function buildFaqSchema(
         name: `${label} soru bankası nedir?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `pythonmulakat.com ${label} soru bankası, ${questionCount} açıklamalı Python mülakat sorusu içerir. Her soruda başlangıç kodu, otomatik test case'leri, ipuçları ve AI geri bildirim bulunur. Tarayıcı tabanlı interaktif editörde ücretsiz pratik yapabilirsiniz. ${categoryUrl}`,
+          text: `pythonmulakat.com ${label} soru bankası, ${questionCount} açıklamalı Python mülakat sorusu içerir. Her soruda başlangıç kodu, otomatik test case'leri, ipuçları ve AI geri bildirim bulunur. Tarayıcı tabanlı editörde ücretsiz pratik yapabilirsiniz. ${categoryUrl}`,
         },
       },
       {
@@ -205,15 +201,7 @@ function buildFaqSchema(
         name: `${label} soruları nasıl çözülür?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Soru detay sayfasında açıklamayı okuyun, ipuçlarını takip edin, başlangıç kodunu (starter_code) editörde düzenleyin ve "Test Et" butonu ile test case'lerini çalıştırın. Çözümünüz doğruysa "AI Geri Bildirim" ile kod kalitenizi arttırın. ${categoryUrl}`,
-        },
-      },
-      {
-        "@type": "Question",
-        name: `Python ${label} mülakatına nasıl hazırlanılır?`,
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: `Seviyenize uygun sorudan başlayın: başlangıç için ${label} temelleri, orta seviye için algoritma/dp soruları, ileri seviye için karmaşık problemler. Her gün 3-5 soru çözerek 2-4 hafta içinde ${label} konusunda hazır olursunuz. Ücretsiz başlamak için: ${baseUrl}/register`,
+          text: `Soru detay sayfasında açıklamayı okuyun, ipuçlarını takip edin, başlangıç kodunu (starter_code) editörde düzenleyin ve "Test Et" ile test case'leri çalıştırın. AI Geri Bildirim ile kod kalitenizi arttırın. ${categoryUrl}`,
         },
       },
       {
@@ -221,7 +209,7 @@ function buildFaqSchema(
         name: `${label} soruları ücretsiz mi?`,
         acceptedAnswer: {
           "@type": "Answer",
-          text: `Evet, pythonmulakat.com'daki tüm ${label} soruları şu an ücretsiz. Misafir olarak da soruları okuyabilir, başlangıç kodunu görebilirsiniz. Kod çalıştırma, AI geri bildirim ve ilerleme takibi için ücretsiz üye olmanız yeterlidir. ${baseUrl}/register`,
+          text: `Evet, pythonmulakat.com'daki tüm ${label} soruları şu an ücretsiz. Misafir olarak da soruları okuyabilirsiniz. Kod çalıştırma, AI geri bildirim ve ilerleme takibi için ücretsiz üye olmanız yeterlidir. ${baseUrl}/register`,
         },
       },
     ],
