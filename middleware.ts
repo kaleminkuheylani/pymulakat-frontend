@@ -144,22 +144,28 @@ export async function middleware(request: NextRequest) {
   //   formları kabul edilir, hepsi DB slug'a normalize edilip redirect olur.
   //   /heap/palindrom-kontrol → /interviews/heap/palindrom-kontrol
   //   /temelleri/palindrom-kontrol → /interviews/python-basics/palindrom-kontrol
+  //
+  // KRITIK (2026-07-13 fix): Önceki kod tanınmayan pillar'lar için 404
+  //   dönüyordu — bu /admin/login, /admin/audit, /about/team gibi gerçek
+  //   sayfaları da yiyordu. Şimdi: pillar TANINMIYORSA → NextResponse.next()
+  //   (Next.js kendi route tablosuna baksın, static 404 mü render mı karar versin).
+  //   Pillar tanınıyorsa → 308 redirect. Başka path'ler için middleware dokunmaz.
   const topLevelPillarSlugMatch = pathname.match(
     /^\/([a-z0-9-]+)\/([a-z0-9-]+)$/i
   );
   if (topLevelPillarSlugMatch) {
     const [, pillarSlug, slug] = topLevelPillarSlugMatch;
-    // Skip if path looks like a real top-level route (about, admin, ...)
-    // (Bu sayfalar statik route olarak zaten match etti, middleware'ye gelmedi)
-    // Sadece bilinen pillar (canonical veya legacy) slug'ları redirect et
     const dbCat = legacyDisplayToDb(pillarSlug);
     if (dbCat) {
+      // Tanınan pillar (canonical veya legacy) → /interviews/{db}/{slug} (308)
       const url = request.nextUrl.clone();
       url.pathname = `/interviews/${dbCat}/${slug}`;
       return NextResponse.redirect(url, 308);
     }
-    // Bilinmeyen /[pillar]/[slug] — 404 (deep link olarak işlenmez)
-    return new NextResponse(null, { status: 404 });
+    // Tanınmayan top-level (admin, about, login, dashboard, ...) →
+    //   Next.js kendi route tablosuna baksın. Eğer page varsa render,
+    //   yoksa Next.js'in kendi 404'ü devreye girer. Burada 404 DÖNME!
+    return NextResponse.next();
   }
 
   // 1c) /{db-or-legacy} (no sub-segment) → 308 → canonical DB slug URL
@@ -170,6 +176,11 @@ export async function middleware(request: NextRequest) {
   //   zarar vermez (idempotent), tutarlılık sağlar.
   // app/[category]/page.tsx zaten pre-rendered, buradaki redirect gereksiz
   //   görünebilir ama Edge'de static path match daha hızlıdır.
+  //
+  // NOT (2026-07-13): Bilinmeyen top-level (about, admin, login, dashboard...)
+  //   fall-through → NextResponse.next(). Middleware her sayfada çalışır
+  //   (matcher pattern: /((?!_next|api|favicon.ico).*)); tanınmayan path'ler
+  //   için Next.js kendi route tablosuna baksın, oradan 404 döner.
   const topLevelPillarOnlyMatch = pathname.match(/^\/([a-z0-9-]+)$/i);
   if (topLevelPillarOnlyMatch) {
     const pillarSlug = topLevelPillarOnlyMatch[1];
@@ -184,8 +195,8 @@ export async function middleware(request: NextRequest) {
     if (dbCat && isCanonicalCategory(pillarSlug)) {
       return NextResponse.next();
     }
-    // Bilinmeyen top-level path → 404 (statik rotalar about/admin/etc. zaten
-    // kendi sayfalarını render eder; bu kontrol buraya gelmez).
+    // Bilinmeyen top-level (admin, about, login, ...) →
+    //   Middleware dokunmaz, Next.js kendi route tablosuna baksın.
   }
 
   // 1.5) Auth-gated sayfalar: misafirler → /login (returnUrl ile geri döner)
