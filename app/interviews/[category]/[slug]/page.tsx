@@ -182,20 +182,40 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     return { title: "Soru bulunamadı | PythonMulakat" };
   }
 
-  const title = `${q.title} — Python Sorusu #${q.id} | PythonMulakat`;
-  const description = q.explanation
-    ? q.explanation.replace(/[*#`]/g, "").slice(0, 160)
-    : `${q.title} sorusu, ${q.level} seviye Python mülakat sorusu. Türkçe açıklama, kod çalıştırma ve test case'leri ile pratik yapın.`;
+  // 2026-07-13: Conversion-friendly title — "soru bankası" + "çözüm" + "açıklama"
+  //   niyet kelimeleri. Hem keşif hem long-tail niyet için optimize.
+  const level = q.level || "junior";
+  const title = `${q.title} — ${level} Seviye Python Sorusu ve Çözümü | PythonMulakat`;
+  // 2026-07-13: Description'a CTA eklendi (ücretsiz dene + test case + AI).
+  //   155-160 char Google snippet hedefi.
+  const rawDesc = q.explanation
+    ? q.explanation.replace(/[*#`]/g, "").slice(0, 130)
+    : `${q.title} — ${level} seviye Python mülakat sorusu.`;
+  const description = `${rawDesc} Tarayıcıda çöz, test case'lerle dene, AI geri bildirim al. Şimdilik ücretsiz.`;
+
+  // 2026-07-13: Long-tail keywords — "X çözümü", "X açıklaması", "X kodu",
+  //   "X algoritması" — kullanıcı çözüm ararken soru sayfasına düşsün.
+  const levelKw = level === "advanced" ? "ileri seviye python" :
+                  level === "intermediate" ? "orta seviye python" :
+                  "başlangıç python";
+  const keywords = [
+    q.title,
+    `${q.title} çözümü`,
+    `${q.title} açıklaması`,
+    `${q.title} kodu`,
+    `${q.title} algoritması`,
+    `${q.title} python`,
+    "python mülakat sorusu",
+    "python mülakat çözümü",
+    levelKw,
+    `python ${q.category}`,
+    ...(q.related_concepts || []),
+  ].join(", ");
 
   return {
     title,
     description,
-    keywords: [
-      q.title,
-      "python mülakat",
-      `python ${q.category}`,
-      ...(q.related_concepts || []),
-    ].join(", "),
+    keywords,
     alternates: {
       canonical: `${BASE_URL}/interviews/${q.category}/${q.slug || slugifyTitle(q.title)}`,
     },

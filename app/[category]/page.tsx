@@ -37,6 +37,7 @@ import {
   isCanonicalCategory,
   getCategoryLabel,
   listAllCategorySlugs,
+  getCategorySeoKeywords,
 } from "@/lib/categorySlug";
 import QuestionListItem from "@/components/QuestionListItem";
 
@@ -71,23 +72,33 @@ export async function generateMetadata({
 
   // Label + count (zengin meta description)
   const label = meta.label ?? getCategoryLabel(category);
+  // 2026-07-13: Conversion-friendly description — soru sayısı + ücretsiz katıl CTA.
+  //   Google snippet'ında 155-160 char hedefiyle kırpılabilir.
   const desc = meta.description ||
-    `${label} konusunda ${questions.length} Python mülakat sorusu. Tarayıcı tabanlı editör, otomatik test case ve anında geri bildirim ile pratik yapın.`;
+    `${label} soru bankası: ${questions.length} açıklamalı Python mülakat sorusu. Tarayıcıda çöz, test case'lerle dene, AI geri bildirim al. Şimdilik ücretsiz.`;
   const canonical = `${BASE_URL}/${category}`;
 
+  // 2026-07-13: Category-specific long-tail keywords (TEK KAYNAK: lib/categorySlug).
+  //   Keşif sorguları ("X soru bankası", "X çözümleri", "X örnekleri") + niyet
+  //   ("X mülakat", "junior X") + spesifik kavramlar (knapsack, memoization).
+  const baseKeywords = [
+    label,
+    "python mülakat soruları",
+    `python ${category}`,
+    `${category} soruları`,
+    "python pratik",
+    "online python test",
+    "ücretsiz python mülakat hazırlık",
+  ];
+  const categoryKeywords = getCategorySeoKeywords(category);
+
   return {
-    title: `${label} Soruları — Python Mülakat Hazırlığı | PythonMulakat`,
+    title: `${label} Soru Bankası — ${questions.length} Açıklamalı Python Sorusu | PythonMulakat`,
     description: desc,
-    keywords: [
-      label,
-      "python mülakat soruları",
-      `python ${category}`,
-      `${category} soruları`,
-      "python pratik",
-    ],
+    keywords: [...baseKeywords, ...categoryKeywords],
     alternates: { canonical },
     openGraph: {
-      title: `${label} Soruları — Python Mülakat Hazırlığı`,
+      title: `${label} Soru Bankası — ${questions.length} Python Sorusu`,
       description: desc,
       url: canonical,
       siteName: "PythonMulakat",
@@ -97,7 +108,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${label} Soruları — Python Mülakat Hazırlığı`,
+      title: `${label} Soru Bankası — ${questions.length} Python Sorusu`,
       description: desc,
       images: [`${BASE_URL}/og-default.png`],
     },
@@ -161,6 +172,62 @@ function buildBreadcrumbSchema(
   };
 }
 
+// ─── FAQ schema — category landing (SERP zengin snippet) ───
+//
+// 2026-07-13 kullanıcı direktifi: "algoritma soru bankası", "açıklamalı
+//   algoritma soruları ve çözümleri" gibi intent-yoğun sorgular.
+// FAQPage schema, Google SERP'te "People also ask" kutusunda FAQ zengin
+//   sonucu tetikler. 3-5 soru ideal (spam riski altında).
+//
+// Conversion bağlantısı: Her cevap URL → /{category} veya /register CTA.
+//   Kullanıcı soruyu ararken buradan siteye düşsün, kayıt olsun.
+function buildFaqSchema(
+  category: string,
+  label: string,
+  questionCount: number,
+  baseUrl: string
+) {
+  const categoryUrl = `${baseUrl}/${category}`;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: [
+      {
+        "@type": "Question",
+        name: `${label} soru bankası nedir?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `pythonmulakat.com ${label} soru bankası, ${questionCount} açıklamalı Python mülakat sorusu içerir. Her soruda başlangıç kodu, otomatik test case'leri, ipuçları ve AI geri bildirim bulunur. Tarayıcı tabanlı interaktif editörde ücretsiz pratik yapabilirsiniz. ${categoryUrl}`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `${label} soruları nasıl çözülür?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Soru detay sayfasında açıklamayı okuyun, ipuçlarını takip edin, başlangıç kodunu (starter_code) editörde düzenleyin ve "Test Et" butonu ile test case'lerini çalıştırın. Çözümünüz doğruysa "AI Geri Bildirim" ile kod kalitenizi arttırın. ${categoryUrl}`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `Python ${label} mülakatına nasıl hazırlanılır?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Seviyenize uygun sorudan başlayın: başlangıç için ${label} temelleri, orta seviye için algoritma/dp soruları, ileri seviye için karmaşık problemler. Her gün 3-5 soru çözerek 2-4 hafta içinde ${label} konusunda hazır olursunuz. Ücretsiz başlamak için: ${baseUrl}/register`,
+        },
+      },
+      {
+        "@type": "Question",
+        name: `${label} soruları ücretsiz mi?`,
+        acceptedAnswer: {
+          "@type": "Answer",
+          text: `Evet, pythonmulakat.com'daki tüm ${label} soruları şu an ücretsiz. Misafir olarak da soruları okuyabilir, başlangıç kodunu görebilirsiniz. Kod çalıştırma, AI geri bildirim ve ilerleme takibi için ücretsiz üye olmanız yeterlidir. ${baseUrl}/register`,
+        },
+      },
+    ],
+  };
+}
+
 // ─── Page ───────────────────────────────────────────────────
 export default async function CategoryPage({
   params,
@@ -186,14 +253,15 @@ export default async function CategoryPage({
   const label = meta.label ?? getCategoryLabel(category);
   const baseUrl = BASE_URL;
 
-  // JSON-LD (3 katman)
+  // JSON-LD (4 katman)
   const collectionSchema = buildCollectionPageSchema(meta, questions.length, category, baseUrl);
   const itemListSchema = buildItemListSchema(questions, category, baseUrl);
   const breadcrumbSchema = buildBreadcrumbSchema(category, label, baseUrl);
+  const faqSchema = buildFaqSchema(category, label, questions.length, baseUrl);
 
   return (
     <main className="min-h-screen bg-[#050816] text-white">
-      {/* SEO: structured data (3 katman) */}
+      {/* SEO: structured data (4 katman — 2026-07-13 FAQ eklendi) */}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(collectionSchema) }}
@@ -205,6 +273,10 @@ export default async function CategoryPage({
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
 
       <div className="max-w-4xl mx-auto px-4 py-8 md:py-12">
