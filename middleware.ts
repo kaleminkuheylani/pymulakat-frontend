@@ -119,6 +119,39 @@ export async function middleware(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  // 1b) Top-level Pillar URL'lerden soru detay URL'lerine yönlendir
+  // (kullanici direktifi 2026-07-13: /pandas/eksik-deger-doldurma 
+  //  → 308 → /interviews/pandas/eksik-deger-doldurma)
+  // TUM 9 pillar icin eski display URL → canonical /interviews/{db}/{slug}
+  const topLevelPillarMatch = pathname.match(
+    /^\/(temelleri|veri-yapilari|liste-sozluk|pandas|algoritma-sorulari|heap|stack|dinamik-programlama|python-temelleri|queue)\/([a-z0-9-]+)$/i
+  );
+  if (topLevelPillarMatch) {
+    const [, displaySlug, slug] = topLevelPillarMatch;
+    const TOP_LEVEL_PILLAR_TO_DB: Record<string, string> = {
+      "temelleri": "python-basics",
+      "veri-yapilari": "data-structures",
+      "liste-sozluk": "list-dict",
+      "pandas": "pandas",
+      "algoritma-sorulari": "algorithms",
+      "heap": "heap",
+      "stack": "stack",
+      "queue": "queue",
+      "dinamik-programlama": "dynamic-programming",
+      "python-temelleri": "python-basics",
+    };
+    const dbCat = TOP_LEVEL_PILLAR_TO_DB[displaySlug];
+    if (dbCat) {
+      // queue kaldirildi, 404'e yonlendir
+      if (dbCat === "queue") {
+        return new NextResponse(null, { status: 404 });
+      }
+      const url = request.nextUrl.clone();
+      url.pathname = `/interviews/${dbCat}/${slug}`;
+      return NextResponse.redirect(url, 308);
+    }
+  }
+
   // 1.5) Auth-gated sayfalar: misafirler → /login (returnUrl ile geri döner)
   // Merkeziyet: SADECE /dashboard* ve /login member-only.
   // - /interviews, /interviews/{cat}, /interviews/{cat}/{id} → public (misafir görür, kod çalıştıramaz)
