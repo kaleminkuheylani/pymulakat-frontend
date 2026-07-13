@@ -43,20 +43,13 @@ const LEVEL_STYLE: Record<string, string> = {
 async function fetchCategoriesFromDB(): Promise<Category[]> {
   try {
     const items = await listCategories();
-    // queue'yu filtrele (8 kategori sabit)
-    const filtered = items.filter((c) => c.slug !== "queue");
+    const filtered = items.filter((c) => c.slug !== "queue" && !!c.slug);
     return filtered.map((c) => {
-      // En düşük level'ı DB'den al (rows: beginner, intermediate, advanced)
-      // Backend level'i döndürmüyorsa default beginner
-      const level: Category["level"] =
-        c.level === "advanced"
-          ? "advanced"
-          : c.level === "intermediate"
-            ? "intermediate"
-            : "beginner";
+      // Backend su anda level dondurmuyor, default beginner
+      const level: Category["level"] = "beginner";
       return {
-        slug: c.slug,
-        label: c.label ?? c.slug,
+        slug: c.slug as string,
+        label: c.label ?? c.slug ?? "",
         description: c.description ?? "",
         question_count: c.question_count ?? 0,
         level,
