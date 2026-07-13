@@ -14,7 +14,6 @@ export const CATEGORY_DISPLAY_URL: Record<string, string> = {
   "algorithms": "/algoritma-sorulari",
   "heap": "/heap",
   "stack": "/stack",
-  "queue": "/queue",
   "dynamic-programming": "/dinamik-programlama",
 };
 
@@ -26,7 +25,6 @@ export const CATEGORY_LABEL: Record<string, string> = {
   "algorithms": "Python Algoritma",
   "heap": "Python Heap",
   "stack": "Python Stack",
-  "queue": "Python Queue",
   "dynamic-programming": "Python Dinamik Programlama",
 };
 

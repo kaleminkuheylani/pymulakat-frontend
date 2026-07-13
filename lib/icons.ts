@@ -119,7 +119,6 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "dynamic-programming": Brain,
   "heap": Mountain,
   "stack": Layers,
-  "queue": ListOrdered,
 };
 
 // ─── Seviye badge icons ────────────────────────────────────────
