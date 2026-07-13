@@ -62,14 +62,14 @@ export default function WorkspaceHeader({
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 min-w-0 flex-1"
       >
-        <button
-          onClick={onBack}
-          className="flex items-center gap-1 text-white/60 hover:text-white transition-colors flex-shrink-0"
-          aria-label="Geri"
+        <Link
+          href="/interviews"
+          className="flex items-center gap-1 text-white/60 hover:text-amber-300 transition-colors flex-shrink-0"
+          aria-label="Tüm sorular"
         >
-          <ChevronLeft className="w-4 h-4" />
+          <Home className="w-3.5 h-3.5" />
           <span className="text-sm">Sorular</span>
-        </button>
+        </Link>
 
         <ChevronRight className="w-3 h-3 text-white/30 flex-shrink-0" />
 
