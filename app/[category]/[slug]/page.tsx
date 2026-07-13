@@ -18,6 +18,7 @@ import type { Metadata } from "next";
 // variant'ı hesaplayıp <Workspace variant="mobile|desktop" ... /> geçirir.
 import Workspace from "./components/workspace";
 import WorkspaceErrorBoundary from "@/components/workspace/WorkspaceErrorBoundary";
+import Breadcrumb from "@/components/Breadcrumb";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { findQuestion, slugifyTitle as csvSlugify } from "@/lib/api/questionAPI";
 import type { ApiQuestion, ApiQuestionTests } from "../../../lib/api/types";
@@ -219,19 +220,20 @@ function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
 }
 
 // ─── Breadcrumb schema ────────────────────────────────────
-function buildBreadcrumbSchema(category: string, id: string, title: string, baseUrl: string) {
+function buildBreadcrumbSchema(category: string, slug: string, title: string, baseUrl: string) {
   // Truth of source: breadcrumb display URL kullanır, internal slug değil.
-  // /interviews/python-basics (internal) yerine /python-temelleri (display) gösterilir.
-  const categoryUrl = `${baseUrl}${getCategoryDisplayUrl(category)}`;
+  // Canonical: /{display-cat}/{slug}
+  const displayCat = getCategoryDisplayUrl(category);
+  const categoryUrl = `${baseUrl}${displayCat}`;
+  const questionUrl = `${baseUrl}${displayCat}/${slug}`;
   const categoryLabel = getCategoryLabel(category);
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: baseUrl },
-      { "@type": "ListItem", position: 2, name: "Sorular", item: `${baseUrl}/interviews` },
-      { "@type": "ListItem", position: 3, name: categoryLabel, item: categoryUrl },
-      { "@type": "ListItem", position: 4, name: title, item: `${baseUrl}/interviews/${category}/${id}` },
+      { "@type": "ListItem", position: 2, name: categoryLabel, item: categoryUrl },
+      { "@type": "ListItem", position: 3, name: title, item: questionUrl },
     ],
   };
 }
@@ -440,10 +442,15 @@ export default async function Page({ params, searchParams }: PageProps) {
         data-ssr-question
         className="ssr-question-block bg-[#050816] text-white px-4 py-6 sm:px-6 sm:py-8 md:max-w-3xl md:mx-auto"
       >
+        <Breadcrumb
+          category={resolvedParams.category}
+          slug={resolvedParams.slug}
+          title={ssrTitle}
+        />
         <h1 className="text-2xl sm:text-3xl font-bold mb-2 leading-tight">{ssrTitle}</h1>
         <div className="flex flex-wrap gap-2 mb-4 text-xs sm:text-sm text-white/60">
-          <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10">{ssrLevel}</span>
-          {ssrComplexity && <span className="px-2 py-0.5 rounded bg-white/5 border border-white/10">{ssrComplexity}</span>}
+          <mark className="px-2 py-0.5 rounded bg-white/5 border border-white/10">{ssrLevel}</mark>
+          {ssrComplexity && <mark className="px-2 py-0.5 rounded bg-white/5 border border-white/10">{ssrComplexity}</mark>}
         </div>
         {ssrDescription && (
           <div className="text-sm sm:text-base whitespace-pre-wrap text-white/80 leading-relaxed mb-6">

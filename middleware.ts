@@ -214,6 +214,17 @@ export async function middleware(request: NextRequest) {
       "queue": "/queue",
       "algorithms": "/algoritma-sorulari",
       "dynamic-programming": "/dinamik-programlama",
+      // Eski 'python-' prefix'li label alias'lar
+      // (tüm 9 pillar önek kaldırıldı, python-temelleri hariç)
+      "python-temelleri": "/python-temelleri",
+      "python-veri-yapilari": "/veri-yapilari",
+      "python-pandas": "/pandas",
+      "python-liste-sozluk": "/liste-sozluk",
+      "python-heap": "/heap",
+      "python-stack": "/stack",
+      "python-queue": "/queue",
+      "python-algoritma-sorulari": "/algoritma-sorulari",
+      "python-dinamik-programlama": "/dinamik-programlama",
     };
     if (INTERVIEW_TO_DISPLAY[category]) {
       const url = request.nextUrl.clone();
@@ -247,6 +258,16 @@ export async function middleware(request: NextRequest) {
       "queue": "/queue",
       "algorithms": "/algoritma-sorulari",
       "dynamic-programming": "/dinamik-programlama",
+      // Eski 'python-' prefix'li label alias'lar
+      "python-temelleri": "/python-temelleri",
+      "python-veri-yapilari": "/veri-yapilari",
+      "python-pandas": "/pandas",
+      "python-liste-sozluk": "/liste-sozluk",
+      "python-heap": "/heap",
+      "python-stack": "/stack",
+      "python-queue": "/queue",
+      "python-algoritma-sorulari": "/algoritma-sorulari",
+      "python-dinamik-programlama": "/dinamik-programlama",
     };
     if (slugRedirectMap[category]) {
       const target = `${slugRedirectMap[category]}/${idOrSlug}`;
