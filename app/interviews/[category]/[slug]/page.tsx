@@ -8,7 +8,7 @@
 // bulamazsak backend DB'ye düşüyoruz. Her iki kaynak aynı şemaya normalize
 // ediliyor, downstream kod değişmiyor.
 import { Check, Download, Eye, Lightbulb, Pin } from "lucide-react";
-import { getCategoryLabel, getCategoryDisplayUrl, displayToDb } from "@/lib/categorySlug";
+import { getCategoryLabel, getCategoryUrl, legacyDisplayToDb } from "@/lib/categorySlug";
 import { getCategoryMeta } from "@/lib/api/categoryAPI";
 
 import { headers } from "next/headers";
@@ -122,8 +122,8 @@ function csvToSEOQuestion(q: ApiQuestion, actualId: number, slug: string): SEOQu
 
 
 function displayToInternal(display: string): string {
-  // displayToDb: /heap → heap, /python-temelleri → python-basics, vb.
-  return displayToDb("/" + display) ?? display;
+  // legacyDisplayToDb: /heap → heap, /python-temelleri → python-basics, vb.
+  return legacyDisplayToDb("/" + display) ?? display;
 }
 
 // ─── Server-side test cases fetch (SSR: misafirler de okuyabilsin) ─────
@@ -258,7 +258,7 @@ async function buildBreadcrumbSchema(category: string, slug: string, title: stri
   const categoryLabel = meta?.label ?? getCategoryLabel(category);
   // Canonical category: /{display} (top-level, ISR pre-rendered)
   // Question detail: /interviews/{db_category}/{slug} (canonical)
-  const categoryUrl = `${baseUrl}${getCategoryDisplayUrl(category)}`;
+  const categoryUrl = `${baseUrl}${getCategoryUrl(category)}`;
   const questionUrl = `${baseUrl}/interviews/${category}/${slug}`;
   return {
     "@context": "https://schema.org",

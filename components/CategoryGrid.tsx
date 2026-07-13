@@ -5,7 +5,7 @@
 // DB-FIRST:
 //   - listCategories() → label, description, question_count, slug
 //   - CATEGORY_ICONS (lib/icons.ts) → her slug için Lucide icon
-//   - Canonical URL: /{display} (lib/categorySlug.ts → getCategoryDisplayUrl)
+//   - Canonical URL: /{display} (lib/categorySlug.ts → getCategoryUrl)
 //
 // Kurallar (2026-07-12):
 //   - Lucide icon, no emoji, no span
@@ -18,7 +18,7 @@ import Link from "next/link";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { getAllCategories } from "@/lib/api/categoryAPI";
 import { CATEGORY_ICONS } from "@/lib/icons";
-import { getCategoryDisplayUrl } from "@/lib/categorySlug";
+import { getCategoryUrl } from "@/lib/categorySlug";
 import type { LucideIcon } from "lucide-react";
 
 interface CategoryCardProps {
@@ -30,7 +30,7 @@ interface CategoryCardProps {
 }
 
 function CategoryCard({ slug, label, description, questionCount, icon: Icon }: CategoryCardProps) {
-  const href = getCategoryDisplayUrl(slug);
+  const href = getCategoryUrl(slug);
   return (
     <Link
       href={href}

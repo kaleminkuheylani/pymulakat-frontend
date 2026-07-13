@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next";
 import { fetchAllQuestions, listCategories, slugifyTitle } from "../lib/api/questionAPI";
 import { BASE_URL } from "../lib/seo";
-import { getCategoryDisplayUrl } from "../lib/categorySlug";
+import { getCategoryUrl } from "../lib/categorySlug";
 
 // Sitemap (2026-07-13 refactor):
 //   - Tüm sayfa URL'leri DB'den (kategori meta + soru listesi)
@@ -64,7 +64,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     .map((c) => c.slug)
     .filter((slug): slug is string => Boolean(slug))
     .map((slug) => ({
-      url: `${BASE_URL}${getCategoryDisplayUrl(slug)}`,
+      url: `${BASE_URL}${getCategoryUrl(slug)}`,
       lastModified: now,
       changeFrequency: "weekly" as const,
       priority: 0.85,

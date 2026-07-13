@@ -1,18 +1,18 @@
-// app/[display]/page.tsx
+// app/[category]/page.tsx
 //
-// TEK DİNAMİK ROUTE — 8 kategori top-level display URL'sinden render.
+// TEK DİNAMİK ROUTE — 8 kategori top-level DB-slug URL'sinden render.
 //
-// URL: /{display} (örn. /heap, /pandas, /temelleri, /veri-yapilari)
-// - Canonical 8: temelleri, veri-yapilari, liste-sozluk, pandas,
-//   algoritma-sorulari, heap, stack, dinamik-programlama
-// - Legacy alias: python-temelleri (canonical'e 308 redirect edilebilir,
-//   veya burada direkt render — şu an 308 tercih edildi, bkz. middleware)
+// URL: /{db_slug} (örn. /python-basics, /heap, /pandas, /data-structures)
+// - Canonical 8: python-basics, data-structures, list-dict, pandas,
+//   algorithms, heap, stack, dynamic-programming
+// - SEO iyi: İngilizce, kısa, tutarlı (2026-07-13 kullanıcı direktifi)
 //
-// 2026-07-13 refactor: 8 ayrı statik sayfa (app/heap/page.tsx, app/pandas/page.tsx,
-// ...) SİLİNDİ. Bu tek dosya tüm kategorileri handle eder.
+// 2026-07-13 refactor: 8 ayrı statik sayfa SİLİNDİ + önceki /{display}
+// (Türkçe) URL yapısı da bırakıldı. Bu tek dosya tüm kategorileri handle eder.
+// Legacy /temelleri, /veri-yapilari vb. → 308 → canonical (middleware).
 //
 // ISR + on-demand revalidation:
-//   - generateStaticParams() → build sırasında 8 display slug pre-render
+//   - generateStaticParams() → build sırasında 8 DB slug pre-render
 //   - dynamicParams=true → build sonrası eklenen kategori (DB'de) on-demand
 //   - revalidate=3600 (1 saat)
 //   - Tag: "category-{db}" → /api/revalidate ile anında invalidate
@@ -20,10 +20,9 @@
 // SEO:
 //   - generateMetadata() DB-FIRST title/description
 //   - JSON-LD: CollectionPage + ItemList + BreadcrumbList
-//   - canonical: /{display} (top-level, redirect yok)
+//   - canonical: /{db_slug} (top-level, redirect yok)
 //
-// Auth:
-//   - Public (misafir görür, kod çalıştırma ayrı component — GuestEditorGate)
+// Auth: Public (misafir görür, kod çalıştırma ayrı component — GuestEditorGate)
 //
 // Cache:
 //   - Server-side fetch: INTERNAL_API_URL (k8s/docker internal)
@@ -32,51 +31,49 @@
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
-import { getCategoryPageData, getAllQuestions } from "@/lib/api/questionAPI";
+import { getCategoryPageData } from "@/lib/api/questionAPI";
 import { BASE_URL } from "@/lib/seo";
 import {
-  displayToDb,
-  listAllDisplaySlugs,
+  isCanonicalCategory,
   getCategoryLabel,
+  listAllCategorySlugs,
 } from "@/lib/categorySlug";
 import QuestionListItem from "@/components/QuestionListItem";
 
 // ─── ISR config ──────────────────────────────────────────────
 export const revalidate = 3600; // 1 saat ISR
-// Build sırasında bilinmeyen bir display slug gelirse on-demand render
-// (DB-FIRST: yeni kategori slug'ı DB'ye eklenince /{yeni} çalışır)
+// Build sırasında bilinmeyen bir DB slug gelirse on-demand render
+// (DB-FIRST: yeni kategori DB'ye eklenince /{yeni-slug} çalışır)
 export const dynamicParams = true;
 
 // ─── generateStaticParams (build-time pre-render) ────────────
-// Tüm bilinen display URL'ler (canonical + legacy) build'de HTML üretir.
-// "python-temelleri" gibi legacy URL'ler de pre-render edilir; middleware
-// 308 tercih edebilir ama pre-render zarar vermez (cached HTML).
 export async function generateStaticParams() {
-  return listAllDisplaySlugs().map((display) => ({ display }));
+  return listAllCategorySlugs().map((category) => ({ category }));
 }
 
 // ─── generateMetadata (SEO) ──────────────────────────────────
 export async function generateMetadata({
   params,
 }: {
-  params: Promise<{ display: string }>;
+  params: Promise<{ category: string }>;
 }): Promise<Metadata> {
-  const { display } = await params;
-  const dbSlug = displayToDb(display);
-  if (!dbSlug) {
+  const { category } = await params;
+
+  // Canonical DB slug mı? Değilse → 404 metadata
+  if (!isCanonicalCategory(category)) {
     return { title: "Kategori bulunamadı | PythonMulakat" };
   }
 
-  const { meta, questions } = await getCategoryPageData(dbSlug);
+  const { meta, questions } = await getCategoryPageData(category);
   if (!meta) {
     return { title: "Kategori bulunamadı | PythonMulakat" };
   }
 
   // Label + count (zengin meta description)
-  const label = meta.label ?? getCategoryLabel(dbSlug);
+  const label = meta.label ?? getCategoryLabel(category);
   const desc = meta.description ||
     `${label} konusunda ${questions.length} Python mülakat sorusu. Tarayıcı tabanlı editör, otomatik test case ve anında geri bildirim ile pratik yapın.`;
-  const canonical = `${BASE_URL}/${display}`;
+  const canonical = `${BASE_URL}/${category}`;
 
   return {
     title: `${label} Soruları — Python Mülakat Hazırlığı | PythonMulakat`,
@@ -84,8 +81,8 @@ export async function generateMetadata({
     keywords: [
       label,
       "python mülakat soruları",
-      `python ${dbSlug}`,
-      `${dbSlug} soruları`,
+      `python ${category}`,
+      `${category} soruları`,
       "python pratik",
     ],
     alternates: { canonical },
@@ -111,17 +108,16 @@ export async function generateMetadata({
 function buildCollectionPageSchema(
   meta: { label?: string; description?: string; slug?: string },
   questionCount: number,
-  display: string,
+  category: string,
   baseUrl: string
 ) {
-  const slug = meta.slug ?? "";
-  const label = meta.label ?? slug;
+  const label = meta.label ?? category;
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: `${label} Soruları`,
     description: meta.description ?? `${label} konusunda Python mülakat soruları.`,
-    url: `${baseUrl}/${display}`,
+    url: `${baseUrl}/${category}`,
     isPartOf: { "@type": "WebSite", name: "PythonMulakat", url: baseUrl },
     mainEntity: { "@type": "ItemList", numberOfItems: questionCount },
   };
@@ -129,13 +125,13 @@ function buildCollectionPageSchema(
 
 function buildItemListSchema(
   questions: Array<{ id: number; title: string; slug: string | null; category: string; level: string }>,
-  display: string,
+  category: string,
   baseUrl: string
 ) {
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: `${display} soruları`,
+    name: `${category} soruları`,
     itemListElement: questions.slice(0, 50).map((q, idx) => ({
       "@type": "ListItem",
       position: idx + 1,
@@ -150,7 +146,7 @@ function buildItemListSchema(
 }
 
 function buildBreadcrumbSchema(
-  display: string,
+  category: string,
   label: string,
   baseUrl: string
 ) {
@@ -160,42 +156,40 @@ function buildBreadcrumbSchema(
     itemListElement: [
       { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: baseUrl },
       { "@type": "ListItem", position: 2, name: "Sorular", item: `${baseUrl}/interviews` },
-      { "@type": "ListItem", position: 3, name: label, item: `${baseUrl}/${display}` },
+      { "@type": "ListItem", position: 3, name: label, item: `${baseUrl}/${category}` },
     ],
   };
 }
 
 // ─── Page ───────────────────────────────────────────────────
-export default async function CategoryDisplayPage({
+export default async function CategoryPage({
   params,
 }: {
-  params: Promise<{ display: string }>;
+  params: Promise<{ category: string }>;
 }) {
-  const { display } = await params;
+  const { category } = await params;
 
-  // display → DB slug (canonical 8 + legacy alias)
-  const dbSlug = displayToDb(display);
-  if (!dbSlug) {
-    // Bilinmeyen top-level path → 404. Statik rotalar (about, admin, ...) zaten
-    // kendi sayfalarını render eder; bu catch-all'a düşmez.
+  // Canonical DB slug mı? Değilse → 404
+  // (Legacy /temelleri vb. middleware'de 308 ile canonical'e yönlendirildi)
+  if (!isCanonicalCategory(category)) {
     notFound();
   }
 
   // DB'den kategori meta + soru listesi
   // (lib/api/questionAPI.ts → getCategoryPageData, tag'li cache'li)
-  const { meta, questions } = await getCategoryPageData(dbSlug);
+  const { meta, questions } = await getCategoryPageData(category);
   if (!meta) {
     notFound();
   }
 
   // UI label normalize
-  const label = meta.label ?? getCategoryLabel(dbSlug);
+  const label = meta.label ?? getCategoryLabel(category);
   const baseUrl = BASE_URL;
 
   // JSON-LD (3 katman)
-  const collectionSchema = buildCollectionPageSchema(meta, questions.length, display, baseUrl);
-  const itemListSchema = buildItemListSchema(questions, display, baseUrl);
-  const breadcrumbSchema = buildBreadcrumbSchema(display, label, baseUrl);
+  const collectionSchema = buildCollectionPageSchema(meta, questions.length, category, baseUrl);
+  const itemListSchema = buildItemListSchema(questions, category, baseUrl);
+  const breadcrumbSchema = buildBreadcrumbSchema(category, label, baseUrl);
 
   return (
     <main className="min-h-screen bg-[#050816] text-white">
@@ -250,7 +244,7 @@ export default async function CategoryDisplayPage({
         </header>
 
         {/* ─── Soru listesi (DB-FIRST, SSR + paylaşılan component) ─── */}
-        <ul className="space-y-3" data-ssr-category-list={display}>
+        <ul className="space-y-3" data-ssr-category-list={category}>
           {questions.length === 0 ? (
             <li className="text-white/50 text-sm py-8 text-center">
               Bu kategoride henüz soru yok.
@@ -260,7 +254,7 @@ export default async function CategoryDisplayPage({
               <QuestionListItem
                 key={q.id}
                 question={q}
-                categorySlug={dbSlug}
+                categorySlug={category}
                 // category label göstermeye gerek yok — zaten bu sayfanın konusu
               />
             ))

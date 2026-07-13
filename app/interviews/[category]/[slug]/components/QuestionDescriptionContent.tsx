@@ -1,6 +1,6 @@
 "use client";
 import { Eye, Lightbulb, MessageSquare } from "lucide-react";
-import { getCategoryDisplayUrl } from "@/lib/categorySlug";
+import { getCategoryUrl } from "@/lib/categorySlug";
 import { slugifyCategory } from "@/lib/questionMeta";
 
 // QuestionDescriptionContent — desktop sidebar + mobile "Soru" tab'ı için

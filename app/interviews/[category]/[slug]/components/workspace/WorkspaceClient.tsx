@@ -1,7 +1,7 @@
 "use client";
 import { Lock } from "lucide-react";
 import { errorMessage } from "@/lib/errorMessage";
-import { getCategoryDisplayUrl } from "@/lib/categorySlug";
+import { getCategoryUrl } from "@/lib/categorySlug";
 
 // WorkspaceClient — desktop orchestrator (refactored).
 //

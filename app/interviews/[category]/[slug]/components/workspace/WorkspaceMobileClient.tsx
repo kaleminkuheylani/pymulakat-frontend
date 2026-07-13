@@ -1,7 +1,7 @@
 "use client";
 import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle } from "lucide-react";
 import { errorMessage } from "@/lib/errorMessage";
-import { getCategoryDisplayUrl } from "@/lib/categorySlug";
+import { getCategoryUrl } from "@/lib/categorySlug";
 
 // WorkspaceMobileClient — Mobile workspace orchestrator (refactored).
 //

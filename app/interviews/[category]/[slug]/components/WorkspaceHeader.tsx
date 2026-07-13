@@ -11,7 +11,7 @@ import Link from "next/link";
 import { ChevronLeft, ChevronRight, Home } from "lucide-react";
 import { Question } from "@/lib/api/types";
 import { UserResponse } from "@/hooks/useUser";
-import { getCategoryDisplayUrl } from "@/lib/categorySlug";
+import { getCategoryUrl } from "@/lib/categorySlug";
 
 interface HeaderProps {
   interview: Question;
@@ -52,7 +52,7 @@ export default function WorkspaceHeader({
   }
 
   const label = categoryLabel ?? category;
-  const categoryUrl = getCategoryDisplayUrl(category);
+  const categoryUrl = getCategoryUrl(category);
   const questionTitle = interview.title || `#${interview.id}`;
 
   return (

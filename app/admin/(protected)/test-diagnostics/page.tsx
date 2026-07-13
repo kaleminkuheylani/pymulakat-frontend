@@ -17,7 +17,7 @@
 // - Bulunamayan slug'lar 'error' (DB-FIRST'te canonical slug kullaniyoruz)
 
 import { findQuestion, getAllQuestions } from "@/lib/api/questionAPI";
-import { CATEGORY_LABEL, CATEGORY_DISPLAY_URL } from "@/lib/categorySlug";
+import { CATEGORY_LABEL, getCategoryUrl } from "@/lib/categorySlug";
 import type { ApiQuestion, ApiTestCase } from "@/lib/api/types";
 
 type FullQuestion = ApiQuestion & {
@@ -208,7 +208,7 @@ export default async function TestDiagnosticsPage() {
             const catMissing = items.filter((i) => i.status === "missing_field").length;
             const catError = items.filter((i) => i.status === "error").length;
             const label = CATEGORY_LABEL[cat] || cat;
-            const displayUrl = CATEGORY_DISPLAY_URL[cat] || `/${cat}`;
+            const displayUrl = getCategoryUrl(cat);
             const total = items.length;
             const pct = Math.round((catOk / total) * 100);
 
@@ -302,7 +302,7 @@ export default async function TestDiagnosticsPage() {
                           </td>
                           <td className="px-4 py-1.5 text-right">
                             <a
-                              href={`/${CATEGORY_DISPLAY_URL[r.category]?.replace("/", "") || r.category}/${r.slug}`}
+                              href={`/interviews/${r.category}/${r.slug}`}
                               target="_blank"
                               rel="noopener noreferrer"
                               className="text-white/30 hover:text-white text-xs"

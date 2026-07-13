@@ -14,7 +14,7 @@
 import Link from "next/link";
 import { Home, ChevronRight } from "lucide-react";
 import { getCategoryMeta } from "@/lib/api/categoryAPI";
-import { getCategoryDisplayUrl } from "@/lib/categorySlug";
+import { getCategoryUrl } from "@/lib/categorySlug";
 
 export interface BreadcrumbItem {
   label: string;
@@ -33,7 +33,7 @@ export default async function Breadcrumb({ category, slug, title }: BreadcrumbPr
   const categoryLabel = meta?.label ?? category;
   // Canonical category: /{display} (top-level, ISR pre-rendered)
   // Question detail: /interviews/{db_category}/{slug} (canonical)
-  const categoryUrl = getCategoryDisplayUrl(category);
+  const categoryUrl = getCategoryUrl(category);
   const questionUrl = `/interviews/${category}/${slug}`;
 
   // 4 seviye: Ana Sayfa > Sorular > {Kategori} > {Soru}

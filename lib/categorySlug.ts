@@ -1,70 +1,74 @@
 // lib/categorySlug.ts
 //
-// TEK KAYNAK: kategori display URL ↔ DB slug mapping.
+// TEK KAYNAK: kategori DB slug'ları + legacy display URL redirect'leri.
 //
-// 8 canonical display URL:
-//   /temelleri            → python-basics
-//   /veri-yapilari        → data-structures
-//   /liste-sozluk         → list-dict
-//   /pandas               → pandas
-//   /algoritma-sorulari   → algorithms
-//   /heap                 → heap
-//   /stack                → stack
-//   /dinamik-programlama  → dynamic-programming
+// 2026-07-13 refactor (kullanici direktifi "seoyu kırıyor suan"):
+//   ESKİ: Canonical = display URL (/temelleri, /veri-yapilari, /liste-sozluk, ...)
+//         SEO kötü: Türkçe karakterler, çok uzun, kısaltılmış formlar.
+//   YENİ: Canonical = DB slug (/python-basics, /data-structures, /list-dict, ...)
+//         SEO iyi: İngilizce, kısa, tutarlı, Google-friendly.
 //
-// Legacy display URL'ler (hâlâ redirect ediliyor, SEO juice korunsun):
-//   /python-temelleri     → python-basics
+// Legacy display URL'ler → 308 → canonical DB slug URL.
+//   /temelleri            → /python-basics
+//   /veri-yapilari        → /data-structures
+//   /liste-sozluk         → /list-dict
+//   /pandas               → /pandas (DB slug aynı, redirect gereksiz)
+//   /algoritma-sorulari   → /algorithms
+//   /heap                 → /heap (DB slug aynı)
+//   /stack                → /stack (DB slug aynı)
+//   /dinamik-programlama  → /dynamic-programming
+//   /python-temelleri     → /python-basics (legacy alias)
 //
-// Canonical top-level dynamic route: app/[display]/page.tsx
-// - /heap, /pandas, /temelleri ... → 8 pre-rendered (ISR 1h, DB-FIRST)
-// - /interviews/{db} → 308 → /{display} (eski canonical konsolidasyon)
-// - /python-temelleri → 308 → /temelleri (legacy)
+// Canonical top-level dynamic route: app/[category]/page.tsx
+//   - URL = /{db_slug} (örn. /python-basics, /heap)
+//   - 8 path pre-rendered (ISR 1h, DB-FIRST)
+//   - dynamicParams=true → yeni kategori eklenince otomatik
+//
+// Soru detay URL'i (değişmedi): /interviews/{db}/{slug}
 
-// ─── DB slug → display URL (canonical) ──────────────────────
-export const CATEGORY_DISPLAY_URL: Record<string, string> = {
-  "python-basics": "/temelleri",
-  "data-structures": "/veri-yapilari",
-  "list-dict": "/liste-sozluk",
-  "pandas": "/pandas",
-  "algorithms": "/algoritma-sorulari",
-  "heap": "/heap",
-  "stack": "/stack",
-  "dynamic-programming": "/dinamik-programlama",
-};
+// ─── 8 canonical DB slug — sıralama sitemap/sidebar için ────
+export const CATEGORY_SLUGS = [
+  "python-basics",
+  "data-structures",
+  "list-dict",
+  "pandas",
+  "algorithms",
+  "heap",
+  "stack",
+  "dynamic-programming",
+] as const;
 
-// ─── DB slug → display label (UI) ───────────────────────────
+export type CategorySlug = (typeof CATEGORY_SLUGS)[number];
+
+// ─── DB slug → display label (UI için) ──────────────────────
 export const CATEGORY_LABEL: Record<string, string> = {
   "python-basics": "Python Temelleri",
   "data-structures": "Python Veri Yapıları",
   "list-dict": "Python Liste & Sözlük",
-  "pandas": "Python Pandas",
-  "algorithms": "Python Algoritma",
-  "heap": "Python Heap",
-  "stack": "Python Stack",
+  pandas: "Python Pandas",
+  algorithms: "Python Algoritma",
+  heap: "Python Heap",
+  stack: "Python Stack",
   "dynamic-programming": "Python Dinamik Programlama",
 };
 
-// ─── Display URL/slug → DB slug (ters mapping) ──────────────
-// Hem canonical ("/heap") hem legacy ("python-temelleri") kapsar.
-// `displayToDb()` fonksiyonu bu mapping'i kullanır.
-const DISPLAY_SLUG_TO_DB: Record<string, string> = {
-  // Canonical (oneksiz, kısa)
+// ─── Legacy display URL → canonical DB slug (308 redirect) ──
+// 308 = kalıcı redirect, SEO juice yeni URL'ye aktarılır.
+const LEGACY_DISPLAY_TO_DB: Record<string, string> = {
+  // Türkçe display URL'ler (eski 8 pillar statik sayfalar)
   temelleri: "python-basics",
   "veri-yapilari": "data-structures",
   "liste-sozluk": "list-dict",
-  pandas: "pandas",
   "algoritma-sorulari": "algorithms",
-  heap: "heap",
-  stack: "stack",
   "dinamik-programlama": "dynamic-programming",
   // Legacy alias
   "python-temelleri": "python-basics",
 };
 
 // ─── Public API ─────────────────────────────────────────────
-/** DB slug → display URL. Canonical, redirect yok. */
-export function getCategoryDisplayUrl(dbSlug: string): string {
-  return CATEGORY_DISPLAY_URL[dbSlug] ?? `/interviews/${dbSlug}`;
+/** Canonical URL oluştur (basit: /{db_slug}). */
+export function getCategoryUrl(dbSlug: string): string {
+  return `/${dbSlug}`;
 }
 
 /** DB slug → display label. UI için. */
@@ -73,33 +77,32 @@ export function getCategoryLabel(dbSlug: string): string {
 }
 
 /**
- * Display URL/slug → DB slug.
- * `/heap`, `/python-temelleri`, `heap`, `python-temelleri` hepsini kabul eder.
- * Bulunamazsa null — caller 404'e düşer.
+ * Verilen slug canonical bir DB slug mı?
+ * generateStaticParams validation, middleware whitelist vb. için.
  */
-export function displayToDb(displaySlug: string): string | null {
-  // "/heap" veya "heap" → normalize
-  const normalized = displaySlug.replace(/^\//, "").toLowerCase();
-  return DISPLAY_SLUG_TO_DB[normalized] ?? null;
+export function isCanonicalCategory(slug: string): boolean {
+  return CATEGORY_SLUGS.includes(slug as CategorySlug);
 }
 
 /**
- * Tüm bilinen display slug'ları (canonical + legacy).
- * generateStaticParams için.
+ * Legacy display URL/slug → canonical DB slug.
+ * `/temelleri`, `temelleri`, `/python-temelleri` hepsini kabul eder.
+ * Canonical zaten DB slug ise kendisini döner. Bilinmeyen → null.
  */
-export function listAllDisplaySlugs(): string[] {
-  return Object.keys(DISPLAY_SLUG_TO_DB);
+export function legacyDisplayToDb(slug: string): string | null {
+  const normalized = slug.replace(/^\//, "").toLowerCase();
+  // Canonical (DB slug) ise kendisini döndür
+  if (isCanonicalCategory(normalized)) return normalized;
+  // Legacy display URL ise DB slug'a map'le
+  return LEGACY_DISPLAY_TO_DB[normalized] ?? null;
 }
 
-/**
- * Sadece canonical (active) display slug'ları.
- * Sitemap, breadcrumb, link generation için — legacy URL'ler sitemap'te yok.
- */
-export function listCanonicalDisplaySlugs(): string[] {
-  return Object.values(CATEGORY_DISPLAY_URL).map((p) => p.replace(/^\//, ""));
+/** generateStaticParams için: 8 canonical DB slug. */
+export function listAllCategorySlugs(): string[] {
+  return [...CATEGORY_SLUGS];
 }
 
-/** Tüm bilinen DB slug'ları. */
-export function listAllDbCategorySlugs(): string[] {
-  return Object.keys(CATEGORY_DISPLAY_URL);
+/** Legacy redirect için: tüm eski display URL'ler. */
+export function listAllLegacyDisplaySlugs(): string[] {
+  return Object.keys(LEGACY_DISPLAY_TO_DB);
 }

@@ -20,7 +20,7 @@
 
 import { listCategories } from "@/lib/api/questionAPI";
 import { getAllQuestions } from "@/lib/api/questionAPI";
-import { CATEGORY_DISPLAY_URL, CATEGORY_LABEL } from "@/lib/categorySlug";
+import { getCategoryUrl, CATEGORY_LABEL } from "@/lib/categorySlug";
 import {
   getViewCountMap,
   getAnalyticsStats,
@@ -65,7 +65,7 @@ export default async function PageAuditPage() {
 
   // 9 pillar
   for (const c of categories) {
-    const displayUrl = CATEGORY_DISPLAY_URL[c.category] || `/${c.category}`;
+    const displayUrl = getCategoryUrl(c.category);
     pages.push({
       url: displayUrl,
       title: CATEGORY_LABEL[c.category] || c.label || c.category,
@@ -78,7 +78,7 @@ export default async function PageAuditPage() {
   for (const c of categories) {
     const list = byCategory.get(c.category) || [];
     for (const q of list.slice(0, 3)) {
-      const displayUrl = CATEGORY_DISPLAY_URL[c.category] || `/${c.category}`;
+      const displayUrl = getCategoryUrl(c.category);
       pages.push({
         url: `${displayUrl}/${q.slug}`,
         title: q.title,
