@@ -330,7 +330,29 @@ export default function WorkspaceClient({
   const mm = Math.floor(seconds / 60).toString().padStart(2, "0");
   const ss = (seconds % 60).toString().padStart(2, "0");
   const formattedTime = `${mm}:${ss}`;
-  const isGuest = !user && !userLoading;
+  // 📌 isGuest mantığı (güçlendirildi, 2026-07-13):
+  //   - user yüklü ve set edilmiş → kesinlikle misafir DEĞİL (gate KAPALI)
+  //   - user null ama userLoading true → hâlâ yükleniyor, gate GÖSTERME (flash önleme)
+  //   - user null + userLoading false + localStorage'da token VAR → token
+  //     var ama /auth/me henüz cevap vermedi, "yüklüyor gibi" davran
+  //   - user null + userLoading false + localStorage'da token YOK → gerçek misafir
+  const isGuest = (() => {
+    if (user) return false; // Kesinlikle login
+    if (userLoading) return false; // Hâlâ yükleniyor
+    if (typeof window !== "undefined") {
+      try {
+        const tokenKeys = ["sb-pymulakat-auth-token"];
+        for (const k of tokenKeys) {
+          const raw = localStorage.getItem(k);
+          if (raw) {
+            const parsed = JSON.parse(raw);
+            if (parsed?.access_token) return false; // Token var, yüklüyor
+          }
+        }
+      } catch { /* ignore */ }
+    }
+    return true; // Gerçekten misafir
+  })();
 
   return (
     <div className="h-screen bg-[#050816] text-white flex flex-col overflow-hidden">

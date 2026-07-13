@@ -14,6 +14,7 @@ import { requireAdmin } from "@/lib/admin/guard";
 import { getWidgetsByCategory } from "@/lib/admin/widgetRegistry";
 import { LayoutDashboard, LogOut, ShieldCheck } from "lucide-react";
 import type { AdminWidget } from "@/lib/admin/widgetRegistry";
+import LogoutButtonClient from "./LogoutButton";
 
 export const dynamic = "force-dynamic";
 
@@ -94,6 +95,7 @@ export default async function AdminProtectedLayout({ children }: LayoutProps) {
         </nav>
 
         <div className="p-3 border-t border-white/10 space-y-1">
+          <LogoutButtonClient />
           <Link
             href="/admin/login"
             className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-sm text-white/60 hover:bg-white/5 transition-colors"
@@ -111,8 +113,8 @@ export default async function AdminProtectedLayout({ children }: LayoutProps) {
         </div>
       </aside>
 
-      {/* ─── Main content ─────────────────────────────────────── */}
-      <main className="flex-1 min-w-0 overflow-x-hidden">{children}</main>
+      {/* ─── Main Content ──────────────────────────────────────── */}
+      <main className="flex-1 overflow-y-auto">{children}</main>
     </div>
   );
 }

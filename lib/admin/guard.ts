@@ -25,8 +25,14 @@
 import { cookies } from "next/headers";
 import { redirect } from "next/navigation";
 
+// Server-side fetch (RSC, force-dynamic):
+// - INTERNAL_API_URL (k8s/docker internal, public DNS atlanır)
+// - NEXT_PUBLIC_API_URL fallback (local dev veya internal tanımsız)
+// - Son çare: Railway public URL
 const API_BASE =
-  process.env.NEXT_PUBLIC_API_URL || "https://pymulakat-backend-production.up.railway.app";
+  process.env.INTERNAL_API_URL ||
+  process.env.NEXT_PUBLIC_API_URL ||
+  "https://pymulakat-backend-production.up.railway.app";
 
 export interface AdminUser {
   id: string;
