@@ -16,8 +16,8 @@ import { getCategoryDisplayUrl } from "@/lib/categorySlug";
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { useUser } from "../../../../../hooks/useUser";
-import { usePyodide, TestRunResult } from "../../../../../hooks/usePyodide";
+import { useUser } from "@/hooks/useUser";
+import { usePyodide, TestRunResult } from "@/hooks/usePyodide";
 import { CodeEditorRef } from "@/components/CodeEditor";
 import { GuestBanner } from "@/components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "@/lib/api";
@@ -27,7 +27,7 @@ import WorkspaceHeader from "../WorkspaceHeader";
 import CodeEditorPanel from "./CodeEditor";
 import QuestionDescriptionPanel from "./QuestionDescriptionPanel";
 import TestPanel from "./TestPanel";
-import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "../../../../../lib/api/authAPI";
+import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "@/lib/api/authAPI";
 
 // ─── Constants ────────────────────────────────────────────
 const LEVEL_CONFIG: Record<string, { label: string; color: string; bg: string; border: string }> = {

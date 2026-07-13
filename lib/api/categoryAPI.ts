@@ -47,9 +47,9 @@ export async function getAllCategories(): Promise<CategoryMeta[]> {
       if (!cat.slug) continue;
       map.set(cat.slug, {
         slug: cat.slug,
-        label: cat.label,
-        description: cat.description,
-        icon: cat.icon,
+        label: cat.label ?? '',
+        description: cat.description ?? '',
+        icon: cat.icon ?? '',
         question_count: cat.question_count,
       });
     }

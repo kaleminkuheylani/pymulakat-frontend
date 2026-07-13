@@ -199,38 +199,36 @@ export async function middleware(request: NextRequest) {
 
   let [, category, idOrSlug] = match;
 
-  // 2a) /interviews/{internal-slug} -> /{display-slug} (308 Permanent)
-  // SADECE /interviews/{cat} (idOrSlug yok) için. Detay sayfa /interviews/{cat}/{id}
-  // aşağıda 2c'de işleniyor — bu blok detay sayfayı yutmasın.
+  // 2a) /interviews/{db_category} (eski display URL'lerden)
+  //      /{top-level} → 308 → /interviews/{db_category} (kullanici direktifi 2026-07-13)
   const isCategoryOnly = !idOrSlug;
   if (isCategoryOnly) {
-    const INTERVIEW_TO_DISPLAY: Record<string, string> = {
-      "python-basics": "/python-temelleri",
-      "data-structures": "/veri-yapilari",
-      "pandas": "/pandas",
-      "list-dict": "/liste-sozluk",
-      "heap": "/heap",
-      "stack": "/stack",
-      "queue": "/queue",
-      "algorithms": "/algoritma-sorulari",
-      "dynamic-programming": "/dinamik-programlama",
-      // Eski 'python-' prefix'li label alias'lar
-      // (tüm 9 pillar önek kaldırıldı, python-temelleri hariç)
-      "python-temelleri": "/python-temelleri",
-      "python-veri-yapilari": "/veri-yapilari",
-      "python-pandas": "/pandas",
-      "python-liste-sozluk": "/liste-sozluk",
-      "python-heap": "/heap",
-      "python-stack": "/stack",
-      "python-queue": "/queue",
-      "python-algoritma-sorulari": "/algoritma-sorulari",
-      "python-dinamik-programlama": "/dinamik-programlama",
+    // Top-level /{display} → /interviews/{db_category}
+    const TOP_LEVEL_TO_DB: Record<string, string> = {
+      "/temelleri": "python-basics",
+      "/veri-yapilari": "data-structures",
+      "/liste-sozluk": "list-dict",
+      "/pandas": "pandas",
+      "/algoritma-sorulari": "algorithms",
+      "/heap": "heap",
+      "/stack": "stack",
+      "/queue": "queue",
+      "/dinamik-programlama": "dynamic-programming",
+      "/python-temelleri": "python-basics",
     };
-    if (INTERVIEW_TO_DISPLAY[category]) {
+    // pathname /interviews/{db_cat} — canonical zaten, render
+    if (pathname.startsWith("/interviews/")) {
+      return NextResponse.next();
+    }
+    // Top-level {display} → /interviews/{db}
+    const dbCat = TOP_LEVEL_TO_DB[`/${category}`];
+    if (dbCat) {
       const url = request.nextUrl.clone();
-      url.pathname = INTERVIEW_TO_DISPLAY[category];
+      url.pathname = `/interviews/${dbCat}`;
       return NextResponse.redirect(url, 308);
     }
+    // Eski /interviews/{db} zaten canonical
+    return NextResponse.next();
   }
 
   // Legacy/deprecated category alias'lar (eski URL'leri canlı kategoriye yönlendir)
@@ -247,37 +245,22 @@ export async function middleware(request: NextRequest) {
   //    Sadece /^\d+$/ ise ID kabul et, aksi halde slug — display URL'e yönlendir.
   const isPureId = /^\d+$/.test(idOrSlug);
   if (!isPureId) {
-    // Slug ise — top-level /{display}/{slug} canonical
-    const slugRedirectMap: Record<string, string> = {
-      "python-basics": "/python-temelleri",
-      "data-structures": "/veri-yapilari",
-      "list-dict": "/liste-sozluk",
-      "pandas": "/pandas",
-      "heap": "/heap",
-      "stack": "/stack",
-      "queue": "/queue",
-      "algorithms": "/algoritma-sorulari",
-      "dynamic-programming": "/dinamik-programlama",
-      // Eski 'python-' prefix'li label alias'lar
-      "python-temelleri": "/python-temelleri",
-      "python-veri-yapilari": "/veri-yapilari",
-      "python-pandas": "/pandas",
-      "python-liste-sozluk": "/liste-sozluk",
-      "python-heap": "/heap",
-      "python-stack": "/stack",
-      "python-queue": "/queue",
-      "python-algoritma-sorulari": "/algoritma-sorulari",
-      "python-dinamik-programlama": "/dinamik-programlama",
+    // Slug ise — zaten canonical /interviews/{db_cat}/{slug}, render et
+    // Eski top-level /{display}/{slug} → 308 → /interviews/{db}/{slug}
+    const TOP_LEVEL_TO_DB_SLUG: Record<string, string> = {
+      "python-basics": "python-basics",
+      "data-structures": "data-structures",
+      "list-dict": "list-dict",
+      "pandas": "pandas",
+      "heap": "heap",
+      "stack": "stack",
+      "queue": "queue",
+      "algorithms": "algorithms",
+      "dynamic-programming": "dynamic-programming",
     };
-    if (slugRedirectMap[category]) {
-      const target = `${slugRedirectMap[category]}/${idOrSlug}`;
-      // Self-redirect skip (display URL zaten canonical)
-      if (pathname === target) {
-        return NextResponse.next();
-      }
-      const url = request.nextUrl.clone();
-      url.pathname = target;
-      return NextResponse.redirect(url, 308);
+    if (TOP_LEVEL_TO_DB_SLUG[category]) {
+      // /interviews/{db}/{slug} — zaten canonical, render
+      return NextResponse.next();
     }
     return NextResponse.next();
   }

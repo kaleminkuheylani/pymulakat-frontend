@@ -15,7 +15,7 @@ import { errorMessage } from "@/lib/errorMessage";
 
 import { useCallback, useEffect, useState } from "react";
 import { QuestionTests, TestCase } from "@/lib/api/types";
-import { TestRunResult, PyodideStatus } from "../../../../../hooks/usePyodide";
+import { TestRunResult, PyodideStatus } from "@/hooks/usePyodide";
 import { getErrorLabel } from "@/lib/errorClassifier";
 import {
   parseFunctionSignature,

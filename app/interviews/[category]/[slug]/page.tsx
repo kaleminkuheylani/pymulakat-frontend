@@ -9,6 +9,7 @@
 // ediliyor, downstream kod değişmiyor.
 import { Check, Download, Eye, Lightbulb, Pin } from "lucide-react";
 import { getCategoryDisplayUrl, getCategoryLabel, DISPLAY_URL_TO_INTERNAL } from "@/lib/categorySlug";
+import { getCategoryMeta } from "@/lib/api/categoryAPI";
 
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
@@ -21,7 +22,7 @@ import WorkspaceErrorBoundary from "@/components/workspace/WorkspaceErrorBoundar
 import Breadcrumb from "@/components/Breadcrumb";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { findQuestion, slugifyTitle as csvSlugify } from "@/lib/api/questionAPI";
-import type { ApiQuestion, ApiQuestionTests } from "../../../lib/api/types";
+import type { ApiQuestion, ApiQuestionTests } from "@/lib/api/types";
 import { getQuestionTests } from "@/lib/api/questionAPI";
 
 // Tüm soru verisi backend DB'den gelir — kod-içi fallback YOK.
@@ -108,7 +109,7 @@ async function fetchQuestionTests(category: string, slugOrId: string): Promise<S
     return {
       question_id: data.question_id ?? metaQ.id,
       function_name: data.function_name ?? "",
-      test_cases: (data.test_cases || []).map((c) => ({
+      test_cases: (data.test_cases || []).map((c: any) => ({
         input: c.input,
         expected: c.expected,
         // description undefined ise spread ile hiç ekleme (Next.js $undefined bug önleme)
@@ -220,13 +221,13 @@ function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
 }
 
 // ─── Breadcrumb schema ────────────────────────────────────
-function buildBreadcrumbSchema(category: string, slug: string, title: string, baseUrl: string) {
-  // Truth of source: breadcrumb display URL kullanır, internal slug değil.
-  // Canonical: /{display-cat}/{slug}
-  const displayCat = getCategoryDisplayUrl(category);
-  const categoryUrl = `${baseUrl}${displayCat}`;
-  const questionUrl = `${baseUrl}${displayCat}/${slug}`;
-  const categoryLabel = getCategoryLabel(category);
+async function buildBreadcrumbSchema(category: string, slug: string, title: string, baseUrl: string) {
+  // DB-FIRST: kategori label'ı DB'den (kullanici direktifi 2026-07-13)
+  const meta = await getCategoryMeta(category);
+  const categoryLabel = meta?.label ?? getCategoryLabel(category);
+  // Canonical: /interviews/{db_category}/{slug}
+  const categoryUrl = `${baseUrl}/interviews/${category}`;
+  const questionUrl = `${baseUrl}/interviews/${category}/${slug}`;
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
@@ -363,7 +364,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     ? {
         question_id: ssrTestsRaw.question_id ?? csvQ.id,
         function_name: ssrTestsRaw.function_name ?? "",
-        test_cases: (ssrTestsRaw.test_cases || []).map((c) => ({
+        test_cases: (ssrTestsRaw.test_cases || []).map((c: any) => ({
           input: c.input,
           expected: c.expected,
           ...(c.description ? { description: c.description } : {}),
@@ -396,7 +397,7 @@ export default async function Page({ params, searchParams }: PageProps) {
   const baseUrl = "https://pythonmulakat.com";
   const howToSchema = seoQ ? buildHowToSchema(seoQ, baseUrl) : null;
   const breadcrumbSchema = seoQ
-    ? buildBreadcrumbSchema(resolvedParams.category, resolvedParams.slug, seoQ.title, baseUrl)
+    ? await buildBreadcrumbSchema(resolvedParams.category, resolvedParams.slug, seoQ.title, baseUrl)
     : null;
 
   // <Pin className="w-3 h-3 inline" /> SSR Content — Googlebot ve JS olmadan da içeriği görsün
@@ -481,7 +482,7 @@ export default async function Page({ params, searchParams }: PageProps) {
           <div className="mt-8 pt-6 border-t border-white/10">
             <h2 className="text-lg sm:text-xl font-semibold mb-3 text-cyan-300">Örnek Test Case'ler</h2>
             <div className="space-y-3">
-              {ssrTestCases.map((tc, i) => (
+              {ssrTestCases.map((tc: any, i: number) => (
                 <div key={i} className="p-3 rounded-lg bg-white/5 border border-white/10 text-xs sm:text-sm">
                   <div className="font-semibold text-white/60 mb-2 uppercase tracking-wider text-[10px]">
                     Örnek #{i + 1}{tc.description ? ` · ${tc.description}` : ""}
