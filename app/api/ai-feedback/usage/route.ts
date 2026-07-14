@@ -27,6 +27,9 @@ export async function GET(req: NextRequest) {
       method: "GET",
       headers: {
         Cookie: cookieHeader,
+        // 2026-07-14 v3: X-User-Email forward — backend profiles.email
+        //   ile eşleştirir (Supabase auth cookie Vercel domain'de yok).
+        "X-User-Email": req.headers.get("x-user-email") || "",
       },
       cache: "no-store",
     });

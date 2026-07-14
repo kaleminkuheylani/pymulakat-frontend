@@ -83,14 +83,44 @@ function readByokKey(): string | null {
   }
 }
 
-// 2026-07-14 v10: Backend DB quota fetch.
-//   Auth user: 10/ay, anon: 5/ay. BYOK user limit muaf (sonsuz).
-//   localStorage fallback (DB hata durumunda eski mantik).
+// 2026-07-14 v10+v13: Backend DB quota fetch. Auth user email header'da
+//   gonderilir, backend profiles.email ile eslestirir (Supabase auth
+//   cookie Vercel domain'de olmadigi icin, email-based match). BYOK
+//   user limit muaf.
+function getUserEmail(): string | null {
+  if (typeof window === "undefined") return null;
+  try {
+    // useUser.ts'deki localStorage key'leri
+    const keys = ["pymulakat_user_email", "supabase.auth.token"];
+    for (const key of keys) {
+      const v = localStorage.getItem(key);
+      if (v) {
+        try {
+          const parsed = JSON.parse(v);
+          if (parsed?.user?.email) return parsed.user.email;
+          if (parsed?.currentSession?.user?.email) return parsed.currentSession.user.email;
+          if (parsed?.session?.user?.email) return parsed.session.user.email;
+        } catch {
+          // plain string
+        }
+      }
+    }
+    return null;
+  } catch {
+    return null;
+  }
+}
+
 async function fetchDbQuota(): Promise<{ used: number; limit: number; remaining: number } | null> {
   if (typeof window === "undefined") return null;
   try {
+    const headers: Record<string, string> = {};
+    const email = getUserEmail();
+    if (email) headers["X-User-Email"] = email;
+
     const res = await fetch("/api/ai-feedback/usage", {
       credentials: "include",
+      headers,
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -109,9 +139,13 @@ async function fetchDbQuota(): Promise<{ used: number; limit: number; remaining:
 async function incrementDbQuota(): Promise<{ used: number; limit: number; remaining: number; allowed: boolean } | null> {
   if (typeof window === "undefined") return null;
   try {
+    const headers: Record<string, string> = { "Content-Type": "application/json" };
+    const email = getUserEmail();
+    if (email) headers["X-User-Email"] = email;
+
     const res = await fetch("/api/ai-feedback/increment", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers,
       credentials: "include",
       cache: "no-store",
     });

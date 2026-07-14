@@ -25,6 +25,8 @@ export async function POST(req: NextRequest) {
       headers: {
         "Content-Type": "application/json",
         Cookie: cookieHeader,
+        // 2026-07-14 v3: X-User-Email forward (backend profiles.email match)
+        "X-User-Email": req.headers.get("x-user-email") || "",
       },
       body,
       cache: "no-store",
