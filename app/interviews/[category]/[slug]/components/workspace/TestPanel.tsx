@@ -194,8 +194,8 @@ export default function TestPanel({
             isGuest={isGuest}
             hasRunOnce={hasRunOnce}
             starterCode={starterCode}
-            questionTitle={questionTitle}
-            questionDescription={questionDescription}
+            questionTitle={questionTitle ?? ""}
+            questionDescription={questionDescription ?? ""}
             testResults={testResults}
           />
         </div>
