@@ -1,5 +1,5 @@
 "use client";
-import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play } from "lucide-react";
+import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play, Sparkles } from "lucide-react";
 import { errorMessage } from "@/lib/errorMessage";
 
 // TestPanel.tsx — test case'leri göster + çalıştır + custom input + geç/kal durumu.
@@ -210,6 +210,26 @@ export default function TestPanel({
                 )}
               </button>
             ))}
+          </div>
+
+          <div className="flex items-center gap-2 mr-2">
+            {/* 2026-07-14: AI Feedback placeholder — "very soon" rozeti ile.
+                Konsol/Örnekler tabs'in yanında, Çalıştır butonundan önce.
+                Disabled: henüz arka uç LLM entegrasyonu yok, sadece UI beklentisi.
+                Conversion: 'cok yakinda' sinyali + gelen user 'bu urun gelisiyor' görür. */}
+            <button
+              type="button"
+              disabled
+              aria-label="AI Geri Bildirim (çok yakında)"
+              title="AI Geri Bildirim — çok yakında"
+              className="px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 bg-white/[0.03] border border-white/10 text-white/40 cursor-not-allowed"
+            >
+              <Sparkles className="w-3.5 h-3.5 text-amber-300/70" />
+              <span>AI Feedback</span>
+              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/20">
+                very soon
+              </span>
+            </button>
           </div>
 
           <button
