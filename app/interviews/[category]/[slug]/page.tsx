@@ -603,10 +603,6 @@ export default async function Page({ params, searchParams }: PageProps) {
           — hem desktop hem mobile için aynı davranış. Bu sayede React hydration
           sırasında duplicate render oluşmuyor. */}
 
-      {/* Cross-link: soru detaydan → ilgili kategoriye (SEO internal link + UX)
-          - JS yoksa bile görünür (server-rendered)
-          - 2026-07-13 v2 (spam-risk): Breadcrumb zaten var, ekstra bir CTA
-            kullanıcıyı aynı kategorideki diğer sorulara yönlendirir
     </>
   );
 }
