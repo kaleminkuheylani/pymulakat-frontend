@@ -106,7 +106,7 @@ export default function PythonOnlinePage() {
             >
               ← Ana Sayfa
             </Link>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Online</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Yapay Zeka Destekli Python Online</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
               Tarayıcıda Python 3.12 kodunu yaz, Pyodide ile anında çalıştır.
               Kurulum yok, hesap yok. Öğrenmek için ideal playground.

@@ -225,6 +225,7 @@ const siteJsonLd = {
       "@type": "Organization",
       "@id": "https://pythonmulakat.com/#organization",
       name: "Python Mülakat",
+      alternateName: "Yapay Zeka Destekli Python Mülakat Platformu",
       url: "https://pythonmulakat.com",
       logo: {
         "@type": "ImageObject",
@@ -233,7 +234,7 @@ const siteJsonLd = {
         height: 630,
       },
       description:
-        "Python öğrenmeye yeni başlayanlar için Türkçe interaktif mülakat hazırlık platformu.",
+        "Yapay zeka destekli Python mülakat soru platformu. Python öğrenmeye yeni başlayanlar için Türkçe interaktif mülakat hazırlık, AI geri bildirim ve kod pratik.",
       sameAs: [],
     },
 
@@ -242,9 +243,10 @@ const siteJsonLd = {
       "@type": "WebSite",
       "@id": "https://pythonmulakat.com/#website",
       url: "https://pythonmulakat.com",
-      name: "Python Mülakat",
+      name: "Yapay Zeka Destekli Python Mülakat",
+      alternateName: "Python Mülakat",
       description:
-        "Python öğrenmeye yeni başlayanlar için gerçek dünya mülakat soruları, interaktif sandbox ve AI geri bildirimi.",
+        "Yapay zeka destekli Python mülakat platformu: gerçek dünya mülakat soruları, interaktif sandbox, AI destekli geri bildirim ve kod pratik.",
       publisher: { "@id": "https://pythonmulakat.com/#organization" },
       inLanguage: "tr-TR",
       potentialAction: {

@@ -221,7 +221,7 @@ export default async function PythonEgitimiPage() {
             >
               ← Ana Sayfa
             </Link>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Eğitimi</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Yapay Zeka Destekli Python Eğitimi</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
               Başlangıçtan ileri seviyeye, Türkçe ve ücretsiz Python dersleri.
               Her ders çalıştırılabilir kod örneği, kısa açıklama ve pratik ödev içerir.

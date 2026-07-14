@@ -227,7 +227,7 @@ export default function PythonKodlariPage() {
             >
               ← Ana Sayfa
             </Link>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Kodları</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Yapay Zeka Destekli Python Kodları</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
               Sık kullanılan Python kod örnekleri.
               Kopyala, tarayıcıda çalıştır, öğren. Toplam <span className="font-bold text-white">{total}</span> örnek.

@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Hakkımızda | Yapay Zeka Destekli Python Mülakat",
   description:
-    "İki kişilik bir ekip, bir amacı paylaşıyoruz: Python öğretmek için yapay zekâ ile üretilmiş sorular, idealist pedagojik yaklaşım ve sıfır bütçe.",
+    "İki kişilik bir ekip, bir amacı paylaşıyoruz: Yapay zeka destekli Python mülakat soru platformu. AI denetiminden geçirilmiş sorular, idealist pedagojik yaklaşım ve sıfır bütçe.",
 };
 
 // ─── Stiller (server component'te <style> tag'i inline) ────────
