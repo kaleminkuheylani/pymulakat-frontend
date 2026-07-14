@@ -135,59 +135,23 @@ export default function TestPanel({
 
   // ── Mobile render (sadece içerik, tab bar parent'ta) ──
   if (!isDesktop) {
-    // 2026-07-14: Mobile variant — Examples + AI Feedback + Custom Input
-    // hepsi TEK scroll container'da. Tab sistemi YOK (sadece 2 tab:
-    // Soru + Workspace mobile'da). Test panel 180px sabit, kendi içinde
-    // scroll yapar, viewport scroll OLMAZ.
+    // 2026-07-14 v3: Mobile variant — sadece ExamplesView (full screen).
+    //   Dış WorkspaceMobileClient 4 alt tab (Editör/Örnekler/Custom Input/Feedback)
+    //   kullanır, test paneli 180px'e sıkıştırılmaz. Editör sayfasında test
+    //   render OLMAZ (yarısı kesik görünmüyor).
     return (
       <div className="h-full flex flex-col bg-[#0a0e1a]">
-        {/* Header: AI Feedback butonu + (ileride) gizli test toggle */}
-        <div className="h-9 flex items-center justify-end gap-1.5 px-2 flex-shrink-0 border-b border-white/5">
-          <AiFeedbackButton
-            isAuthenticated={!isGuest}
-            hasRunOnce={hasRunOnce ?? false}
-            code={starterCode ?? ""}
-            questionTitle={questionTitle ?? ""}
-            questionDescription={questionDescription ?? ""}
-            testResults={testResults.map((r) => ({
-              input: r.input !== undefined ? String(r.input) : undefined,
-              expected: r.expected !== undefined ? String(r.expected) : undefined,
-              actual: r.actual !== undefined ? String(r.actual) : undefined,
-              passed: r.passed,
-              description: r.description,
-            }))}
-            onOpenSettings={() => {
-              if (typeof window !== "undefined") {
-                window.dispatchEvent(new CustomEvent("pymulakat:open-settings"));
-              }
-            }}
-          />
-        </div>
-        {/* Body: Examples + Custom Input (kendi içinde scroll) */}
         <div className="flex-1 min-h-0 overflow-y-auto">
-          <div className="p-2 space-y-3">
-            <ExamplesView
-              testCases={{ ...testCases, test_cases: visibleTestCases } as QuestionTests}
-              testResults={testResults}
-              isGuest={isGuest}
-              category={category}
-              id={id}
-              hiddenCount={hiddenCount}
-              showHidden={showHidden}
-              onToggleHidden={() => setShowHidden((v) => !v)}
-            />
-            {starterCode && (
-              <div className="pt-2 border-t border-white/5">
-                <ConsoleView
-                  errorLines={errorLines}
-                  starterCode={starterCode}
-                  functionName={testCases?.function_name}
-                  isRunning={isRunning}
-                  onCustomRun={onCustomRun}
-                />
-              </div>
-            )}
-          </div>
+          <ExamplesView
+            testCases={{ ...testCases, test_cases: visibleTestCases } as QuestionTests}
+            testResults={testResults}
+            isGuest={isGuest}
+            category={category}
+            id={id}
+            hiddenCount={hiddenCount}
+            showHidden={showHidden}
+            onToggleHidden={() => setShowHidden((v) => !v)}
+          />
         </div>
       </div>
     );
@@ -515,7 +479,7 @@ function ExamplesView({
 }
 
 // ─── ConsoleView: Custom Input + Hata Traceback ───────────
-function ConsoleView({
+export function ConsoleView({
   errorLines,
   starterCode,
   functionName,

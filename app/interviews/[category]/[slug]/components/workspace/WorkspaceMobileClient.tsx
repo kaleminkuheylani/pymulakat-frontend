@@ -1,5 +1,5 @@
 "use client";
-import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle } from "lucide-react";
+import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle, Code2, TestTube, Terminal, Sparkles } from "lucide-react";
 import { errorMessage } from "@/lib/errorMessage";
 import { getCategoryUrl } from "@/lib/categorySlug";
 
@@ -26,11 +26,12 @@ import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "@/lib/api
 import type { CodeEditorRef } from "@/components/CodeEditor";
 import CodeEditorPanel from "./CodeEditor";
 import QuestionDescriptionPanel from "./QuestionDescriptionPanel";
-import TestPanel from "./TestPanel";
+import TestPanel, { ConsoleView } from "./TestPanel";
+import AiFeedbackView from "./AiFeedbackView";
 
 export const dynamic_ = "force-dynamic";
 
-type Tab = "question" | "workspace" | "examples" | "console";
+type Tab = "question" | "editor" | "examples" | "customInput" | "feedback";
 
 interface Props {
   initialParams?: { category: string; id: string };
@@ -92,9 +93,9 @@ export default function WorkspaceMobileClient({
   const [errorLines, setErrorLines] = useState<string[]>([]);
   // 2026-07-14: AI Feedback trigger — ilk Run sonrası enable olur
   const [hasRunOnce, setHasRunOnce] = useState(false);
-  // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
-  //     test case'ler Testler tab'ında ayrıca erişilebilir.
-  const [tab, setTab] = useState<Tab>("workspace");
+  // 📌 Default "editor" — kullanıcı soruyu açar açmaz editörle başlar,
+  //     test/feedback ayrı alt tab'larda.
+  const [tab, setTab] = useState<Tab>("editor");
   const [resultModal, setResultModal] = useState<{ results: any[]; errorLines: string[]; passed: number; total: number } | null>(null);
 
   // ─── Guards ──
@@ -331,7 +332,7 @@ export default function WorkspaceMobileClient({
           <div className="text-[10px] text-white/40 truncate">{category}</div>
           <div className="text-xs font-bold text-white truncate">{interview.title}</div>
         </div>
-        {/* Tab degistirme butonlari (header'da) */}
+        {/* Üst toggle: Soru (📖) ↔ Editör (🖥️). Diğer 3 tab alt nav'da. */}
         <div className="flex items-center gap-1 mr-1">
           <button
             onClick={() => setTab("question")}
@@ -339,26 +340,19 @@ export default function WorkspaceMobileClient({
               tab === "question" ? "bg-white/10 text-white" : "text-white/40"
             }`}
             aria-label="Soru"
+            title="Soru açıklaması"
           >
-            📖
+            <BookOpen className="w-3.5 h-3.5" />
           </button>
           <button
-            onClick={() => setTab("examples")}
+            onClick={() => setTab("editor")}
             className={`px-2 py-1 rounded text-[10px] font-semibold ${
-              tab === "examples" ? "bg-white/10 text-white" : "text-white/40"
+              tab === "editor" ? "bg-white/10 text-white" : "text-white/40"
             }`}
-            aria-label="Örnekler"
+            aria-label="Editör"
+            title="Kod editörü"
           >
-            📋
-          </button>
-          <button
-            onClick={() => setTab("console")}
-            className={`px-2 py-1 rounded text-[10px] font-semibold ${
-              tab === "console" ? "bg-white/10 text-white" : "text-white/40"
-            }`}
-            aria-label="Konsol"
-          >
-            🖨️
+            <Code2 className="w-3.5 h-3.5" />
           </button>
         </div>
         {readonly ? null : isGuest ? (
@@ -399,7 +393,7 @@ export default function WorkspaceMobileClient({
           </div>
         )}
 
-        {tab === "workspace" && (
+        {tab === "editor" && (
           <>
             {/* Mobilde editör — kalan tüm dikey alan, Pyodide yüklenene kadar
                 placeholder spinner göster. min-h 320px kaldırıldı, ekrana tam
@@ -427,47 +421,9 @@ export default function WorkspaceMobileClient({
                 readOnly={readonly || isGuest}
               />
             </div>
-            {/* Console — TestPanel mobile variantı (ExamplesView + AI Feedback)
-                180px sabit, kendi içinde scroll yapar; viewport scroll OLMAZ. */}
-            <div className="h-[180px] flex-shrink-0 overflow-hidden border-t border-white/10 bg-[#0a0e1a]">
-              <TestPanel
-                variant="mobile"
-                testCases={testCases}
-                testResults={results}
-                isRunning={running}
-                pyStatus={pyStatus}
-                isGuest={isGuest}
-                category={category}
-                id={id}
-                onRun={handleRun}
-                starterCode={interview?.starter_code || undefined}
-                onCustomRun={handleCustomRun}
-                errorLines={errorLines}
-                hasRunOnce={hasRunOnce}
-                questionTitle={interview?.title}
-                questionDescription={interview?.description}
-              />
-            </div>
+            {/* 2026-07-14 v3: Test paneli editör sayfasında YOK.
+                Örnekler/Custom Input/Feedback alt tab'lardan erişilir. */}
           </>
-        )}
-
-        {tab === "console" && (
-          <div className="flex-1 overflow-y-auto">
-            <TestPanel
-              variant="mobile"
-              testCases={testCases}
-              testResults={results}
-              isRunning={running}
-              pyStatus={pyStatus}
-              isGuest={isGuest}
-              category={category}
-              id={id}
-              onRun={handleRun}
-              starterCode={interview?.starter_code || undefined}
-              onCustomRun={handleCustomRun}
-              errorLines={errorLines}
-            />
-          </div>
         )}
 
         {tab === "examples" && (
@@ -488,30 +444,80 @@ export default function WorkspaceMobileClient({
             />
           </div>
         )}
+
+        {tab === "customInput" && (
+          <div className="flex-1 overflow-y-auto">
+            {interview?.starter_code ? (
+              <ConsoleView
+                errorLines={errorLines}
+                starterCode={interview.starter_code}
+                functionName={testCases?.function_name}
+                isRunning={running}
+                onCustomRun={handleCustomRun}
+              />
+            ) : (
+              <div className="p-4 text-center text-white/50 text-xs">
+                Bu soru için custom input mevcut değil.
+              </div>
+            )}
+          </div>
+        )}
+
+        {tab === "feedback" && (
+          <div className="flex-1 overflow-y-auto p-3">
+            <AiFeedbackView
+              isGuest={isGuest}
+              hasRunOnce={hasRunOnce}
+              code={code}
+              questionTitle={interview?.title || ""}
+              questionDescription={interview?.description}
+              testResults={results}
+            />
+          </div>
+        )}
       </div>
 
       {/* Bottom tab bar — SADECE workspace tab'indayken gizle (editor tam ekran kullanir) */}
-      {tab !== "workspace" && (
-        <div className="flex bg-[#0a0e1a]">
-          {(["question", "workspace", "examples", "console"] as const).map((k) => (
-            <button
-              key={k}
-              onClick={() => setTab(k)}
-              className={`flex-1 py-2 text-[10px] font-semibold ${
-                tab === k ? "text-white border-t-2 border-amber-500" : "text-white/40"
-              }`}
-            >
-              {k === "question"
-                ? "Soru"
-                : k === "workspace"
-                ? "Editör"
-                : k === "examples"
-                ? `Örnekler (${testCases?.test_cases.length ?? 0})`
-                : "🖨️ Konsol"}
-            </button>
-          ))}
-        </div>
-      )}
+      {/* 2026-07-14 v3: Alt nav — 4 tab: Editör / Örnekler / Custom Input / Feedback.
+          Soru üst bar'da (header toggle). Alt nav sabit, viewport'un altında. */}
+      <div className="flex bg-[#0a0e1a] border-t border-white/10 flex-shrink-0">
+        <button
+          onClick={() => setTab("editor")}
+          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors ${
+            tab === "editor" ? "text-amber-300 border-t-2 border-amber-500 -mt-px" : "text-white/40"
+          }`}
+        >
+          <Code2 className="w-4 h-4" />
+          Editör
+        </button>
+        <button
+          onClick={() => setTab("examples")}
+          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors ${
+            tab === "examples" ? "text-amber-300 border-t-2 border-amber-500 -mt-px" : "text-white/40"
+          }`}
+        >
+          <TestTube className="w-4 h-4" />
+          Örnekler
+        </button>
+        <button
+          onClick={() => setTab("customInput")}
+          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors ${
+            tab === "customInput" ? "text-amber-300 border-t-2 border-amber-500 -mt-px" : "text-white/40"
+          }`}
+        >
+          <Terminal className="w-4 h-4" />
+          Custom Input
+        </button>
+        <button
+          onClick={() => setTab("feedback")}
+          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors ${
+            tab === "feedback" ? "text-amber-300 border-t-2 border-amber-500 -mt-px" : "text-white/40"
+          }`}
+        >
+          <Sparkles className="w-4 h-4" />
+          Feedback
+        </button>
+      </div>
 
       {/* Sonuç Modalı — success/fail + comparison */}
       {resultModal && (
