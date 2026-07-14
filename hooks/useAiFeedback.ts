@@ -136,13 +136,11 @@ export function useAiFeedback(): AiFeedbackState {
         });
 
         if (res.status === 401) {
-          setTimeout(() => {
-            const returnUrl = typeof window !== "undefined" ? window.location.pathname : "/";
-            if (typeof window !== "undefined") {
-              window.location.href = `/login?returnUrl=${encodeURIComponent(returnUrl)}`;
-            }
-          }, 800);
-          setError("AI feedback için giriş yapmalısın. Login sayfasına yönlendiriliyorsun...");
+          // 2026-07-14 v3: 401 login'e yönlendirmez, sadece hata gösterir.
+          // Misafir zaten "Giriş Yap & Dene" butonu kullanıyor
+          // (AiFeedbackButton/AiFeedbackView). Burada sadece hata göster,
+          // kullanıcı manuel karar versin (yenileme veya giriş).
+          setError("Oturum süresi dolmuş olabilir. Sayfayı yenile veya giriş yap.");
           return null;
         }
 
