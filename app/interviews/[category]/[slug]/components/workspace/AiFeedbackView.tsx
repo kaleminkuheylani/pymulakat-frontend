@@ -14,7 +14,11 @@ import { useAiFeedback, AI_FEEDBACK_MAX } from "@/hooks/useAiFeedback";
 interface AiFeedbackViewProps {
   isGuest: boolean;
   hasRunOnce: boolean;
-  code: string;
+  // 2026-07-14 v4: code + starterCode ikisi de kabul edilir (geriye uyumlu).
+  //   Mobile AiFeedbackView (eski) code gönderiyor, TestPanel starterCode
+  //   gönderiyor. Hangisi varsa onu kullan.
+  code?: string;
+  starterCode?: string;
   questionTitle: string;
   questionDescription?: string;
   testResults: Array<{ input?: string; expected?: string; actual?: string; passed: boolean; description?: string }>;
@@ -24,6 +28,7 @@ export default function AiFeedbackView({
   isGuest,
   hasRunOnce,
   code,
+  starterCode,
   questionTitle,
   questionDescription,
   testResults,
@@ -42,13 +47,17 @@ export default function AiFeedbackView({
     resetQuota,
   } = useAiFeedback();
 
+  // 2026-07-14 v4: code veya starterCode (hangisi varsa). TestPanel
+  //   starterCode gönderir, mobile AiFeedbackView code gönderir.
+  const effectiveCode = code ?? starterCode ?? "";
+
   const handleClick = async () => {
     if (isGuest) {
       const returnUrl = typeof window !== "undefined" ? window.location.pathname : "/";
       window.location.href = `/login?returnUrl=${encodeURIComponent(returnUrl)}`;
       return;
     }
-    await requestFeedback({ code, questionTitle, questionDescription, testResults });
+    await requestFeedback({ code: effectiveCode, questionTitle, questionDescription, testResults });
   };
 
   return (
@@ -87,20 +96,25 @@ export default function AiFeedbackView({
           <Settings className="w-3.5 h-3.5" />
         </button>
         {/* 2026-07-14: Kullanılan AI feedback haklarını sıfırla.
-            limitReached veya test için. localStorage sayacını temizler. */}
-        <button
-          type="button"
-          onClick={() => {
-            if (window.confirm("Kullanılan AI feedback haklarını sıfırla?")) {
-              resetQuota();
-            }
-          }}
-          className="p-1.5 rounded text-white/50 hover:text-white hover:bg-white/10 transition-colors"
-          title="Kullanılan hakları sıfırla"
-          aria-label="Hakları sıfırla"
-        >
-          <RotateCcw className="w-3.5 h-3.5" />
-        </button>
+            limitReached veya test için. localStorage sayacını temizler.
+            v4: Sadece NEXT_PUBLIC_REPAIR_MODE=true ise göster (prod'da
+            gizli — server-side quota authoritative, client-side reset
+            yaniltici olur). Dev/repair-mode'da görünür. */}
+        {process.env.NEXT_PUBLIC_REPAIR_MODE === "true" && (
+          <button
+            type="button"
+            onClick={() => {
+              if (window.confirm("Kullanılan AI feedback haklarını sıfırla?")) {
+                resetQuota();
+              }
+            }}
+            className="p-1.5 rounded text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+            title="Kullanılan hakları sıfırla (dev/repair only)"
+            aria-label="Hakları sıfırla"
+          >
+            <RotateCcw className="w-3.5 h-3.5" />
+          </button>
+        )}
       </div>
 
       {/* Buton: 4 state */}

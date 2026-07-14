@@ -1,6 +1,7 @@
 "use client";
 import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play } from "lucide-react";
 import AiFeedbackButton from "./AiFeedbackButton";
+import AiFeedbackView from "./AiFeedbackView";
 import { errorMessage } from "@/lib/errorMessage";
 
 // TestPanel.tsx — test case'leri göster + çalıştır + custom input + geç/kal durumu.
@@ -182,6 +183,23 @@ export default function TestPanel({
         className="bg-[#0a0e1a] flex flex-col flex-shrink-0"
         style={{ height: panelHeight }}
       >
+        {/* 2026-07-14 v4: AI Feedback — desktop'ta da full panel.
+            Eski: sadece AiFeedbackButton (kompakt, inline feedback).
+            Yeni: mobile'daki ile aynı sistem (AiFeedbackView) — full
+            panel, typewriter, token sayacı, BYOK ayarları, disclaimer.
+            Reset butonu (RotateCcw) sadece NEXT_PUBLIC_REPAIR_MODE=true
+            ise görünür (production'da gizli, dev/repair'de görünür). */}
+        <div className="flex-shrink-0 max-h-[50%] overflow-y-auto border-b border-white/5">
+          <AiFeedbackView
+            isGuest={isGuest}
+            hasRunOnce={hasRunOnce}
+            starterCode={starterCode}
+            questionTitle={questionTitle}
+            questionDescription={questionDescription}
+            testResults={testResults}
+          />
+        </div>
+
         <div className="h-10 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
             {(["examples", "console"] as const).map((tab) => (
@@ -230,8 +248,11 @@ export default function TestPanel({
           </div>
 
           <div className="flex items-center gap-2 mr-2">
-            {/* 2026-07-14: AI Feedback butonu — DeepSeek V3 arkasında.
-                Misafir/limit/hasRunOnce state'lerini AiFeedbackButton yönetir. */}
+            {/* 2026-07-14: AI Feedback — desktop'ta da full panel (v4).
+                Eski: AiFeedbackButton (kompakt, sadece buton + inline feedback).
+                Yeni: Mobile'daki ile aynı sistem — full AiFeedbackView
+                (Typewriter + token sayacı + disclaimer + reset butonu).
+                Reset butonu sadece NEXT_PUBLIC_REPAIR_MODE=true ise görünür. */}
             <AiFeedbackButton
               isAuthenticated={!isGuest}
               hasRunOnce={hasRunOnce}
