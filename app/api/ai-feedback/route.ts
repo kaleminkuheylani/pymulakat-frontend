@@ -38,19 +38,24 @@ const MAX_TOKENS = 1500;
 const TEMPERATURE = 0.3; // düşük = deterministik, kod review için ideal
 
 // Sistem promptu — Türkçe, deneyimli coding coach persona
-const SYSTEM_PROMPT = `Sen deneyimli bir Python teknik mülakat koçusun. Öğrenci bir kod yazdı ve test case'leri çalıştırdı. Sana kodu, soru bağlamını ve test sonuçlarını göndereceğim. Görevin:
+// 2026-07-14 v2: "Çözüm yazma" kuralı eklendi — sadece feedback/yönlendirme.
+const SYSTEM_PROMPT = `Sen deneyimli bir Python teknik mülakat koçusun. Öğrenci bir kod yazdı ve test case'leri çalıştırdı. Sana kodu, soru bağlamını ve test sonuçlarını göndereceğim.
 
-1. **Doğru çalışan kısımları teyit et** — neyi iyi yapmış, kısa ve net.
-2. **Hata varsa** — spesifik satır/satır aralığı belirt, neden hatalı olduğunu açıkla.
-3. **Edge case uyarısı** — boş liste, tek eleman, None, negatif sayı, vs.
-4. **Time/space complexity** — Big-O notasyonu, sade ve net.
-5. **Pythonic iyileştirme** — var ise 1-2 satır, read/performance için.
+GÖREV — sadece FEEDBACK ve YÖNLENDIRME, ASLA direkt çözüm kodu yazma:
 
-Kurallar:
-- Türkçe yaz, gerekirse teknik terim İngilizce parantez içinde.
-- Maksimum 250 kelime, markdown KULLANMA (düz metin, UI'da render için).
-- Cevap yapısı: "✅ İyi: ... → ⚠️ Hata: ... → 💡 Öneri: ... → ⏱ Karmaşıklık: ...".
-- Ton: samimi, yargılamayan, teşvik edici.`;
+1. **✅ İyi olan kısımlar** — neyi doğru yapmış, kısa ve net.
+2. **⚠️ Hata / bug** — varsa spesifik satır/satır aralığı, NEDEN hatalı.
+3. **💡 Düşünce yönlendirmesi** — hangi yaklaşımı denemesi gerektiğini İPUCU olarak söyle (hangi veri yapısı, hangi algoritma pattern'i, hangi edge case'leri kontrol etmeli). ÇÖZÜM KODU YAZMA.
+4. **⏱ Karmaşıklık** — mevcut kodun Big-O'su, ideal olması gereken.
+5. **🧪 Edge case hatırlatması** — boş liste, tek eleman, None, negatif sayı, büyük input.
+
+KURALLAR:
+- ASLA tam çözüm kodu yazma. "Bunu dene: def foo(x): ..." gibi. Sadece yön göster.
+- İPUCU formatı: "Şunu düşün: [kavram]", "Hangi pattern uygun: [pattern adı]", "[X] durumunda ne olur?"
+- Türkçe yaz, teknik terim İngilizce parantez içinde olabilir.
+- Maksimum 280 kelime, markdown KULLANMA (düz metin).
+- Cevap yapısı: "✅ İyi: ... → ⚠️ Hata: ... → 💡 Düşün: ... → ⏱ Karmaşıklık: ... → 🧪 Edge: ...".
+- Ton: samimi, yargılamayan, teşvik edici. Kullanıcı öğrensin, kopyala-yapıştır yapmasın.`;
 
 interface AiFeedbackBody {
   code: string;
@@ -75,9 +80,57 @@ const parseBody = (raw: unknown): AiFeedbackBody | null => {
 
 export async function POST(request: NextRequest) {
   // 1) Auth gate — sadece authenticated user
-  //    (sentinel cookie "pymulakat_auth" — useUser.ts mount + auth state change sırasında set edilir)
-  const authSentinel = request.cookies.get("pymulakat_auth")?.value;
-  if (authSentinel !== "1") {
+  //    2026-07-14: 3 katmanlı kontrol:
+  //    1) Sentinel cookie "pymulakat_auth" (useUser.ts mount sırasında yazılır)
+  //    2) Supabase auth cookie'leri (sb-pymulakat-auth-token, sb-*-auth-token, vs.)
+  //    3) Pattern fallback: cookie name auth/access-token/sb-*-auth içeriyor
+  //    Sentinel yazımı race condition'da başarısız olabilir, Supabase cookie
+  //    fallback ile daha robust.
+  const allCookies = request.cookies.getAll();
+  const cookieMap: Record<string, string> = {};
+  for (const c of allCookies) cookieMap[c.name] = c.value;
+
+  let authenticated = false;
+
+  // 1) Sentinel
+  if (cookieMap["pymulakat_auth"] === "1") {
+    authenticated = true;
+  }
+
+  // 2) Supabase auth cookie pattern
+  if (!authenticated) {
+    const SUPABASE_NAMES = [
+      "sb-pymulakat-auth-token",
+      "sb-pymulakat-auth-token-code-verifier",
+      "sb-lhuhfgpjbnngjxzlvywp-auth-token",
+      "sb-lhuhfgpjbnngjxzlvywp-auth-token-code-verifier",
+    ];
+    for (const name of SUPABASE_NAMES) {
+      const v = cookieMap[name];
+      if (v && v.length > 0 && v !== "null" && v !== "undefined") {
+        authenticated = true;
+        break;
+      }
+    }
+  }
+
+  // 3) Pattern fallback
+  if (!authenticated) {
+    for (const [name, value] of Object.entries(cookieMap)) {
+      if (
+        /auth-token|access-token|jwt|sb-.*-auth/i.test(name) &&
+        value &&
+        value.length > 0 &&
+        value !== "null" &&
+        value !== "undefined"
+      ) {
+        authenticated = true;
+        break;
+      }
+    }
+  }
+
+  if (!authenticated) {
     return NextResponse.json(
       { error: "auth_required", message: "AI feedback için giriş yapmalısın." },
       { status: 401 }
@@ -137,18 +190,21 @@ export async function POST(request: NextRequest) {
     })
     .join("\n");
 
-  const userPrompt = `Soru: ${body.questionTitle}
-${body.questionDescription ? `\nAçıklama: ${body.questionDescription.slice(0, 500)}` : ""}
+  const userPrompt = `Soru Başlığı: ${body.questionTitle}
+${body.questionDescription ? `\nSoru Açıklaması:\n${body.questionDescription.slice(0, 800)}` : ""}
 
 ${testSummary}
 ${failingTests ? `\nBaşarısız testler:\n${failingTests}` : ""}
 
-Kullanıcının kodu:
+Kullanıcının Şu Anki Kodu:
 \`\`\`python
 ${body.code}
 \`\`\`
 
-Lütfen yukarıdaki kurallara göre feedback ver.`;
+Lütfen yukarıdaki kurallara göre feedback ver:
+- Sadece yönlendirme + ipucu
+- ASLA tam çözüm kodu yazma
+- Kullanıcı kendi çözsün`;
 
   // 5) DeepSeek API call
   try {

@@ -132,7 +132,19 @@ export function useAiFeedback(): AiFeedbackState {
         });
 
         if (res.status === 401) {
-          setError("AI feedback için giriş yapmalısın.");
+          // 2026-07-14: Sentinel cookie yoksas veya session süresi dolmuşsa
+          // otomatik login'e yönlendir. Sentinel cookie useUser.ts mount
+          // + auth state change sırasında yazılıyor, ama ilk yükleme / cookie
+          // expire senaryolarında yazılmamış olabilir. Login sonrası returnUrl
+          // ile bu sayfaya geri dön.
+          const returnUrl = typeof window !== "undefined" ? window.location.pathname : "/";
+          if (typeof window !== "undefined") {
+            // Kısa gecikme: kullanıcı hatayı görsün, sonra yönlendir
+            setTimeout(() => {
+              window.location.href = `/login?returnUrl=${encodeURIComponent(returnUrl)}`;
+            }, 800);
+          }
+          setError("AI feedback için giriş yapmalısın. Login sayfasına yönlendiriliyorsun...");
           return null;
         }
 
