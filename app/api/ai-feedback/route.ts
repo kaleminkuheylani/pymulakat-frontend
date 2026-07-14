@@ -29,7 +29,12 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-export const runtime = "nodejs"; // DeepSeek fetch için Node runtime (Edge'de de çalışır ama hata yönetimi zor)
+// 2026-07-14 v2: Edge runtime — Vercel ReadableStream'i buffer'lamaz,
+//   streaming (SSE) client'a anında ulaşır. Node.js runtime'da Vercel
+//   response body'yi buffer'a alıp sonra gönderiyordu (kullanıcı
+//   'karakterler bir anda geliyor' şeklinde yorumlamıştı).
+//   Edge runtime fetch streaming'i doğrudan pipe eder.
+export const runtime = "edge";
 export const dynamic = "force-dynamic";
 
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
@@ -267,9 +272,13 @@ Lütfen yukarıdaki kurallara göre feedback ver:
       status: 200,
       headers: {
         "Content-Type": "text/event-stream",
-        "Cache-Control": "no-cache, no-transform",
+        // no-store: Vercel/CDN cache'lemesin, her seferinde upstream'den
+        "Cache-Control": "no-store, no-transform",
         // Nginx/Vercel buffering kapat — streaming gerçek zamanlı
         "X-Accel-Buffering": "no",
+        // Transfer-Encoding: chunked (ReadabkleStream için zaten default,
+        // ama explicit belirtmek Vercel proxy'e netleştirir)
+        "Transfer-Encoding": "chunked",
       },
     });
   } catch (e) {

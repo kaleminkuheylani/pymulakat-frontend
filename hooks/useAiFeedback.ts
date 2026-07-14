@@ -18,7 +18,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 const COUNT_KEY = "pymulakat_ai_feedback_count";
 const BYOK_KEY = "pymulakat_ai_feedback_byok_key";
-const MAX_FREE_FEEDBACK = 5;
+const MAX_FREE_FEEDBACK = 10;
 
 export interface AiFeedbackResult {
   feedback: string;
@@ -108,11 +108,14 @@ export function useAiFeedback(): AiFeedbackState {
 
   const startTypewriter = useCallback(() => {
     stopTypewriter();
+    // 2026-07-14 v7: Hız insan okuma seviyesi (~200 wpm Turkce)
+    //   50ms tick × 2 karakter = 40 char/sn (2000 char / 50s = 40 char/s)
+    //   Onceki 20ms × 2 = 100 char/sn (cok hizli, "akma" hissi yok)
     typewriterIntervalRef.current = setInterval(() => {
       const target = typewriterBufferRef.current;
       const current = typewriterDisplayedRef.current;
       if (current < target.length) {
-        // Her tick 2 karakter — 100 char/sn (okunaklı, "akma" hissi)
+        // Her tick 2 karakter — ~40 char/sn (yazı okuma hızı)
         const next = Math.min(current + 2, target.length);
         setPartialFeedback(target.slice(0, next));
         typewriterDisplayedRef.current = next;
@@ -129,7 +132,7 @@ export function useAiFeedback(): AiFeedbackState {
       } else {
         stopTypewriter();
       }
-    }, 20);
+    }, 50);
   }, [stopTypewriter]);
 
   useEffect(() => {
