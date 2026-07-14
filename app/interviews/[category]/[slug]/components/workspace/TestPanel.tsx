@@ -34,7 +34,10 @@ const MAX_PANEL_HEIGHT_RATIO = 0.7;
 // 2026-07-14 v4: 3 tab — AI / Örnekler / Custom Input. Eski: 2 tab
 //   (Examples / Console). AI Feedback artık ayrı tab, full panel.
 //   Editör ayrı (sağda daima), bu 3 tab test paneli içinde.
+// 2026-07-14 v5: AI tab gecici disabled (backend deploy/debug). Aksam
+//   geri acilacak. Tab gorunur ama tiklanamaz.
 type Tab = "ai" | "examples" | "customInput";
+const AI_TAB_DISABLED = true;
 type Variant = "desktop" | "mobile";
 
 export interface TestPanelProps {
@@ -189,13 +192,19 @@ export default function TestPanel({
       >
         <div className="h-10 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
-            {(["ai", "examples", "customInput"] as const).map((tab) => (
+            {(["ai", "examples", "customInput"] as const).map((tab) => {
+              // 2026-07-14 v5: AI tab gecici disabled (backend deploy)
+              const isAiTab = tab === "ai";
+              const disabled = isAiTab && AI_TAB_DISABLED;
+              return (
               <button
                 key={tab}
-                onClick={() => setActiveTab(tab)}
+                onClick={() => !disabled && setActiveTab(tab)}
+                disabled={disabled}
+                title={disabled ? "AI feedback geçici olarak devre dışı (akşam açılacak)" : undefined}
                 className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${
                   activeTab === tab ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
-                }`}
+                } ${disabled ? "opacity-40 cursor-not-allowed" : ""}`}
               >
                 {tab === "ai" ? (
                   <>
@@ -222,7 +231,8 @@ export default function TestPanel({
                   </>
                 )}
               </button>
-            ))}
+              );
+            })}
           </div>
 
           <div className="flex items-center gap-2 mr-2">

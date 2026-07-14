@@ -517,7 +517,11 @@ export default function WorkspaceMobileClient({
         </button>
         <button
           onClick={() => setTab("feedback")}
-          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors ${
+          // 2026-07-14 v5: AI feedback geçici disabled (backend deploy).
+          //   Akşam geri açılacak. Tab görünür ama tıklanamaz.
+          disabled
+          title="AI feedback geçici olarak devre dışı (akşam açılacak)"
+          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors opacity-40 cursor-not-allowed ${
             tab === "feedback" ? "text-amber-300 border-t-2 border-amber-500 -mt-px" : "text-white/40"
           }`}
         >
