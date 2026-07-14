@@ -20,6 +20,10 @@ export async function POST(req: NextRequest) {
     const cookieHeader = req.headers.get("cookie") || "";
     const body = await req.text();
 
+    // 2026-07-14 v5: Bos body göndermek 422 döndürüyor (Pydantic validation).
+    //   Frontend useAiFeedback bazen bos body gönderiyor. Default '{}' yap.
+    const finalBody = body && body.trim() ? body : "{}";
+
     const backendRes = await fetch(`${BACKEND_URL}/api/ai-feedback/increment`, {
       method: "POST",
       headers: {
@@ -28,7 +32,7 @@ export async function POST(req: NextRequest) {
         // 2026-07-14 v4: Authorization header forward
         Authorization: req.headers.get("authorization") || "",
       },
-      body,
+      body: finalBody,
       cache: "no-store",
     });
 
