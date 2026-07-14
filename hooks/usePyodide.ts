@@ -166,26 +166,37 @@ export function usePyodide(): UsePyodideReturn {
 
     initPromiseRef.current = (async () => {
       setStatus("loading");
+      // 2026-07-14: 12s timeout — Pyodide yükleme takılırsa (CSP, network,
+      // SharedArrayBuffer) sonsuza kadar loading'de kalmayı önler. Timeout
+      // → error state, editör hâlâ kullanılabilir (sadece Run disabled).
+      const TIMEOUT_MS = 12000;
+      const timeoutPromise = new Promise<never>((_, reject) =>
+        setTimeout(() => reject(new Error("Pyodide yükleme zaman aşımı (12s)")), TIMEOUT_MS)
+      );
       try {
-        await loadScript(PYODIDE_SCRIPT_URL);
-        if (!window.loadPyodide) throw new Error("loadPyodide yok");
-        const py = await window.loadPyodide({
-          indexURL: PYODIDE_CDN,
-          fullStdLib: false,
-        });
-        // Sandbox policy — dış dünyaya erişim modülleri (requests, os, sys,
-        // urllib, socket, subprocess, vs.) import edilemez hale getirilir.
-        try {
-          await installSandboxPolicy(py);
-        } catch (policyErr) {
-          console.error("[usePyodide] sandbox policy yüklenemedi:", policyErr);
-        }
-        pyodideRef.current = py;
+        await Promise.race([
+          (async () => {
+            await loadScript(PYODIDE_SCRIPT_URL);
+            if (!window.loadPyodide) throw new Error("loadPyodide yok");
+            const py = await window.loadPyodide({
+              indexURL: PYODIDE_CDN,
+              fullStdLib: false,
+            });
+            try {
+              await installSandboxPolicy(py);
+            } catch (policyErr) {
+              console.error("[usePyodide] sandbox policy yüklenemedi:", policyErr);
+            }
+            pyodideRef.current = py;
+          })(),
+          timeoutPromise,
+        ]);
         setStatus("ready");
       } catch (err: any) {
         setStatus("error");
         // 📌 Raw error.message UI'a sızmaz — sabit hardcoded mesaj
         setErrorMsg("Çalıştırma ortamı yüklenemedi");
+        console.error("[usePyodide] init failed:", err);
         throw err;
       }
     })();

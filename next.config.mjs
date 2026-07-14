@@ -11,7 +11,7 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       // Next.js inline script + Pyodide WebAssembly + GTM
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com",
       // Tailwind inline style + Monaco editor
       "style-src 'self' 'unsafe-inline'",
       // Supabase storage + general image hosting
