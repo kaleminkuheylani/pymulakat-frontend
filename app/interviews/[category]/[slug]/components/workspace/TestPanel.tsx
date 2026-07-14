@@ -1,6 +1,5 @@
 "use client";
-import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play } from "lucide-react";
-import AiFeedbackButton from "./AiFeedbackButton";
+import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play, Sparkles, Terminal } from "lucide-react";
 import AiFeedbackView from "./AiFeedbackView";
 import { errorMessage } from "@/lib/errorMessage";
 
@@ -32,7 +31,10 @@ const DEFAULT_PANEL_HEIGHT = 448;
 const MIN_PANEL_HEIGHT = 160;
 const MAX_PANEL_HEIGHT_RATIO = 0.7;
 
-type Tab = "examples" | "console";
+// 2026-07-14 v4: 3 tab — AI / Örnekler / Custom Input. Eski: 2 tab
+//   (Examples / Console). AI Feedback artık ayrı tab, full panel.
+//   Editör ayrı (sağda daima), bu 3 tab test paneli içinde.
+type Tab = "ai" | "examples" | "customInput";
 type Variant = "desktop" | "mobile";
 
 export interface TestPanelProps {
@@ -79,6 +81,8 @@ export default function TestPanel({
 }: TestPanelProps) {
   // Tab state — sadece desktop'ta tab var, mobile'da tabs ayrı render edilir
   const isDesktop = variant === "desktop";
+  // Default "examples" — kullanıcı kodu çalıştırdıktan sonra "ai"
+  // tab'ına geçer, AI Feedback Al tıklar.
   const [activeTab, setActiveTab] = useState<Tab>("examples");
   const [showHidden, setShowHidden] = useState(false);
 
@@ -183,95 +187,48 @@ export default function TestPanel({
         className="bg-[#0a0e1a] flex flex-col flex-shrink-0"
         style={{ height: panelHeight }}
       >
-        {/* 2026-07-14 v4: AI Feedback — desktop'ta da full panel.
-            Eski: sadece AiFeedbackButton (kompakt, inline feedback).
-            Yeni: mobile'daki ile aynı sistem (AiFeedbackView) — full
-            panel, typewriter, token sayacı, BYOK ayarları, disclaimer.
-            Reset butonu (RotateCcw) sadece NEXT_PUBLIC_REPAIR_MODE=true
-            ise görünür (production'da gizli, dev/repair'de görünür). */}
-        <div className="flex-shrink-0 max-h-[50%] overflow-y-auto border-b border-white/5">
-          <AiFeedbackView
-            isGuest={isGuest}
-            hasRunOnce={hasRunOnce}
-            starterCode={starterCode}
-            questionTitle={questionTitle ?? ""}
-            questionDescription={questionDescription ?? ""}
-            testResults={testResults}
-          />
-        </div>
-
         <div className="h-10 flex items-center justify-between px-4 flex-shrink-0">
           <div className="flex items-center gap-1">
-            {(["examples", "console"] as const).map((tab) => (
+            {(["ai", "examples", "customInput"] as const).map((tab) => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                className={`px-3 py-1.5 rounded-md text-xs font-medium transition-colors flex items-center gap-1.5 ${
                   activeTab === tab ? "bg-white/10 text-white" : "text-white/40 hover:text-white/70"
                 }`}
               >
-                {tab === "examples" ? (
-                  <span className="flex items-center gap-2">
+                {tab === "ai" ? (
+                  <>
+                    <Sparkles className="w-3.5 h-3.5" />
+                    AI
+                  </>
+                ) : tab === "examples" ? (
+                  <>
+                    <TestTube className="w-3.5 h-3.5" />
                     Örnekler
                     {testCases && (
                       <span className="px-1.5 py-0.5 rounded text-[10px] font-bold bg-indigo-500/20 text-indigo-300">
                         {visibleTestCases.length}
                       </span>
                     )}
-                    {hiddenCount > 0 && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setShowHidden((v) => !v);
-                        }}
-                        className={`ml-1 px-1.5 py-0.5 rounded text-[10px] font-bold border ${
-                          showHidden
-                            ? "bg-amber-500/20 border-amber-500/40 text-amber-300"
-                            : "bg-white/5 border-white/10 text-white/40"
-                        }`}
-                        title={showHidden ? "Hidden testleri gizle" : `${hiddenCount} hidden testi göster`}
-                      >
-                        {showHidden ? "👁 Hidden" : `🔒 ${hiddenCount} Hidden`}
-                      </button>
-                    )}
-                  </span>
+                  </>
                 ) : (
-                  <span className="flex items-center gap-2">
-                    <Printer className="w-3.5 h-3.5 inline" /> Konsol
+                  <>
+                    <Terminal className="w-3.5 h-3.5" />
+                    Custom Input
                     {errorLines.length > 0 && (
                       <span className="w-1.5 h-1.5 rounded-full bg-rose-400" />
                     )}
-                  </span>
+                  </>
                 )}
               </button>
             ))}
           </div>
 
           <div className="flex items-center gap-2 mr-2">
-            {/* 2026-07-14: AI Feedback — desktop'ta da full panel (v4).
-                Eski: AiFeedbackButton (kompakt, sadece buton + inline feedback).
-                Yeni: Mobile'daki ile aynı sistem — full AiFeedbackView
-                (Typewriter + token sayacı + disclaimer + reset butonu).
-                Reset butonu sadece NEXT_PUBLIC_REPAIR_MODE=true ise görünür. */}
-            <AiFeedbackButton
-              isAuthenticated={!isGuest}
-              hasRunOnce={hasRunOnce}
-              code={starterCode ?? ""}
-              questionTitle={questionTitle ?? ""}
-              questionDescription={questionDescription ?? ""}
-              testResults={testResults.map((r) => ({
-                input: r.input !== undefined ? String(r.input) : undefined,
-                expected: r.expected !== undefined ? String(r.expected) : undefined,
-                actual: r.actual !== undefined ? String(r.actual) : undefined,
-                passed: r.passed,
-                description: r.description,
-              }))}
-              onOpenSettings={() => {
-                if (typeof window !== "undefined") {
-                  window.dispatchEvent(new CustomEvent("pymulakat:open-settings"));
-                }
-              }}
-            />
+            {/* 2026-07-14 v4: Eski AiFeedbackButton kaldırıldı. AI Feedback
+                artık 3 tab'dan biri ("AI" tab) — full panel. Kullanıcı kodu
+                çalıştırır, "AI" tab'ına tıklar, "AI Feedback Al" butonu. */}
           </div>
 
           <button
@@ -313,6 +270,18 @@ export default function TestPanel({
         </div>
 
         <div className="flex-1 overflow-auto p-4">
+          {/* 2026-07-14 v4: 3 tab — AI / Örnekler / Custom Input */}
+          {activeTab === "ai" && (
+            <AiFeedbackView
+              isGuest={isGuest}
+              hasRunOnce={hasRunOnce}
+              starterCode={starterCode}
+              questionTitle={questionTitle ?? ""}
+              questionDescription={questionDescription ?? ""}
+              testResults={testResults}
+            />
+          )}
+
           {activeTab === "examples" && (
             <ExamplesView
               testCases={{ ...testCases, test_cases: visibleTestCases } as QuestionTests}
@@ -326,7 +295,7 @@ export default function TestPanel({
             />
           )}
 
-          {activeTab === "console" && (
+          {activeTab === "customInput" && (
             <ConsoleView
               errorLines={errorLines}
               starterCode={starterCode}
