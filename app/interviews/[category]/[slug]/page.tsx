@@ -180,13 +180,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { category, slug } = await params;
   const q = await fetchQuestionSEO(category, slug);
   if (!q) {
-    return { title: "Soru bulunamadı | PythonMulakat" };
+    return { title: "Soru bulunamadı | Yapay Zeka Destekli Python Mülakat" };
   }
 
   // 2026-07-13: Conversion-friendly title — "soru bankası" + "çözüm" + "açıklama"
   //   niyet kelimeleri. Hem keşif hem long-tail niyet için optimize.
   const level = q.level || "junior";
-  const title = `${q.title} — ${level} Seviye Python Sorusu ve Çözümü | PythonMulakat`;
+  const title = `${q.title} — Yapay Zeka Destekli ${level} Seviye Python Sorusu ve Çözümü`;
   // 2026-07-13: Description'a CTA eklendi (ücretsiz dene + test case + AI).
   //   155-160 char Google snippet hedefi.
   const rawDesc = q.explanation

@@ -8,7 +8,7 @@ import PythonOnlineEditor from "./PythonOnlineEditor";
 import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCategories";
 
 export const metadata: Metadata = {
-  title: "Python Online Compiler — Tarayıcıda Ücretsiz Kod Editörü",
+  title: "Yapay Zeka Destekli Python Online Compiler — Tarayıcıda Ücretsiz Kod Editörü",
   description:
     "Python online compiler — tarayıcıda anında kod yaz ve çalıştır. Kurulum yok, hesap yok. Şimdilik ücretsiz.",
   keywords: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     canonical: "https://pythonmulakat.com/python-online",
   },
   openGraph: {
-    title: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
+    title: "Yapay Zeka Destekli Python Online — Tarayıcıda Ücretsiz Kod Editörü",
     description: "Python online compiler — kurulum yok, hesap yok. Tarayıcıda Python yaz, anında çalıştır.",
     url: "https://pythonmulakat.com/python-online",
     siteName: "PythonMulakat",
@@ -44,13 +44,13 @@ export const metadata: Metadata = {
         url: "https://pythonmulakat.com/og-default.png",
         width: 1200,
         height: 630,
-        alt: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
+        alt: "Yapay Zeka Destekli Python Online — Tarayıcıda Ücretsiz Kod Editörü",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Python Online — Tarayıcıda Ücretsiz Editör",
+    title: "Yapay Zeka Destekli Python Online — Tarayıcıda Ücretsiz Editör",
     description: "Python öğren — tarayıcıda anında çalıştır, kurulum yok.",
     images: ["https://pythonmulakat.com/og-default.png"],
   },

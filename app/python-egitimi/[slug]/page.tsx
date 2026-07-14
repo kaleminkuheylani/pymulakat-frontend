@@ -15,9 +15,9 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   const lesson = getLesson(slug);
-  if (!lesson) return { title: "Ders Bulunamadı" };
+  if (!lesson) return { title: "Ders Bulunamadı | Yapay Zeka Destekli Python Eğitimi" };
   return {
-    title: `${lesson.title} — Python Eğitimi`,
+    title: `${lesson.title} — Yapay Zeka Destekli Python Eğitimi`,
     description: lesson.description,
     keywords: [
       "python eğitimi",
@@ -35,7 +35,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
       },
     },
     openGraph: {
-      title: `${lesson.title} — Python Eğitimi`,
+      title: `${lesson.title} — Yapay Zeka Destekli Python Eğitimi`,
       description: lesson.description,
       url: `https://pythonmulakat.com/python-egitimi/${lesson.slug}`,
       siteName: "PythonMulakat",
@@ -46,13 +46,13 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
           url: "https://pythonmulakat.com/og-default.png",
           width: 1200,
           height: 630,
-          alt: `${lesson.title} — Python Eğitimi`,
+          alt: `${lesson.title} — Yapay Zeka Destekli Python Eğitimi`,
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: `${lesson.title} — Python Eğitimi`,
+      title: `${lesson.title} — Yapay Zeka Destekli Python Eğitimi`,
       description: lesson.description,
       images: ["https://pythonmulakat.com/og-default.png"],
       creator: "@pythonmulakat",

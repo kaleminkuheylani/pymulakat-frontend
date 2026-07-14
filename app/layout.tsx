@@ -50,12 +50,12 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "Python Mülakat Soruları, Algoritma ve Online Pratik",
-    template: "%s | Python Mülakat",
+      "Yapay Zeka Destekli Python Mülakat Platformu",
+    template: "%s | Yapay Zeka Destekli Python Mülakat",
   },
 
   description:
-    "Python mülakat soruları, algoritma ve dinamik programlama için Türkçe interaktif pratik platformu. Tarayıcıda kod yaz, AI geri bildirim al. Şimdilik ücretsiz.",
+    "Yapay zeka destekli Python mülakat soru platformu. Yapay zeka denetiminden geçirilmiş sorular, algoritma ve dinamik programlama için Türkçe interaktif pratik. Tarayıcıda kod yaz, AI geri bildirim al. Şimdilik ücretsiz.",
 
   keywords: [
     // Temel / Yeni başlayan

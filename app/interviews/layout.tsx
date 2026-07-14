@@ -5,8 +5,8 @@ import { BASE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
   title: {
-    default: "Python Alıştırma Soruları | Yeni Başlayanlar İçin İnteraktif Liste",
-    template: "%s Soruları | Python Alıştırma Soruları",
+    default: "Yapay Zeka Destekli Python Alıştırma Soruları | Yeni Başlayanlar İçin",
+    template: "%s | Yapay Zeka Destekli Python Alıştırma Soruları",
   },
   description:
     "Python öğrenmeye yeni başlayanlar için interaktif python soruları. OOP, veri tipleri, SQLite3, basit uygulamalar, beyin fırtınası ve sklearn gibi modüllerle seviye bazlı hazırlan.",
@@ -41,14 +41,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    title: "Python Alıştırma Soruları | Yeni Başlayanlar İçin İnteraktif Liste",
+    title: "Yapay Zeka Destekli Python Alıştırma Soruları | Yeni Başlayanlar İçin",
     description:
       "Python öğrenmeye yeni başlayanlar için interaktif alıştırma soruları. OOP, veri tipleri, SQLite3 ve daha fazlası.",
     siteName: "Python Alıştırma Soruları",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Python Alıştırma Soruları | Yeni Başlayanlar İçin",
+    title: "Yapay Zeka Destekli Python Alıştırma Soruları | Yeni Başlayanlar İçin",
     description:
       "OOP, veri tipleri, SQLite3, beyin fırtınası ve daha fazlası. Seviye bazlı Python soruları ile mülakatlara hazırlanın.",
   },

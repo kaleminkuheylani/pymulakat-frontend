@@ -37,15 +37,16 @@ export default async function Hero() {
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5">
-              Tarayıcıda Python
+              Yapay zeka destekli
               <br />
-              mülakatına{" "}
-              <mark className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">hazırlan.</mark>
+              Python{" "}
+              <mark className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">mülakat platformu.</mark>
             </h1>
 
             <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-xl mb-7">
-              {total} gerçek mülakat sorusu, kategorize ve zorluk seviyeli.
-              Tarayıcıda kod yaz, anında test et, yapay zekâdan geri bildirim al.
+              {total} gerçek mülakat sorusu — yapay zeka denetiminden geçirilmiş,
+              kategorize ve zorluk seviyeli. Tarayıcıda kod yaz, anında test et,
+              yapay zekâdan geri bildirim al.
             </p>
 
             {/* CTA: Hesap aç, hemen başla */}

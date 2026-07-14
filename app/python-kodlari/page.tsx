@@ -10,7 +10,7 @@ import PlayButton from "../../components/PlayButton";
 import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCategories";
 
 export const metadata: Metadata = {
-  title: "Python Kodları — Hazır Örnekler ve Şablonlar",
+  title: "Yapay Zeka Destekli Python Kodları — Hazır Örnekler ve Şablonlar",
   description:
     "Python kodları kataloğu — algoritmalar, veri yapıları, dosya işlemleri, API çağrıları. Kopyala, çalıştır, öğren.",
   keywords: [
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Python Kodları — Hazır Örnekler ve Şablonlar",
+    title: "Yapay Zeka Destekli Python Kodları — Hazır Örnekler ve Şablonlar",
     description: "Python kodları — kategorize, çalıştırılabilir hazır örnekler ve şablonlar. Kopyala, dene.",
     url: "https://pythonmulakat.com/python-kodlari",
     siteName: "PythonMulakat",
@@ -56,13 +56,13 @@ export const metadata: Metadata = {
         url: "https://pythonmulakat.com/og-default.png",
         width: 1200,
         height: 630,
-        alt: "Python Kodları — Hazır Örnekler ve Şablonlar",
+        alt: "Yapay Zeka Destekli Python Kodları — Hazır Örnekler ve Şablonlar",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Python Kodları — Hazır Örnekler ve Şablonlar",
+    title: "Yapay Zeka Destekli Python Kodları — Hazır Örnekler ve Şablonlar",
     description: "Algoritmalar, veri yapıları, dosya işlemleri, API çağrıları. Kopyala, çalıştır.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",

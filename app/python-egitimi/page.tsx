@@ -9,7 +9,7 @@ import { LESSONS, getLesson } from "./lessons";
 import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCategories";
 
 export const metadata: Metadata = {
-  title: "Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
+  title: "Yapay Zeka Destekli Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
   description:
     "Python öğren — Türkçe, ücretsiz eğitim. Değişkenler, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör.",
   keywords: [
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Python Eğitimi — Türkçe, Ücretsiz, Kapsamlı",
+    title: "Yapay Zeka Destekli Python Eğitimi — Türkçe, Ücretsiz, Kapsamlı",
     description: "Python öğren — Türkçe, ücretsiz kapsamlı eğitim. 6 ders, kod örnekleri, online editör.",
     url: "https://pythonmulakat.com/python-egitimi",
     siteName: "PythonMulakat",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Python Eğitimi — Türkçe, Ücretsiz",
+    title: "Yapay Zeka Destekli Python Eğitimi — Türkçe, Ücretsiz",
     description: "Türkçe Python dersleri: başlangıç, orta, ileri. 6 ders, kod örnekleri, online editör.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",

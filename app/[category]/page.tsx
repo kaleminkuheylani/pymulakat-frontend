@@ -62,12 +62,12 @@ export async function generateMetadata({
 
   // Canonical DB slug mı? Değilse → 404 metadata
   if (!isCanonicalCategory(category)) {
-    return { title: "Kategori bulunamadı | PythonMulakat" };
+    return { title: "Kategori bulunamadı | Yapay Zeka Destekli Python Mülakat" };
   }
 
   const { meta, questions } = await getCategoryPageData(category);
   if (!meta) {
-    return { title: "Kategori bulunamadı | PythonMulakat" };
+    return { title: "Kategori bulunamadı | Yapay Zeka Destekli Python Mülakat" };
   }
 
   // Label + count (zengin meta description)
@@ -92,12 +92,12 @@ export async function generateMetadata({
   const categoryKeywords = getCategorySeoKeywords(category);
 
   return {
-    title: `${label} Soru Bankası — ${questions.length} Açıklamalı Python Sorusu | PythonMulakat`,
+    title: `Yapay Zeka Destekli ${label} Soru Bankası — ${questions.length} Açıklamalı Python Sorusu`,
     description: desc,
     keywords: [...baseKeywords, ...categoryKeywords],
     alternates: { canonical },
     openGraph: {
-      title: `${label} Soru Bankası — ${questions.length} Python Sorusu`,
+      title: `Yapay Zeka Destekli ${label} Soru Bankası — ${questions.length} Python Sorusu`,
       description: desc,
       url: canonical,
       siteName: "PythonMulakat",
@@ -107,7 +107,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `${label} Soru Bankası — ${questions.length} Python Sorusu`,
+      title: `Yapay Zeka Destekli ${label} Soru Bankası — ${questions.length} Python Sorusu`,
       description: desc,
       images: [`${BASE_URL}/og-default.png`],
     },

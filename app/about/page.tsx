@@ -8,7 +8,7 @@ import { Target } from "lucide-react";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Hakkımızda | Python Mülakat",
+  title: "Hakkımızda | Yapay Zeka Destekli Python Mülakat",
   description:
     "İki kişilik bir ekip, bir amacı paylaşıyoruz: Python öğretmek için yapay zekâ ile üretilmiş sorular, idealist pedagojik yaklaşım ve sıfır bütçe.",
 };

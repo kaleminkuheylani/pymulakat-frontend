@@ -16,8 +16,8 @@ export default function Footer() {
               <span className="font-bold text-white">PythonMulakat</span>
             </div>
             <p className="text-xs text-white/50 leading-relaxed">
-              Tarayıcıda Python mülakat hazırlığı.
-              Kurulum yok, 60 saniyede ilk soruyu çöz.
+              Yapay zeka destekli mülakat soru platformu.
+              Tarayıcıda Python mülakat hazırlığı, yapay zekâ geri bildirimi.
             </p>
           </div>
 

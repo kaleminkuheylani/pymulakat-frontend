@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Kullanıcı Sözleşmesi | Python Mülakat",
+  title: "Kullanıcı Sözleşmesi | Yapay Zeka Destekli Python Mülakat",
   description:
     "Python Mulakat yapay zeka destekli mülakat soru platformu kullanıcı sözleşmesi, KVKK aydınlatma metni ve açık rıza beyanı.",
 };
