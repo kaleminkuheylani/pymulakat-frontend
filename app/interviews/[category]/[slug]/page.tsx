@@ -572,7 +572,7 @@ export default async function Page({ params, searchParams }: PageProps) {
         </noscript>
       </div>
 
-      <div data-client-workspace>
+      <div data-client-workspace className="h-[100dvh] flex flex-col overflow-hidden">
         <WorkspaceErrorBoundary categoryUrl={`/${resolvedParams.category}`}>
           <Workspace
             key={resolvedParams.slug}
@@ -608,8 +608,11 @@ export default async function Page({ params, searchParams }: PageProps) {
           - 2026-07-13 v2 (spam-risk): Breadcrumb zaten var, ekstra bir CTA
             kullanıcıyı aynı kategorideki diğer sorulara yönlendirir
           - Conversion: benzer soru keşfi → oturumda daha fazla sayfa
+          - 2026-07-14: Sadece desktop'ta görünür (md+). Mobil viewport'a sığma
+            kuralı: cross-link workspace dışında olduğu için mobile body scroll
+            yaratıyordu. Mobile'da navigation bar + sidebar zaten benzer işi görüyor.
        */}
-      <div className="max-w-3xl mx-auto px-4 sm:px-6 mt-12 mb-16">
+      <div className="hidden md:block max-w-3xl mx-auto px-4 sm:px-6 mt-12 mb-16">
         <div className="border-t border-white/10 pt-8">
           <p className="text-xs uppercase tracking-widest text-amber-300/80 font-mono mb-2">
             <ListTree className="w-3.5 h-3.5 inline" /> {categoryLabel}

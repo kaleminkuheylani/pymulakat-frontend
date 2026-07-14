@@ -90,6 +90,8 @@ export default function WorkspaceMobileClient({
   const [running, setRunning] = useState(false);
   const [results, setResults] = useState<any[]>([]);
   const [errorLines, setErrorLines] = useState<string[]>([]);
+  // 2026-07-14: AI Feedback trigger — ilk Run sonrası enable olur
+  const [hasRunOnce, setHasRunOnce] = useState(false);
   // 📌 Default "workspace" — kullanıcı soruyu açar açmaz editörle başlar,
   //     test case'ler Testler tab'ında ayrıca erişilebilir.
   const [tab, setTab] = useState<Tab>("workspace");
@@ -239,6 +241,7 @@ export default function WorkspaceMobileClient({
     setRunning(true);
     setResults([]);
     setErrorLines([]);
+    setHasRunOnce(true); // AI Feedback butonu enable
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setResults(result.results);
@@ -305,7 +308,7 @@ export default function WorkspaceMobileClient({
     //    100vh layout viewport'a sabit — soft keyboard açılınca görsel alan
     //    küçülüyor ama container aynı kalıyor; Monaco hit-test'i yanlış
     //    koordinata düşüp cursor'ü istenmeyen yere koyuyordu.
-    <div className="h-[100dvh] min-h-screen flex flex-col bg-[#050816]">
+    <div className="h-[100dvh] flex flex-col bg-[#050816] overflow-hidden">
       {(readonly || isGuest) && <GuestBanner feature="kod çalıştırma" />}
 
       {/* 📌 Gerçek SSR içerik bloğu — crawler/SEO için ilk HTML'de mevcut,
@@ -398,12 +401,23 @@ export default function WorkspaceMobileClient({
 
         {tab === "workspace" && (
           <>
-            {/* Mobilde editör — flex-1 min-h 320px (iPhone SE uyumlu) */}
+            {/* Mobilde editör — kalan tüm dikey alan, Pyodide yüklenene kadar
+                placeholder spinner göster. min-h 320px kaldırıldı, ekrana tam
+                sığması için flex-1 + min-h-0. */}
             <div
               ref={editorContainerRef}
-              className="flex-1 min-h-[320px] flex-shrink min-w-0 overflow-hidden"
+              className="flex-1 min-h-0 flex-shrink min-w-0 overflow-hidden relative"
               style={{ touchAction: "manipulation" }}
             >
+              {/* Pyodide / editör yüklenene kadar placeholder */}
+              {(pyStatus === "loading" || pyStatus === "idle") && (
+                <div className="absolute inset-0 flex items-center justify-center bg-[#0a0e1a] z-10">
+                  <div className="flex flex-col items-center gap-2">
+                    <div className="w-8 h-8 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+                    <p className="text-white/50 text-[11px] font-mono">Python yükleniyor…</p>
+                  </div>
+                </div>
+              )}
               <CodeEditorPanel
                 editorRef={editorRef}
                 value={code}
@@ -413,8 +427,9 @@ export default function WorkspaceMobileClient({
                 readOnly={readonly || isGuest}
               />
             </div>
-            {/* Console — TestPanel mobile variantı (ExamplesView) */}
-            <div className="h-[180px] flex-shrink-0 overflow-y-auto border-t border-white/10 bg-[#0a0e1a] p-2">
+            {/* Console — TestPanel mobile variantı (ExamplesView + AI Feedback)
+                180px sabit, kendi içinde scroll yapar; viewport scroll OLMAZ. */}
+            <div className="h-[180px] flex-shrink-0 overflow-hidden border-t border-white/10 bg-[#0a0e1a]">
               <TestPanel
                 variant="mobile"
                 testCases={testCases}
@@ -428,6 +443,9 @@ export default function WorkspaceMobileClient({
                 starterCode={interview?.starter_code || undefined}
                 onCustomRun={handleCustomRun}
                 errorLines={errorLines}
+                hasRunOnce={hasRunOnce}
+                questionTitle={interview?.title}
+                questionDescription={interview?.description}
               />
             </div>
           </>
