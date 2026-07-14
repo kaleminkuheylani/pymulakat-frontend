@@ -1,5 +1,12 @@
 // hooks/useAiFeedback.ts
 //
+// 2026-07-14 v10: DB-backed quota (Supabase). localStorage istemcide
+//   kolayca bypass edilirdi, abuse risk. Sunucu tarafı enforcement:
+//   - useEffect: DB'den initial quota fetch (count, limit, remaining)
+//   - requestFeedback: limit doluysa blokla
+//   - success sonrası: POST /increment (DB artır)
+//   - BYOK user bu quota'dan muaf (sınırsız)
+//
 // 2026-07-14 v2: Streaming feedback (DeepSeek SSE passthrough).
 //
 // Akış:
@@ -74,6 +81,45 @@ function readByokKey(): string | null {
   }
 }
 
+// 2026-07-14 v10: Backend DB quota fetch.
+//   Auth user: 10/ay, anon: 5/ay. BYOK user limit muaf (sonsuz).
+//   localStorage fallback (DB hata durumunda eski mantik).
+async function fetchDbQuota(): Promise<{ used: number; limit: number; remaining: number } | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const res = await fetch("/api/ai-feedback/usage", {
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return {
+      used: data.used,
+      limit: data.limit,
+      remaining: data.remaining,
+    };
+  } catch {
+    return null;
+  }
+}
+
+// 2026-07-14 v10: DB increment. Success sonrası çağrılır.
+async function incrementDbQuota(): Promise<{ used: number; limit: number; remaining: number; allowed: boolean } | null> {
+  if (typeof window === "undefined") return null;
+  try {
+    const res = await fetch("/api/ai-feedback/increment", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      credentials: "include",
+      cache: "no-store",
+    });
+    if (!res.ok) return null;
+    return res.json();
+  } catch {
+    return null;
+  }
+}
+
 function writeByokKey(key: string | null) {
   if (typeof window === "undefined") return;
   try {
@@ -139,9 +185,21 @@ export function useAiFeedback(): AiFeedbackState {
     }, 50);
   }, [stopTypewriter]);
 
+  // 2026-07-14 v10: Initial mount'ta DB'den quota fetch. Auth/anon
+  //   ayrımı backend'de. BYOK user limit muaf (sonsuz) — backend limit
+  //   check'i yok, bu yüzden BYOK varsa quota sıfır gösterilir.
   useEffect(() => {
-    setUsed(readCount());
     setByokKeyState(readByokKey());
+    const key = readByokKey();
+    if (key) {
+      // BYOK user: limit muaf, 0/∞ göster
+      setUsed(0);
+      return;
+    }
+    // Auth/anon: DB'den fetch
+    fetchDbQuota().then((q) => {
+      if (q) setUsed(q.used);
+    });
   }, []);
 
   // Unmount'ta aktif stream'i iptal et, typewriter durdur
@@ -154,10 +212,15 @@ export function useAiFeedback(): AiFeedbackState {
 
   const requestFeedback = useCallback<AiFeedbackState["requestFeedback"]>(
     async (params) => {
-      const currentUsed = readCount();
-      if (currentUsed >= MAX_FREE_FEEDBACK) {
-        setError("Ücretsiz deneme hakkın bitti. Yarın sıfırlanır veya kendi API key'ini kullanabilirsin.");
-        return null;
+      // 2026-07-14 v10: DB-side limit check. BYOK user muaf.
+      // Backend authoritative: limit doluysa 403 doner.
+      const byokKey = readByokKey();
+      if (!byokKey) {
+        const q = await fetchDbQuota();
+        if (q && q.remaining <= 0) {
+          setError("Ücretsiz deneme hakkın bitti. Kendi API key'ini kullan veya yeni ayı bekle.");
+          return null;
+        }
       }
 
       setLoading(true);
@@ -231,6 +294,21 @@ export function useAiFeedback(): AiFeedbackState {
         const model: string = data.model || "deepseek-chat";
         const usage = data.usage;
 
+        // 2026-07-14 v10: Quota increment — DB authoritative. Backend
+        //   /increment çağrısı kullanıcı tipini belirler (auth/anon),
+        //   sıfırdan ekler. BYOK user muaf.
+        if (!readByokKey()) {
+          const inc = await incrementDbQuota();
+          if (inc) {
+            setUsed(inc.used);
+          } else {
+            // Fallback: localStorage (eski davranış)
+            const newUsed = currentUsed + 1;
+            writeCount(newUsed);
+            setUsed(newUsed);
+          }
+        }
+
         // 2026-07-14 v9: Minimum 'Düşünüyor' süresi (800ms).
         //   DeepSeek cache'li veya küçük prompt'ta fetch <100ms dönebilir,
         //   kullanıcı 'Düşünüyor' frame'ini görmeden 'Yazıyor'a geçer.
@@ -249,10 +327,7 @@ export function useAiFeedback(): AiFeedbackState {
           }
         }, remainingThinking);
 
-        // Quota increment (interval tamamlanmasını beklemeden)
-        const newUsed = currentUsed + 1;
-        writeCount(newUsed);
-        setUsed(newUsed);
+        // Quota increment yukarıda DB-side yapıldı (v10)
 
         return null; // Result interval bittiğinde set edilir
       } catch (e) {
@@ -286,6 +361,10 @@ export function useAiFeedback(): AiFeedbackState {
   }, [stopTypewriter]);
 
   const resetQuota = useCallback(() => {
+    // 2026-07-14 v10: Client-side localStorage temizleme (optimistik).
+    //   Server authoritative — DB quota aylık periyod sıfırlanır.
+    //   Bu çağrı sadece UI'ı anlık günceller, gerçek reset backend'de
+    //   yeni ay başında (period_start) olur.
     writeCount(0);
     setUsed(0);
   }, []);
