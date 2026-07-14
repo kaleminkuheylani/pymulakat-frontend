@@ -90,18 +90,49 @@ export function useAiFeedback(): AiFeedbackState {
   const [used, setUsed] = useState(0);
   const [byokKey, setByokKeyState] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  // Typewriter efekt (2026-07-14): Stream chunk'ları anında state'e
+  // yazılmak yerine buffer'da birikir, setInterval 20ms'de birkaç
+  // karakter state'e aktarılır. Kullanıcı için yazıyormuş hissi.
+  const typewriterBufferRef = useRef<string>("");
+  const typewriterDisplayedRef = useRef<number>(0);
+  const typewriterIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+
+  const stopTypewriter = useCallback(() => {
+    if (typewriterIntervalRef.current) {
+      clearInterval(typewriterIntervalRef.current);
+      typewriterIntervalRef.current = null;
+    }
+  }, []);
+
+  const startTypewriter = useCallback(() => {
+    stopTypewriter();
+    typewriterIntervalRef.current = setInterval(() => {
+      const target = typewriterBufferRef.current;
+      const current = typewriterDisplayedRef.current;
+      if (current < target.length) {
+        // Her tick 2 karakter — 100 char/sn (okunaklı, "akma" hissi)
+        const next = Math.min(current + 2, target.length);
+        setPartialFeedback(target.slice(0, next));
+        typewriterDisplayedRef.current = next;
+      } else {
+        // Tam metin gösterildi, interval'i durdur
+        stopTypewriter();
+      }
+    }, 20);
+  }, [stopTypewriter]);
 
   useEffect(() => {
     setUsed(readCount());
     setByokKeyState(readByokKey());
   }, []);
 
-  // Unmount'ta aktif stream'i iptal et
+  // Unmount'ta aktif stream'i iptal et, typewriter durdur
   useEffect(() => {
     return () => {
       if (abortRef.current) abortRef.current.abort();
+      stopTypewriter();
     };
-  }, []);
+  }, [stopTypewriter]);
 
   const requestFeedback = useCallback<AiFeedbackState["requestFeedback"]>(
     async (params) => {
@@ -115,6 +146,10 @@ export function useAiFeedback(): AiFeedbackState {
       setError(null);
       setResult(null);
       setPartialFeedback("");
+      // Typewriter state reset
+      stopTypewriter();
+      typewriterBufferRef.current = "";
+      typewriterDisplayedRef.current = 0;
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -207,7 +242,12 @@ export function useAiFeedback(): AiFeedbackState {
               const delta = parsed.choices?.[0]?.delta?.content;
               if (delta) {
                 fullText += delta;
-                setPartialFeedback(fullText);
+                // Typewriter: chunk'ı buffer'a ekle, anında gösterme
+                typewriterBufferRef.current = fullText;
+                // İlk chunk'ta interval'i başlat (henüz başlamadıysa)
+                if (!typewriterIntervalRef.current) {
+                  startTypewriter();
+                }
               }
               if (parsed.model) model = parsed.model;
               if (parsed.usage) usage = parsed.usage;
@@ -227,6 +267,12 @@ export function useAiFeedback(): AiFeedbackState {
           setError("Boş yanıt");
           return null;
         }
+
+        // Typewriter'ı durdur, son metni anında göster
+        stopTypewriter();
+        typewriterBufferRef.current = fullText;
+        typewriterDisplayedRef.current = fullText.length;
+        setPartialFeedback(fullText);
 
         // Quota increment
         const newUsed = currentUsed + 1;
@@ -266,8 +312,9 @@ export function useAiFeedback(): AiFeedbackState {
       abortRef.current.abort();
       abortRef.current = null;
       setLoading(false);
+      stopTypewriter();
     }
-  }, []);
+  }, [stopTypewriter]);
 
   const resetQuota = useCallback(() => {
     writeCount(0);
