@@ -168,26 +168,38 @@ export default function AiFeedbackView({
         </div>
       )}
 
-      {/* Result */}
-      {result ? (
-        <div className="p-3 rounded-lg bg-amber-500/[0.06] border border-amber-500/20">
-          <div className="flex items-center gap-1.5 mb-2">
-            <Sparkles className="w-3 h-3 text-amber-300" />
-            <span className="text-[10px] uppercase tracking-wider text-amber-300/80 font-bold">
-              DeepSeek {result.model.includes("coder") ? "Coder" : "V3"} · {result.usage?.total_tokens ?? "?"} token
-            </span>
-          </div>
-          <pre className="text-[12px] text-white/85 font-sans whitespace-pre-wrap leading-relaxed">
-{result.feedback}
-          </pre>
-        </div>
-      ) : !isGuest && hasRunOnce && !loading ? (
-        <div className="p-3 rounded-lg border border-dashed border-white/10 text-center">
-          <p className="text-[11px] text-white/40 font-mono">
-            Yukarıdaki butona bas, kodunun analizini ve önerileri al.
-          </p>
-        </div>
-      ) : null}
+      {/* Result / Typewriter (kademeli) — 2026-07-14 v3 */}
+      {/* 2026-07-14 v3: Result henüz set edilmediyse (interval devam ediyor) */}
+      {/*   partialFeedback'i göster, kullanıcı harfleri görsün. Result */}
+      {/*   interval bittiğinde set edilir (current==target). */}
+      {(() => {
+        const displayText = result?.feedback || partialFeedback;
+        if (displayText) {
+          return (
+            <div className="p-3 rounded-lg bg-amber-500/[0.06] border border-amber-500/20">
+              <div className="flex items-center gap-1.5 mb-2">
+                <Sparkles className="w-3 h-3 text-amber-300" />
+                <span className="text-[10px] uppercase tracking-wider text-amber-300/80 font-bold">
+                  DeepSeek {result?.model?.includes("coder") ? "Coder" : "V3"} · {result?.usage?.total_tokens ?? "?"} token
+                </span>
+              </div>
+              <pre className="text-[12px] text-white/85 font-sans whitespace-pre-wrap leading-relaxed">
+{displayText}
+              </pre>
+            </div>
+          );
+        }
+        if (!isGuest && hasRunOnce && !loading) {
+          return (
+            <div className="p-3 rounded-lg border border-dashed border-white/10 text-center">
+              <p className="text-[11px] text-white/40 font-mono">
+                Yukarıdaki butona bas, kodunun analizini ve önerileri al.
+              </p>
+            </div>
+          );
+        }
+        return null;
+      })()}
     </div>
   );
 }
