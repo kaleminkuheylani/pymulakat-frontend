@@ -34,6 +34,14 @@ export async function GET(req: NextRequest) {
       cache: "no-store",
     });
 
+    // 2026-07-14 v3 DEBUG: Header flow + response log
+    console.log("[ai-feedback/usage proxy]", {
+      incomingEmail: req.headers.get("x-user-email"),
+      cookieLength: cookieHeader.length,
+      backendStatus: backendRes.status,
+      backendResponse: (await backendRes.clone().text()).slice(0, 200),
+    });
+
     // Backend response'unu olduğu gibi geçir (status + body + Set-Cookie!)
     // 2026-07-14 v2: Set-Cookie header forward KRITIK — yoksa backend'in
     //   pymulakat_anon_id cookie'si client'a ulaşmaz, her request'te
