@@ -8,7 +8,7 @@
 
 "use client";
 
-import { Sparkles, Lock, KeyRound, Loader2, AlertCircle, Settings } from "lucide-react";
+import { Sparkles, Lock, KeyRound, Loader2, AlertCircle, Settings, X, StopCircle } from "lucide-react";
 import { useAiFeedback, AI_FEEDBACK_MAX } from "@/hooks/useAiFeedback";
 
 interface AiFeedbackViewProps {
@@ -30,6 +30,7 @@ export default function AiFeedbackView({
 }: AiFeedbackViewProps) {
   const {
     loading,
+    partialFeedback,
     error,
     result,
     remaining,
@@ -37,6 +38,7 @@ export default function AiFeedbackView({
     requestFeedback,
     setByokKey,
     hasByokKey,
+    abort,
   } = useAiFeedback();
 
   const handleClick = async () => {
@@ -115,24 +117,41 @@ export default function AiFeedbackView({
           <KeyRound className="w-4 h-4" />
           Limit doldu — kendi API key'ini ekle
         </button>
+      ) : loading ? (
+        // 2026-07-14: Streaming sırasında "İptal" butonu — kullanıcı
+        // yarıda kesebilir. Stream sürerken spinner + partial feedback.
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            disabled
+            className="flex-1 px-3 py-2.5 rounded-md text-xs font-medium flex items-center justify-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-200 cursor-wait"
+          >
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Yazıyor…</span>
+            {partialFeedback && (
+              <span className="text-[10px] text-amber-300/60">
+                {partialFeedback.length} karakter
+              </span>
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={abort}
+            title="İptal"
+            className="px-3 py-2.5 rounded-md text-xs font-medium flex items-center gap-1.5 bg-white/5 border border-white/10 text-white/70 hover:bg-rose-500/15 hover:border-rose-500/30 hover:text-rose-300 transition-colors"
+          >
+            <StopCircle className="w-4 h-4" />
+            İptal
+          </button>
+        </div>
       ) : (
         <button
           type="button"
           onClick={handleClick}
-          disabled={loading}
-          className="w-full px-3 py-2.5 rounded-md text-xs font-medium flex items-center justify-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-200 hover:bg-amber-500/25 disabled:opacity-50"
+          className="w-full px-3 py-2.5 rounded-md text-xs font-medium flex items-center justify-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-200 hover:bg-amber-500/25"
         >
-          {loading ? (
-            <>
-              <Loader2 className="w-4 h-4 animate-spin" />
-              Analiz ediliyor…
-            </>
-          ) : (
-            <>
-              <Sparkles className="w-4 h-4" />
-              AI Feedback Al
-            </>
-          )}
+          <Sparkles className="w-4 h-4" />
+          AI Feedback Al
         </button>
       )}
 

@@ -206,7 +206,11 @@ Lütfen yukarıdaki kurallara göre feedback ver:
 - ASLA tam çözüm kodu yazma
 - Kullanıcı kendi çözsün`;
 
-  // 5) DeepSeek API call
+  // 5) DeepSeek API call — 2026-07-14 streaming (SSE passthrough)
+  //    stream: true ile DeepSeek'ten SSE alıyoruz, response.body'yi
+  //    doğrudan client'a forward ediyoruz (Next.js Response ReadableStream
+  //    destekli). Hata durumunda SSE error event gönderiyoruz, böylece
+  //    client JSON parse etmeden düz parse edebilir.
   try {
     const response = await fetch(DEEPSEEK_API_URL, {
       method: "POST",
@@ -222,36 +226,51 @@ Lütfen yukarıdaki kurallara göre feedback ver:
         ],
         max_tokens: MAX_TOKENS,
         temperature: TEMPERATURE,
-        stream: false,
+        stream: true,
       }),
     });
 
     if (!response.ok) {
       const errText = await response.text().catch(() => "");
-      return NextResponse.json(
-        {
-          error: "deepseek_error",
-          message: `DeepSeek API hata döndü: ${response.status}`,
-          detail: errText.slice(0, 300),
+      // Hata durumunda SSE error event gönder (JSON değil, çünkü
+      // client stream parse ediyor). Client onu yakalayacak.
+      const encoder = new TextEncoder();
+      const errorStream = new ReadableStream({
+        start(controller) {
+          controller.enqueue(
+            encoder.encode(`event: error\ndata: ${JSON.stringify({
+              error: "deepseek_error",
+              message: `DeepSeek API hata döndü: ${response.status}`,
+              detail: errText.slice(0, 300),
+            })}\n\n`)
+          );
+          controller.close();
         },
-        { status: 502 }
-      );
+      });
+      return new Response(errorStream, {
+        status: 502,
+        headers: { "Content-Type": "text/event-stream" },
+      });
     }
 
-    const data = await response.json();
-    const choice = data.choices?.[0];
-    if (!choice?.message?.content) {
+    if (!response.body) {
       return NextResponse.json(
-        { error: "empty_response", message: "DeepSeek boş yanıt döndü." },
+        { error: "empty_body", message: "DeepSeek boş body döndü." },
         { status: 502 }
       );
     }
 
-    return NextResponse.json({
-      feedback: choice.message.content,
-      model: data.model ?? DEFAULT_MODEL,
-      usage: data.usage ?? { prompt_tokens: 0, completion_tokens: 0, total_tokens: 0 },
-      finished_at: new Date().toISOString(),
+    // SSE passthrough — client'a direkt forward. Content-Type korunmalı
+    // (text/event-stream) ki client EventSource veya fetch-streaming
+    // parse edebilsin. Cache olmamalı, edge'de buffering olmamalı.
+    return new Response(response.body, {
+      status: 200,
+      headers: {
+        "Content-Type": "text/event-stream",
+        "Cache-Control": "no-cache, no-transform",
+        // Nginx/Vercel buffering kapat — streaming gerçek zamanlı
+        "X-Accel-Buffering": "no",
+      },
     });
   } catch (e) {
     const message = e instanceof Error ? e.message : "Bilinmeyen hata";
