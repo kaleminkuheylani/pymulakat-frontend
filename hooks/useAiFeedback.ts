@@ -98,6 +98,10 @@ export function useAiFeedback(): AiFeedbackState {
   const typewriterIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const typewriterModelRef = useRef<string>("deepseek-chat");
   const typewriterUsageRef = useRef<AiFeedbackResult["usage"]>(undefined);
+  // 2026-07-14 v9: Fetch baslangic zamani — minimum 'Dusunuyor' suresi
+  //   (800ms) icin kullaniliyor. DeepSeek cache'li isteklerde <100ms donebilir,
+  //   kullanici 'Dusunuyor' frame'ini gormeden typewriter'a gecebilir.
+  const streamStartedAtRef = useRef<number>(0);
 
   const stopTypewriter = useCallback(() => {
     if (typewriterIntervalRef.current) {
@@ -160,6 +164,7 @@ export function useAiFeedback(): AiFeedbackState {
       setError(null);
       setResult(null);
       setPartialFeedback("");
+      streamStartedAtRef.current = Date.now();
       // Typewriter state reset
       stopTypewriter();
       typewriterBufferRef.current = "";
@@ -226,14 +231,23 @@ export function useAiFeedback(): AiFeedbackState {
         const model: string = data.model || "deepseek-chat";
         const usage = data.usage;
 
-        // Buffer'a koy, interval kademeli gösterir
-        typewriterBufferRef.current = fullText;
-        typewriterModelRef.current = model;
-        typewriterUsageRef.current = usage;
-        // Interval henüz başlamadıysa başlat
-        if (!typewriterIntervalRef.current) {
-          startTypewriter();
-        }
+        // 2026-07-14 v9: Minimum 'Düşünüyor' süresi (800ms).
+        //   DeepSeek cache'li veya küçük prompt'ta fetch <100ms dönebilir,
+        //   kullanıcı 'Düşünüyor' frame'ini görmeden 'Yazıyor'a geçer.
+        //   UX için minimum 800ms loading göster, sonra typewriter başla.
+        const MIN_THINKING_MS = 800;
+        const fetchDuration = Date.now() - streamStartedAtRef.current;
+        const remainingThinking = Math.max(0, MIN_THINKING_MS - fetchDuration);
+
+        setTimeout(() => {
+          typewriterBufferRef.current = fullText;
+          typewriterModelRef.current = model;
+          typewriterUsageRef.current = usage;
+          // Interval henüz başlamadıysa başlat
+          if (!typewriterIntervalRef.current) {
+            startTypewriter();
+          }
+        }, remainingThinking);
 
         // Quota increment (interval tamamlanmasını beklemeden)
         const newUsed = currentUsed + 1;

@@ -118,8 +118,9 @@ export default function AiFeedbackView({
           Limit doldu — kendi API key'ini ekle
         </button>
       ) : loading ? (
-        // 2026-07-14: Streaming sırasında "İptal" butonu — kullanıcı
-        // yarıda kesebilir. Stream sürerken spinner + partial feedback.
+        // 2026-07-14 v2: İki aşama — fetch sırasında "Düşünüyor...",
+        //   typewriter başladığında "Yazıyor..." (partial feedback > 0).
+        //   Kullanıcı fetch (5-10s) vs yazma (12s) farkını anlasın.
         <div className="flex items-center gap-2">
           <button
             type="button"
@@ -127,7 +128,11 @@ export default function AiFeedbackView({
             className="flex-1 px-3 py-2.5 rounded-md text-xs font-medium flex items-center justify-center gap-2 bg-amber-500/15 border border-amber-500/30 text-amber-200 cursor-wait"
           >
             <Loader2 className="w-4 h-4 animate-spin" />
-            <span>Yazıyor…</span>
+            {partialFeedback ? (
+              <span>Yazıyor…</span>
+            ) : (
+              <span>Yapay zeka düşünüyor…</span>
+            )}
             {partialFeedback && (
               <span className="text-[10px] text-amber-300/60">
                 {partialFeedback.length} karakter
