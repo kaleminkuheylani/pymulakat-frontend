@@ -96,6 +96,8 @@ export function useAiFeedback(): AiFeedbackState {
   const typewriterBufferRef = useRef<string>("");
   const typewriterDisplayedRef = useRef<number>(0);
   const typewriterIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const typewriterModelRef = useRef<string>("deepseek-chat");
+  const typewriterUsageRef = useRef<AiFeedbackResult["usage"]>(undefined);
 
   const stopTypewriter = useCallback(() => {
     if (typewriterIntervalRef.current) {
@@ -114,8 +116,17 @@ export function useAiFeedback(): AiFeedbackState {
         const next = Math.min(current + 2, target.length);
         setPartialFeedback(target.slice(0, next));
         typewriterDisplayedRef.current = next;
+        if (next === target.length) {
+          // Tam metin gösterildi — result + loading kapat
+          setResult({
+            feedback: target,
+            model: typewriterModelRef.current,
+            usage: typewriterUsageRef.current,
+          });
+          setLoading(false);
+          stopTypewriter();
+        }
       } else {
-        // Tam metin gösterildi, interval'i durdur
         stopTypewriter();
       }
     }, 20);
@@ -150,6 +161,8 @@ export function useAiFeedback(): AiFeedbackState {
       stopTypewriter();
       typewriterBufferRef.current = "";
       typewriterDisplayedRef.current = 0;
+      typewriterModelRef.current = "deepseek-chat";
+      typewriterUsageRef.current = undefined;
 
       const controller = new AbortController();
       abortRef.current = controller;
@@ -205,8 +218,6 @@ export function useAiFeedback(): AiFeedbackState {
         const decoder = new TextDecoder("utf-8");
         let buffer = "";
         let fullText = "";
-        let model = "deepseek-chat";
-        let usage: AiFeedbackResult["usage"] | undefined;
         let lastError: string | null = null;
 
         // SSE "data: {...}\n\n" parse — buffer kısmi chunk'ları biriktirir
@@ -249,8 +260,8 @@ export function useAiFeedback(): AiFeedbackState {
                   startTypewriter();
                 }
               }
-              if (parsed.model) model = parsed.model;
-              if (parsed.usage) usage = parsed.usage;
+              if (parsed.model) typewriterModelRef.current = parsed.model;
+              if (parsed.usage) typewriterUsageRef.current = parsed.usage;
             } catch (parseErr) {
               // Parse hatası — chunk bozuk olabilir, sessizce atla
               console.warn("[useAiFeedback] SSE parse hatası:", parseErr, dataStr.slice(0, 100));
@@ -268,24 +279,23 @@ export function useAiFeedback(): AiFeedbackState {
           return null;
         }
 
-        // Typewriter'ı durdur, son metni anında göster
-        stopTypewriter();
+        // Buffer'ı son metne set et, interval hedefe ulaşınca result/loading
+        // kendisi kapatacak. Burada setPartialFeedback(fullText) YAPMA — animasyon
+        // atlanmasın.
         typewriterBufferRef.current = fullText;
-        typewriterDisplayedRef.current = fullText.length;
-        setPartialFeedback(fullText);
+        // İlk chunk'tan sonra interval başlamadıysa (stream çok hızlı bitti),
+        // burada manuel başlat.
+        if (!typewriterIntervalRef.current) {
+          startTypewriter();
+        }
 
-        // Quota increment
+        // Quota increment (interval bitmeden quota'yı arttır, sonraki
+        // kullanıcı tıklaması için doğru sayaç).
         const newUsed = currentUsed + 1;
         writeCount(newUsed);
         setUsed(newUsed);
 
-        const finalResult: AiFeedbackResult = {
-          feedback: fullText,
-          model,
-          usage,
-        };
-        setResult(finalResult);
-        return finalResult;
+        return null; // Result interval bittiğinde set edilir
       } catch (e) {
         if (e instanceof DOMException && e.name === "AbortError") {
           // Kullanıcı iptal etti — sessizce çık
