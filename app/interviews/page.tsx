@@ -49,7 +49,7 @@ export default async function InterviewsListPage({ searchParams }: PageProps) {
         {/* ─── Header ─────────────────────────────────────── */}
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Yapay Zeka Destekli Python Mülakat Soruları
+            Python Mülakat Soruları
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-2xl">
             {activeCategory === "all"

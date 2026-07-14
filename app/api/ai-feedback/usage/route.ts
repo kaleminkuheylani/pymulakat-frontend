@@ -31,13 +31,25 @@ export async function GET(req: NextRequest) {
       cache: "no-store",
     });
 
-    // Backend response'unu olduğu gibi geçir (status + body)
+    // Backend response'unu olduğu gibi geçir (status + body + Set-Cookie!)
+    // 2026-07-14 v2: Set-Cookie header forward KRITIK — yoksa backend'in
+    //   pymulakat_anon_id cookie'si client'a ulaşmaz, her request'te
+    //   yeni UUID oluşur, DB'de yeni satır = 0/5 (limit sifirlanmis görünür).
     const body = await backendRes.text();
+    const responseHeaders = new Headers();
+    const contentType = backendRes.headers.get("Content-Type");
+    if (contentType) responseHeaders.set("Content-Type", contentType);
+    // Tüm set-cookie header'larını ilet (backend birden fazla Set-Cookie gönderebilir)
+    // 2026-07-14 v2: getSetCookie() Node 20+ / modern fetch — backend'in
+    //   pymulakat_anon_id cookie'si client'a ulaşmazsa her request'te
+    //   yeni UUID olusur, DB'de yeni satır = 0/5 görünür.
+    const setCookies = (backendRes.headers as any).getSetCookie?.() || [];
+    for (const cookie of setCookies) {
+      responseHeaders.append("Set-Cookie", cookie);
+    }
     return new NextResponse(body, {
       status: backendRes.status,
-      headers: {
-        "Content-Type": backendRes.headers.get("Content-Type") || "application/json",
-      },
+      headers: responseHeaders,
     });
   } catch (err) {
     // Backend unreachable — fallback boş response (frontend localStorage'a düşer)

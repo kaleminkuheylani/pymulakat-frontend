@@ -62,12 +62,12 @@ export async function generateMetadata({
 
   // Canonical DB slug mı? Değilse → 404 metadata
   if (!isCanonicalCategory(category)) {
-    return { title: "Kategori bulunamadı | Yapay Zeka Destekli Python Mülakat" };
+    return { title: "Kategori bulunamadı | Python Mülakat" };
   }
 
   const { meta, questions } = await getCategoryPageData(category);
   if (!meta) {
-    return { title: "Kategori bulunamadı | Yapay Zeka Destekli Python Mülakat" };
+    return { title: "Kategori bulunamadı | Python Mülakat" };
   }
 
   // Label + count (zengin meta description)
@@ -92,12 +92,12 @@ export async function generateMetadata({
   const categoryKeywords = getCategorySeoKeywords(category);
 
   return {
-    title: `Yapay Zeka Destekli ${label} Soru Bankası — ${questions.length} Açıklamalı Python Sorusu`,
+    title: `${label} Soru Bankası — ${questions.length} Açıklamalı Python Sorusu`,
     description: desc,
     keywords: [...baseKeywords, ...categoryKeywords],
     alternates: { canonical },
     openGraph: {
-      title: `Yapay Zeka Destekli ${label} Soru Bankası — ${questions.length} Python Sorusu`,
+      title: `${label} Soru Bankası — ${questions.length} Python Sorusu`,
       description: desc,
       url: canonical,
       siteName: "PythonMulakat",
@@ -107,7 +107,7 @@ export async function generateMetadata({
     },
     twitter: {
       card: "summary_large_image",
-      title: `Yapay Zeka Destekli ${label} Soru Bankası — ${questions.length} Python Sorusu`,
+      title: `${label} Soru Bankası — ${questions.length} Python Sorusu`,
       description: desc,
       images: [`${BASE_URL}/og-default.png`],
     },
@@ -292,7 +292,7 @@ export default async function CategoryPage({
         {/* ─── Hero (DB-FIRST: label + description) ─── */}
         <header className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Yapay Zeka Destekli {label} Soruları
+            {label} Soruları
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-2xl">
             {meta.description ||

@@ -31,11 +31,18 @@ export async function POST(req: NextRequest) {
     });
 
     const responseBody = await backendRes.text();
+    // 2026-07-14 v2: Set-Cookie forward — yoksa anon_id her request'te
+    //   yeni, DB'de yeni satır, limit sifirlanmis görünür.
+    const responseHeaders = new Headers();
+    const contentType = backendRes.headers.get("Content-Type");
+    if (contentType) responseHeaders.set("Content-Type", contentType);
+    const setCookieHeader = (backendRes.headers as any).getSetCookie?.() || [];
+    for (const cookie of setCookieHeader) {
+      responseHeaders.append("Set-Cookie", cookie);
+    }
     return new NextResponse(responseBody, {
       status: backendRes.status,
-      headers: {
-        "Content-Type": backendRes.headers.get("Content-Type") || "application/json",
-      },
+      headers: responseHeaders,
     });
   } catch (err) {
     // Backend unreachable — frontend fallback localStorage

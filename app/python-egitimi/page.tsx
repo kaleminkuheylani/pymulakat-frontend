@@ -9,7 +9,7 @@ import { LESSONS, getLesson } from "./lessons";
 import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCategories";
 
 export const metadata: Metadata = {
-  title: "Yapay Zeka Destekli Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
+  title: "Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
   description:
     "Python öğren — Türkçe, ücretsiz eğitim. Değişkenler, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör.",
   keywords: [
@@ -50,7 +50,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Yapay Zeka Destekli Python Eğitimi — Türkçe, Ücretsiz, Kapsamlı",
+    title: "Python Eğitimi — Türkçe, Ücretsiz, Kapsamlı",
     description: "Python öğren — Türkçe, ücretsiz kapsamlı eğitim. 6 ders, kod örnekleri, online editör.",
     url: "https://pythonmulakat.com/python-egitimi",
     siteName: "PythonMulakat",
@@ -67,7 +67,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Yapay Zeka Destekli Python Eğitimi — Türkçe, Ücretsiz",
+    title: "Python Eğitimi — Türkçe, Ücretsiz",
     description: "Türkçe Python dersleri: başlangıç, orta, ileri. 6 ders, kod örnekleri, online editör.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
@@ -221,7 +221,7 @@ export default async function PythonEgitimiPage() {
             >
               ← Ana Sayfa
             </Link>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Yapay Zeka Destekli Python Eğitimi</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Eğitimi</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
               Başlangıçtan ileri seviyeye, Türkçe ve ücretsiz Python dersleri.
               Her ders çalıştırılabilir kod örneği, kısa açıklama ve pratik ödev içerir.

@@ -51,7 +51,11 @@ export const metadata: Metadata = {
   title: {
     default:
       "Yapay Zeka Destekli Python Mülakat Platformu",
-    template: "%s | Yapay Zeka Destekli Python Mülakat",
+    // 2026-07-14 v13: Template sade ("Python Mülakat" — her sayfada
+    //   tekrar "Yapay Zeka Destekli" ekleyerek keyword stuffing riski).
+    //   Default title + description + footer + JSON-LD yeterli (toplam
+    //   4-5 YZD per sayfa, dogal dagilim).
+    template: "%s | Python Mülakat",
   },
 
   description:

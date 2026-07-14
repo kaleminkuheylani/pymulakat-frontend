@@ -8,7 +8,7 @@ import PythonOnlineEditor from "./PythonOnlineEditor";
 import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCategories";
 
 export const metadata: Metadata = {
-  title: "Yapay Zeka Destekli Python Online Compiler — Tarayıcıda Ücretsiz Kod Editörü",
+  title: "Python Online Compiler — Tarayıcıda Ücretsiz Kod Editörü",
   description:
     "Python online compiler — tarayıcıda anında kod yaz ve çalıştır. Kurulum yok, hesap yok. Şimdilik ücretsiz.",
   keywords: [
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     canonical: "https://pythonmulakat.com/python-online",
   },
   openGraph: {
-    title: "Yapay Zeka Destekli Python Online — Tarayıcıda Ücretsiz Kod Editörü",
+    title: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
     description: "Python online compiler — kurulum yok, hesap yok. Tarayıcıda Python yaz, anında çalıştır.",
     url: "https://pythonmulakat.com/python-online",
     siteName: "PythonMulakat",
@@ -44,13 +44,13 @@ export const metadata: Metadata = {
         url: "https://pythonmulakat.com/og-default.png",
         width: 1200,
         height: 630,
-        alt: "Yapay Zeka Destekli Python Online — Tarayıcıda Ücretsiz Kod Editörü",
+        alt: "Python Online — Tarayıcıda Ücretsiz Kod Editörü",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Yapay Zeka Destekli Python Online — Tarayıcıda Ücretsiz Editör",
+    title: "Python Online — Tarayıcıda Ücretsiz Editör",
     description: "Python öğren — tarayıcıda anında çalıştır, kurulum yok.",
     images: ["https://pythonmulakat.com/og-default.png"],
   },
@@ -106,7 +106,7 @@ export default function PythonOnlinePage() {
             >
               ← Ana Sayfa
             </Link>
-            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Yapay Zeka Destekli Python Online</h1>
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-3">Python Online</h1>
             <p className="text-white/70 text-base md:text-lg max-w-3xl leading-relaxed">
               Tarayıcıda Python 3.12 kodunu yaz, Pyodide ile anında çalıştır.
               Kurulum yok, hesap yok. Öğrenmek için ideal playground.
