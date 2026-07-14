@@ -1,5 +1,6 @@
 "use client";
-import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play, Sparkles } from "lucide-react";
+import { Printer, Lightbulb, Download, Lock, TestTube, Eye, Loader2, Play } from "lucide-react";
+import AiFeedbackButton from "./AiFeedbackButton";
 import { errorMessage } from "@/lib/errorMessage";
 
 // TestPanel.tsx — test case'leri göster + çalıştır + custom input + geç/kal durumu.
@@ -50,6 +51,11 @@ export interface TestPanelProps {
   onCustomRun?: (args: any[]) => Promise<{ actual: any; errorLine?: string; errorCategory?: string }>;
   /** Hata traceback satırları (Run Tests sonucu) */
   errorLines: string[];
+  /** 2026-07-14: Run en az 1 kez çağrıldı mı? (AI Feedback trigger) */
+  hasRunOnce?: boolean;
+  /** AI Feedback prompt için — soru başlığı + opsiyonel açıklama */
+  questionTitle?: string;
+  questionDescription?: string;
 }
 
 // ─── TestPanel ───────────────────────────────────────────
@@ -66,6 +72,9 @@ export default function TestPanel({
   starterCode,
   onCustomRun,
   errorLines,
+  hasRunOnce = false,
+  questionTitle,
+  questionDescription,
 }: TestPanelProps) {
   // Tab state — sadece desktop'ta tab var, mobile'da tabs ayrı render edilir
   const isDesktop = variant === "desktop";
@@ -213,23 +222,27 @@ export default function TestPanel({
           </div>
 
           <div className="flex items-center gap-2 mr-2">
-            {/* 2026-07-14: AI Feedback placeholder — "very soon" rozeti ile.
-                Konsol/Örnekler tabs'in yanında, Çalıştır butonundan önce.
-                Disabled: henüz arka uç LLM entegrasyonu yok, sadece UI beklentisi.
-                Conversion: 'cok yakinda' sinyali + gelen user 'bu urun gelisiyor' görür. */}
-            <button
-              type="button"
-              disabled
-              aria-label="AI Geri Bildirim (çok yakında)"
-              title="AI Geri Bildirim — çok yakında"
-              className="px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 bg-white/[0.03] border border-white/10 text-white/40 cursor-not-allowed"
-            >
-              <Sparkles className="w-3.5 h-3.5 text-amber-300/70" />
-              <span>AI Feedback</span>
-              <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/20">
-                very soon
-              </span>
-            </button>
+            {/* 2026-07-14: AI Feedback butonu — DeepSeek V3 arkasında.
+                Misafir/limit/hasRunOnce state'lerini AiFeedbackButton yönetir. */}
+            <AiFeedbackButton
+              isAuthenticated={!isGuest}
+              hasRunOnce={hasRunOnce}
+              code={starterCode ?? ""}
+              questionTitle={questionTitle ?? ""}
+              questionDescription={questionDescription ?? ""}
+              testResults={testResults.map((r) => ({
+                input: r.input !== undefined ? String(r.input) : undefined,
+                expected: r.expected !== undefined ? String(r.expected) : undefined,
+                actual: r.actual !== undefined ? String(r.actual) : undefined,
+                passed: r.passed,
+                description: r.description,
+              }))}
+              onOpenSettings={() => {
+                if (typeof window !== "undefined") {
+                  window.dispatchEvent(new CustomEvent("pymulakat:open-settings"));
+                }
+              }}
+            />
           </div>
 
           <button

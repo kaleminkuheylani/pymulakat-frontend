@@ -130,6 +130,8 @@ export default function WorkspaceClient({
   const [isRunning, setIsRunning] = useState(false);
   const [errorLines, setErrorLines] = useState<string[]>([]);
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
+  // 2026-07-14: Run en az 1 kez çağrıldı mı? (AI Feedback trigger)
+  const [hasRunOnce, setHasRunOnce] = useState(false);
   const [seconds, setSeconds] = useState(0);
   const [showShareModal, setShowShareModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -259,6 +261,7 @@ export default function WorkspaceClient({
     setTestResults([]);
     setErrorLines([]);
     setAttemptSubmitted(false); // her Run'da sıfırla — eski attempt state'i yutmasın
+    setHasRunOnce(true); // AI Feedback butonu enable olsun
     try {
       const result = await runTests(code, testCases.function_name, testCases.test_cases);
       setTestResults(result.results);
@@ -437,6 +440,9 @@ export default function WorkspaceClient({
             starterCode={interview?.starter_code || undefined}
             onCustomRun={handleCustomRun}
             errorLines={errorLines}
+            hasRunOnce={hasRunOnce}
+            questionTitle={interview?.title}
+            questionDescription={interview?.description}
           />
         </main>
       </div>
