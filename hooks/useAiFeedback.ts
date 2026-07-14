@@ -297,15 +297,16 @@ export function useAiFeedback(): AiFeedbackState {
         // 2026-07-14 v10: Quota increment — DB authoritative. Backend
         //   /increment çağrısı kullanıcı tipini belirler (auth/anon),
         //   sıfırdan ekler. BYOK user muaf.
+        // 2026-07-14 v11: Backend unreachable olursa mevcut 'used'
+        //   state'ine +1 ekle, UI tutarlı kalsın. localStorage yazma yok
+        //   (single source of truth = backend DB).
         if (!readByokKey()) {
           const inc = await incrementDbQuota();
           if (inc) {
             setUsed(inc.used);
           } else {
-            // Fallback: localStorage (eski davranış)
-            const newUsed = currentUsed + 1;
-            writeCount(newUsed);
-            setUsed(newUsed);
+            // Backend offline: optimistik +1 (rollback sonraki fetch'te)
+            setUsed((prev) => prev + 1);
           }
         }
 
