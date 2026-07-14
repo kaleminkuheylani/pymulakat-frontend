@@ -27,16 +27,17 @@ export async function GET(req: NextRequest) {
       method: "GET",
       headers: {
         Cookie: cookieHeader,
-        // 2026-07-14 v3: X-User-Email forward — backend profiles.email
-        //   ile eşleştirir (Supabase auth cookie Vercel domain'de yok).
-        "X-User-Email": req.headers.get("x-user-email") || "",
+        // 2026-07-14 v4: Authorization header forward (Supabase JWT
+        //   cookie'de yok, frontend'ten header'da geliyor). Backend
+        //   get_current_user dependency ile user_id alır.
+        Authorization: req.headers.get("authorization") || "",
       },
       cache: "no-store",
     });
 
     // 2026-07-14 v3 DEBUG: Header flow + response log
     console.log("[ai-feedback/usage proxy]", {
-      incomingEmail: req.headers.get("x-user-email"),
+      authHeader: req.headers.get("authorization")?.slice(0, 30),
       cookieLength: cookieHeader.length,
       backendStatus: backendRes.status,
       backendResponse: (await backendRes.clone().text()).slice(0, 200),
