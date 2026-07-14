@@ -119,6 +119,16 @@ export function useAiFeedback(): AiFeedbackState {
       const controller = new AbortController();
       abortRef.current = controller;
 
+      // 2026-07-14 v4: Her istek öncesi sentinel cookie refresh.
+      // User authenticated ama cookie 24h TTL'den dolmussa veya
+      // yazilamamissa (SameSite, third-party block, vs.) backend 401
+      // döner. Yenileme ile cookie var oldugundan emin ol.
+      if (typeof document !== "undefined") {
+        try {
+          document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
+        } catch {}
+      }
+
       try {
         const headers: Record<string, string> = {
           "Content-Type": "application/json",
