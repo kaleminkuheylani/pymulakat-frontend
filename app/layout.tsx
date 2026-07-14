@@ -8,6 +8,7 @@ import ConditionalFooter from "../components/ConditionalFooter";
 import MaintenanceNotice from "../components/MaintenanceNotice";
 import ClientOnly from "../components/ClientOnly";
 import CookieConsent from "../components/CookieConsent";
+import ReadyBanner from "../components/ReadyBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -427,6 +428,9 @@ export default function RootLayout({
         <ClientOnly>
           <MaintenanceNotice />
         </ClientOnly>
+        {/* 2026-07-14: "Sitemiz kullanıma hazır" sticky banner — misafirlere.
+            ReadyBanner kendi localStorage'ını yönetir, kapatılabilir. */}
+        <ReadyBanner />
         <ClientOnly fallback={<div style={{ height: 64 }} />}>
         <GlobalNav />
       </ClientOnly>
