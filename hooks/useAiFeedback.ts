@@ -211,89 +211,31 @@ export function useAiFeedback(): AiFeedbackState {
           return null;
         }
 
-        if (!res.body) {
+        // 2026-07-14 v8: JSON response (backend'de stream: false).
+        // SSE streaming Vercel Node.js'te buffer'lanıyordu (yarim geliyor).
+        // Edge runtime timeout nedeniyle kesiliyordu. En güvenilir: normal
+        // JSON response, frontend typewriter interval kademeli gösterir
+        // (40 char/sn, yazı okuma hızı). Kullanıcı deneyimi aynı.
+        const data = await res.json();
+        if (!data.feedback) {
           setError("Boş yanıt");
           return null;
         }
 
-        // ── SSE streaming parse ────────────────────────────────
-        const reader = res.body.getReader();
-        const decoder = new TextDecoder("utf-8");
-        let buffer = "";
-        let fullText = "";
-        let lastError: string | null = null;
+        const fullText: string = data.feedback;
+        const model: string = data.model || "deepseek-chat";
+        const usage = data.usage;
 
-        // SSE "data: {...}\n\n" parse — buffer kısmi chunk'ları biriktirir
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          buffer += decoder.decode(value, { stream: true });
-
-          // SSE event'leri \n\n ile ayrılır. Kısmi event buffer'da kalır.
-          let eventEnd: number;
-          while ((eventEnd = buffer.indexOf("\n\n")) !== -1) {
-            const event = buffer.slice(0, eventEnd);
-            buffer = buffer.slice(eventEnd + 2);
-
-            // "event:" prefix'i (custom eventler için), "data:" zorunlu
-            const eventTypeMatch = event.match(/^event:\s*(.+)$/m);
-            const dataMatch = event.match(/^data:\s*(.+)$/m);
-            if (!dataMatch) continue;
-
-            const dataStr = dataMatch[1].trim();
-            if (dataStr === "[DONE]") continue;
-
-            try {
-              const parsed = JSON.parse(dataStr);
-
-              // Custom error event (backend tarafında gönderildi)
-              if (eventTypeMatch?.[1] === "error" || parsed.error) {
-                lastError = parsed.message || parsed.error || "Stream hatası";
-                continue;
-              }
-
-              // OpenAI/DeepSeek streaming chunk shape
-              const delta = parsed.choices?.[0]?.delta?.content;
-              if (delta) {
-                fullText += delta;
-                // Typewriter: chunk'ı buffer'a ekle, anında gösterme
-                typewriterBufferRef.current = fullText;
-                // İlk chunk'ta interval'i başlat (henüz başlamadıysa)
-                if (!typewriterIntervalRef.current) {
-                  startTypewriter();
-                }
-              }
-              if (parsed.model) typewriterModelRef.current = parsed.model;
-              if (parsed.usage) typewriterUsageRef.current = parsed.usage;
-            } catch (parseErr) {
-              // Parse hatası — chunk bozuk olabilir, sessizce atla
-              console.warn("[useAiFeedback] SSE parse hatası:", parseErr, dataStr.slice(0, 100));
-            }
-          }
-        }
-
-        if (lastError) {
-          setError(lastError);
-          return null;
-        }
-
-        if (!fullText) {
-          setError("Boş yanıt");
-          return null;
-        }
-
-        // Buffer'ı son metne set et, interval hedefe ulaşınca result/loading
-        // kendisi kapatacak. Burada setPartialFeedback(fullText) YAPMA — animasyon
-        // atlanmasın.
+        // Buffer'a koy, interval kademeli gösterir
         typewriterBufferRef.current = fullText;
-        // İlk chunk'tan sonra interval başlamadıysa (stream çok hızlı bitti),
-        // burada manuel başlat.
+        typewriterModelRef.current = model;
+        typewriterUsageRef.current = usage;
+        // Interval henüz başlamadıysa başlat
         if (!typewriterIntervalRef.current) {
           startTypewriter();
         }
 
-        // Quota increment (interval bitmeden quota'yı arttır, sonraki
-        // kullanıcı tıklaması için doğru sayaç).
+        // Quota increment (interval tamamlanmasını beklemeden)
         const newUsed = currentUsed + 1;
         writeCount(newUsed);
         setUsed(newUsed);
