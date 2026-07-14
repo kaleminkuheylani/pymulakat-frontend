@@ -40,6 +40,8 @@ export interface AiFeedbackState {
   error: string | null;
   result: AiFeedbackResult | null;
   remaining: number;
+  /** 2026-07-14 v12: limit DB'den (auth 10, anon 5). */
+  limit: number;
   limitReached: boolean;
   requestFeedback: (params: {
     code: string;
@@ -133,7 +135,13 @@ export function useAiFeedback(): AiFeedbackState {
   const [partialFeedback, setPartialFeedback] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<AiFeedbackResult | null>(null);
+  // 2026-07-14 v12: used + limit + remaining DB'den (authoritative).
+  //   Önceki: MAX_FREE_FEEDBACK = 10 hardcoded, DB'den gelen limit
+  //   kullanılmıyordu (anon user 5/ay, ama UI 10/ay gösteriyordu).
+  //   Yeni: limit + remaining backend'den gelir, fallback 10 (eski
+  //   default) — backend yüklenemezse.
   const [used, setUsed] = useState(0);
+  const [limit, setLimit] = useState(10);
   const [byokKey, setByokKeyState] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
   // Typewriter efekt (2026-07-14): Stream chunk'ları anında state'e
@@ -185,20 +193,26 @@ export function useAiFeedback(): AiFeedbackState {
     }, 50);
   }, [stopTypewriter]);
 
-  // 2026-07-14 v10: Initial mount'ta DB'den quota fetch. Auth/anon
+  // 2026-07-14 v10+v12: Initial mount'ta DB'den quota fetch. Auth/anon
   //   ayrımı backend'de. BYOK user limit muaf (sonsuz) — backend limit
   //   check'i yok, bu yüzden BYOK varsa quota sıfır gösterilir.
+  //   v12: limit de DB'den (auth: 10, anon: 5). UI'da '5/10' yerine
+  //   gerçek değerler (anon: '0/5', auth: '0/10').
   useEffect(() => {
     setByokKeyState(readByokKey());
     const key = readByokKey();
     if (key) {
       // BYOK user: limit muaf, 0/∞ göster
       setUsed(0);
+      setLimit(10); // fallback (görüntülenmez, sonsuz)
       return;
     }
     // Auth/anon: DB'den fetch
     fetchDbQuota().then((q) => {
-      if (q) setUsed(q.used);
+      if (q) {
+        setUsed(q.used);
+        setLimit(q.limit);
+      }
     });
   }, []);
 
@@ -370,7 +384,10 @@ export function useAiFeedback(): AiFeedbackState {
     setUsed(0);
   }, []);
 
-  const remaining = Math.max(0, MAX_FREE_FEEDBACK - used);
+  // 2026-07-14 v12: remaining DB'den türetilir (auth 10, anon 5).
+  //   Eski: MAX_FREE_FEEDBACK = 10 hardcoded, anon user 5/ay olsa bile
+  //   UI 10/ay gösteriyordu.
+  const remaining = Math.max(0, limit - used);
   const limitReached = remaining === 0;
 
   return {
@@ -379,6 +396,7 @@ export function useAiFeedback(): AiFeedbackState {
     error,
     result,
     remaining,
+    limit,        // 2026-07-14 v12: DB'den (auth 10, anon 5)
     limitReached,
     requestFeedback,
     setByokKey,
@@ -388,4 +406,7 @@ export function useAiFeedback(): AiFeedbackState {
   };
 }
 
+// 2026-07-14 v12: AI_FEEDBACK_MAX deprecated. Artık `limit` state'i
+//   hook'tan geliyor (DB authoritative, auth 10, anon 5). Geriye
+//   uyumluluk için default 10 — UI'lar `limit` kullanmalı.
 export const AI_FEEDBACK_MAX = MAX_FREE_FEEDBACK;

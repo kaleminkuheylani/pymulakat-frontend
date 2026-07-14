@@ -14,7 +14,7 @@
 "use client";
 
 import { Sparkles, Lock, Loader2, KeyRound, AlertCircle } from "lucide-react";
-import { useAiFeedback, AI_FEEDBACK_MAX } from "@/hooks/useAiFeedback";
+import { useAiFeedback } from "@/hooks/useAiFeedback";
 import { useState } from "react";
 
 interface AiFeedbackButtonProps {
@@ -47,6 +47,7 @@ export default function AiFeedbackButton({
     loading,
     error,
     remaining,
+    limit,        // 2026-07-14 v12: DB'den
     limitReached,
     requestFeedback,
   } = useAiFeedback();
@@ -140,7 +141,7 @@ export default function AiFeedbackButton({
       <button
         type="button"
         onClick={handleClick}
-        title={`AI Feedback — kalan ${remaining}/${AI_FEEDBACK_MAX} deneme`}
+        title={`AI Feedback — kalan ${remaining}/${limit} deneme`}
         className="px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 bg-amber-500/15 border border-amber-500/30 text-amber-200 hover:bg-amber-500/25 hover:border-amber-500/50 transition-colors"
       >
         <Sparkles className="w-3.5 h-3.5" />
@@ -153,9 +154,9 @@ export default function AiFeedbackButton({
       </button>
       <span
         className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/20"
-        title={`${remaining}/${AI_FEEDBACK_MAX} ücretsiz deneme kaldı`}
+        title={`${remaining}/${limit} ücretsiz deneme kaldı`}
       >
-        {remaining}/{AI_FEEDBACK_MAX}
+        {remaining}/{limit}
       </span>
     </div>
   );

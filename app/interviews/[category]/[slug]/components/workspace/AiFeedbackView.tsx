@@ -9,7 +9,7 @@
 "use client";
 
 import { Sparkles, Lock, KeyRound, Loader2, AlertCircle, Settings, X, StopCircle, RotateCcw } from "lucide-react";
-import { useAiFeedback, AI_FEEDBACK_MAX } from "@/hooks/useAiFeedback";
+import { useAiFeedback } from "@/hooks/useAiFeedback";
 
 interface AiFeedbackViewProps {
   isGuest: boolean;
@@ -39,6 +39,7 @@ export default function AiFeedbackView({
     error,
     result,
     remaining,
+    limit,        // 2026-07-14 v12: DB'den
     limitReached,
     requestFeedback,
     setByokKey,
@@ -69,7 +70,7 @@ export default function AiFeedbackView({
           <h3 className="text-sm font-bold text-white truncate">AI Feedback</h3>
           {!isGuest && !limitReached && (
             <span className="px-1.5 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-amber-500/15 text-amber-300 border border-amber-500/20">
-              {remaining}/{AI_FEEDBACK_MAX}
+              {remaining}/{limit}
             </span>
           )}
           {hasByokKey && (
