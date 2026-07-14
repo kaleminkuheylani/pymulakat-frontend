@@ -1,5 +1,5 @@
 "use client";
-import { Eye, Lightbulb, MessageSquare } from "lucide-react";
+import { Eye, Lightbulb, MessageSquare, CheckCircle } from "lucide-react";
 import { getCategoryUrl } from "@/lib/categorySlug";
 import { slugifyCategory } from "@/lib/questionMeta";
 
@@ -57,6 +57,17 @@ export default function QuestionDescriptionContent({
           {interview.title}
         </h1>
         <div className="flex items-center gap-2 text-xs text-white/40 flex-wrap">
+          {/* 2026-07-14: "Yapay zeka denetiminden geçmiştir" vurgusu.
+              Sorular AI tarafından denetlenmiş (kalite + müfredat uyumu),
+              insan editörler tarafından onaylanmış. Yasal dayanak: Terms
+              Bölüm 4.1. */}
+          <span
+            className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded bg-emerald-500/10 border border-emerald-500/25 text-emerald-300"
+            title="Bu soru yapay zeka denetiminden geçirilmiş ve insan editörler tarafından onaylanmıştır."
+          >
+            <CheckCircle className="w-3 h-3" />
+            Yapay zeka denetiminden geçmiştir
+          </span>
           {questionMeta.topic && questionMeta.topic !== "Genel" && (
             <span className="px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/25 text-indigo-300">
               {questionMeta.topic}

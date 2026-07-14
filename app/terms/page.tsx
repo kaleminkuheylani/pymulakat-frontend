@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Kullanıcı Sözleşmesi | Python Mülakat",
   description:
-    "Python Mulakat platformu kullanıcı sözleşmesi, KVKK aydınlatma metni ve açık rıza beyanı.",
+    "Python Mulakat yapay zeka destekli mülakat soru platformu kullanıcı sözleşmesi, KVKK aydınlatma metni ve açık rıza beyanı.",
 };
 
-const LAST_UPDATED = "2 Temmuz 2026";
+const LAST_UPDATED = "14 Temmuz 2026";
 const PLATFORM_NAME = "Python Mulakat";
 const PLATFORM_URL = "https://www.pythonmulakat.com";
 
@@ -501,6 +501,122 @@ export default function TermsPage() {
     },
   ];
 
+  // ─── BÖLÜM 4: YAPAY ZEKA KULLANIMI VE SORUMLULUK REDDİ ─────────────
+  // 2026-07-14: AI Feedback özelliği production'a alındı. Aşağıdaki maddeler
+  //   - AI feedback disclaimer (tavsiye niteliğinde, bağlayıcı değil)
+  //   - Soruların AI denetiminden geçtiği vurgusu
+  //   - Hukuki sorumluluk reddi (DeepSeek V3 + 3. parti LLM)
+  //   - Veri işleme (kod, prompt) — sunucu taraflı
+  const yapayZeka: Section[] = [
+    {
+      num: "4.1",
+      title: "Yapay Zeka Destekli Mülakat Soru Platformu",
+      content: (
+        <p>
+          {PLATFORM_NAME}, Python mülakat hazırlığı için <strong className="text-zinc-200">yapay zeka destekli bir mülakat soru platformudur</strong>.
+          Platform üzerinde sunulan tüm mülakat soruları, açıklamaları ve örnek
+          çözümler, insan editörler tarafından <strong className="text-zinc-200">yapay zeka denetiminden geçirilmiştir</strong>.
+          Yapay zeka, soru kalitesi, doğruluk ve müfredat uyumluluğu açısından
+          denetim aracı olarak kullanılmış; içeriklerin nihai onayı insan
+          editörler tarafından verilmiştir.
+        </p>
+      ),
+    },
+    {
+      num: "4.2",
+      title: "AI Feedback (Yapay Zeka Geri Bildirim) Özelliği",
+      content: (
+        <>
+          <p>
+            Platform, yazdığınız Python kodunu analiz eden bir <strong className="text-zinc-200">AI Feedback</strong> özelliği
+            sunmaktadır. Bu özellik, üçüncü taraf bir büyük dil modeli (LLM)
+            olan <strong className="text-zinc-200">DeepSeek V3</strong> üzerinden çalışmaktadır. AI Feedback
+            tarafından üretilen tüm yanıtlar, kod analizleri ve öneriler
+            <strong className="text-amber-400"> bilgilendirme amaçlıdır ve bağlayıcı değildir</strong>.
+          </p>
+          <p>
+            AI Feedback çıktıları; mülakat değerlendirmesi, işe alım kararı
+            veya akademik not yerine geçmez. Kullanıcı, AI Feedback
+            çıktılarını kendi takdirine göre değerlendireceğini kabul eder.
+          </p>
+        </>
+      ),
+    },
+    {
+      num: "4.3",
+      title: "Hukuki Sorumluluk Reddi",
+      content: (
+        <>
+          <p>
+            Yapay zeka modelleri, eğitim verilerinin doğası gereği hata
+            yapabilir, yanlış veya eksik bilgi üretebilir. {PLATFORM_NAME},
+            AI Feedback çıktılarının doğruluğu, güncelliği veya belirli bir
+            amaca uygunluğu konusunda <strong className="text-amber-400">hiçbir garanti vermez</strong>.
+          </p>
+          <p>
+            Aşağıdaki hallerde {PLATFORM_NAME} sorumlu tutulamaz:
+          </p>
+          <ul className="list-disc list-inside space-y-1 ml-2 text-zinc-400">
+            <li>AI Feedback çıktılarının hatalı, yanıltıcı veya eksik olması,</li>
+            <li>Üçüncü taraf LLM sağlayıcısının (DeepSeek) kesintisi veya hizmet değişiklikleri,</li>
+            <li>AI Feedback çıktılarına dayanılarak alınan kararlar (mülakat, iş, akademik),</li>
+            <li>Yapay zeka tarafından üretilen kodun üçüncü taraflara ait fikri mülkiyet haklarını ihlal etmesi.</li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      num: "4.4",
+      title: "AI Feedback Veri İşleme",
+      content: (
+        <>
+          <p>
+            AI Feedback kullandığınızda, yazdığınız Python kodu ve soruya
+            ilişkin meta veriler (soru başlığı, test çıktıları) sunucu
+            tarafında DeepSeek API'sine gönderilir. Bu veriler yapay zeka
+            tarafından işlenir, yanıt oluşturulur ve size iletilir.
+          </p>
+          <p>
+            Yapay zeka sağlayıcısı (DeepSeek) bu verileri <em>model eğitimi
+            için kullanmaz</em> (API kullanım koşulları gereği). Ancak,
+            hizmet kesintisi, veri sızıntısı veya üçüncü taraf politikası
+            değişikliklerinde {PLATFORM_NAME}'in sorumluluğu sınırlıdır.
+          </p>
+        </>
+      ),
+    },
+    {
+      num: "4.5",
+      title: "Kendi API Anahtarınız (BYOK)",
+      content: (
+        <p>
+          AI Feedback hizmetini kendi DeepSeek API anahtarınızla
+          (<em>BYOK — Bring Your Own Key</em>) kullanabilirsiniz. Bu durumda
+          istekler doğrudan sizin anahtarınızla yapılır; aylık ücretsiz
+          hak sınırı uygulanmaz. API anahtarınız yalnızca sizin tarayıcınızda
+          saklanır (<code className="font-mono text-[12px] text-cyan-300">localStorage</code>), sunucularımıza iletilmez
+          (yalnızca DeepSeek'e iletilir).
+        </p>
+      ),
+    },
+    {
+      num: "4.6",
+      title: "Kabul Beyanı",
+      content: (
+        <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 mt-3">
+          <p className="text-zinc-300 italic">
+            "Platform üzerindeki soruların yapay zeka denetiminden geçirilmiş
+            olduğunu; AI Feedback özelliğinin bilgilendirme amaçlı, bağlayıcı
+            olmayan bir yapay zeka aracı olduğunu; yapay zeka çıktılarının
+            doğruluğu konusunda garanti verilmediğini; bu çıktılara dayanarak
+            alınan kararlarda sorumluluğun bana ait olduğunu okudum, anladım
+            ve kabul ediyorum."
+          </p>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="max-w-2xl mx-auto px-6 py-16">
@@ -544,6 +660,16 @@ export default function TermsPage() {
           <PartTitle num="3" title="Açık Rıza Metni (KVKK md. 5/1)" color="cyan" />
           <div className="space-y-10 mt-6">
             {acikRiza.map((s) => (
+              <SectionBlock key={s.num} {...s} />
+            ))}
+          </div>
+        </div>
+
+        {/* BÖLÜM 4 — 2026-07-14: Yapay Zeka Kullanımı ve Sorumluluk Reddi */}
+        <div className="mt-20">
+          <PartTitle num="4" title="Yapay Zeka Kullanımı ve Sorumluluk Reddi" color="amber" />
+          <div className="space-y-10 mt-6">
+            {yapayZeka.map((s) => (
               <SectionBlock key={s.num} {...s} />
             ))}
           </div>
