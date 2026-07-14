@@ -105,7 +105,7 @@ async function getIdToSlug(): Promise<Map<number, string>> {
 // Mapping tek kaynak: lib/categorySlug (DRY prensibi)
 import { legacyDisplayToDb, getCategoryUrl, isCanonicalCategory } from "@/lib/categorySlug";
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const host = request.headers.get("host") || "";
 
