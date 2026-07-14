@@ -8,7 +8,7 @@
 
 "use client";
 
-import { Sparkles, Lock, KeyRound, Loader2, AlertCircle, Settings, X, StopCircle } from "lucide-react";
+import { Sparkles, Lock, KeyRound, Loader2, AlertCircle, Settings, X, StopCircle, RotateCcw } from "lucide-react";
 import { useAiFeedback, AI_FEEDBACK_MAX } from "@/hooks/useAiFeedback";
 
 interface AiFeedbackViewProps {
@@ -39,6 +39,7 @@ export default function AiFeedbackView({
     setByokKey,
     hasByokKey,
     abort,
+    resetQuota,
   } = useAiFeedback();
 
   const handleClick = async () => {
@@ -84,6 +85,21 @@ export default function AiFeedbackView({
           aria-label="Ayarlar"
         >
           <Settings className="w-3.5 h-3.5" />
+        </button>
+        {/* 2026-07-14: Kullanılan AI feedback haklarını sıfırla.
+            limitReached veya test için. localStorage sayacını temizler. */}
+        <button
+          type="button"
+          onClick={() => {
+            if (window.confirm("Kullanılan AI feedback haklarını sıfırla?")) {
+              resetQuota();
+            }
+          }}
+          className="p-1.5 rounded text-white/50 hover:text-white hover:bg-white/10 transition-colors"
+          title="Kullanılan hakları sıfırla"
+          aria-label="Hakları sıfırla"
+        >
+          <RotateCcw className="w-3.5 h-3.5" />
         </button>
       </div>
 
