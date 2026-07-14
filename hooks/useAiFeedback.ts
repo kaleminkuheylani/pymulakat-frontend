@@ -87,11 +87,21 @@ function readByokKey(): string | null {
 //   email okuma yok. Backend kendi auth sistemi (Supabase JWT) +
 //   sb-*-auth-token cookie ile user_id tespit eder. Vercel proxy
 //   Authorization header + cookie'yi otomatik forward eder.
+// 2026-07-14 v15: Authorization: Bearer <jwt> header eklendi
+//   (Supabase JWT localStorage'dan alinip fetch'e ekleniyor).
+import { extractAccessToken } from "./useUser";
+
+function getAuthHeaders(): Record<string, string> {
+  const token = extractAccessToken();
+  return token ? { Authorization: `Bearer ${token}` } : {};
+}
+
 async function fetchDbQuota(): Promise<{ used: number; limit: number; remaining: number } | null> {
   if (typeof window === "undefined") return null;
   try {
     const res = await fetch("/api/ai-feedback/usage", {
       credentials: "include",
+      headers: getAuthHeaders(),
       cache: "no-store",
     });
     if (!res.ok) return null;
@@ -112,7 +122,7 @@ async function incrementDbQuota(): Promise<{ used: number; limit: number; remain
   try {
     const res = await fetch("/api/ai-feedback/increment", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...getAuthHeaders() },
       credentials: "include",
       cache: "no-store",
     });
@@ -270,6 +280,12 @@ export function useAiFeedback(): AiFeedbackState {
         };
         const key = readByokKey();
         if (key) headers["X-User-Api-Key"] = key;
+        // 2026-07-14 v15: Authorization Bearer header — Supabase JWT
+        //   Vercel proxy'den backend'e iletir, backend jwt.decode ile
+        //   user_id alır. BYOK user limit muaf (bu header göndermese de
+        //   olur, ama göndermek zarar etmez).
+        const authToken = extractAccessToken();
+        if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
 
         const res = await fetch("/api/ai-feedback", {
           method: "POST",
