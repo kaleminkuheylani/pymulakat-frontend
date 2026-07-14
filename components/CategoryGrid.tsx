@@ -52,7 +52,7 @@ function CategoryCard({ slug, label, description, questionCount, icon: Icon }: C
         <ArrowRight className="w-4 h-4 text-white/30 flex-shrink-0 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
       </div>
       <p className="text-xs text-white/50 line-clamp-2 leading-relaxed">
-        {description || `${label} konusunda Python mülakat soruları ve çözümleri.`}
+        {description || `${label} konusunda yapay zeka destekli Python mülakat soruları ve çözümleri.`}
       </p>
     </Link>
   );
