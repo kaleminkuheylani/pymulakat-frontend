@@ -7,7 +7,7 @@
 // gecikebilir). Bu yüzden önce CSV'den (jsDelivr CDN, GitHub main) çekiyoruz,
 // bulamazsak backend DB'ye düşüyoruz. Her iki kaynak aynı şemaya normalize
 // ediliyor, downstream kod değişmiyor.
-import { Check, Download, Eye, Lightbulb, Pin, ListTree, ArrowRight } from "lucide-react";
+import { Check, Download, Eye, Lightbulb, Pin } from "lucide-react";
 import { getCategoryLabel, getCategoryUrl, legacyDisplayToDb } from "@/lib/categorySlug";
 import { getCategoryMeta } from "@/lib/api/categoryAPI";
 
@@ -607,31 +607,6 @@ export default async function Page({ params, searchParams }: PageProps) {
           - JS yoksa bile görünür (server-rendered)
           - 2026-07-13 v2 (spam-risk): Breadcrumb zaten var, ekstra bir CTA
             kullanıcıyı aynı kategorideki diğer sorulara yönlendirir
-          - Conversion: benzer soru keşfi → oturumda daha fazla sayfa
-          - 2026-07-14: Sadece desktop'ta görünür (md+). Mobil viewport'a sığma
-            kuralı: cross-link workspace dışında olduğu için mobile body scroll
-            yaratıyordu. Mobile'da navigation bar + sidebar zaten benzer işi görüyor.
-       */}
-      <div className="hidden md:block max-w-3xl mx-auto px-4 sm:px-6 mt-12 mb-16">
-        <div className="border-t border-white/10 pt-8">
-          <p className="text-xs uppercase tracking-widest text-amber-300/80 font-mono mb-2">
-            <ListTree className="w-3.5 h-3.5 inline" /> {categoryLabel}
-          </p>
-          <h3 className="text-lg font-semibold text-white mb-2">
-            Bu kategorideki diğer çözümler
-          </h3>
-          <p className="text-sm text-white/60 mb-4">
-            {categoryLabel} konusundaki tüm soruları, ipuçlarını ve açıklamalı çözümleri kategori sayfasında görebilirsin.
-          </p>
-          <Link
-            href={getCategoryUrl(resolvedParams.category)}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-md bg-white/5 border border-white/10 hover:bg-white/10 hover:border-white/20 text-sm text-white/90 transition-colors"
-          >
-            <ArrowRight className="w-4 h-4" />
-            {categoryLabel} soru bankasına git
-          </Link>
-        </div>
-      </div>
     </>
   );
 }
