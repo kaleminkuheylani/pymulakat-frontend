@@ -34,10 +34,12 @@ const MAX_PANEL_HEIGHT_RATIO = 0.7;
 // 2026-07-14 v4: 3 tab — AI / Örnekler / Custom Input. Eski: 2 tab
 //   (Examples / Console). AI Feedback artık ayrı tab, full panel.
 //   Editör ayrı (sağda daima), bu 3 tab test paneli içinde.
-// 2026-07-14 v5: AI tab gecici disabled (backend deploy/debug). Aksam
-//   geri acilacak. Tab gorunur ama tiklanamaz.
+// 2026-07-14 v6: AI tab tekrar enabled (backend debug tamamlandi).
+//   Backend /usage ve /increment Authorization Bearer + Supabase JWT
+//   ile user_id tespit ediyor, profiles tablosunda quota takip
+//   ediliyor. Frontend useAiFeedback cookie forward yeterli.
 type Tab = "ai" | "examples" | "customInput";
-const AI_TAB_DISABLED = true;
+const AI_TAB_DISABLED = false;
 type Variant = "desktop" | "mobile";
 
 export interface TestPanelProps {

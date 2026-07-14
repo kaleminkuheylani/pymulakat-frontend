@@ -517,11 +517,10 @@ export default function WorkspaceMobileClient({
         </button>
         <button
           onClick={() => setTab("feedback")}
-          // 2026-07-14 v5: AI feedback geçici disabled (backend deploy).
-          //   Akşam geri açılacak. Tab görünür ama tıklanamaz.
-          disabled
-          title="AI feedback geçici olarak devre dışı (akşam açılacak)"
-          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors opacity-40 cursor-not-allowed ${
+          // 2026-07-14 v6: AI feedback tekrar enabled (backend debug tamamlandi).
+          //   Backend Authorization Bearer + Supabase JWT ile user_id tespit ediyor.
+          //   profiles tablosunda ai_feedback_used + period_start quota tracking.
+          className={`flex-1 py-2.5 text-[10px] font-semibold flex flex-col items-center gap-0.5 transition-colors ${
             tab === "feedback" ? "text-amber-300 border-t-2 border-amber-500 -mt-px" : "text-white/40"
           }`}
         >
