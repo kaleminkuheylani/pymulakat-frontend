@@ -369,4 +369,3 @@ export function useUser() {
   return { user, loading, error, refresh, logout };
 }
 
-export { extractAccessToken };
