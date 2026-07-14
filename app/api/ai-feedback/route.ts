@@ -29,12 +29,11 @@
 
 import { NextRequest, NextResponse } from "next/server";
 
-// 2026-07-14 v2: Edge runtime — Vercel ReadableStream'i buffer'lamaz,
-//   streaming (SSE) client'a anında ulaşır. Node.js runtime'da Vercel
-//   response body'yi buffer'a alıp sonra gönderiyordu (kullanıcı
-//   'karakterler bir anda geliyor' şeklinde yorumlamıştı).
-//   Edge runtime fetch streaming'i doğrudan pipe eder.
-export const runtime = "edge";
+// 2026-07-14 v3: Edge runtime iptal — 30s timeout + CPU limit, DeepSeek
+//   fetch uzun sürünce kesiliyordu (stream yarım geldi). Node.js'e geri
+//   dönüldü. Streaming için Vercel-aware headers + ReadableStream passthrough.
+//   Vercel Node.js runtime Web Streams API (ReadableStream) destekliyor (Node 18+).
+export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
 const DEEPSEEK_API_URL = "https://api.deepseek.com/v1/chat/completions";
@@ -268,17 +267,16 @@ Lütfen yukarıdaki kurallara göre feedback ver:
     // SSE passthrough — client'a direkt forward. Content-Type korunmalı
     // (text/event-stream) ki client EventSource veya fetch-streaming
     // parse edebilsin. Cache olmamalı, edge'de buffering olmamalı.
+    // Transfer-Encoding: chunked Next.js tarafindan ReadableStream ile
+    // otomatik set edilir, manuel set etmek header duplicate'a sebep olur.
     return new Response(response.body, {
       status: 200,
       headers: {
         "Content-Type": "text/event-stream",
-        // no-store: Vercel/CDN cache'lemesin, her seferinde upstream'den
-        "Cache-Control": "no-store, no-transform",
+        "Cache-Control": "no-cache, no-store, no-transform, must-revalidate",
+        "Connection": "keep-alive",
         // Nginx/Vercel buffering kapat — streaming gerçek zamanlı
         "X-Accel-Buffering": "no",
-        // Transfer-Encoding: chunked (ReadabkleStream için zaten default,
-        // ama explicit belirtmek Vercel proxy'e netleştirir)
-        "Transfer-Encoding": "chunked",
       },
     });
   } catch (e) {
