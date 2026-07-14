@@ -32,7 +32,7 @@ export function notifyAuthChange() {
  * Supabase'in kullandığı storage key'leri dahil tüm olası konumlardan access_token çıkar.
  * @supabase/ssr hem localStorage hem cookie kullanabilir; biz her iki kaynağı da tarıyoruz.
  */
-function extractAccessToken(): string | null {
+export function extractAccessToken(): string | null {
   if (typeof window === "undefined") return null;
 
   // 1) Bilinen storage key'ler
