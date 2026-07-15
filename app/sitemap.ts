@@ -3,6 +3,12 @@ import { fetchAllQuestions, listCategories, slugifyTitle } from "../lib/api/ques
 import { BASE_URL } from "../lib/seo";
 import { getCategoryUrl } from "../lib/categorySlug";
 
+// 2026-07-15: Sitemap ISR cache sorunlu (Vercel Data Cache eski data tutuyor,
+// 85 sorudan 20'sini donduruyordu). force-dynamic ile her istekte DB-FIRST
+// fetch, tum 85 soru sitemap'e dahil olur.
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // Sitemap (2026-07-13 refactor):
 //   - Tüm sayfa URL'leri DB'den (kategori meta + soru listesi)
 //   - 8 pillar statik sayfa artık yok — sitemap yalnızca canonical /interviews/{db}/...
@@ -15,13 +21,15 @@ async function fetchQuestionsFromAPI(): Promise<
 > {
   try {
     const rows = await fetchAllQuestions();
+    console.log(`[sitemap] fetchAllQuestions returned ${rows.length} questions`);
     return rows
       .filter((q) => q.category && (q.title || q.slug))
       .map((q) => ({
         category: q.category,
         slug: q.slug || slugifyTitle(q.title || ""),
       }));
-  } catch {
+  } catch (err) {
+    console.error(`[sitemap] fetchAllQuestions ERROR:`, err);
     return [];
   }
 }
