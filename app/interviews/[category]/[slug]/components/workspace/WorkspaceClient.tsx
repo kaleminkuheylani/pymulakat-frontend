@@ -492,6 +492,7 @@ export default function WorkspaceClient({
               <GuestEditorFallback category={category ?? ""} id={id ?? ""} starterCode={interview?.starter_code ?? undefined} />
             ) : (
               <CodeEditorPanel
+                key={language}
                 editorRef={editorRef}
                 value={code}
                 onChange={handleCodeChange}
