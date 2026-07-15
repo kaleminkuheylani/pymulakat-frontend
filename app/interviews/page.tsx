@@ -37,15 +37,11 @@ export default async function InterviewsListPage({ searchParams }: PageProps) {
   const allCategories = await getAllCategories();
   const categories = allCategories.filter((c) => c.slug !== "queue");
 
-  // 2026-07-15 debug: server-side fetch kontrol (Vercel log'da gorulecek)
-  const _apiBase = process.env.INTERNAL_API_URL || process.env.NEXT_PUBLIC_API_URL || "fallback-railway";
-  console.log(`[interviews/page] activeCategory=${activeCategory} apiBase=${_apiBase} catCount=${categories.length}`);
   // DB'den tüm sorular (filtre uygulanacak)
   const allQuestions: ApiQuestion[] =
     activeCategory === "all"
       ? await getAllQuestions({ limit: 500 })
       : await getAllQuestions({ category: activeCategory, limit: 500 });
-  console.log(`[interviews/page] allQuestions.length=${allQuestions.length} activeCategory=${activeCategory}`);
 
   return (
     <main className="min-h-screen bg-[#050816] text-white">
