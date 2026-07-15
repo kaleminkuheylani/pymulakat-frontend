@@ -147,11 +147,8 @@ function RegisterFormInner() {
     // donuyor olsa bile frontend gizler (email disinda erisim yok).
     toast.success("Kayıt başarılı! 📧", {
       description: "E-postanı kontrol et",
-        duration: 30000,
-      });
-    } else {
-      toast.success("Kayıt başarılı! E-postanı kontrol et");
-    }
+      duration: 30000,
+    });
 
     setIsVerifyMode(true);
     setCode("");
