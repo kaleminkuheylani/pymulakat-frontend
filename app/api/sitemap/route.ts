@@ -54,7 +54,10 @@ export async function GET(req: NextRequest) {
   req.headers.get("host");
   const now = new Date().toISOString();
 
-  // 1. Statik sayfalar
+  // 1. Statik sayfalar (yalnizca public, 200 donen, noindex/auth-gated olmayan)
+  // 2026-07-15: /dashboard, /dashboard/forms, /dashboard/recommendations, /profile
+  //   auth-gated (302 redirect → /login veya auth context), sitemap'te olmamali
+  //   (Google crawl ederse "redirect" veya "soft 404" hatasi verir).
   const staticEntries: SitemapEntry[] = [
     toEntry(`${BASE_URL}/`, now, "daily", 1.0),
     toEntry(`${BASE_URL}/interviews`, now, "daily", 0.9),
@@ -65,10 +68,6 @@ export async function GET(req: NextRequest) {
     toEntry(`${BASE_URL}/login`, now, "monthly", 0.5),
     toEntry(`${BASE_URL}/register`, now, "monthly", 0.6),
     toEntry(`${BASE_URL}/terms`, now, "yearly", 0.3),
-    toEntry(`${BASE_URL}/profile`, now, "monthly", 0.4),
-    toEntry(`${BASE_URL}/dashboard`, now, "monthly", 0.5),
-    toEntry(`${BASE_URL}/dashboard/forms`, now, "daily", 0.6),
-    toEntry(`${BASE_URL}/dashboard/recommendations`, now, "daily", 0.6),
   ];
 
   // 2-3. Inline fetch (apiFetch import etmeden) — Vercel Function Cache bypass
