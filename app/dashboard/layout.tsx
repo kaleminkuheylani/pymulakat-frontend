@@ -67,8 +67,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
-      <div className="max-w-3xl mx-auto px-4 md:px-6 py-6">
+    <div className="min-h-screen bg-[#050816] text-white flex justify-center">
+      <div className="w-[80%] max-w-5xl mx-auto px-4 md:px-6 py-6">
         {/* Üst bar — merkezi, tek kolon, sidebar YOK */}
         <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 mb-6">
           <div className="flex items-center gap-3 mb-4">
