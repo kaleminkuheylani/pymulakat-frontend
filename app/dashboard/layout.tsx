@@ -66,33 +66,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
 
   if (!user) return null;
 
-  // 2026-07-15: Dashboard'da kacis engelleme (onContextMenu, F12, ESC, Ctrl+U/S/P)
-  // Not: Tarayicilar her zaman F12 acabilir, devtools localStorage silebilir.
-  // Tam koruma yok; sadece UI seviyesinde bilinen yollari engelle.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    const blockKey = (e: KeyboardEvent) => {
-      // F12, Ctrl+U (view source), Ctrl+S (save), Ctrl+P (print), Ctrl+Shift+I/J (devtools)
-      if (
-        e.key === "F12" ||
-        (e.ctrlKey && (e.key === "u" || e.key === "U" || e.key === "s" || e.key === "S" || e.key === "p" || e.key === "P")) ||
-        (e.ctrlKey && e.shiftKey && (e.key === "I" || e.key === "J" || e.key === "C"))
-      ) {
-        e.preventDefault();
-        e.stopPropagation();
-      }
-    };
-    window.addEventListener("keydown", blockKey, true);
-    return () => window.removeEventListener("keydown", blockKey, true);
-  }, []);
-
   return (
-    <div
-      className="min-h-screen bg-[#050816] text-white flex justify-center select-none"
-      onContextMenu={(e) => e.preventDefault()}
-      onCopy={(e) => e.preventDefault()}
-      onCut={(e) => e.preventDefault()}
-    >
+    <div className="min-h-screen bg-[#050816] text-white flex justify-center">
       <div className="w-[80%] max-w-5xl mx-auto px-4 md:px-6 py-6">
         {/* Üst bar — merkezi, tek kolon, sidebar YOK */}
         <div className="bg-white/[0.03] border border-white/10 rounded-2xl p-4 mb-6">
@@ -104,6 +79,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               <div className="text-xs text-white/40 uppercase tracking-wide">Hoş geldin</div>
               <div className="font-semibold text-white truncate">{user.username}</div>
             </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="text-xs text-white/50 hover:text-rose-300 transition-colors px-2 py-1 rounded"
+              title="Çıkış Yap"
+            >
+              🚪
+            </button>
           </div>
 
           {/* 📌 Stats — dashboard'a girer girmez görsün */}
