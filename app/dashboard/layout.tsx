@@ -4,7 +4,7 @@
 "use client";
 
 import { useUser } from "../../hooks/useUser";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 
 const NAV = [
@@ -17,8 +17,17 @@ const NAV = [
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {
   // 📌 Middleware tek kapı: /dashboard* için auth kontrolünü zaten yapıyor.
   // Layout'a user geldiyse authenticated demektir. Client-side redirect yok.
-  const { user, loading } = useUser();
+  const { user, loading, logout } = useUser();
   const pathname = usePathname();
+  const router = useRouter();
+
+  // 2026-07-15: Çıkış → landing page'e yönlendir
+  const handleLogout = async () => {
+    await logout();
+    if (typeof window !== "undefined") {
+      window.location.assign("/");
+    }
+  };
 
   if (loading) {
     return (
@@ -62,6 +71,14 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   <div className="text-[10px] text-white/40">Oran</div>
                 </div>
               </div>
+
+              {/* 2026-07-15: Hemen Başla CTA — dashboard'dan direkt soruya atla */}
+              <Link
+                href="/interviews"
+                className="mt-3 flex items-center justify-center gap-1.5 w-full py-2 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-colors"
+              >
+                ⚡ Hemen Başla
+              </Link>
             </div>
             <nav className="space-y-1">
               {NAV.map((item) => {
@@ -82,6 +99,15 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                 );
               })}
             </nav>
+
+            {/* 2026-07-15: Çıkış butonu → landing page'e yönlendir */}
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="mt-4 w-full flex items-center gap-3 px-3 py-2 rounded-lg text-sm text-white/50 hover:bg-rose-500/10 hover:text-rose-300 transition-colors"
+            >
+              🚪 Çıkış Yap
+            </button>
           </aside>
 
           {/* Main content */}

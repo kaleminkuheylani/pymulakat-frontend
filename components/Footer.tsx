@@ -119,6 +119,19 @@ export default function Footer() {
             İki kişi · saf niyet · saf Python · test kullanıcıları arıyoruz
           </div>
         </div>
+
+        {/* 2026-07-15: Kısıtlı süreliğine ücretsiz vurgusu */}
+        <div className="mt-6 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-amber-300/80 font-medium">
+            ⏳ Şu anda kısıtlı süreliğine ücretsiz — süre sınırı yakında
+          </p>
+          <a
+            href="/register"
+            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-colors"
+          >
+            Hemen Başla →
+          </a>
+        </div>
       </div>
     </footer>
   );

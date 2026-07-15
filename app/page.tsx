@@ -13,12 +13,14 @@
 //   - DB-FIRST (lib/api/categoryAPI.ts)
 
 import Hero from "../components/Hero";
+import Features from "../components/Features";
 import CategoryGrid from "../components/CategoryGrid";
 
 export default function HomePage() {
   return (
     <main className="min-h-screen bg-[#050816] text-white">
       <Hero />
+      <Features />
       <CategoryGrid />
     </main>
   );
