@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
 import { useCodeRunner, type RunTestCaseResult } from "@/hooks/useCodeRunner";
+import { pythonToJsStarter, isStarterUnchanged } from "@/lib/codeRunners/starters";
 import { CodeEditorRef } from "@/components/CodeEditor";
 import { GuestBanner } from "@/components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "@/lib/api";
@@ -106,6 +107,20 @@ export default function WorkspaceClient({
   const [interview, setInterview] = useState<Question | null>(initialInterviewProp ?? null);
   const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCasesProp ?? null);
   const [code, setCode] = useState(initialInterviewProp?.starter_code || "");
+  // 2026-07-15: Dil degisince Python starter → JS starter otomatik yukle
+  // (kullanici starter'i degistirmediyse)
+  const pyStarter = initialInterviewProp?.starter_code || "";
+  const handleLanguageChange = useCallback(
+    (lang: "python" | "javascript") => {
+      setLanguage(lang);
+      // JavaScript'e gecildiyse ve kod hâlâ starter ise → JS starter yukle
+      if (lang === "javascript" && isStarterUnchanged(code, pyStarter)) {
+        const fnName = testCases?.function_name || "fn";
+        setCode(pythonToJsStarter(pyStarter, fnName));
+      }
+    },
+    [setLanguage, code, pyStarter, testCases?.function_name],
+  );
 
   // Custom input runner — EditorProps args[] veriyor, onu string'e cevirip
   // useCodeRunner.runWithCustomInput(code, input, functionName) signature'ina
@@ -271,7 +286,9 @@ export default function WorkspaceClient({
     // 📌 Misafire kod çalıştırma yok — GuestEditorGate zaten editor'i gizliyor;
     // burasi son savunma. Return-ile sessizce cik, redirect yapma (state tutarliligi).
     if (!user) return;
-    if (isRunning || (pyStatus !== "ready" && pyStatus !== "idle") || !testCases) return;
+    if (isRunning || !testCases) return;
+    // Python: Pyodide ready olmali; JS: Worker her zaman hazir
+    if (language === "python" && pyStatus !== "ready" && pyStatus !== "idle") return;
     setIsRunning(true);
     setTestResults([]);
     setErrorLines([]);
@@ -290,7 +307,30 @@ export default function WorkspaceClient({
         }))
       );
       setTestResults(result.results);
-      setErrorLines(result.errorLines || []);
+      // 2026-07-15: JS modunda Python syntax hatasi tespit edilirse kullanciya ipucu
+      const rawErrors = result.errorLines || [];
+      if (language === "javascript") {
+        const isPySyntaxError = rawErrors.some(
+          (e) =>
+            e.includes("Unexpected token 'return'") ||
+            e.includes("Unexpected token ':'") ||
+            e.includes("Unexpected token 'def'") ||
+            e.includes("Unexpected token 'elif'") ||
+            e.includes("Unexpected token 'None'") ||
+            e.includes("Unexpected token 'True'") ||
+            e.includes("Unexpected token 'False'") ||
+            e.includes("Unexpected token 'else'") ||
+            e.includes("Unexpected identifier 'print'") ||
+            (e.includes("is not defined") && (e.includes("True") || e.includes("False") || e.includes("None"))),
+        );
+        if (isPySyntaxError) {
+          toast.error("Python syntax kullandiniz", {
+            description: "JavaScript secili. Ornek: text => text veya text => { return text; }",
+            duration: 6000,
+          });
+        }
+      }
+      setErrorLines(rawErrors);
       const passed = result.results.filter((r) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
@@ -401,7 +441,7 @@ export default function WorkspaceClient({
         isGuest={isGuest}
         onBack={handleBackToList}
         language={language}
-        onLanguageChange={setLanguage}
+        onLanguageChange={handleLanguageChange}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
