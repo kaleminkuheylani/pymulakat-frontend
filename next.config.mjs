@@ -6,6 +6,20 @@ const nextConfig = {
   // www -> apex redirect middleware.ts'te yapılıyor (308 Permanent).
   // Edge'de host header'ı okuyabilmek için burada redirects() kullanılmadı.
 
+  // 2026-07-15: /sitemap.xml eski URL'i Google Search Console'da
+  // 1 hata veriyor (eski build'den kalan 47 URL'lik eski sitemap).
+  // /api/sitemap yeni aktif URL. 308 Permanent Redirect ile
+  // eski URL'i yeni URL'e yonlendir.
+  async redirects() {
+    return [
+      {
+        source: "/sitemap.xml",
+        destination: "/api/sitemap",
+        permanent: true, // 308
+      },
+    ];
+  },
+
   async headers() {
     // Production-grade security headers (OWASP önerileri)
     const csp = [
