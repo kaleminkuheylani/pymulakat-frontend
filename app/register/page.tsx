@@ -127,7 +127,7 @@ function RegisterFormInner() {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [code, setCode] = useState<string>("");
-  const [displayedCode, setDisplayedCode] = useState<string>("");
+
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -143,12 +143,10 @@ function RegisterFormInner() {
       privacy_policy_consent: true,
     });
 
-    // Bazı ortamlarda backend kod'u response.message içinde döndürür — UI'da göster
-    const extractedCode = response.message?.match(/\b\d{6}\b/)?.[0];
-    if (extractedCode) {
-      setDisplayedCode(extractedCode);
-      toast.success("Kayıt başarılı! 📧", {
-        description: `Doğrulama kodun: ${extractedCode}`,
+    // 2026-07-15: Kod UI'da gosterilmez. Backend dev'de response.message'da
+    // donuyor olsa bile frontend gizler (email disinda erisim yok).
+    toast.success("Kayıt başarılı! 📧", {
+      description: "E-postanı kontrol et",
         duration: 30000,
       });
     } else {
@@ -179,15 +177,11 @@ function RegisterFormInner() {
   const handleResend = async () => {
     try {
       setIsLoading(true);
-      const response = await authAPI.resendCode(formData.email);
-      const newCode = response.message?.match(/\b\d{6}\b/)?.[0];
-      if (newCode) {
-        setDisplayedCode(newCode);
-        setCode("");
-        toast.success("Yeni kod gönderildi 📧", { duration: 30000 });
-      } else {
-        toast.info("Yeni kod gönderildi", { description: "E-postanı kontrol et" });
-      }
+      await authAPI.resendCode(formData.email);
+      // 2026-07-15: Kod UI'da gosterilmez, sadece email'e gonderilir.
+      // Dev'de backend response.message'da donuyordu, artik gizli.
+      setCode("");
+      toast.info("Yeni kod gönderildi", { description: "E-postanı kontrol et" });
     } catch (err: any) {
       toast.error("Kod gönderilemedi", { description: err?.message || "Bilinmeyen hata" });
     } finally {
@@ -302,30 +296,8 @@ function RegisterFormInner() {
                   />
                 </motion.div>
 
-                {displayedCode && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    className="p-3 rounded-lg bg-amber-500/10 border border-amber-500/30 text-center"
-                  >
-                    <div className="text-[10px] uppercase tracking-wider text-amber-400/70 mb-1">
-                      Doğrulama Kodun
-                    </div>
-                    <div className="text-2xl font-mono font-bold text-amber-400 tracking-[0.3em]">
-                      {displayedCode}
-                    </div>
-                    <button
-                      onClick={() => {
-                        setCode(displayedCode);
-                        toast.success("Kod input'a kopyalandı");
-                      }}
-                      className="mt-2 text-xs text-amber-400/80 hover:text-amber-300 transition-colors"
-                      type="button"
-                    >
-                      📋 Input'a Kopyala
-                    </button>
-                  </motion.div>
-                )}
+                {/* 2026-07-15: Kod UI'da gosterilmez (dev debug panel kaldirildi).
+                    Kullanici email'e gelen kodu okumali, otomatik kopya yok. */}
 
                 <button
                   type="button"
@@ -383,7 +355,7 @@ function RegisterFormInner() {
             className="text-center mt-6 text-white/50 text-sm"
           >
             {isVerifyMode ? (
-              <span className="cursor-pointer hover:text-white/80 transition-colors underline decoration-dotted" onClick={() => { setIsVerifyMode(false); setError(null); setCode(""); setDisplayedCode(""); }}>
+              <span className="cursor-pointer hover:text-white/80 transition-colors underline decoration-dotted" onClick={() => { setIsVerifyMode(false); setError(null); setCode(""); }}>
                 E-posta adresini değiştir
               </span>
             ) : (
