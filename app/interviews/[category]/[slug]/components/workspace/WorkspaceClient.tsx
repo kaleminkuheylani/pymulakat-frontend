@@ -17,7 +17,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
-import { usePyodide, TestRunResult } from "@/hooks/usePyodide";
+import { useCodeRunner } from "@/hooks/useCodeRunner";
 import { CodeEditorRef } from "@/components/CodeEditor";
 import { GuestBanner } from "@/components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "@/lib/api";
@@ -89,7 +89,15 @@ export default function WorkspaceClient({
   // Hooks
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
-  const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
+  // 2026-07-15: useCodeRunner — language dispatch (Pyodide Python + Web Worker JS)
+  const runner = useCodeRunner();
+  const {
+    language,
+    setLanguage,
+    status: pyStatus,
+    runTests,
+    runWithCustomInput,
+  } = runner;
   const editorRef = useRef<CodeEditorRef>(null);
 
   // State
@@ -375,6 +383,8 @@ export default function WorkspaceClient({
         user={user}
         isGuest={isGuest}
         onBack={handleBackToList}
+        language={language}
+        onLanguageChange={setLanguage}
       />
 
       <div className="flex-1 flex overflow-hidden relative">
