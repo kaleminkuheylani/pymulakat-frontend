@@ -30,6 +30,9 @@ interface PageProps {
 }
 
 export default async function InterviewsListPage({ searchParams }: PageProps) {
+  // 2026-07-15: cookies() cagirisi dynamic mode'a zorlar (Data Cache bypass)
+  // ISR/Full Route Cache sorunlu, header okuyarak zorla fresh
+  await cookies();
   const params = await searchParams;
   const activeCategory = params.category ?? "all";
 
