@@ -17,9 +17,10 @@ self.onmessage = (e) => {
   const { id, code, input = "", fnName } = e.data || {};
   const start = performance.now();
 
-  // Sandbox: console.log override
+  // Stdout capture: self.console override (her mesajda orijinalini geri yukle)
+  const originalConsole = self.console;
   let stdout = "";
-  const sandboxConsole = {
+  self.console = {
     log: (...args) => {
       stdout +=
         args
@@ -39,6 +40,13 @@ self.onmessage = (e) => {
     warn: (...args) => {
       stdout += "[warn] " + args.map(String).join(" ") + "\n";
     },
+    info: (...args) => {
+      stdout += args.map(String).join(" ") + "\n";
+    },
+    debug: (...args) => {
+      stdout += args.map(String).join(" ") + "\n";
+    },
+    // 2026-07-15: Yeterli metodlar (worker'in kendi console'u ile cakisma yok)
   };
 
   // input'u JSON.stringify ile gomme (string icin guvenli)
@@ -46,17 +54,21 @@ self.onmessage = (e) => {
 
   // Eger fnName belirtilmisse, cagir (orn. "is_palindrome")
   // Degilse kodu dogrudan calistir (module-level)
+  //
+  // NOT: Onceki surum "console" parametre adi ile cakisma yapiyordu
+  // ("Identifier 'console' has already been declared" — Worker'da console
+  // zaten global). Cozum: self.console override + parametre YOK.
   let wrapper = `
 "use strict";
-const console = arguments[0];
 const __input = ${inputLiteral};
 ${code}
 ${fnName ? `return ${fnName}(__input);` : "return undefined;"}
 `;
 
   try {
-    const fn = new Function("console", wrapper);
-    const result = fn(sandboxConsole);
+    // Parametre YOK — self.console zaten override edilmis durumda
+    const fn = new Function(wrapper);
+    const result = fn();
     const durationMs = Math.round(performance.now() - start);
 
     self.postMessage({
@@ -77,6 +89,9 @@ ${fnName ? `return ${fnName}(__input);` : "return undefined;"}
       durationMs,
       error: "runtime_error",
     });
+  } finally {
+    // Original console'u geri yukle (her mesajda temiz state)
+    self.console = originalConsole;
   }
 };
 
