@@ -63,13 +63,11 @@
   --text-primary: #ffffff;
   --text-secondary: rgba(255, 255, 255, 0.7);
   --text-muted: rgba(255, 255, 255, 0.4);
-}
 
-  /* ── Tipografi ─────────────────────────────────────────────── */
+  /* 2026-07-15: Dark mode'da font/radius da override edilebilir
+     (suan ortak degerler, :root'ta tanimli) */
   --font-sans: var(--font-geist-sans), "Inter", system-ui, sans-serif;
   --font-mono: var(--font-geist-mono), "JetBrains Mono", ui-monospace, monospace;
-
-  /* ── Spacing & radius ──────────────────────────────────────── */
   --radius-sm: 0.375rem;
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
