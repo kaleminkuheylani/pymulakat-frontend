@@ -1,29 +1,22 @@
+// app/robots.ts
+//
+// robots.txt generator.
+// 2026-07-15: Sitemap URL güncellendi — /api/sitemap (eski /sitemap.xml
+// Vercel Edge Cache sorunu nedeniyle eski data tutuyordu).
+
 import type { MetadataRoute } from "next";
+import { BASE_URL } from "@/lib/seo";
 
 export default function robots(): MetadataRoute.Robots {
   return {
     rules: [
       {
         userAgent: "*",
-        // Wildcard (*) ile prefix match: /interviews/* → /interviews/python-basics dahil
-        allow: [
-          "/",
-          "/login",
-          "/register",
-          "/interviews/*",
-          "/python-online",
-          "/python-egitimi",
-          "/python-egitimi/*",
-          "/python-kodlari",
-          "/dashboard",
-          "/dashboard/*",
-          "/terms",
-          "/profile",
-        ],
-        disallow: ["/_next/", "/api/", "/admin/", "/auth/callback", "/auth/reset-password", "/dev-tools/"],
+        allow: "/",
+        disallow: ["/api/", "/admin/", "/dashboard/", "/auth/callback"],
       },
     ],
-    sitemap: "https://pythonmulakat.com/sitemap.xml",
-    host: "https://pythonmulakat.com",
+    sitemap: `${BASE_URL}/api/sitemap`,
+    host: BASE_URL,
   };
 }
