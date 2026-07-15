@@ -1,8 +1,20 @@
 // components/Footer.tsx
 // Global footer — ConditionalFooter tarafından render edilir.
+//
+// 2026-07-15: Footer CTA user state'e göre dinamik:
+//   - Anon user → "Hemen Başla →" /register
+//   - Authenticated → "Soru Çözmeye Devam Et →" /interviews
+//   - Authenticated + dashboard hariç her yerde (kullanıcı dashboard'da zaten)
+
+"use client";
+
+import { useUser } from "@/hooks/useUser";
+import Link from "next/link";
 
 export default function Footer() {
   const year = new Date().getFullYear();
+  const { user } = useUser();
+
   return (
     <footer className="mt-20 bg-slate-950">
       <div className="max-w-6xl mx-auto px-5 py-10">
@@ -120,17 +132,26 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* 2026-07-15: Kısıtlı süreliğine ücretsiz vurgusu */}
+        {/* 2026-07-15: Kısıtlı süreliğine ücretsiz vurgusu + dinamik CTA */}
         <div className="mt-6 pt-6 border-t border-white/5 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-amber-300/80 font-medium">
             ⏳ Şu anda kısıtlı süreliğine ücretsiz — süre sınırı yakında
           </p>
-          <a
-            href="/register"
-            className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-colors"
-          >
-            Hemen Başla →
-          </a>
+          {user ? (
+            <Link
+              href="/interviews"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-colors"
+            >
+              Soru Çözmeye Devam Et →
+            </Link>
+          ) : (
+            <Link
+              href="/register"
+              className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-colors"
+            >
+              Hemen Başla →
+            </Link>
+          )}
         </div>
       </div>
     </footer>
