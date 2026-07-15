@@ -395,8 +395,14 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr" className="dark">
+    <html lang="tr" suppressHydrationWarning>
       <head>
+        {/* 2026-07-15: Theme init (FOUC onleyici) — localStorage > OS > dark default */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=localStorage.getItem('pymulakat-theme');if(t==='light'||t==='dark'){if(t==='dark')document.documentElement.classList.add('dark');document.documentElement.style.colorScheme=t;}else if(!window.matchMedia('(prefers-color-scheme: light)').matches){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){document.documentElement.classList.add('dark');}})();`,
+          }}
+        />
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
@@ -426,7 +432,7 @@ export default function RootLayout({
       </head>
 
       <body
-        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} bg-slate-950 text-white antialiased min-h-screen`}
+        className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} antialiased min-h-screen`}
         suppressHydrationWarning
       >
         <ClientOnly fallback={<div style={{ height: 64 }} />}>

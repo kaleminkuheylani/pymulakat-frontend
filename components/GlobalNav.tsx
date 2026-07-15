@@ -5,6 +5,7 @@ import { useEffect, useState, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useUser } from "../hooks/useUser";
+import ThemeToggle from "./ThemeToggle";
 import { usePageView } from "../hooks/usePageView";
 
 export default function GlobalNav() {
@@ -47,6 +48,9 @@ export default function GlobalNav() {
           </div>
           PythonMulakat
         </Link>
+
+        {/* 2026-07-15: Theme toggle (dark/light) */}
+        <ThemeToggle />
 
         {/* 2026-07-15: 'Sorular' linki kaldirildi (kullanici direktifi). Kategori
             listesi /interviews sayfasinda, footer/dashboard'da zaten erisilebilir. */}
