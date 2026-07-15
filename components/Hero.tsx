@@ -59,11 +59,11 @@ export default async function Hero() {
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/interviews"
+                href="/login"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-colors"
               >
                 <Code2 className="w-4 h-4" />
-                Misafir Olarak Dene
+                Zaten Hesabım Var
               </Link>
             </div>
 
