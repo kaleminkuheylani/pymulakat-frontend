@@ -21,13 +21,13 @@ import {
 
 // 2026-07-15: Language extension builder
 // python → cm.python() (lang-python, gelismis Python highlight)
-// javascript → cm.javascriptStream() (legacy-modes StreamParser, JS highlight)
+// javascript → cm.javascriptLanguage (StreamLanguage.define() wrap edilmis, JS highlight)
 function buildLanguageExt(cm: any, lang: string): any[] {
   const exts: any[] = [];
   if (lang === "javascript") {
     try {
-      if (cm.javascriptStream) {
-        exts.push(cm.javascriptStream);
+      if (cm.javascriptLanguage) {
+        exts.push(cm.javascriptLanguage);
       }
     } catch { /* ignore */ }
     // ESLint gibi llm-eslint YOK, sadece basic syntax highlight + bracket match
@@ -65,12 +65,13 @@ async function loadCodeMirror() {
   if (cmModulesPromise) return cmModulesPromise;
   cmModulesPromise = (async () => {
     try {
-      const [stateMod, viewMod, cmdMod, pyMod, jsMod, acMod, themeMod] = await Promise.all([
+      const [stateMod, viewMod, cmdMod, pyMod, jsMod, langMod, acMod, themeMod] = await Promise.all([
         import("@codemirror/state").catch(() => null),
         import("@codemirror/view").catch(() => null),
         import("@codemirror/commands").catch(() => null),
         import("@codemirror/lang-python").catch(() => null),
         import("@codemirror/legacy-modes/mode/javascript").catch(() => null),
+        import("@codemirror/language").catch(() => null),
         import("@codemirror/autocomplete").catch(() => null),
         import("@codemirror/theme-one-dark").catch(() => null),
       ]);
@@ -78,6 +79,15 @@ async function loadCodeMirror() {
       if (!stateMod || !viewMod || !cmdMod || !pyMod) {
         throw new Error("CodeMirror core modülleri yüklenemedi");
       }
+
+      // 2026-07-15: StreamParser → StreamLanguage.define() ile wrap et
+      // Direkt push edilemez ("Unrecognized extension value" hatasi)
+      let javascriptLanguage: any = null;
+      try {
+        if (jsMod && (jsMod as any).javascript && langMod && (langMod as any).StreamLanguage) {
+          javascriptLanguage = (langMod as any).StreamLanguage.define((jsMod as any).javascript);
+        }
+      } catch { /* ignore */ }
 
       return {
         EditorState: stateMod.EditorState,
@@ -91,9 +101,9 @@ async function loadCodeMirror() {
         indentWithTab: (cmdMod as any).indentWithTab,
         // language modes
         python: pyMod.python,
-        // JavaScript: legacy-modes StreamParser (syntax highlight + bracket match)
+        // JavaScript: StreamLanguage.define() ile wrap edilmis (extension-compatible)
         // 2026-07-15: Workspace JS runtime dispatch icin
-        javascriptStream: jsMod ? (jsMod as any).javascript : null,
+        javascriptLanguage,
         // autocomplete (optional) — TUM diller icin
         autocompletion: acMod ? (acMod as any).autocompletion : null,
         closeBrackets: acMod ? (acMod as any).closeBrackets : null,
