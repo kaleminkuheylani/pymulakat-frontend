@@ -23,7 +23,7 @@ import type { ApiQuestion } from "@/lib/api/types";
 import FilterButtons from "./FilterButtons";
 import QuestionListItem from "@/components/QuestionListItem";
 
-export const revalidate = 3600; // 1 saat ISR
+export const revalidate = 60; // 2026-07-15: gecici 1dk ISR (cache sifirlama sonrasi 3600 dondurulecek)
 
 interface PageProps {
   searchParams: Promise<{ category?: string }>;
