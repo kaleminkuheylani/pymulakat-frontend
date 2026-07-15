@@ -5,12 +5,8 @@ import "./global.css";
 import Script from "next/script";
 import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
-// 2026-07-14: MaintenanceNotice kaldırıldı (server bakımda banner'i).
-// import MaintenanceNotice from "../components/MaintenanceNotice";
 import ClientOnly from "../components/ClientOnly";
 import CookieConsent from "../components/CookieConsent";
-// 2026-07-14: ReadyBanner kaldırıldı (production'da gereksiz).
-// import ReadyBanner from "../components/ReadyBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
