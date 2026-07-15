@@ -209,12 +209,15 @@ export default function LoginClient() {
               <label className="block text-xs text-white/50 uppercase tracking-wider mb-1.5 font-semibold">
                 <KeyRound className="w-3 h-3 inline mr-1" />
                 Şifre
+                <span className="ml-2 text-[10px] text-white/30 normal-case font-normal">
+                  (Railway env'de set edildiyse boş bırakılabilir)
+                </span>
               </label>
               <input
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                required
+                // 2026-07-15: required kaldirildi — ADMIN_PASSWORD env fallback
                 autoComplete="current-password"
                 className="w-full px-3 py-2.5 rounded-lg bg-slate-950 border border-white/10 text-sm text-white focus:border-amber-500/50 focus:outline-none focus:ring-2 focus:ring-amber-500/20"
               />
