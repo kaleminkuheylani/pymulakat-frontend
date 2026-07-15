@@ -12,7 +12,7 @@
 // Response: application/xml (Next.js standard sitemap format).
 
 import { NextResponse } from "next/server";
-import { fetchAllQuestions, listCategories, slugifyTitle } from "@/lib/api/questionAPI";
+import { NextRequest } from "next/server";
 import { BASE_URL } from "@/lib/seo";
 import { getCategoryUrl } from "@/lib/categorySlug";
 
@@ -49,7 +49,9 @@ function toXml(entries: SitemapEntry[]): string {
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>`;
 }
 
-export async function GET() {
+export async function GET(req: NextRequest) {
+  // 2026-07-15: header oku → dynamic mode (Function Cache bypass)
+  req.headers.get("host");
   const now = new Date().toISOString();
 
   // 1. Statik sayfalar
@@ -69,8 +71,28 @@ export async function GET() {
     toEntry(`${BASE_URL}/dashboard/recommendations`, now, "daily", 0.6),
   ];
 
-  // 2. Kategori landing sayfaları
-  const categories = await listCategories().catch(() => []);
+  // 2-3. Inline fetch (apiFetch import etmeden) — Vercel Function Cache bypass
+  const apiBase = process.env.INTERNAL_API_URL || "https://pymulakat-backend-production.up.railway.app";
+  const [catRes, qRes] = await Promise.all([
+    fetch(`${apiBase}/api/v2/categories`, { cache: "no-store" }),
+    fetch(`${apiBase}/api/v2/questions/all?limit=500`, { cache: "no-store" }),
+  ]).catch((err) => {
+    console.error("[api/sitemap] fetch err:", err);
+    return [null, null] as const;
+  });
+
+  let categories: Array<{ slug: string }> = [];
+  if (catRes && catRes.ok) {
+    const cData = await catRes.json();
+    categories = cData.data || cData.items || cData || [];
+  }
+  let questions: Array<{ category?: string; title?: string; slug?: string }> = [];
+  if (qRes && qRes.ok) {
+    const qData = await qRes.json();
+    questions = qData.data || qData.items || qData || [];
+    console.log(`[api/sitemap] inline fetch: ${questions.length} questions`);
+  }
+
   const categoryEntries: SitemapEntry[] = categories
     .map((c) => c.slug)
     .filter((slug): slug is string => Boolean(slug))
@@ -78,16 +100,11 @@ export async function GET() {
       toEntry(`${BASE_URL}${getCategoryUrl(slug)}`, now, "weekly", 0.85),
     );
 
-  // 3. Soru detay sayfaları (DB-FIRST)
-  const questions = await fetchAllQuestions().catch((err) => {
-    console.error("[api/sitemap] fetchAllQuestions ERROR:", err);
-    return [];
-  });
   const questionEntries: SitemapEntry[] = questions
     .filter((q) => q.category && (q.title || q.slug))
     .map((q) =>
       toEntry(
-        `${BASE_URL}/interviews/${q.category}/${q.slug || slugifyTitle(q.title || "")}`,
+        `${BASE_URL}/interviews/${q.category}/${q.slug || (q.title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`,
         now,
         "monthly",
         0.7,
