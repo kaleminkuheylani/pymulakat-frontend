@@ -1,7 +1,7 @@
 "use client";
 
 import { Sun, Moon } from "lucide-react";
-import { useTheme } from "../hooks/useTheme";
+import { useTheme } from "./ThemeProvider";
 
 /**
  * Theme toggle button — Sun/Moon lucide icon.

@@ -7,6 +7,7 @@ import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
 import ClientOnly from "../components/ClientOnly";
 import CookieConsent from "../components/CookieConsent";
+import { ThemeProvider } from "../components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -450,13 +451,15 @@ export default function RootLayout({
         </noscript>
 
         {/* <Toaster position="top-right" theme="dark" richColors closeButton /> */}
-        {children}
-        <ClientOnly>
-        <ConditionalFooter />
-      </ClientOnly>
-      <ClientOnly>
-        <CookieConsent />
-      </ClientOnly>
+        <ThemeProvider>
+          {children}
+          <ClientOnly>
+            <ConditionalFooter />
+          </ClientOnly>
+          <ClientOnly>
+            <CookieConsent />
+          </ClientOnly>
+        </ThemeProvider>
       </body>
     </html>
   );
