@@ -47,7 +47,7 @@ export async function fetchAllQuestions(): Promise<ApiQuestion[]> {
   const data = await apiFetch<ApiPagination | ApiQuestion[]>(
     "/api/v2/questions",
     {
-      next: { revalidate: 3600, tags: ["questions-list"] },
+      next: { revalidate: 0 }, cache: "no-store", // 2026-07-15: sitemap eski data tutuyor,
     }
   );
   // Backend InterviewListResponse.items döner; fallback: data veya [] direkt
