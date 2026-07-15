@@ -7,7 +7,6 @@ import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
 import ClientOnly from "../components/ClientOnly";
 import CookieConsent from "../components/CookieConsent";
-import { ThemeProvider } from "../components/ThemeProvider";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -396,14 +395,8 @@ export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr" suppressHydrationWarning>
+    <html lang="tr" className="dark">
       <head>
-        {/* 2026-07-15: Theme init (FOUC onleyici) — localStorage > OS > dark default */}
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var t=localStorage.getItem('pymulakat-theme');if(t==='light'||t==='dark'){if(t==='dark')document.documentElement.classList.add('dark');document.documentElement.style.colorScheme=t;}else if(!window.matchMedia('(prefers-color-scheme: light)').matches){document.documentElement.classList.add('dark');document.documentElement.style.colorScheme='dark';}}catch(e){document.documentElement.classList.add('dark');}})();`,
-          }}
-        />
         {/* JSON-LD Structured Data */}
         <script
           type="application/ld+json"
@@ -451,15 +444,13 @@ export default function RootLayout({
         </noscript>
 
         {/* <Toaster position="top-right" theme="dark" richColors closeButton /> */}
-        <ThemeProvider>
-          {children}
-          <ClientOnly>
-            <ConditionalFooter />
-          </ClientOnly>
-          <ClientOnly>
-            <CookieConsent />
-          </ClientOnly>
-        </ThemeProvider>
+        {children}
+        <ClientOnly>
+          <ConditionalFooter />
+        </ClientOnly>
+        <ClientOnly>
+          <CookieConsent />
+        </ClientOnly>
       </body>
     </html>
   );
