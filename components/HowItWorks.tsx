@@ -193,7 +193,7 @@ export default function HowItWorks() {
           </p>
           <div className="flex flex-wrap items-center justify-center gap-3">
             <Link
-              href="/dashboard"
+              href="/register"
               className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition-colors shadow-lg shadow-amber-500/20"
             >
               <Sparkles className="w-4 h-4" />

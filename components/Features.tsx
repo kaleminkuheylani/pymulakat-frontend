@@ -134,7 +134,7 @@ export default function Features() {
         {/* ─── Bottom CTA ─────────────────────────────────────────── */}
         <div className="mt-10 md:mt-14 text-center">
           <Link
-            href="/dashboard"
+            href="/register"
             className="inline-flex items-center gap-2 px-6 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition-colors shadow-lg shadow-amber-500/20"
           >
             Hemen Başla — Ücretsiz
