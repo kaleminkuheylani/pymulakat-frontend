@@ -70,14 +70,20 @@ export async function getAllQuestions(params?: {
   const tags = params?.category
     ? [CACHE_TAGS.ALL_QUESTIONS, CACHE_TAGS.CATEGORY(params.category)]
     : [CACHE_TAGS.ALL_QUESTIONS];
-  const data = await apiFetch<ApiPagination | ApiQuestion[]>(
-    "/api/v2/questions/all",
-    { params, next: { revalidate: 3600, tags } }
-  );
-  if (Array.isArray(data)) return data;
-  if (Array.isArray(data?.data)) return data.data as ApiQuestion[];
-  if (Array.isArray(data?.items)) return data.items as ApiQuestion[];
-  return [];
+  try {
+    const data = await apiFetch<ApiPagination | ApiQuestion[]>(
+      "/api/v2/questions/all",
+      { params, next: { revalidate: 3600, tags } }
+    );
+    console.log(`[getAllQuestions] params=${JSON.stringify(params)} keys=${data && typeof data === "object" ? Object.keys(data).join(",") : typeof data}`);
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.data)) return data.data as ApiQuestion[];
+    if (Array.isArray(data?.items)) return data.items as ApiQuestion[];
+    return [];
+  } catch (err) {
+    console.error(`[getAllQuestions] ERROR params=${JSON.stringify(params)}:`, err);
+    return [];
+  }
 }
 
 /**
