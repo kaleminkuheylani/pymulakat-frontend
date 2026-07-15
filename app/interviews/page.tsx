@@ -17,6 +17,7 @@
 //   - DB'den soru + label + description + count
 
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { getAllCategories } from "@/lib/api/categoryAPI";
 import { getAllQuestions } from "@/lib/api/questionAPI";
 import type { ApiQuestion } from "@/lib/api/types";
