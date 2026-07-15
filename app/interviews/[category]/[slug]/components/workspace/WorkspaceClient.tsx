@@ -107,11 +107,12 @@ export default function WorkspaceClient({
   const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCasesProp ?? null);
   const [code, setCode] = useState(initialInterviewProp?.starter_code || "");
 
-  // Custom input runner — EditorProps sadece args[] veriyor, code + functionName'i
-  // burada kapatıyoruz. code state'inden SONRA tanımlı olmalı.
+  // Custom input runner — EditorProps args[] veriyor, onu string'e cevirip
+  // useCodeRunner.runWithCustomInput(code, input, functionName) signature'ina
+  // uygun hale getiriyoruz.
   const handleCustomRun = useCallback(
     async (args: any[]) =>
-      runWithCustomInput(code, testCases?.function_name || "", args),
+      runWithCustomInput(code, testCases?.function_name || "", Array.isArray(args) ? args.join(" ") : String(args ?? "")),
     [runWithCustomInput, code, testCases?.function_name]
   );
   const [loading, setLoading] = useState(true);
