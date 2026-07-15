@@ -57,7 +57,8 @@ export const metadata: Metadata = {
   },
 
   description:
-    "Yapay zeka destekli Python mülakat soru platformu. Yapay zeka denetiminden geçirilmiş sorular, algoritma ve dinamik programlama için Türkçe interaktif pratik. Tarayıcıda kod yaz, AI geri bildirim al. Şimdilik ücretsiz.",
+    // 2026-07-15: JavaScript desteği eklendi (Web Worker + native V8 runtime)
+    "Yapay zeka destekli Python ve JavaScript mülakat platformu. AI denetiminden geçirilmiş sorular, algoritma ve dinamik programlama için Türkçe interaktif pratik. Tarayıcıda kod yaz, anlık AI geri bildirim al. Şimdilik ücretsiz.",
 
   keywords: [
     // Temel / Yeni başlayan
@@ -125,6 +126,32 @@ export const metadata: Metadata = {
     "python mülakat bootcamp",
     "junior python mülakat",
     "python developer mülakat",
+
+    // 2026-07-15: JavaScript mulakat (Web Worker + native V8 runtime)
+    // Mulakat hazirlik — frontend developer
+    "javascript mülakat soruları",
+    "javascript temel konular",
+    "javascript sıfırdan",
+    "javascript pratik soruları",
+    "javascript alıştırma soruları",
+    "javascript dersleri türkçe",
+    "javascript eğitimi",
+    "javascript kodları",
+    "javascript mülakat hazırlık",
+    "javascript sınav soruları",
+    "javascript online test",
+    "javascript bootcamp",
+    "javascript mülakat bootcamp",
+    "junior javascript developer mülakat soruları",
+    "frontend developer mülakat soruları",
+    "javascript veri yapıları mülakat",
+    "javascript array method mülakat",
+    "javascript string manipulation soruları",
+    "javascript online mülakat",
+    "javascript tarayıcıda kod yazma",
+    "javascript çevrimiçi üye ol",
+    "javascript ücretsiz deneme",
+    "yazılım mülakat soruları javascript",
   ],
 
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
@@ -151,9 +178,10 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     url: "https://pythonmulakat.com",
     siteName: "Python Mülakat",
-    title: "Python Mülakat, Algoritma ve Dinamik Programlama Soruları",
+    // 2026-07-15: JS desteği OG title'a eklendi
+    title: "Python ve JavaScript Mülakat, Algoritma ve Veri Yapıları Soruları",
     description:
-      "Python mülakat soruları, algoritma soruları ve dinamik programlama için Türkçe interaktif pratik. OOP, SQLite, Pandas, sandbox ve anlık AI geri bildirimi.",
+      "Python ve JavaScript mülakat soruları, algoritma ve dinamik programlama için Türkçe interaktif pratik. OOP, SQLite, Pandas, sandbox ve anlık AI geri bildirimi.",
     images: [
       {
         url: "https://pythonmulakat.com/og-default.png",
@@ -167,9 +195,10 @@ export const metadata: Metadata = {
   // ── Twitter / X ─────────────────────────────────────────────
   twitter: {
     card: "summary_large_image",
-    title: "Python Mülakat, Algoritma ve Dinamik Programlama Soruları",
+    // 2026-07-15: JS desteği
+    title: "Python ve JavaScript Mülakat, Algoritma ve Veri Yapıları",
     description:
-      "Türkçe interaktif Python mülakat soruları, algoritma soruları ve dinamik programlama. OOP, veri tipleri, SQLite, sandbox ve anlık AI geri bildirimi.",
+      "Türkçe interaktif Python ve JavaScript mülakat soruları. OOP, veri tipleri, SQLite, sandbox, Web Worker runtime ve anlık AI geri bildirimi.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
