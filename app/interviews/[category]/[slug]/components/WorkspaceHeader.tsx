@@ -8,7 +8,7 @@
 //   - Lucide icon (span yok, emoji yok, no inline svg)
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Home } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Code2, Zap } from "lucide-react";
 import { Question } from "@/lib/api/types";
 import { UserResponse } from "@/hooks/useUser";
 import { getCategoryUrl } from "@/lib/categorySlug";
@@ -27,6 +27,9 @@ interface HeaderProps {
   user: UserResponse | null;
   isGuest: boolean;
   onBack: () => void; // (geri butonu için, breadcrumb click'in alternatifi)
+  // 2026-07-15: Language seçici (python|javascript)
+  language: "python" | "javascript";
+  onLanguageChange: (lang: "python" | "javascript") => void;
 }
 
 export default function WorkspaceHeader({
@@ -42,6 +45,8 @@ export default function WorkspaceHeader({
   pyStatus,
   user,
   onBack,
+  language,
+  onLanguageChange,
 }: HeaderProps) {
   // 📌 interview undefined/null ise boş render et. SSR'da initial data
   // gelmediğinde burası crashlemesin.
@@ -117,27 +122,40 @@ export default function WorkspaceHeader({
           </span>
         </div>
 
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-xs">
-          <span
-            className={`w-2 h-2 rounded-full ${
-              pyStatus === "ready"
-                ? "bg-green-400"
-                : pyStatus === "loading"
-                ? "bg-amber-400 animate-pulse"
-                : pyStatus === "running"
-                ? "bg-indigo-400 animate-pulse"
-                : "bg-red-400"
+        {/* 2026-07-15: Language seçici (Python/JS) — Workspace runtime dispatch */}
+        <div
+          className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10"
+          role="group"
+          aria-label="Dil seçici"
+        >
+          <button
+            type="button"
+            onClick={() => onLanguageChange("python")}
+            aria-pressed={language === "python"}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+              language === "python"
+                ? "bg-amber-500/20 text-amber-200"
+                : "text-white/60 hover:text-white hover:bg-white/5"
             }`}
-          />
-
-            {pyStatus === "ready"
-              ? "Python Hazır"
-              : pyStatus === "loading"
-              ? "Yükleniyor..."
-              : pyStatus === "running"
-              ? "Çalışıyor..."
-              : "Hata"}
-
+            title="Python (Pyodide)"
+          >
+            <Code2 className="w-3 h-3" />
+            Python
+          </button>
+          <button
+            type="button"
+            onClick={() => onLanguageChange("javascript")}
+            aria-pressed={language === "javascript"}
+            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+              language === "javascript"
+                ? "bg-amber-500/20 text-amber-200"
+                : "text-white/60 hover:text-white hover:bg-white/5"
+            }`}
+            title="JavaScript (Web Worker)"
+          >
+            <Zap className="w-3 h-3" />
+            JavaScript
+          </button>
         </div>
 
         {user && (
