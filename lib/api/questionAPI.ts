@@ -73,7 +73,7 @@ export async function getAllQuestions(params?: {
   try {
     const data = await apiFetch<ApiPagination | ApiQuestion[]>(
       "/api/v2/questions/all",
-      { params, next: { revalidate: 3600, tags } }
+      { params, next: { revalidate: 0 }, cache: "no-store" // 2026-07-15: Vercel Data Cache sorunlu, no-store }
     );
     console.log(`[getAllQuestions] params=${JSON.stringify(params)} keys=${data && typeof data === "object" ? Object.keys(data).join(",") : typeof data}`);
     if (Array.isArray(data)) return data;
