@@ -17,7 +17,7 @@ import { useEffect, useState, useRef, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
-import { useCodeRunner } from "@/hooks/useCodeRunner";
+import { useCodeRunner, type RunTestCaseResult } from "@/hooks/useCodeRunner";
 import { CodeEditorRef } from "@/components/CodeEditor";
 import { GuestBanner } from "@/components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "@/lib/api";
@@ -111,8 +111,14 @@ export default function WorkspaceClient({
   // useCodeRunner.runWithCustomInput(code, input, functionName) signature'ina
   // uygun hale getiriyoruz.
   const handleCustomRun = useCallback(
-    async (args: any[]) =>
-      runWithCustomInput(code, testCases?.function_name || "", Array.isArray(args) ? args.join(" ") : String(args ?? "")),
+    async (args: any[]) => {
+      // useCodeRunner.runWithCustomInput(code, functionName, args: any[]) — mevcut usePyodide signature
+      // JS branch'inde args.join(' ') ile birlestirilir; Python branch'inde oldugu gibi gider.
+      const r = await runWithCustomInput(code, testCases?.function_name || "", args);
+      // CustomRunResult → { actual, errorLine?, errorCategory? }
+      // TestPanel'in bekledigi tip { actual, errorLine? }
+      return r;
+    },
     [runWithCustomInput, code, testCases?.function_name]
   );
   const [loading, setLoading] = useState(true);
@@ -135,7 +141,7 @@ export default function WorkspaceClient({
     };
   }, []);
 
-  const [testResults, setTestResults] = useState<TestRunResult[]>([]);
+  const [testResults, setTestResults] = useState<RunTestCaseResult[]>([]);
   const [isRunning, setIsRunning] = useState(false);
   const [errorLines, setErrorLines] = useState<string[]>([]);
   const [attemptSubmitted, setAttemptSubmitted] = useState(false);
@@ -272,13 +278,23 @@ export default function WorkspaceClient({
     setAttemptSubmitted(false); // her Run'da sıfırla — eski attempt state'i yutmasın
     setHasRunOnce(true); // AI Feedback butonu enable olsun
     try {
-      const result = await runTests(code, testCases.function_name, testCases.test_cases);
+      const result = await runTests(
+        code,
+        testCases.function_name,
+        // ApiTestCase[] → RunTestCaseInput[] (input/expected string olmali, unknown stringify)
+        (testCases.test_cases as any[]).map((tc: any, i: number) => ({
+          name: tc.description ?? `Test ${i + 1}`,
+          input: String(tc.input ?? ""),
+          expected: String(tc.expected ?? ""),
+          isHidden: tc.is_hidden,
+        }))
+      );
       setTestResults(result.results);
-      setErrorLines(result.error_lines || []);
+      setErrorLines(result.errorLines || []);
       const passed = result.results.filter((r) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
-      await submitAttempt(success, passed, total, result.execution_ms);
+      await submitAttempt(success, passed, total, result.durationMs);
       if (success) {
         // Tüm testler geçti → paylaşım modalı (1.5 sn gecikmeyle daha okunaklı)
         setTimeout(() => setShowShareModal(true), 1500);
