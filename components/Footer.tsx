@@ -73,7 +73,7 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/login" className="hover:text-white transition-colors">
+                <a href="/dashboard" className="hover:text-white transition-colors">
                   Giriş Yap
                 </a>
               </li>
@@ -126,7 +126,7 @@ export default function Footer() {
             ⏳ Şu anda kısıtlı süreliğine ücretsiz — süre sınırı yakında
           </p>
           <a
-            href="/register"
+            href="/dashboard"
             className="inline-flex items-center gap-1.5 px-4 py-1.5 rounded-md bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 text-xs font-semibold transition-colors"
           >
             Hemen Başla →

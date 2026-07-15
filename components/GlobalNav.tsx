@@ -59,13 +59,13 @@ export default function GlobalNav() {
             // user'lar gizli kalmali). Sadece login/register CTA'lari.
             <>
               <Link
-                href="/login"
+                href="/dashboard"
                 className="text-white/70 hover:text-white text-sm font-medium transition-colors"
               >
                 Giriş Yap
               </Link>
               <Link
-                href="/register"
+                href="/dashboard"
                 className="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#050816] font-bold text-xs md:text-sm rounded-lg transition-all"
               >
                 Kayıt Ol
@@ -141,13 +141,13 @@ export default function GlobalNav() {
             // Anonymous — show login/register
             <>
               <Link
-                href="/login"
+                href="/dashboard"
                 className="text-white/70 hover:text-white text-sm font-medium transition-colors"
               >
                 Giriş Yap
               </Link>
               <Link
-                href="/register"
+                href="/dashboard"
                 className="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#050816] font-bold text-xs md:text-sm rounded-lg transition-all"
               >
                 Kayıt Ol
