@@ -18,6 +18,30 @@ import {
   useState,
 } from "react";
 
+
+// 2026-07-15: Language extension builder
+// python → cm.python() (lang-python, gelismis Python highlight)
+// javascript → cm.javascriptStream() (legacy-modes StreamParser, JS highlight)
+function buildLanguageExt(cm: any, lang: string): any[] {
+  const exts: any[] = [];
+  if (lang === "javascript") {
+    try {
+      if (cm.javascriptStream) {
+        exts.push(cm.javascriptStream);
+      }
+    } catch { /* ignore */ }
+    // ESLint gibi llm-eslint YOK, sadece basic syntax highlight + bracket match
+  } else {
+    // default: python
+    try {
+      if (typeof cm.python === "function") {
+        exts.push(cm.python());
+      }
+    } catch { /* ignore */ }
+  }
+  return exts;
+}
+
 // ─── Imperative API (caller'lar için değişmedi) ────────────────
 export interface CodeEditorRef {
   getValue: () => string;
@@ -41,11 +65,12 @@ async function loadCodeMirror() {
   if (cmModulesPromise) return cmModulesPromise;
   cmModulesPromise = (async () => {
     try {
-      const [stateMod, viewMod, cmdMod, pyMod, acMod, themeMod] = await Promise.all([
+      const [stateMod, viewMod, cmdMod, pyMod, jsMod, acMod, themeMod] = await Promise.all([
         import("@codemirror/state").catch(() => null),
         import("@codemirror/view").catch(() => null),
         import("@codemirror/commands").catch(() => null),
         import("@codemirror/lang-python").catch(() => null),
+        import("@codemirror/legacy-modes/mode/javascript").catch(() => null),
         import("@codemirror/autocomplete").catch(() => null),
         import("@codemirror/theme-one-dark").catch(() => null),
       ]);
@@ -57,15 +82,19 @@ async function loadCodeMirror() {
       return {
         EditorState: stateMod.EditorState,
         EditorView: viewMod.EditorView,
+        Compartment: (stateMod as any).Compartment,
         // keymap @codemirror/view'da export ediliyor
         keymap: (viewMod as any).keymap,
         defaultKeymap: (cmdMod as any).defaultKeymap,
         history: cmdMod.history,
         historyKeymap: (cmdMod as any).historyKeymap,
         indentWithTab: (cmdMod as any).indentWithTab,
-        // python language
+        // language modes
         python: pyMod.python,
-        // autocomplete (optional)
+        // JavaScript: legacy-modes StreamParser (syntax highlight + bracket match)
+        // 2026-07-15: Workspace JS runtime dispatch icin
+        javascriptStream: jsMod ? (jsMod as any).javascript : null,
+        // autocomplete (optional) — TUM diller icin
         autocompletion: acMod ? (acMod as any).autocompletion : null,
         closeBrackets: acMod ? (acMod as any).closeBrackets : null,
         closeBracketsKeymap: acMod ? (acMod as any).closeBracketsKeymap : [],
@@ -188,10 +217,19 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
             }
           } catch { /* ignore */ }
 
-          // Python language (best-effort)
+          // 2026-07-15: Language dispatch — python|javascript (Compartment ile dinamik)
+          // Once Compartment olustur, sonra initial language'i yukle
+          let languageCompartment: any = null;
           try {
-            if (typeof cm.python === "function") {
-              extensions.push(cm.python());
+            if (cm.Compartment) {
+              languageCompartment = new cm.Compartment();
+              extensions.push(languageCompartment.of(buildLanguageExt(cm, language)));
+              // mount sonrasi setLanguage icin disariya acmak gerekirse ref tut
+              (viewRef as any).languageCompartment = languageCompartment;
+              (viewRef as any).cm = cm;
+            } else {
+              // Compartment yoksa fallback: initial language
+              extensions.push(buildLanguageExt(cm, language));
             }
           } catch { /* ignore */ }
 
@@ -335,6 +373,22 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
         /* ignore */
       }
     }, [readOnly]);
+
+    // 2026-07-15: Language degisimi (python → javascript veya tam tersi)
+    // Compartment.reconfigure ile editor remount etmeden syntax degistir
+    useEffect(() => {
+      const view = viewRef.current;
+      if (!view) return;
+      const compartment = (viewRef as any).languageCompartment;
+      const cm = (viewRef as any).cm;
+      if (!compartment || !cm) return;
+      try {
+        const newExts = buildLanguageExt(cm, language);
+        view.dispatch({ effects: compartment.reconfigure(newExts) });
+      } catch {
+        /* ignore */
+      }
+    }, [language]);
 
     return (
       <div

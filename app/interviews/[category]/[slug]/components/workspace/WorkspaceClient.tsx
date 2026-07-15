@@ -488,7 +488,7 @@ export default function WorkspaceClient({
                 editorRef={editorRef}
                 value={code}
                 onChange={handleCodeChange}
-                language="python"
+                language={language}
                 height="100%"
               />
             )}
