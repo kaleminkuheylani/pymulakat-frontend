@@ -49,7 +49,7 @@ export const dynamicParams = true;
 
 // ─── generateStaticParams (build-time pre-render) ────────────
 export async function generateStaticParams() {
-  return listAllCategorySlugs().map((category) => ({ category }));
+  return []; // 2026-07-15: Build sirasinda Supabase baglantisi kopabiliyor (Server disconnected). dynamicParams=true ile runtime'da on-demand render.
 }
 
 // ─── generateMetadata (SEO) ──────────────────────────────────
