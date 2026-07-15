@@ -155,8 +155,10 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     res = await fetch(url, init);
   } catch (e) {
     const msg = e instanceof Error ? e.message : "Network error";
+    console.error(`[apiFetch] Network error url=${url} msg=${msg}`);
     throw new ApiError(0, url, `Network error: ${msg}`);
   }
+  console.log(`[apiFetch] ${url} status=${res.status}`);
 
   // 7) Response handling
   if (!res.ok) {
