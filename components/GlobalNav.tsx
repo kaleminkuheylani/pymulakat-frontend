@@ -48,16 +48,9 @@ export default function GlobalNav() {
           PythonMulakat
         </Link>
 
-        {/* Right side — /interviews her zaman görünür (misafir + üye).
-            Internal SEO: ana sayfa → kategori listesi direkt nav'dan. */}
-        <div className="flex items-center gap-2 md:gap-3">
-          <Link
-            href="/interviews"
-            className="hidden sm:flex items-center gap-1.5 text-sm text-white/70 hover:text-white transition-colors px-3 py-1.5 rounded-lg hover:bg-white/5"
-          >
-            Sorular
-          </Link>
-        </div>
+        {/* 2026-07-15: 'Sorular' linki kaldirildi (kullanici direktifi). Kategori
+            listesi /interviews sayfasinda, footer/dashboard'da zaten erisilebilir. */}
+        <div className="flex items-center gap-2 md:gap-3" />
 
         {loading ? (
             <div className="w-8 h-8 rounded-full bg-white/5 animate-pulse" />
