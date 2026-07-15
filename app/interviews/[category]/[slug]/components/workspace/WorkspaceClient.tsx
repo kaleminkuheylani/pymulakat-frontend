@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
 import { useCodeRunner, type RunTestCaseResult } from "@/hooks/useCodeRunner";
-import { isStarterUnchanged } from "@/lib/codeRunners/starters";
+// starters.ts kullanilmiyor — JS sabit template inline
 import { CodeEditorRef } from "@/components/CodeEditor";
 import { GuestBanner } from "@/components/GuestBanner";
 import { questionsAPI, Question, QuestionTests } from "@/lib/api";
@@ -111,21 +111,22 @@ export default function WorkspaceClient({
   // (kullanici starter'i degistirmediyse)
   const pyStarter = initialInterviewProp?.starter_code || "";
   // 2026-07-15: Sabit JS starter — kullanici talebi ("console.log('hello PYMulakat')")
+  // Mulakat simulasyonu: dil degisimi = ilgili starter sifirdan yuklenir
+  // (kullanicinin yazdigi kod korunmaz, test/Python/JS ayri oturum)
   const JS_STARTER = '// JavaScript\nconsole.log("hello PYMulakat");\n';
 
   const handleLanguageChange = useCallback(
     (lang: "python" | "javascript") => {
       setLanguage(lang);
-      // JavaScript'e gecildiyse:
-      //  - Kod hâlâ Python starter ise (veya bos ise) → sabit JS starter yukle
-      //  - Kod kullanici tarafindan degistirildiyse → mevcut koda dokunma
+      // HER durumda ilgili starter'i yukle
       if (lang === "javascript") {
-        if (isStarterUnchanged(code, pyStarter) || !code.trim()) {
-          setCode(JS_STARTER);
-        }
+        setCode(JS_STARTER);
+      } else {
+        // Python'a don — Python starter'i yukle
+        setCode(pyStarter);
       }
     },
-    [setLanguage, code, pyStarter, JS_STARTER],
+    [setLanguage, pyStarter, JS_STARTER],
   );
 
   // Custom input runner — EditorProps args[] veriyor, onu string'e cevirip
