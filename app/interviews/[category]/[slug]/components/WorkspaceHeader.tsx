@@ -63,30 +63,31 @@ export default function WorkspaceHeader({
   return (
     <header className="h-14 bg-[#0a0e1a]/80 backdrop-blur-md flex items-center justify-between px-5 flex-shrink-0">
       {/* ─── Breadcrumb (Lucide icon, no span) ─── */}
+      {/* Breadcrumb — mobile responsive: sadece soru basligi */}
       <nav
         aria-label="Breadcrumb"
         className="flex items-center gap-1.5 min-w-0 flex-1"
       >
         <Link
           href="/interviews"
-          className="flex items-center gap-1 text-white/60 hover:text-amber-300 transition-colors flex-shrink-0"
+          className="hidden sm:flex items-center gap-1 text-white/60 hover:text-amber-300 transition-colors flex-shrink-0"
           aria-label="Tüm sorular"
         >
           <Home className="w-3.5 h-3.5" />
           <span className="text-sm">Sorular</span>
         </Link>
 
-        <ChevronRight className="w-3 h-3 text-white/30 flex-shrink-0" />
+        <ChevronRight className="w-3 h-3 text-white/30 flex-shrink-0 hidden sm:inline" />
 
         <Link
           href={categoryUrl}
-          className="text-sm text-white/60 hover:text-amber-300 transition-colors truncate hidden sm:inline"
+          className="text-sm text-white/60 hover:text-amber-300 transition-colors truncate hidden md:inline"
           title={label}
         >
           {label}
         </Link>
 
-        <ChevronRight className="w-3 h-3 text-white/30 flex-shrink-0 hidden sm:inline" />
+        <ChevronRight className="w-3 h-3 text-white/30 flex-shrink-0 hidden md:inline" />
 
         <strong
           className="text-sm text-white font-medium truncate"
@@ -104,7 +105,8 @@ export default function WorkspaceHeader({
       </nav>
 
       <div className="flex items-center gap-3 flex-shrink-0">
-        <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 font-mono text-sm">
+        {/* Timer — sadece sm: ve ustu (mobile'da gizli) */}
+        <div className="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 font-mono text-sm">
           <svg className="w-3.5 h-3.5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <circle cx="12" cy="12" r="10" strokeWidth={2} />
             <polyline points="12 6 12 12 16 14" strokeWidth={2} />
@@ -122,7 +124,8 @@ export default function WorkspaceHeader({
           </span>
         </div>
 
-        {/* 2026-07-15: Language seçici (Python/JS) — Workspace runtime dispatch */}
+        {/* 2026-07-16: Dil seçici (Python/JS) — mobile responsive
+            mobile: sadece icon, desktop: icon + text */}
         <div
           className="flex items-center gap-1 p-1 rounded-lg bg-white/5 border border-white/10"
           role="group"
@@ -132,7 +135,7 @@ export default function WorkspaceHeader({
             type="button"
             onClick={() => onLanguageChange("python")}
             aria-pressed={language === "python"}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+            className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
               language === "python"
                 ? "bg-amber-500/20 text-amber-200"
                 : "text-white/60 hover:text-white hover:bg-white/5"
@@ -140,13 +143,13 @@ export default function WorkspaceHeader({
             title="Python (Pyodide)"
           >
             <Code2 className="w-3 h-3" />
-            Python
+            <span className="hidden sm:inline">Python</span>
           </button>
           <button
             type="button"
             onClick={() => onLanguageChange("javascript")}
             aria-pressed={language === "javascript"}
-            className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
+            className={`flex items-center gap-1.5 px-2 sm:px-2.5 py-1 rounded-md text-xs font-medium transition-colors ${
               language === "javascript"
                 ? "bg-amber-500/20 text-amber-200"
                 : "text-white/60 hover:text-white hover:bg-white/5"
@@ -154,16 +157,16 @@ export default function WorkspaceHeader({
             title="JavaScript (Web Worker)"
           >
             <Zap className="w-3 h-3" />
-            JavaScript
+            <span className="hidden sm:inline">JavaScript</span>
           </button>
         </div>
 
         {user && (
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
+          <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">
             <div className="w-5 h-5 rounded-full bg-gradient-to-br from-indigo-500 to-purple-500 flex items-center justify-center text-[10px] font-bold">
               {(user.username || "U")[0].toUpperCase()}
             </div>
-            <span className="text-xs text-indigo-200 font-medium">{user.username}</span>
+            <span className="hidden md:inline text-xs text-indigo-200 font-medium">{user.username}</span>
           </div>
         )}
       </div>
