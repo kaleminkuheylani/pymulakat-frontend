@@ -18,7 +18,7 @@ import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
-import { usePyodide } from "@/hooks/usePyodide";
+import { usePyodide } from "@/hooks/usePyodide";  // pyStatus icin (Pyodide yükleme durumu)
 import { questionsAPI, Question, QuestionTests } from "@/lib/api";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { GuestBanner } from "@/components/GuestBanner";
@@ -56,7 +56,10 @@ export default function WorkspaceMobileClient({
 }: Props) {
   const router = useRouter();
   const { user } = useUser();
-  const { status: pyStatus, runTests, runWithCustomInput } = usePyodide();
+  // 2026-07-16: pyStatus icin usePyodide, runtime dispatch icin useCodeRunner
+  // (Mobile'da setLanguage + runTests/runWithCustomInput useCodeRunner'dan gelir
+  //  — bu sayede JS kodu Web Worker, Python kodu Pyodide ile calisir)
+  const { status: pyStatus } = usePyodide();
   // 📌 Ref pattern — Monaco.tsx'teki stabil versiyonla uyumlu.
   // CodeEditorRef typed ref + son bilinen kodu tutan fallback ref.
   // Imperative API çağrıları (layout/focus) için stabil referans.
@@ -67,19 +70,25 @@ export default function WorkspaceMobileClient({
   // ─── State ──
   const [code, setCode] = useState<string>(initialInterview?.starter_code || "");
   // 2026-07-16: JS dil destegi (useCodeRunner dispatch)
+  // Local state: UI icin (header toggle)
+  // useCodeRunner: gercek runtime dispatch (runTests JS/Python ayirt eder)
   const [language, setLanguage] = useState<"python" | "javascript">("python");
   const JS_STARTER_MOBILE = '// JavaScript\nconsole.log("hello PYMulakat");\n';
   const pyStarter = initialInterview?.starter_code || "";
+  // 2026-07-16: useCodeRunner.language state'i + runTests/runWithCustomInput
+  // (runtime dispatch bunu kullanir — JS oldugunda Web Worker, Python'da Pyodide)
+  const { setLanguage: setRunnerLanguage, runTests: runnerRunTests, runWithCustomInput: runnerCustomRun } = useCodeRunner();
   const handleLanguageChangeMobile = useCallback(
     (lang: "python" | "javascript") => {
       setLanguage(lang);
+      setRunnerLanguage(lang);  // useCodeRunner dispatch — JS oldugunda Web Worker, Python oldugunda Pyodide
       if (lang === "javascript") {
         setCode(JS_STARTER_MOBILE);
       } else {
         setCode(pyStarter);
       }
     },
-    [pyStarter]
+    [pyStarter, setRunnerLanguage]
   );
 
   // 📌 Her kod değişikliğinde backend'e play_count increment gönder (debounced 2s)
@@ -261,28 +270,41 @@ export default function WorkspaceMobileClient({
     setErrorLines([]);
     setHasRunOnce(true); // AI Feedback butonu enable
     try {
-      const result = await runTests(code, testCases.function_name, testCases.test_cases);
+      // 2026-07-16: runnerRunTests — useCodeRunner dispatch (JS → Web Worker, Python → Pyodide)
+      // testCases'i string coercion ile RunTestCaseInput[] formatina cevir
+      // (ApiTestCase.input/expected unknown olabilir, useCodeRunner string bekliyor)
+      const result = await runnerRunTests(
+        code,
+        testCases.function_name,
+        testCases.test_cases.map((tc: any, i: number) => ({
+          name: tc.description ?? `Test ${i + 1}`,
+          input: String(tc.input ?? ""),
+          expected: String(tc.expected ?? ""),
+          isHidden: tc.is_hidden,
+        }))
+      );
       setResults(result.results);
-      setErrorLines(result.error_lines || []);
+      setErrorLines(result.errorLines || []);  // 2026-07-16: camelCase
       const passed = result.results.filter((r: any) => r.passed).length;
       const total = result.results.length;
       const success = total > 0 && passed === total;
-      await submitAttempt(success, passed, total, result.execution_ms);
+      await submitAttempt(success, passed, total, result.durationMs);  // 2026-07-16: camelCase
       // Sonuç modal'ı aç (success/fail comparison)
-      setResultModal({ results: result.results, errorLines: result.error_lines || [], passed, total });
+      setResultModal({ results: result.results, errorLines: result.errorLines || [], passed, total });
     } catch (e) {
       // 📌 Raw error sızmaz — sabit hardcoded mesaj
       toast.error("Çalıştırma hatası", { description: "Kodunu gözden geçirip tekrar dene." });
     } finally {
       setRunning(false);
     }
-  }, [readonly, user, testCases, running, pyStatus, runTests, code, submitAttempt, category, interview, id]);
+  }, [readonly, user, testCases, running, pyStatus, runnerRunTests, code, submitAttempt, category, interview, id]);
 
-  // Custom input runner — code + functionName'i kapatır, sadece args[] alır
+  // 2026-07-16: Custom input runner — useCodeRunner dispatch
+  // (JS oldugunda Web Worker, Python'da Pyodide)
   const handleCustomRun = useCallback(
     async (args: any[]) =>
-      runWithCustomInput(code, testCases?.function_name || "", args),
-    [runWithCustomInput, code, testCases?.function_name]
+      runnerCustomRun(code, testCases?.function_name || "", args),
+    [runnerCustomRun, code, testCases?.function_name]
   );
 
   const handleNextQuestion = useCallback(() => {
