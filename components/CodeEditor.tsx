@@ -386,6 +386,7 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
 
     // 2026-07-15: Language degisimi (python → javascript veya tam tersi)
     // Compartment.reconfigure ile editor remount etmeden syntax degistir
+    // 2026-07-16: Console'a debug log (production'da 'syntax error' goren kullanici icin)
     useEffect(() => {
       const view = viewRef.current;
       if (!view) return;
@@ -394,9 +395,16 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
       if (!compartment || !cm) return;
       try {
         const newExts = buildLanguageExt(cm, language);
+        // 2026-07-16: Dil degisimi logu (debug)
+        if (typeof window !== "undefined" && (window as any).__pyMulakatDebug) {
+          // eslint-disable-next-line no-console
+          console.log(`[CodeEditor] language=${language}, exts=`, newExts.length, "of", Object.keys(cm).filter(k => k.includes("python") || k.includes("javascript") || k.includes("lang")));
+        }
         view.dispatch({ effects: compartment.reconfigure(newExts) });
-      } catch {
-        /* ignore */
+      } catch (e) {
+        // 2026-07-16: Hata olursa logla (debug)
+        // eslint-disable-next-line no-console
+        console.error("[CodeEditor] language reconfigure failed:", e, { language });
       }
     }, [language]);
 

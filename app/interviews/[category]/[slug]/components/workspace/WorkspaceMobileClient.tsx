@@ -475,7 +475,10 @@ export default function WorkspaceMobileClient({
                   - Pyodide runtime 'Run Tests' için gerekli, ayrı yüklenir
                   - Loading state Run butonunda (pyStatus === "loading" iken spinner)
                   - Starter code her zaman editöre yüklenir (Pyodide'dan bağımsız) */}
+              {/* 2026-07-16: key={language} — dil değişiminde full remount garantisi
+                  (Compartment.reconfigure bazen patlar, özellikle mobile) */}
               <CodeEditorPanel
+                key={language}
                 editorRef={editorRef}
                 value={code}
                 onChange={handleCodeChange}
