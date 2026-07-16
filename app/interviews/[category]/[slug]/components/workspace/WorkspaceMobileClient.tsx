@@ -25,6 +25,8 @@ import { GuestBanner } from "@/components/GuestBanner";
 import { submitAttempt as submitAttemptAPI, incrementPlayCount } from "@/lib/api/authAPI";
 import type { CodeEditorRef } from "@/components/CodeEditor";
 import CodeEditorPanel from "./CodeEditor";
+import { Zap } from "lucide-react";
+import { useCodeRunner } from "@/hooks/useCodeRunner";
 import QuestionDescriptionPanel from "./QuestionDescriptionPanel";
 import TestPanel, { ConsoleView } from "./TestPanel";
 import AiFeedbackView from "./AiFeedbackView";
@@ -64,6 +66,21 @@ export default function WorkspaceMobileClient({
 
   // ─── State ──
   const [code, setCode] = useState<string>(initialInterview?.starter_code || "");
+  // 2026-07-16: JS dil destegi (useCodeRunner dispatch)
+  const [language, setLanguage] = useState<"python" | "javascript">("python");
+  const JS_STARTER_MOBILE = '// JavaScript\nconsole.log("hello PYMulakat");\n';
+  const pyStarter = initialInterview?.starter_code || "";
+  const handleLanguageChangeMobile = useCallback(
+    (lang: "python" | "javascript") => {
+      setLanguage(lang);
+      if (lang === "javascript") {
+        setCode(JS_STARTER_MOBILE);
+      } else {
+        setCode(pyStarter);
+      }
+    },
+    [pyStarter]
+  );
 
   // 📌 Her kod değişikliğinde backend'e play_count increment gönder (debounced 2s)
   const playCountTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -312,6 +329,45 @@ export default function WorkspaceMobileClient({
     <div className="h-[100dvh] flex flex-col bg-[#050816] overflow-hidden">
       {(readonly || isGuest) && <GuestBanner feature="kod çalıştırma" />}
 
+      {/* 2026-07-16: Mobile minimal header (Python/JS toggle + timer)
+          — WorkspaceHeader kullaniyor (compact variant) */}
+      <header className="flex items-center justify-between gap-2 px-3 py-2 bg-[#0a0e1a]/95 backdrop-blur border-b border-white/10 flex-shrink-0">
+        <strong className="text-xs text-white/90 truncate flex-1 min-w-0">
+          {interview?.title || "Soru"}
+        </strong>
+
+        <div className="flex items-center gap-1 p-0.5 rounded-md bg-white/5 border border-white/10 flex-shrink-0" role="group" aria-label="Dil seçici">
+          <button
+            type="button"
+            onClick={() => handleLanguageChangeMobile("python")}
+            aria-pressed={language === "python"}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+              language === "python"
+                ? "bg-amber-500/20 text-amber-200"
+                : "text-white/60"
+            }`}
+            title="Python (Pyodide)"
+          >
+            <Code2 className="w-3 h-3" />
+            Py
+          </button>
+          <button
+            type="button"
+            onClick={() => handleLanguageChangeMobile("javascript")}
+            aria-pressed={language === "javascript"}
+            className={`flex items-center gap-1 px-2 py-0.5 rounded text-[10px] font-medium transition-colors ${
+              language === "javascript"
+                ? "bg-amber-500/20 text-amber-200"
+                : "text-white/60"
+            }`}
+            title="JavaScript (Web Worker)"
+          >
+            <Zap className="w-3 h-3" />
+            JS
+          </button>
+        </div>
+      </header>
+
       {/* 📌 Gerçek SSR içerik bloğu — crawler/SEO için ilk HTML'de mevcut,
           hydration sonrası yukarıdaki useEffect tarafından kaldırılır. */}
       {initialInterview && (
@@ -423,7 +479,7 @@ export default function WorkspaceMobileClient({
                 editorRef={editorRef}
                 value={code}
                 onChange={handleCodeChange}
-                language="python"
+                language={language}
                 height="100%"
                 readOnly={readonly || isGuest}
               />
