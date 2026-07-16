@@ -22,6 +22,8 @@ interface AiFeedbackViewProps {
   questionTitle: string;
   questionDescription?: string;
   testResults: Array<{ input?: string; expected?: string; actual?: string; passed: boolean; description?: string }>;
+  /** 2026-07-16: Hangi dilde yazildi (python/javascript) — AI prompt'unu language-aware yapar */
+  language?: "python" | "javascript";
 }
 
 export default function AiFeedbackView({
@@ -32,6 +34,7 @@ export default function AiFeedbackView({
   questionTitle,
   questionDescription,
   testResults,
+  language = "python",
 }: AiFeedbackViewProps) {
   const {
     loading,
@@ -58,7 +61,8 @@ export default function AiFeedbackView({
       window.location.href = `/login?returnUrl=${encodeURIComponent(returnUrl)}`;
       return;
     }
-    await requestFeedback({ code: effectiveCode, questionTitle, questionDescription, testResults });
+    // 2026-07-16: language eklendi (AI prompt language-aware)
+    await requestFeedback({ code: effectiveCode, questionTitle, questionDescription, testResults, language });
   };
 
   return (

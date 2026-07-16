@@ -48,6 +48,8 @@ export interface AiFeedbackState {
     questionTitle: string;
     questionDescription?: string;
     testResults?: Array<{ input?: string; expected?: string; actual?: string; passed: boolean; description?: string }>;
+    /** 2026-07-16: Hangi dilde yazildi (python/javascript) — AI prompt'unu language-aware yapar */
+    language?: "python" | "javascript";
   }) => Promise<AiFeedbackResult | null>;
   setByokKey: (key: string) => void;
   hasByokKey: boolean;

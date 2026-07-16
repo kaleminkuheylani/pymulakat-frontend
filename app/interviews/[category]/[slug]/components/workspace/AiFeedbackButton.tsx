@@ -30,6 +30,8 @@ interface AiFeedbackButtonProps {
   questionDescription?: string;
   /** Test sonuçları (son Run'dan) */
   testResults: Array<{ input?: string; expected?: string; actual?: string; passed: boolean; description?: string }>;
+  /** 2026-07-16: Hangi dilde yazildi (python/javascript) — AI prompt'unu language-aware yapar */
+  language: "python" | "javascript";
   /** Settings modalı aç (BYOK key girişi için) */
   onOpenSettings: () => void;
 }
@@ -41,6 +43,7 @@ export default function AiFeedbackButton({
   questionTitle,
   questionDescription,
   testResults,
+  language,
   onOpenSettings,
 }: AiFeedbackButtonProps) {
   const {
@@ -63,7 +66,8 @@ export default function AiFeedbackButton({
       onOpenSettings();
       return;
     }
-    await requestFeedback({ code, questionTitle, questionDescription, testResults });
+    // 2026-07-16: language eklendi (AI prompt language-aware)
+    await requestFeedback({ code, questionTitle, questionDescription, testResults, language });
   };
 
   // ─── Disabled: misafir (kullanıcıya mesaj ver, tıklanırsa login'e) ───

@@ -43,7 +43,7 @@ const TEMPERATURE = 0.3; // düşük = deterministik, kod review için ideal
 
 // Sistem promptu — Türkçe, deneyimli coding coach persona
 // 2026-07-14 v2: "Çözüm yazma" kuralı eklendi — sadece feedback/yönlendirme.
-const SYSTEM_PROMPT = `Sen deneyimli bir Python teknik mülakat koçusun. Öğrenci bir kod yazdı ve test case'leri çalıştırdı. Sana kodu, soru bağlamını ve test sonuçlarını göndereceğim.
+const SYSTEM_PROMPT = `Sen deneyimli bir teknik mülakat koçusun. Öğrenci {LANGUAGE} dilinde kod yazdı ve test case'leri çalıştırdı. {LANGUAGE} dilinin syntax, idiom ve best practice'lerine göre değerlendir. Öğrenci bir kod yazdı ve test case'leri çalıştırdı. Sana kodu, soru bağlamını ve test sonuçlarını göndereceğim.
 
 GÖREV — sadece FEEDBACK ve YÖNLENDIRME, ASLA direkt çözüm kodu yazma:
 
@@ -67,6 +67,8 @@ interface AiFeedbackBody {
   questionDescription?: string;
   testResults?: Array<{ input?: string; expected?: string; actual?: string; passed: boolean; description?: string }>;
   apiKey?: string;
+  /** 2026-07-16: Dil bilgisi (python/javascript) — prompt language-aware */
+  language?: "python" | "javascript";
 }
 
 const parseBody = (raw: unknown): AiFeedbackBody | null => {
@@ -79,6 +81,7 @@ const parseBody = (raw: unknown): AiFeedbackBody | null => {
     questionDescription: typeof r.questionDescription === "string" ? r.questionDescription : "",
     testResults: Array.isArray(r.testResults) ? (r.testResults as AiFeedbackBody["testResults"]) : [],
     apiKey: typeof r.apiKey === "string" ? r.apiKey : undefined,
+    language: r.language === "javascript" ? "javascript" : "python",
   };
 };
 
@@ -226,7 +229,8 @@ Lütfen yukarıdaki kurallara göre feedback ver:
       body: JSON.stringify({
         model: DEFAULT_MODEL,
         messages: [
-          { role: "system", content: SYSTEM_PROMPT },
+          // 2026-07-16: LANGUAGE placeholder replace (python/javascript)
+        { role: "system", content: SYSTEM_PROMPT.replace("{LANGUAGE}", body.language || "python") },
           { role: "user", content: userPrompt },
         ],
         max_tokens: MAX_TOKENS,

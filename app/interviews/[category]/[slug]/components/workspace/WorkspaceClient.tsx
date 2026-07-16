@@ -518,6 +518,7 @@ export default function WorkspaceClient({
             hasRunOnce={hasRunOnce}
             questionTitle={interview?.title}
             questionDescription={interview?.description}
+            language={language}
           />
         </main>
       </div>

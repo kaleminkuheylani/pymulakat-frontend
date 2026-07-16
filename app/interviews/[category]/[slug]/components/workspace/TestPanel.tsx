@@ -64,6 +64,8 @@ export interface TestPanelProps {
   /** AI Feedback prompt için — soru başlığı + opsiyonel açıklama */
   questionTitle?: string;
   questionDescription?: string;
+  /** 2026-07-16: Hangi dilde yazildi (python/javascript) — AI Feedback prompt'unu language-aware yapar */
+  language?: "python" | "javascript";
 }
 
 // ─── TestPanel ───────────────────────────────────────────
@@ -83,6 +85,7 @@ export default function TestPanel({
   hasRunOnce = false,
   questionTitle,
   questionDescription,
+  language = "python",
 }: TestPanelProps) {
   // Tab state — sadece desktop'ta tab var, mobile'da tabs ayrı render edilir
   const isDesktop = variant === "desktop";
@@ -291,6 +294,7 @@ export default function TestPanel({
               questionTitle={questionTitle ?? ""}
               questionDescription={questionDescription ?? ""}
               testResults={testResults}
+              language={language}
             />
           )}
 

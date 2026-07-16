@@ -504,7 +504,8 @@ export default function WorkspaceMobileClient({
               starterCode={interview?.starter_code || undefined}
               onCustomRun={handleCustomRun}
               errorLines={errorLines}
-            />
+            language={language}
+          />
           </div>
         )}
 
