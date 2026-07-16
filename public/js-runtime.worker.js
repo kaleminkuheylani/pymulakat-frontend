@@ -49,8 +49,20 @@ self.onmessage = (e) => {
     // 2026-07-15: Yeterli metodlar (worker'in kendi console'u ile cakisma yok)
   };
 
-  // input'u JSON.stringify ile gomme (string icin guvenli)
-  const inputLiteral = JSON.stringify(String(input || ""));
+  // 2026-07-16: input JSON-aware — eğer parse edilebilirse, parsed value kullan.
+  // Aksi halde string olarak kullan. Bu sayede dict/array argümanları
+  // doğru tipte fonksiyona geçer.
+  let __inputValue;
+  if (typeof input === "string" && input.length > 0) {
+    try {
+      __inputValue = JSON.parse(input);
+    } catch {
+      __inputValue = input;
+    }
+  } else {
+    __inputValue = input || "";
+  }
+  const inputLiteral = JSON.stringify(__inputValue);
 
   // Eger fnName belirtilmisse, cagir (orn. "is_palindrome")
   // Degilse kodu dogrudan calistir (module-level)
