@@ -87,6 +87,16 @@ export async function GET() {
       toEntry(`${BASE_URL}${getCategoryUrl(slug)}`, now, "weekly", 0.85),
     );
 
+  // 2026-07-16: /interviews/{category} kategori listesi sayfalari (yeni route)
+  // 8 canonical slug (python-basics, data-structures, list-dict, pandas,
+  // algorithms, heap, stack, dynamic-programming)
+  const interviewsCategoryEntries: SitemapEntry[] = categories
+    .map((c) => c.slug)
+    .filter((slug): slug is string => Boolean(slug))
+    .map((slug) =>
+      toEntry(`${BASE_URL}/interviews/${slug}`, now, "weekly", 0.8),
+    );
+
   const questionEntries: SitemapEntry[] = questions
     .filter((q) => q.category && (q.title || q.slug))
     .map((q) =>
@@ -102,7 +112,13 @@ export async function GET() {
     toEntry(`${BASE_URL}/python-egitimi/${slug}`, now, "monthly", 0.7),
   );
 
-  const all = [...staticEntries, ...categoryEntries, ...questionEntries, ...lessonEntries];
+  const all = [
+    ...staticEntries,
+    ...categoryEntries,
+    ...interviewsCategoryEntries,
+    ...questionEntries,
+    ...lessonEntries,
+  ];
   const xml = toXml(all);
 
   return new NextResponse(xml, {
