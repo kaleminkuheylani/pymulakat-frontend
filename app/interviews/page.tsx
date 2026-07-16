@@ -1,111 +1,130 @@
 // app/interviews/page.tsx
 //
-// TÜM SORULAR — Tek liste + kategori filtreleme.
+// KATEGORİ GRİD — 8 pillar kategori, DB-driven, ISR 1h.
 //
-// /interviews → tüm 85+ soru, DB'den (kullanici direktifi 2026-07-13).
-//   - Kategori filtresi: butonlar (8 kategori)
-//   - Default: tümü
-//   - Tıklanan kategori: sadece o kategorinin soruları
-//   - URL: ?category=python-basics (deep linking)
-//   - DB-FIRST: server-side fetch, ISR 1h cache
-//   - 8 kategori (queue kaldirildi)
+// 2026-07-16 kullanıcı direktifi:
+//   /interviews → kategori grid (soru listesi DEĞİL)
+//   Her kategori kartı tıklanabilir → /interviews/{db_slug}
+//   Örnek: "Dinamik Programlama" → /interviews/dynamic-programming
 //
 // Mimari:
-//   - Server component (initial HTML dolu, JS yok calissin)
-//   - Soru kartlari /interviews/{db_cat}/{slug} link
-//   - Client component (FilterButtons): kategori state + URL sync
-//   - DB'den soru + label + description + count
+//   - Server component (initial HTML dolu)
+//   - DB-FIRST: getAllCategories() (1 saat cache)
+//   - ISR: revalidate=3600 (kategori eklenince/silinince revalidate)
+//   - 8 kategori: python-basics, data-structures, list-dict, pandas,
+//     algorithms, heap, stack, dynamic-programming
+//   - Sade/düz tasarım: icon + label + description + count
+//   - Lucide icon (lib/icons.ts → CATEGORY_ICONS)
+//   - DB'den description (TEK KAYNAK)
+//
+// SEO:
+//   - Title: "Mülakat Soruları — Python Kategorileri | Python Mülakat"
+//   - JSON-LD: CollectionPage + ItemList
 
 import Link from "next/link";
-import { cookies } from "next/headers";
 import { getAllCategories } from "@/lib/api/categoryAPI";
-import { getAllQuestions } from "@/lib/api/questionAPI";
-import type { ApiQuestion } from "@/lib/api/types";
-import FilterButtons from "./FilterButtons";
-import QuestionListItem from "@/components/QuestionListItem";
+import { CATEGORY_ICONS } from "@/lib/icons";
+import { getCategoryUrl } from "@/lib/categorySlug";
+import type { Metadata } from "next";
+import { BASE_URL } from "@/lib/seo";
 
-export const dynamic = "force-dynamic";
+// ISR — 1 saatte bir yenile (kategori eklenince değişsin)
+export const revalidate = 3600;
 
-interface PageProps {
-  searchParams: Promise<{ category?: string }>;
+export const metadata: Metadata = {
+  title: "Mülakat Soruları — Python Kategorileri | Python Mülakat",
+  description:
+    "Python mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack. Her kategoride 5-20+ soru.",
+  keywords: [
+    "python mülakat soruları",
+    "python kategori",
+    "algoritma soruları",
+    "dinamik programlama",
+    "veri yapıları soruları",
+    "heap stack mülakat",
+    "pandas soruları",
+  ],
+  openGraph: {
+    title: "Mülakat Soruları — Python Kategorileri",
+    description:
+      "Python mülakat sorularını kategorilere göre keşfet. 8 farklı kategori, 85+ soru.",
+    url: `${BASE_URL}/interviews`,
+    siteName: "Python Mülakat",
+    locale: "tr_TR",
+    type: "website",
+  },
+  alternates: {
+    canonical: `${BASE_URL}/interviews`,
+  },
+};
+
+interface Category {
+  slug: string;
+  label: string;
+  description: string;
+  question_count: number;
 }
 
-export default async function InterviewsListPage({ searchParams }: PageProps) {
-  // 2026-07-15: cookies() cagirisi dynamic mode'a zorlar (Data Cache bypass)
-  // ISR/Full Route Cache sorunlu, header okuyarak zorla fresh
-  await cookies();
-  const params = await searchParams;
-  const activeCategory = params.category ?? "all";
-
-  // DB'den tüm kategoriler (8 kategori, queue yok)
-  const allCategories = await getAllCategories();
+export default async function InterviewsGridPage() {
+  const allCategories = (await getAllCategories()) as Category[];
+  // queue kategorisini filtrele (varsa)
   const categories = allCategories.filter((c) => c.slug !== "queue");
-
-  // DB'den tüm sorular (filtre uygulanacak)
-  const allQuestions: ApiQuestion[] =
-    activeCategory === "all"
-      ? await getAllQuestions({ limit: 500 })
-      : await getAllQuestions({ category: activeCategory, limit: 500 });
 
   return (
     <main className="min-h-screen bg-[#050816] text-white">
-      <div className="max-w-5xl mx-auto px-4 py-8 md:py-12">
+      <div className="max-w-5xl mx-auto px-4 py-10 md:py-16">
         {/* ─── Header ─────────────────────────────────────── */}
-        <header className="mb-8">
-          <h1 className="text-3xl md:text-4xl font-bold mb-3">
-            Python Mülakat Soruları
+        <header className="mb-10">
+          <h1 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
+            Mülakat Soruları
           </h1>
-          <p className="text-white/60 text-sm md:text-base max-w-2xl">
-            {activeCategory === "all"
-              ? "Tüm kategorilerdeki Python mülakat soruları. Filtre ile daraltabilirsin."
-              : categories.find((c) => c.slug === activeCategory)?.description ||
-                "Filtrelenmiş sorular."}
+          <p className="text-white/60 text-sm md:text-base max-w-2xl leading-relaxed">
+            Aşağıdaki kategorilerden birini seçerek o alandaki mülakat
+            sorularına ulaşabilirsin. Her kategoride 5-20+ soru, açıklama
+            ve örnek test case&apos;leri bulunur.
           </p>
-          <div className="mt-3 text-sm text-white/50">
-            {allQuestions.length} soru gösteriliyor
-            {activeCategory !== "all" && (
-              <>
-                {" · "}
-                <Link
-                  href="/interviews"
-                  className="text-amber-400 hover:text-amber-300 underline-offset-2 hover:underline"
-                >
-                  Filtreyi temizle
-                </Link>
-              </>
-            )}
+          <div className="mt-4 text-sm text-white/50">
+            {categories.length} kategori · toplam{" "}
+            {categories.reduce((sum, c) => sum + (c.question_count || 0), 0)}{" "}
+            soru
           </div>
         </header>
 
-        {/* ─── Filtre butonlari (client component) ───────── */}
-        <FilterButtons
-          categories={categories.map((c) => ({
-            slug: c.slug,
-            label: c.label ?? c.slug,
-            count: c.question_count,
-          }))}
-          active={activeCategory}
-        />
+        {/* ─── Kategori grid (sade/düz) ──────────────────── */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {categories.map((cat) => {
+            const Icon = CATEGORY_ICONS[cat.slug] ?? CATEGORY_ICONS["python-basics"];
+            return (
+              <Link
+                key={cat.slug}
+                href={getCategoryUrl(cat.slug)}
+                className="group block p-5 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-white/20 transition-colors"
+              >
+                {/* Icon + count */}
+                <div className="flex items-start justify-between mb-3">
+                  <div className="w-10 h-10 rounded-lg bg-amber-500/10 border border-amber-500/20 flex items-center justify-center">
+                    <Icon className="w-5 h-5 text-amber-300" />
+                  </div>
+                  <span className="text-xs text-white/40 font-mono">
+                    {cat.question_count ?? 0} soru
+                  </span>
+                </div>
 
-        {/* ─── Soru listesi (DB'den, paylaşılan component) ─── */}
-        <ul className="space-y-3 mt-6" data-ssr-interviews-list>
-          {allQuestions.length === 0 ? (
-            <li className="text-white/50 text-sm py-8 text-center">
-              {activeCategory === "all"
-                ? "Henüz soru yok."
-                : "Bu kategoride henüz soru yok."}
-            </li>
-          ) : (
-            allQuestions.map((q) => (
-              <QuestionListItem
-                key={q.id}
-                question={q}
-                categorySlug={q.category}
-                categoryLabel={categories.find((c) => c.slug === q.category)?.label ?? q.category}
-              />
-            ))
-          )}
-        </ul>
+                {/* Label */}
+                <h2 className="text-lg font-semibold text-white mb-1.5 group-hover:text-amber-300 transition-colors">
+                  {cat.label ?? cat.slug}
+                </h2>
+
+                {/* Description */}
+                {cat.description && (
+                  <p className="text-sm text-white/50 leading-relaxed line-clamp-2">
+                    {cat.description}
+                  </p>
+                )}
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </main>
   );

@@ -73,6 +73,7 @@ export async function getAllCategories(): Promise<CategoryMeta[]> {
   }
 }
 
+
 /**
  * Tek bir kategorinin metadata'sini slug ile getir.
  * DB'den dinamik label — hardcoded YOK.
