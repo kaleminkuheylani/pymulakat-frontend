@@ -1,5 +1,5 @@
 "use client";
-import { Eye, Lightbulb, MessageSquare, CheckCircle } from "lucide-react";
+import { Eye, Lightbulb, MessageSquare, CheckCircle, BookOpen, ExternalLink } from "lucide-react";
 import { getCategoryUrl } from "@/lib/categorySlug";
 import { slugifyCategory } from "@/lib/questionMeta";
 
@@ -36,6 +36,80 @@ export default function QuestionDescriptionContent({
   hasStudy = false,
 }: Props) {
   const questionMeta = toQuestionMetaView(interview);
+
+  // 2026-07-17: Etut/Study rehberleri — her soru icin universal + kategori-ozel
+  // (kullanici talebi: 'sorulara etutler/study ler var description component'ine ekle')
+  // 1. Universal etut (her soru icin)
+  // 2. Kategori-ozel etut (algorithms, data-structures, vs.)
+  // DB-driven olunca: study_links alani (JSON) interview tablosuna eklenir
+  const studyGuides: Array<{
+    title: string;
+    excerpt: string;
+    href: string;
+    color: "amber" | "cyan" | "purple" | "emerald";
+  }> = [
+    {
+      title: "Algoritma Nedir?",
+      excerpt: "Sandviç örneği, akış şeması, bubble sort, 5 sebep — temelden başla.",
+      href: "/blog/algoritma-nedir",
+      color: "amber",
+    },
+  ];
+
+  // Kategori-ozel rehber
+  const interviewCategory = (interview.category || "python-basics").toLowerCase();
+  const categoryStudyMap: Record<string, { title: string; excerpt: string; href: string; color: "cyan" | "purple" | "emerald" | "amber" }> = {
+    "python-basics": {
+      title: "Python Temelleri Rehberi",
+      excerpt: "Değişkenler, koşullar, döngüler, fonksiyonlar — 6 ders, sıfırdan ileri seviyeye.",
+      href: "/python-egitimi",
+      color: "emerald",
+    },
+    "algorithms": {
+      title: "Algoritma Örnekleri (yakında)",
+      excerpt: "FizzBuzz, Fibonacci, Two Sum, Anagram — 10 örnek, Big-O analizi ile.",
+      href: "/interviews/algorithms",
+      color: "cyan",
+    },
+    "data-structures": {
+      title: "Veri Yapıları Rehberi",
+      excerpt: "Liste, dict, set, tuple, deque — Python veri yapıları derinlemesine.",
+      href: "/interviews/data-structures",
+      color: "purple",
+    },
+    "dynamic-programming": {
+      title: "Dinamik Programlama Soruları",
+      excerpt: "Memoization, tabulation, klasik DP problemleri — Fibonacci'den LCS'ye.",
+      href: "/interviews/dynamic-programming",
+      color: "amber",
+    },
+    "list-dict": {
+      title: "Liste & Sözlük Pratikleri",
+      excerpt: "Python list ve dict ile en sık sorulan 5 mülakat sorusu.",
+      href: "/interviews/list-dict",
+      color: "emerald",
+    },
+    "heap": {
+      title: "Heap & Priority Queue",
+      excerpt: "Min-heap, max-heap, heapq modülü, top-K problemleri.",
+      href: "/interviews/heap",
+      color: "cyan",
+    },
+    "stack": {
+      title: "Stack & Queue",
+      excerpt: "LIFO/FIFO, balanced parentheses, BFS/DFS temelleri.",
+      href: "/interviews/stack",
+      color: "purple",
+    },
+    "pandas": {
+      title: "Pandas ile Veri Analizi",
+      excerpt: "DataFrame, groupby, merge, apply — Pandas mülakat soruları.",
+      href: "/interviews/pandas",
+      color: "emerald",
+    },
+  };
+  const categoryStudy = categoryStudyMap[interviewCategory];
+  if (categoryStudy) studyGuides.push(categoryStudy);
 
   // Related — sadece DB (interview.related_question_ids)
   const relatedIds = interview.related_question_ids || [];
@@ -90,6 +164,43 @@ export default function QuestionDescriptionContent({
       <p className="text-white/70 leading-relaxed whitespace-pre-wrap text-sm">
         {interview.description}
       </p>
+
+      {/* ─── 📚 Etütler / Study Rehberleri (2026-07-17) ──────── */}
+      {studyGuides.length > 0 && (
+        <div className="space-y-2.5">
+          <h3 className="text-sm font-semibold text-white/80 flex items-center gap-2">
+            <BookOpen className="w-4 h-4 text-amber-400" />
+            Etütler & Çalışma Materyalleri
+          </h3>
+          {studyGuides.map((g, i) => {
+            const colorMap = {
+              amber: "from-amber-500/10 via-amber-500/5 border-amber-500/25 hover:border-amber-400/50 text-amber-300",
+              cyan: "from-cyan-500/10 via-cyan-500/5 border-cyan-500/25 hover:border-cyan-400/50 text-cyan-300",
+              purple: "from-purple-500/10 via-purple-500/5 border-purple-500/25 hover:border-purple-400/50 text-purple-300",
+              emerald: "from-emerald-500/10 via-emerald-500/5 border-emerald-500/25 hover:border-emerald-400/50 text-emerald-300",
+            } as const;
+            return (
+              <a
+                key={i}
+                href={g.href}
+                className={`group block p-3 rounded-xl bg-gradient-to-br ${colorMap[g.color]} to-transparent border transition-all`}
+              >
+                <div className="flex items-start justify-between gap-2">
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-sm font-semibold text-white group-hover:text-amber-200 transition-colors mb-0.5">
+                      {g.title}
+                    </h4>
+                    <p className="text-[11px] text-white/60 leading-relaxed line-clamp-2">
+                      {g.excerpt}
+                    </p>
+                  </div>
+                  <ExternalLink className="w-3.5 h-3.5 text-white/30 group-hover:text-current flex-shrink-0 mt-0.5" />
+                </div>
+              </a>
+            );
+          })}
+        </div>
+      )}
 
       {/* ─── 📖 Detaylı Etüt CTA — sadece guide (DB analiz) varsa ─── */}
       {hasStudy && (
