@@ -70,6 +70,11 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-white/50">
               <li>
+                <a href="/blog" className="hover:text-white transition-colors">
+                  Blog
+                </a>
+              </li>
+              <li>
                 <a href="/about" className="hover:text-white transition-colors">
                   Hakkında
                 </a>

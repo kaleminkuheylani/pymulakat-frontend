@@ -58,6 +58,7 @@ export async function GET() {
     toEntry(`${BASE_URL}/login`, now, "monthly", 0.5),
     toEntry(`${BASE_URL}/register`, now, "monthly", 0.6),
     toEntry(`${BASE_URL}/terms`, now, "yearly", 0.3),
+    toEntry(`${BASE_URL}/blog`, now, "weekly", 0.7),
   ];
 
   const apiBase =
@@ -112,12 +113,21 @@ export async function GET() {
     toEntry(`${BASE_URL}/python-egitimi/${slug}`, now, "monthly", 0.7),
   );
 
+  // 2026-07-17: Blog yazilari (simdilik inline)
+  const BLOG_POSTS = [
+    { slug: "algoritma-nedir", date: "2026-07-17" },
+  ];
+  const blogEntries: SitemapEntry[] = BLOG_POSTS.map((p) =>
+    toEntry(`${BASE_URL}/blog/${p.slug}`, p.date, "monthly", 0.7),
+  );
+
   const all = [
     ...staticEntries,
     ...categoryEntries,
     ...interviewsCategoryEntries,
     ...questionEntries,
     ...lessonEntries,
+    ...blogEntries,
   ];
   const xml = toXml(all);
 
