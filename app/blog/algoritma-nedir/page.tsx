@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const post = await getPost("algoritma-nedir");
   if (!post) return { title: "Yazı Bulunamadı" };
   return {
-    title: `${post.title} | Python Mülakat Blog`,
+    title: `${post.title} | PYBlog — Python Mülakat`,
     description: post.excerpt,
     keywords: post.tags,
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
@@ -99,7 +99,7 @@ export default async function AlgoritmaNedirPage() {
             className="hover:text-amber-300 transition-colors flex items-center gap-1"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            Blog
+            PYBlog
           </Link>
           <span className="text-white/20">/</span>
           <span className="text-white/70">Algoritma Nedir?</span>
@@ -117,7 +117,7 @@ export default async function AlgoritmaNedirPage() {
             <span>·</span>
             <span className="flex items-center gap-1">
               <BookOpen className="w-3 h-3" />
-              Blog
+              PYBlog
             </span>
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4 leading-tight">
@@ -484,7 +484,7 @@ export default async function AlgoritmaNedirPage() {
             className="inline-flex items-center gap-2 text-sm text-white/60 hover:text-amber-300 transition-colors"
           >
             <ArrowLeft className="w-4 h-4" />
-            Tüm yazılar
+            PYBlog&apos;a dön
           </Link>
           <Link
             href="/interviews"

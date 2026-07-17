@@ -71,7 +71,7 @@ export default function Footer() {
             <ul className="space-y-2 text-xs text-white/50">
               <li>
                 <a href="/blog" className="hover:text-white transition-colors">
-                  Blog
+                  PYBlog
                 </a>
               </li>
               <li>

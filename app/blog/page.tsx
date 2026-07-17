@@ -18,9 +18,9 @@ import { getAllPosts } from "./posts";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Blog — Algoritma, Mülakat İpuçları | Python Mülakat",
+  title: "PYBlog — Algoritma, Mülakat İpuçları | Python Mülakat",
   description:
-    "Yazılım mülakatlarına hazırlık için algoritma, veri yapıları, problem çözme stratejileri. Editöryal içerik, örnekler, görsel anlatımlar.",
+    "PYBlog — Python Mülakat'ın blog'u. Algoritma, veri yapıları, mülakat hazırlık stratejileri. Editöryal içerik, örnekler, görsel anlatımlar.",
   keywords: [
     "yazılım blog",
     "algoritma rehberi",
@@ -30,7 +30,7 @@ export const metadata: Metadata = {
     "problem çözme",
   ],
   openGraph: {
-    title: "Blog — Python Mülakat",
+    title: "PYBlog — Python Mülakat",
     description: "Algoritma, veri yapıları, mülakat hazırlık stratejileri.",
     url: `${BASE_URL}/blog`,
     type: "website",
@@ -49,14 +49,15 @@ export default async function BlogIndexPage() {
         <header className="mb-12">
           <div className="flex items-center gap-2 text-amber-300 text-xs font-semibold uppercase tracking-wider mb-3">
             <BookOpen className="w-4 h-4" />
-            Blog
+            PYBlog
           </div>
           <h1 className="text-4xl md:text-5xl font-bold tracking-tight mb-4">
-            Algoritma, Mülakat, Yazılım
+            PYBlog
           </h1>
           <p className="text-white/60 text-base md:text-lg max-w-2xl leading-relaxed">
-            Mülakat hazırlığında ihtiyacın olan kavramsal derinlik, görsel
-            anlatımlar ve gerçek mühendislik perspektifi.
+            <strong className="text-white">PYBlog</strong> — Python Mülakat&apos;ın
+            editöryal köşesi. Mülakat hazırlığında ihtiyacın olan kavramsal
+            derinlik, görsel anlatımlar ve gerçek mühendislik perspektifi.
           </p>
         </header>
 
