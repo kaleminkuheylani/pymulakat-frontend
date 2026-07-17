@@ -11,6 +11,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Question, QuestionTests } from "@/lib/api/types";
 import { toQuestionMetaView } from "@/lib/questionMeta";
 import MarkdownLite from "./MarkdownLite";
+import ReportBugButton from "./workspace/ReportBugButton";
 
 interface Props {
   interview: Question;
@@ -83,6 +84,15 @@ export default function QuestionDescriptionContent({
               {interview.level}
             </span>
           )}
+        </div>
+        {/* 2026-07-17: Soru hataliysa bildir butonu (sadece authenticated user) */}
+        <div className="mt-2">
+          <ReportBugButton
+            questionId={interview.id}
+            questionSlug={interview.slug || id}
+            category={category}
+            isGuest={isGuest}
+          />
         </div>
       </div>
 
