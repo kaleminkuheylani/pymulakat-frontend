@@ -22,12 +22,28 @@ export async function generateMetadata(): Promise<Metadata> {
   if (!post) return { title: "Yazı Bulunamadı" };
   return {
     title: `${post.title} | PYBlog — Python Mülakat`,
-    description: post.excerpt,
-    keywords: post.tags,
+    description:
+      "Algoritma nedir? Sandviç örneği, akış şeması, bubble sort ve 5 sebep ile öğren. Algoritma örnekleri, akış şeması nasıl çizilir, sıkça sorulan sorular — hepsi bu rehberde.",
+    keywords: [
+      "algoritma nedir",
+      "algoritma ne demek",
+      "algoritma örnekleri",
+      "algoritma akış şeması",
+      "akış şeması nedir",
+      "algoritma şeması",
+      "algoritma şekilleri",
+      "algoritma soruları",
+      "veri yapıları ve algoritmalar",
+      "programlama algoritmaları",
+      "bilgisayar algoritması",
+      "algoritma tanımı",
+      ...post.tags,
+    ],
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
     openGraph: {
       title: post.title,
-      description: post.excerpt,
+      description:
+      "Algoritma nedir? Sandviç örneği, akış şeması, bubble sort ve 5 sebep ile öğren. Algoritma örnekleri, akış şeması nasıl çizilir, sıkça sorulan sorular — hepsi bu rehberde.",
       url: `${BASE_URL}/blog/algoritma-nedir`,
       type: "article",
       publishedTime: post.date,
@@ -36,7 +52,8 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: post.title,
-      description: post.excerpt,
+      description:
+      "Algoritma nedir? Sandviç örneği, akış şeması, bubble sort ve 5 sebep ile öğren. Algoritma örnekleri, akış şeması nasıl çizilir, sıkça sorulan sorular — hepsi bu rehberde.",
     },
     alternates: {
       canonical: `${BASE_URL}/blog/algoritma-nedir`,
@@ -89,9 +106,115 @@ export default async function AlgoritmaNedirPage() {
   const post = await getPost("algoritma-nedir");
   if (!post) notFound();
 
+  // 2026-07-17: SEO — Article + FAQ + HowTo JSON-LD schema
+  // Ubersuggest: "algoritma nedir" 22.2K volume, PD 1 — golden opportunity
+  // Rich results (SERP feature) icin gerekli
+  const articleSchema = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Algoritma Nedir? — Sandviçten Kodlamaya Bir Yolculuk",
+    "description":
+      "Bir problemi çözmek için izlenen sonlu, sıralı, kesin adımlar bütünü. Sandviç tarifinden bubble sort'a, akış şemaları ve pseudo kodlarla.",
+    "author": { "@type": "Organization", "name": "Python Mülakat" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "Python Mülakat",
+      "url": "https://pythonmulakat.com",
+    },
+    "datePublished": "2026-07-17",
+    "dateModified": "2026-07-17",
+    "mainEntityOfPage": "https://pythonmulakat.com/blog/algoritma-nedir",
+    "keywords":
+      "algoritma nedir, algoritma örnekleri, akış şeması, bubble sort, pseudo kod, yazılım mülakat",
+    "inLanguage": "tr-TR",
+  };
+
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Algoritma ne demek?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Algoritma, bir problemi çözmek veya bir hedefe ulaşmak için izlenen sonlu, sıralı, kesin adımlar bütünüdür. Her bilgisayar programı, her yemek tarifi, her yol tarifi aslında bir algoritmadır.",
+        },
+      },
+      {
+        "@type": "Question",
+        "name": "Algoritma ile program arasındaki fark nedir?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Algoritma, yapılacak işin adımlarını söyler (mantık). Program ise o adımların belirli bir programlama dilinde yazılmış halidir. Aynı algoritma Python'da, JavaScript'te veya C'de yazılabilir — mantık değişmez, dil değişir.",
+        },
+      },
+      {
+        "@type": "Question",
+        "name": "Algoritma örnekleri nelerdir?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Günlük hayattan: yemek tarifi, yol tarifi, çamaşır yıkama adımları. Yazılımdan: sıralama (bubble sort, merge sort), arama (binary search), veri sıkıştırma (Huffman), graf algoritmaları (Dijkstra). Bu rehberde sandviç yapımı ve bubble sort örnek olarak anlatıldı.",
+        },
+      },
+      {
+        "@type": "Question",
+        "name": "Akış şeması nasıl çizilir?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Akış şeması 4 temel sembolden oluşur: yuvarlak/dikdörtgen (başla/bitir), paralelkenar (giriş/çıkış), dikdörtgen (işlem), eşkenar dörtgen (karar). Adımları bu sembollerle gösterip oklarla birleştirirsin. Detaylı örnek için bu yazıdaki Bubble Sort bölümüne bak.",
+        },
+      },
+      {
+        "@type": "Question",
+        "name": "Algoritma neden bu kadar önemli?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "İki nedeni var: (1) Performans — iyi algoritma 100 kat hızlı çalışır. (2) Problem çözme disiplini — büyük problemi küçük parçalara bölmeyi öğretir. Yazılım mülakatlarının %60'ı algoritma sorusudur.",
+        },
+      },
+      {
+        "@type": "Question",
+        "name": "Hangi programlama dilinde algoritma öğrenilmeli?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Python en iyi başlangıç — söz dizimi sade, kütüphane zengin. Ama algoritma mantığı dil bağımsızdır. Aynı bubble sort'u JavaScript, Java veya C ile de yazabilirsin. Önemli olan dil değil, düşünce biçimi.",
+        },
+      },
+    ],
+  };
+
+  const howtoSchema = {
+    "@context": "https://schema.org",
+    "@type": "HowTo",
+    "name": "Bubble Sort Algoritması Nasıl Uygulanır?",
+    "description":
+      "Bubble sort ile 5 elemanlı bir listeyi 9 adımda küçükten büyüğe sıralama adımları.",
+    "step": [
+      { "@type": "HowToStep", "name": "Liste hazırla", "text": "Sıralanacak liste belirlenir: [5, 2, 8, 1, 4]." },
+      { "@type": "HowToStep", "name": "İç döngü başlat", "text": "İki komşu eleman yan yana karşılaştırılır." },
+      { "@type": "HowToStep", "name": "Karşılaştır", "text": "Solda büyükse yer değiştir (takas), değilse geç." },
+      { "@type": "HowToStep", "name": "Dış döngü", "text": "Tüm liste bitene veya sıralı görünene kadar tekrarla." },
+      { "@type": "HowToStep", "name": "Sonuç", "text": "Liste sıralı: [1, 2, 4, 5, 8]." },
+    ],
+  };
+
   return (
-    <main className="min-h-screen bg-[#050816] text-white">
-      <article className="max-w-3xl mx-auto px-4 py-12 md:py-20">
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(howtoSchema) }}
+      />
+      <main className="min-h-screen bg-[#050816] text-white">
+        <article className="max-w-3xl mx-auto px-4 py-12 md:py-20">
         {/* Breadcrumb */}
         <nav className="flex items-center gap-2 text-sm text-white/40 mb-8">
           <Link
@@ -205,7 +328,7 @@ export default async function AlgoritmaNedirPage() {
         <section className="mb-16">
           <SectionHeader
             num="02"
-            title="0–10 Arası Sayıları Tek / Çift Sınıflandır"
+            title="Algoritma Örnekleri — 0–10 Arası Tek / Çift Sınıflandır"
           />
           <p className="text-white/70 leading-relaxed mb-6">
             Basit bir algoritma: 0&apos;dan 10&apos;a kadar her sayıyı al, 2&apos;ye
@@ -250,7 +373,7 @@ export default async function AlgoritmaNedirPage() {
 
         {/* ── SECTION 03: BUBBLE SORT ────────────────────── */}
         <section className="mb-16">
-          <SectionHeader num="03" title="Bubble Sort ile Listeyi Sırala" />
+          <SectionHeader num="03" title="Akış Şeması Nasıl Çizilir? — Bubble Sort Örneği" />
           <p className="text-white/70 leading-relaxed mb-6">
             Elimizde{" "}
             <code className="text-amber-300 px-1.5 py-0.5 rounded bg-white/5">
@@ -448,10 +571,65 @@ export default async function AlgoritmaNedirPage() {
           </ul>
         </section>
 
-        {/* ── SECTION 05: SONUÇ ─────────────────────────── */}
+
+        {/* ── SECTION 05: SSS / FAQ ──────────────────────────── */}
+        <section className="mb-16">
+          <SectionHeader num="05" title="Sıkça Sorulan Sorular" />
+          <p className="text-white/70 leading-relaxed mb-6">
+            Algoritma hakkında en sık sorulan sorular — kısa ve net cevaplarla.
+          </p>
+
+          <div className="space-y-4">
+            {[
+              {
+                q: "Algoritma ne demek?",
+                a: "Algoritma, bir problemi çözmek veya bir hedefe ulaşmak için izlenen sonlu, sıralı, kesin adımlar bütünüdür. Her bilgisayar programı, her yemek tarifi, her yol tarifi aslında bir algoritmadır.",
+              },
+              {
+                q: "Algoritma ile program arasındaki fark nedir?",
+                a: "Algoritma, yapılacak işin adımlarını söyler (mantık). Program ise o adımların belirli bir programlama dilinde yazılmış halidir. Aynı algoritma Python'da, JavaScript'te veya C'de yazılabilir — mantık değişmez, dil değişir.",
+              },
+              {
+                q: "Algoritma örnekleri nelerdir?",
+                a: "Günlük hayattan: yemek tarifi, yol tarifi, çamaşır yıkama adımları. Yazılımdan: sıralama (bubble sort, merge sort), arama (binary search), veri sıkıştırma (Huffman), graf algoritmaları (Dijkstra). Bu rehberde sandviç yapımı ve bubble sort örnek olarak anlatıldı.",
+              },
+              {
+                q: "Akış şeması nasıl çizilir?",
+                a: "Akış şeması 4 temel sembolden oluşur: yuvarlak/dikdörtgen (başla/bitir), paralelkenar (giriş/çıkış), dikdörtgen (işlem), eşkenar dörtgen (karar). Adımları bu sembollerle gösterip oklarla birleştirirsin. Detaylı örnek için bu yazıdaki 'Bubble Sort' bölümüne bak.",
+              },
+              {
+                q: "Algoritma neden bu kadar önemli?",
+                a: "İki nedeni var: (1) Performans — iyi algoritma 100 kat hızlı çalışır. (2) Problem çözme disiplini — büyük problemi küçük parçalara bölmeyi öğretir. Yazılım mülakatlarının %60'ı algoritma sorusudur.",
+              },
+              {
+                q: "Hangi programlama dilinde algoritma öğrenilmeli?",
+                a: "Python en iyi başlangıç — söz dizimi sade, kütüphane zengin. Ama algoritma mantığı dil bağımsızdır. Aynı bubble sort'u JavaScript, Java veya C ile de yazabilirsin. Önemli olan dil değil, düşünce biçimi.",
+              },
+            ].map((item, i) => (
+              <details
+                key={i}
+                className="group p-4 rounded-xl border border-white/10 bg-white/[0.02] [&_summary::-webkit-details-marker]:hidden"
+              >
+                <summary className="cursor-pointer flex items-center justify-between gap-3 text-white font-semibold list-none">
+                  <h3 className="text-base md:text-lg flex-1 min-w-0">
+                    {item.q}
+                  </h3>
+                  <span className="text-amber-300 text-xl group-open:rotate-45 transition-transform flex-shrink-0">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm md:text-base text-white/70 leading-relaxed">
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+
+        {/* ── SECTION 06: SONUÇ ─────────────────────────── */}
         <section>
           <div className="p-8 rounded-2xl bg-gradient-to-br from-amber-500/15 to-amber-700/10 border border-amber-500/20">
-            <SectionHeader num="05" title="Sonuç — Kanaat" variant="highlight" />
+            <SectionHeader num="06" title="Sonuç — Kanaat" variant="highlight" />
             <p className="text-white/80 leading-relaxed mb-4">
               Algoritma, yazılımın{" "}
               <strong className="text-white">ne yapacağını</strong> söyleyen
@@ -494,8 +672,9 @@ export default async function AlgoritmaNedirPage() {
             <ArrowRight className="w-4 h-4" />
           </Link>
         </div>
-      </article>
-    </main>
+        </article>
+      </main>
+    </>
   );
 }
 
