@@ -186,12 +186,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   // 2026-07-13: Conversion-friendly title — "soru bankası" + "çözüm" + "açıklama"
   //   niyet kelimeleri. Hem keşif hem long-tail niyet için optimize.
   const level = q.level || "junior";
-  const title = `${q.title} — ${level} Seviye Python Sorusu ve Çözümü`;
+  const title = `${q.title} — ${level} Seviye Python ve JavaScript Mülakat Sorusu`;
   // 2026-07-13: Description'a CTA eklendi (ücretsiz dene + test case + AI).
   //   155-160 char Google snippet hedefi.
   const rawDesc = q.explanation
     ? q.explanation.replace(/[*#`]/g, "").slice(0, 130)
-    : `${q.title} — ${level} seviye Python mülakat sorusu.`;
+    : `${q.title} — ${level} seviye Python ve JavaScript mülakat sorusu.`;
   const description = `${rawDesc} Tarayıcıda çöz, test case'lerle dene, AI geri bildirim al. Şimdilik ücretsiz.`;
 
   // 2026-07-13 v2 (spam-risk reduction): 5 long-tail varyasyon → 1 ana + 1 spec.

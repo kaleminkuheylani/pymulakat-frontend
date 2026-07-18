@@ -50,7 +50,7 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "Python ve JavaScript Mülakat Hazırlık | Python Mülakat",
+      "Python ve JavaScript Mülakat Soruları | Python Mülakat",
     // 2026-07-14 v13: Template sade ("Python Mülakat" — her sayfada
     //   tekrar "Yapay Zeka Destekli" ekleyerek keyword stuffing riski).
     //   Default title + description + footer + JSON-LD yeterli (toplam
@@ -59,8 +59,8 @@ export const metadata: Metadata = {
   },
 
   description:
-    // 2026-07-18: 155 char SEO limit (Google snippet width)
-    "Python ve JavaScript mülakat soruları, AI destekli geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 8 kategori, 100+ soru.",
+    // 2026-07-18: 155 char SEO limit + 've JavaScript' tutarlı
+    "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 8 kategori, 100+ soru.",
 
   keywords: [
     // Temel / Yeni başlayan
@@ -180,10 +180,10 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     url: "https://pythonmulakat.com",
     siteName: "Python Mülakat",
-    // 2026-07-15: JS desteği OG title'a eklendi
-    title: "Python ve JavaScript Mülakat, Algoritma ve Veri Yapıları Soruları",
+    // 2026-07-18: 've JavaScript' tutarlı — H1 ile aynı
+    title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
     description:
-      "Python ve JavaScript mülakat soruları, algoritma ve dinamik programlama için Türkçe interaktif pratik. OOP, SQLite, Pandas, sandbox ve anlık AI geri bildirimi.",
+      "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 8 kategori, 100+ soru.",
     images: [
       {
         url: "https://pythonmulakat.com/og-default.png",
@@ -198,7 +198,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     // 2026-07-15: JS desteği
-    title: "Python ve JavaScript Mülakat, Algoritma ve Veri Yapıları",
+    title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
     description:
       "Türkçe interaktif Python ve JavaScript mülakat soruları. OOP, veri tipleri, SQLite, sandbox, Web Worker runtime ve anlık AI geri bildirimi.",
     images: ["https://pythonmulakat.com/og-default.png"],
@@ -276,10 +276,10 @@ const siteJsonLd = {
       "@type": "WebSite",
       "@id": "https://pythonmulakat.com/#website",
       url: "https://pythonmulakat.com",
-      name: "Yapay Zeka Destekli Python Mülakat",
+      name: "Python ve JavaScript Mülakat",
       alternateName: "Python Mülakat",
       description:
-        "Yapay zeka destekli Python mülakat platformu: gerçek dünya mülakat soruları, interaktif sandbox, AI destekli geri bildirim ve kod pratik.",
+        "Python ve JavaScript mülakat platformu: gerçek dünya mülakat soruları, interaktif sandbox, AI geri bildirim.",
       publisher: { "@id": "https://pythonmulakat.com/#organization" },
       inLanguage: "tr-TR",
       potentialAction: {
@@ -297,7 +297,7 @@ const siteJsonLd = {
     {
       "@type": "LearningResource",
       "@id": "https://pythonmulakat.com/#learning-resource",
-      name: "Python Mülakat Soruları - İnteraktif Sandbox",
+      name: "Python ve JavaScript Mülakat Soruları - İnteraktif Sandbox",
       description:
         "Tarayıcıda kod yazarak Python mülakat sorularını çözebileceğin, yapay zekâ destekli geri bildirim veren interaktif öğrenme platformu.",
       url: "https://pythonmulakat.com",
@@ -309,10 +309,12 @@ const siteJsonLd = {
       },
       teaches: [
         "Python veri tipleri",
+        "JavaScript temelleri",
         "OOP temelleri",
         "SQLite3 ile veritabanı",
         "Pandas ile veri analizi",
         "Algoritmik düşünme",
+        "Dinamik programlama",
       ],
       isAccessibleForFree: true,
     },
