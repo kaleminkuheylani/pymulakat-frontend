@@ -47,7 +47,7 @@ function CallbackInner() {
         }
 
         const callbackType = classifyCallback(searchParams);
-        const returnUrl = searchParams.get("returnUrl") || "/interviews/programlama-temelleri";
+        const returnUrl = searchParams.get("returnUrl") || "/dashboard";
 
         // ─── RECOVERY flow ─────────────────────────────────
         if (callbackType === "recovery") {
