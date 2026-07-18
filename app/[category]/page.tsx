@@ -72,7 +72,8 @@ export async function generateMetadata({
   }
 
   // Label + count (zengin meta description)
-  const label = meta.label ?? getCategoryLabel(category);
+  // 2026-07-18: Canonical CATEGORY_LABEL (Programlama pozisyonu) — DB label override
+  const label = getCategoryLabel(category);
   // 2026-07-13: Conversion-friendly description — soru sayısı + ücretsiz katıl CTA.
   //   Google snippet'ında 155-160 char hedefiyle kırpılabilir.
   const desc = meta.description ||
@@ -240,7 +241,8 @@ export default async function CategoryPage({
   }
 
   // UI label normalize
-  const label = meta.label ?? getCategoryLabel(category);
+  // 2026-07-18: Canonical CATEGORY_LABEL (Programlama pozisyonu) — DB label override
+  const label = getCategoryLabel(category);
   const baseUrl = BASE_URL;
 
   // JSON-LD (4 katman)

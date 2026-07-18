@@ -273,7 +273,8 @@ function buildHowToSchema(q: SEOQuestion, baseUrl: string) {
 async function buildBreadcrumbSchema(category: string, slug: string, title: string, baseUrl: string) {
   // DB-FIRST: kategori label'ı DB'den (kullanici direktifi 2026-07-13)
   const meta = await getCategoryMeta(category);
-  const categoryLabel = meta?.label ?? getCategoryLabel(category);
+  // 2026-07-18: Canonical CATEGORY_LABEL
+  const categoryLabel = getCategoryLabel(category);
   // Canonical category: /{display} (top-level, ISR pre-rendered)
   // Question detail: /interviews/{db_category}/{slug} (canonical)
   const categoryUrl = `${baseUrl}${getCategoryUrl(category)}`;
