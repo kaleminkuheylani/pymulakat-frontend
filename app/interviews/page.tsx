@@ -32,9 +32,9 @@ import { BASE_URL } from "@/lib/seo";
 export const revalidate = 3600;
 
 export const metadata: Metadata = {
-  title: "Mülakat Soruları — Python Kategorileri | Python Mülakat",
+  title: "Python Mülakat Soruları — Tüm Kategoriler | Python Mülakat",
   description:
-    "Python mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack. Her kategoride 5-20+ soru.",
+    "Python mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack, pandas. 8 kategori, 100+ soru.",
   keywords: [
     "python mülakat soruları",
     "python kategori",
@@ -45,7 +45,7 @@ export const metadata: Metadata = {
     "pandas soruları",
   ],
   openGraph: {
-    title: "Mülakat Soruları — Python Kategorileri",
+    title: "Python Mülakat Soruları — Tüm Kategoriler",
     description:
       "Python mülakat sorularını kategorilere göre keşfet. 8 farklı kategori, 85+ soru.",
     url: `${BASE_URL}/interviews`,
@@ -76,7 +76,7 @@ export default async function InterviewsGridPage() {
         {/* ─── Header ─────────────────────────────────────── */}
         <header className="mb-10">
           <h1 className="text-3xl md:text-4xl font-bold mb-3 tracking-tight">
-            Mülakat Soruları
+            Python Mülakat Soruları
           </h1>
           <p className="text-white/60 text-sm md:text-base max-w-2xl leading-relaxed">
             Aşağıdaki kategorilerden birini seçerek o alandaki mülakat

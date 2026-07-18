@@ -71,6 +71,19 @@ const breadcrumbJsonLd = (title: string, slug: string) => ({
 });
 
 // LearningResource — tek bir dersi schema.org'a kayıt
+const faqJsonLd = (faq: { q: string; a: string }[] | undefined) => {
+  if (!faq || faq.length === 0) return null;
+  return {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: faq.map((item) => ({
+      "@type": "Question",
+      name: item.q,
+      acceptedAnswer: { "@type": "Answer", text: item.a },
+    })),
+  };
+};
+
 const learningResourceJsonLd = (
   title: string,
   description: string,
@@ -108,6 +121,10 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
     <>
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbJsonLd(lesson.title, lesson.slug)) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(learningResourceJsonLd(lesson.title, lesson.description, lesson.slug, lesson.level, lesson.topics, idx + 1)) }} />
+      {(() => {
+        const faqSchema = faqJsonLd(lesson.faq);
+        return faqSchema ? <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }} /> : null;
+      })()}
 
       <div className="min-h-screen bg-[#050816] text-white">
         <header className="border-b border-white/10 bg-[#0a0e1a]/80 backdrop-blur">
@@ -164,7 +181,33 @@ export default async function LessonPage({ params }: { params: Promise<{ slug: s
             </div>
           </section>
 
-          <section className="mb-8 p-5 rounded-xl bg-amber-500/5 border border-amber-500/20">
+          {lesson.faq && lesson.faq.length > 0 && (
+        <section className="mb-8">
+          <h2 className="text-xl font-bold mb-4">❓ Sıkça Sorulan Sorular</h2>
+          <div className="space-y-3">
+            {lesson.faq.map((item, i) => (
+              <details
+                key={i}
+                className="group p-4 rounded-xl border border-white/10 bg-white/[0.02] [&_summary::-webkit-details-marker]:hidden"
+              >
+                <summary className="cursor-pointer flex items-center justify-between gap-3 text-white font-semibold list-none">
+                  <h3 className="text-sm md:text-base flex-1 min-w-0">
+                    {item.q}
+                  </h3>
+                  <span className="text-amber-300 text-xl group-open:rotate-45 transition-transform flex-shrink-0">
+                    +
+                  </span>
+                </summary>
+                <p className="mt-3 text-sm md:text-base text-white/70 leading-relaxed">
+                  {item.a}
+                </p>
+              </details>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <section className="mb-8 p-5 rounded-xl bg-amber-500/5 border border-amber-500/20">
             <h2 className="text-base font-bold text-amber-300 mb-2">📝 Ödev</h2>
             <p className="text-sm text-white/80 leading-relaxed mb-3">{lesson.homework}</p>
             <EditorErrorBoundary editorName="Ödev">

@@ -3,6 +3,11 @@
 
 export type LessonLevel = "Başlangıç" | "Orta" | "İleri";
 
+export interface LessonFAQ {
+  q: string;
+  a: string;
+}
+
 export interface Lesson {
   slug: string;
   title: string;
@@ -14,6 +19,8 @@ export interface Lesson {
   intro: string;
   sections: LessonSection[];
   homework: string;
+  /** 2026-07-18: SEO — FAQ JSON-LD schema icin (Google rich results) */
+  faq?: LessonFAQ[];
 }
 
 export interface LessonSection {

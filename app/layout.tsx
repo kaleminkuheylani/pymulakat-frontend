@@ -50,7 +50,7 @@ export const metadata: Metadata = {
 
   title: {
     default:
-      "Yapay Zeka Destekli Python Mülakat Platformu",
+      "Python ve JavaScript Mülakat Hazırlık | Python Mülakat",
     // 2026-07-14 v13: Template sade ("Python Mülakat" — her sayfada
     //   tekrar "Yapay Zeka Destekli" ekleyerek keyword stuffing riski).
     //   Default title + description + footer + JSON-LD yeterli (toplam
@@ -59,8 +59,8 @@ export const metadata: Metadata = {
   },
 
   description:
-    // 2026-07-15: JavaScript desteği eklendi (Web Worker + native V8 runtime)
-    "Yapay zeka destekli Python ve JavaScript mülakat platformu. AI denetiminden geçirilmiş sorular, algoritma ve dinamik programlama için Türkçe interaktif pratik. Tarayıcıda kod yaz, anlık AI geri bildirim al. Şimdilik ücretsiz.",
+    // 2026-07-18: 155 char SEO limit (Google snippet width)
+    "Python ve JavaScript mülakat soruları, AI destekli geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 8 kategori, 100+ soru.",
 
   keywords: [
     // Temel / Yeni başlayan
