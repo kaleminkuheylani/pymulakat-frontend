@@ -23,6 +23,7 @@ export const CACHE_TAGS = {
 
 import { apiFetch } from "./index";
 import type { ApiCategory } from "./types";
+import { CATEGORY_LABEL, CATEGORY_DESCRIPTION } from "../categorySlug";
 
 const CACHE_TTL = 3600; // 1 saat ISR cache
 
@@ -58,8 +59,12 @@ export async function getAllCategories(): Promise<CategoryMeta[]> {
       if (!cat.slug) continue;
       map.set(cat.slug, {
         slug: cat.slug,
-        label: cat.label ?? '',
-        description: cat.description ?? '',
+        // 2026-07-18: "Programlama Mülakatı" pozisyonlaması.
+        // DB-First olduğu için label/description DB'den gelir, ama
+        // Python'a bağımlı etiketleri frontend canonical map ile override ederiz.
+        // (DB'de "Python Temelleri" yazıyorsa bile UI'da "Programlama Temelleri" görünür)
+        label: CATEGORY_LABEL[cat.slug] ?? cat.label ?? '',
+        description: CATEGORY_DESCRIPTION[cat.slug] ?? cat.description ?? '',
         icon: cat.icon ?? '',
         question_count: cat.question_count,
       });

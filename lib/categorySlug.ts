@@ -40,14 +40,42 @@ export const CATEGORY_SLUGS = [
 export type CategorySlug = (typeof CATEGORY_SLUGS)[number];
 
 // ─── DB slug → display label (UI için) ──────────────────────
+// 2026-07-18: "Programlama Mülakatı" pozisyonlaması.
+// Python'a bağımlı label kaldırıldı, evrensel programlama dili.
+// JS runtime için de aynı kategori geçerli (Py/JS toggle).
+//   - python-basics      → "Programlama Temelleri" (eski: "Python Temelleri")
+//   - data-structures    → "Veri Yapıları"          (eski: "Python Veri Yapıları")
+//   - list-dict          → "Listeler & Sözlükler"   (eski: "Python Liste & Sözlük")
+//   - algorithms         → "Algoritmalar"           (eski: "Python Algoritma")
+//   - heap               → "Heap / Öncelik Kuyruğu" (evrensel)
+//   - stack              → "Yığın / Stack"          (evrensel)
+//   - dynamic-programming→ "Dinamik Programlama"    (evrensel)
 export const CATEGORY_LABEL: Record<string, string> = {
-  "python-basics": "Python Temelleri",
-  "data-structures": "Python Veri Yapıları",
-  "list-dict": "Python Liste & Sözlük",
-  algorithms: "Python Algoritma",
-  heap: "Python Heap",
-  stack: "Python Stack",
-  "dynamic-programming": "Python Dinamik Programlama",
+  "python-basics": "Programlama Temelleri",
+  "data-structures": "Veri Yapıları",
+  "list-dict": "Listeler & Sözlükler",
+  algorithms: "Algoritmalar",
+  heap: "Heap / Öncelik Kuyruğu",
+  stack: "Yığın / Stack",
+  "dynamic-programming": "Dinamik Programlama",
+};
+
+// ─── DB slug → kısa açıklama (kategori kartı alt metni için) ──
+// 2026-07-18: Python'a bağımlı metin kaldırıldı.
+export const CATEGORY_DESCRIPTION: Record<string, string> = {
+  "python-basics":
+    "Değişkenler, döngüler, koşullar, fonksiyonlar, string işlemleri. Python ve JavaScript için ortak temel.",
+  "data-structures":
+    "List, dict, set, tuple, deque, generators. Dil-bağımsız veri yapıları.",
+  "list-dict":
+    "Listeler, sözlükler, setler. Arama, ekleme, silme, sıralama pratikleri.",
+  algorithms:
+    "Sıralama, arama, iki işaretçi, sliding window. Dil-bağımsız algoritma temelleri.",
+  heap: "Heapq, kth largest, top-k, merge k sorted, median stream.",
+  stack:
+    "Yığın yapısı, parantez eşleme, undo, RPN, monotonik stack.",
+  "dynamic-programming":
+    "Memoization, tabulation, optimal substructure. Fibonacci, knapsack, LCS.",
 };
 
 // ─── Legacy display URL → canonical DB slug (308 redirect) ──
