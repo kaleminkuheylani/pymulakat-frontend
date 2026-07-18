@@ -260,11 +260,27 @@ export async function getCategoryPageData(
   questions: ApiQuestion[];
 }> {
   // 2026-07-18: DB-FIRST — canonical slug = DB slug.
-  // "programlama-temelleri" slug'i DB'de olmali; SQL migration tamamlanmali.
-  const [allCats, allQs] = await Promise.all([
+  // "programlama-temelleri" henüz DB'ye migrate edilmediyse eski "python-basics"
+  // ile dene (graceful degradation). SQL migration tamamlanınca bu blok no-op olur.
+  const LEGACY_SLUG_BRIDGE: Record<string, string> = {
+    "programlama-temelleri": "python-basics",
+  };
+
+  // 1) Önce canonical slug ile dene
+  let [allCats, allQs] = await Promise.all([
     listCategories(),
-    listQuestionsByCategory(categorySlug), // DB-side filtre
+    listQuestionsByCategory(categorySlug),
   ]);
+
+  // 2) Sonuç boş + bridge varsa eski slug ile dene
+  if (allQs.length === 0 && LEGACY_SLUG_BRIDGE[categorySlug]) {
+    const legacySlug = LEGACY_SLUG_BRIDGE[categorySlug];
+    [allCats, allQs] = await Promise.all([
+      listCategories(),
+      listQuestionsByCategory(legacySlug),
+    ]);
+  }
+
   return {
     meta: allCats.find((c) => c.slug === categorySlug) ?? null,
     questions: allQs,
