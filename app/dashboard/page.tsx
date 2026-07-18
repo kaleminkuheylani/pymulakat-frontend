@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useUser } from "../../hooks/useUser";
 import OnboardingGate from "../../components/OnboardingGate";
+import OnboardingSurvey from "../../components/OnboardingSurvey";
 import { getAllQuestions, getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
 
 // 📌 Lazy load — initial bundle'dan cikar (mobil performans)
@@ -236,6 +237,7 @@ export default function DashboardHome() {
 
   return (
     <>
+      <OnboardingSurvey userId={user.id} />
       <OnboardingGate userId={user.id}>
         <div className="space-y-5">
           {/* Üst Bar — kullanıcı + stats + tablar */}
