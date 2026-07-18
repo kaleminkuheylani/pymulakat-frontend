@@ -73,22 +73,27 @@ export default function OnboardingSurvey({ userId }: Props) {
     }
 
     // Backend'den kontrol (dismissed = true ise gosterme)
+    console.log("[OnboardingSurvey] mount, userId:", userId, "lsDismissed:", lsDismissed);
     (async () => {
       setLoading(true);
       try {
         const res = await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey/status", {
           credentials: "include",
         });
+        console.log("[OnboardingSurvey] status response:", res.status);
         if (res.status === 401) {
+          // Auth yoksa sessizce gec (kullanici login olmamis)
+          console.log("[OnboardingSurvey] 401 - user not authenticated");
           setOpen(false);
           return;
         }
         if (!res.ok) {
-          // Backend yok/sessizce gec
+          console.log("[OnboardingSurvey] not OK:", res.status, await res.text());
           setOpen(false);
           return;
         }
         const data = await res.json();
+        console.log("[OnboardingSurvey] data:", data);
         if (data.dismissed) {
           localStorage.setItem(STORAGE_KEY(userId), "1");
           setOpen(false);
@@ -96,7 +101,8 @@ export default function OnboardingSurvey({ userId }: Props) {
           // 1.5s gecikme — sayfa acilsin sonra modal gorunur
           setTimeout(() => setOpen(true), 1500);
         }
-      } catch {
+      } catch (e) {
+        console.log("[OnboardingSurvey] fetch error:", e);
         setOpen(false);
       } finally {
         setLoading(false);
