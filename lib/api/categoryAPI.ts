@@ -23,7 +23,7 @@ export const CACHE_TAGS = {
 
 import { apiFetch } from "./index";
 import type { ApiCategory } from "./types";
-import { CATEGORY_LABEL, CATEGORY_DESCRIPTION } from "../categorySlug";
+import { CATEGORY_LABEL, CATEGORY_DESCRIPTION, CATEGORY_SLUGS } from "../categorySlug";
 
 const CACHE_TTL = 60; // 2026-07-18: gecici cache bypass (slug migration sonrasi 3600'a dondur)
 
@@ -89,9 +89,8 @@ export async function getCategoryMeta(slug: string): Promise<CategoryMeta | null
 }
 
 /**
- * Cache invalidate (admin data-tools invalidate-cache icin).
+ * Cache invalidate (deprecated 2026-07-18: module cache kaldirildi).
  */
 export function clearCategoryCache() {
-  categoryCache = null;
-  cacheTs = 0;
+  // no-op
 }
