@@ -13,6 +13,8 @@ import Link from "next/link";
 import { useUser } from "../../hooks/useUser";
 import OnboardingSurvey from "../../components/OnboardingSurvey";
 import { getAllQuestions, getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
+import { getAllPosts } from "../blog/posts";
+import { BookOpen, ArrowRight } from "lucide-react";
 
 // 📌 Lazy load — initial bundle'dan cikar (mobil performans)
 const PersonalFlow = dynamic(() => import("../../components/dashboard/PersonalFlow"), {
@@ -139,6 +141,16 @@ export default function DashboardHome() {
   const [community, setCommunity] = useState<FlowItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [allPosts, setAllPosts] = useState<Awaited<ReturnType<typeof getAllPosts>>>([]);
+
+  // PYBlog yazilari — ilk render'da
+  useEffect(() => {
+    let cancelled = false;
+    getAllPosts().then((p) => {
+      if (!cancelled) setAllPosts(p);
+    }).catch(() => {});
+    return () => { cancelled = true; };
+  }, []);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   // Mounted guard (TS strict mode + Vercel SWC uyumluluğu icin explicit type)
   const mountedRef = useRef<boolean>(true);
@@ -312,15 +324,11 @@ export default function DashboardHome() {
                 description="17 snippet, 6 kategori: algoritma, veri yapısı, dinamik programlama."
                 color="purple"
               />
-              <FeatureCard
-                href="/python-egitimi"
-                icon="🎓"
-                title="Eğitimler"
-                description="6 derslik sıralı yol haritası, çalıştırılabilir örnekler."
-                color="emerald"
-              />
             </div>
           </section>
+
+          {/* 📌 PYBlog — son yazilar. "Blog servisini dashboard'a cek" (2026-07-18) */}
+          <BlogWidget posts={allPosts} />
 
           {/* Content */}
           {loading ? (
@@ -414,5 +422,49 @@ function FeatureCard({ href, icon, title, description, color, highlight }: Featu
         {highlight ? "Hemen Dene" : "Git"} →
       </span>
     </Link>
+  );
+}
+
+
+// ─── Blog Widget — son yazilar ───────────────────────
+function BlogWidget({ posts }: { posts: Awaited<ReturnType<typeof getAllPosts>> }) {
+  if (!posts || posts.length === 0) return null;
+  return (
+    <section>
+      <div className="flex items-center justify-between mb-3">
+        <h2 className="text-sm font-bold text-white/70 uppercase tracking-wider flex items-center gap-2">
+          <BookOpen className="w-4 h-4" />
+          PYBlog
+        </h2>
+        <span className="text-[10px] text-white/40">
+          {posts.length} yazı
+        </span>
+      </div>
+      <div className="grid sm:grid-cols-2 gap-3">
+        {posts.slice(0, 4).map((p) => (
+          <Link
+            key={p.slug}
+            href={`/blog/${p.slug}`}
+            className="group block p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:bg-white/[0.04] hover:border-amber-500/30 transition-colors"
+          >
+            <div className="flex items-center gap-2 text-[10px] text-white/40 mb-1.5">
+              <span>{p.date}</span>
+              <span>·</span>
+              <span>{p.readingMinutes} dk</span>
+            </div>
+            <div className="text-sm font-semibold text-white mb-1.5 group-hover:text-amber-300 transition-colors line-clamp-2">
+              {p.title}
+            </div>
+            <div className="text-xs text-white/60 line-clamp-2 mb-2">
+              {p.excerpt}
+            </div>
+            <div className="flex items-center gap-1 text-[11px] text-amber-300/80 group-hover:text-amber-300 transition-colors">
+              Oku
+              <ArrowRight className="w-3 h-3" />
+            </div>
+          </Link>
+        ))}
+      </div>
+    </section>
   );
 }

@@ -15,15 +15,6 @@ import { getCategoryUrl } from "@/lib/categorySlug";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const LESSON_SLUGS = [
-  "temel-kavramlar",
-  "kontrol-yapilari",
-  "fonksiyonlar",
-  "veri-yapilari",
-  "oop",
-  "ileri-konular",
-];
-
 interface SitemapEntry {
   loc: string;
   lastmod: string;
@@ -58,7 +49,6 @@ export async function GET() {
     toEntry(`${BASE_URL}/login`, now, "monthly", 0.5),
     toEntry(`${BASE_URL}/register`, now, "monthly", 0.6),
     toEntry(`${BASE_URL}/terms`, now, "yearly", 0.3),
-    toEntry(`${BASE_URL}/blog`, now, "weekly", 0.7),
   ];
 
   const apiBase =
@@ -112,14 +102,12 @@ export async function GET() {
       ),
     );
 
-  const lessonEntries: SitemapEntry[] = LESSON_SLUGS.map((slug) =>
-    toEntry(`${BASE_URL}/python-egitimi/${slug}`, now, "monthly", 0.7),
-  );
 
   // 2026-07-17: Blog yazilari (simdilik inline)
   const BLOG_POSTS = [
     { slug: "algoritma-nedir", date: "2026-07-17" },
     { slug: "programlama-temelleri", date: "2026-07-18" },
+    { slug: "sifirdan-zirveye", date: "2026-07-18" },
   ];
   const blogEntries: SitemapEntry[] = BLOG_POSTS.map((p) =>
     toEntry(`${BASE_URL}/blog/${p.slug}`, p.date, "monthly", 0.7),
@@ -130,7 +118,6 @@ export async function GET() {
     ...categoryEntries,
     ...interviewsCategoryEntries,
     ...questionEntries,
-    ...lessonEntries,
     ...blogEntries,
   ];
   const xml = toXml(all);

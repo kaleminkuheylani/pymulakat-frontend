@@ -70,7 +70,7 @@ export default function Footer() {
             </h4>
             <ul className="space-y-2 text-xs text-white/50">
               <li>
-                <a href="/blog" className="hover:text-white transition-colors">
+                <a href="/blog/sifirdan-zirveye" className="hover:text-white transition-colors">
                   PYBlog
                 </a>
               </li>
