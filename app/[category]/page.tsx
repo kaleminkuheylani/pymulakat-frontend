@@ -43,7 +43,7 @@ import {
 import QuestionListItem from "@/components/QuestionListItem";
 
 // ─── ISR config ──────────────────────────────────────────────
-export const revalidate = 3600; // 1 saat ISR
+export const revalidate = 60; // 2026-07-18: gecici cache bypass
 // Build sırasında bilinmeyen bir DB slug gelirse on-demand render
 // (DB-FIRST: yeni kategori DB'ye eklenince /{yeni-slug} çalışır)
 export const dynamicParams = true;

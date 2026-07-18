@@ -25,7 +25,7 @@ import { apiFetch } from "./index";
 import type { ApiCategory } from "./types";
 import { CATEGORY_LABEL, CATEGORY_DESCRIPTION } from "../categorySlug";
 
-const CACHE_TTL = 3600; // 1 saat ISR cache
+const CACHE_TTL = 60; // 2026-07-18: gecici cache bypass (slug migration sonrasi 3600'a dondur)
 
 interface CategoryMeta {
   slug: string;
