@@ -125,7 +125,7 @@ function buildCollectionPageSchema(
   category: string,
   baseUrl: string
 ) {
-  // 2026-07-18: Canonical label
+  // 2026-07-18: Canonical label (deploy: cache invalidation)
   const label = getCategoryLabel(category);
   // 2026-07-18: Canonical description
   const desc = CATEGORY_DESCRIPTION[category] ?? meta.description ?? `${label} konusunda mülakat soruları.`;
@@ -333,3 +333,4 @@ export default async function CategoryPage({
     </main>
   );
 }
+
