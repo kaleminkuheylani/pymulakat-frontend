@@ -29,7 +29,7 @@ import type { Metadata } from "next";
 import { BASE_URL } from "@/lib/seo";
 
 // ISR — 1 saatte bir yenile (kategori eklenince değişsin)
-export const revalidate = 3600;
+export const revalidate = 60; // 2026-07-18: gecici cache bypass (slug migration sonrasi 3600)
 
 export const metadata: Metadata = {
   title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
