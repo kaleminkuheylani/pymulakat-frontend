@@ -11,7 +11,6 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useUser } from "../../hooks/useUser";
-import OnboardingGate from "../../components/OnboardingGate";
 import OnboardingSurvey from "../../components/OnboardingSurvey";
 import { getAllQuestions, getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
 
@@ -238,8 +237,7 @@ export default function DashboardHome() {
   return (
     <>
       <OnboardingSurvey userId={user.id} />
-      <OnboardingGate userId={user.id}>
-        <div className="space-y-5">
+      <div className="space-y-5">
           {/* Üst Bar — kullanıcı + stats + tablar */}
           <div className="space-y-3">
             <div className="flex items-center justify-between flex-wrap gap-3">
@@ -335,7 +333,6 @@ export default function DashboardHome() {
             <CommunityFlow items={community} />
           )}
         </div>
-      </OnboardingGate>
     </>
   );
 }
