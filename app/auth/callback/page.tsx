@@ -22,9 +22,10 @@ function classifyCallback(searchParams: URLSearchParams): CallbackType {
     return "signup";
   }
 
-  // Hash fragment (#access_token=...) — eski legacy flow
+  // Hash fragment (#access_token=...) — OAuth legacy implicit flow
+  // (PKCE aksine Supabase bazen implicit doner, ozellikle signInWithOAuth)
   if (typeof window !== "undefined" && window.location.hash.includes("access_token")) {
-    return "magiclink";
+    return "oauth";
   }
 
   return "oauth";
@@ -137,6 +138,25 @@ function CallbackInner() {
 
         // ─── OAUTH (Google/GitHub/etc) flow ───────────────
         setMessage("OAuth girişi tamamlanıyor...");
+
+        // PKCE flow: Supabase detectSessionInUrl=true hash'ten session'i otomatik olusturur.
+        // Yine de fallback olarak setSession deneyelim.
+        const hash = typeof window !== "undefined" ? window.location.hash : "";
+        if (hash.includes("access_token")) {
+          const params = new URLSearchParams(hash.slice(1));
+          const accessToken = params.get("access_token");
+          const refreshToken = params.get("refresh_token");
+          if (accessToken && refreshToken) {
+            const { error: setErr } = await supabase.auth.setSession({
+              access_token: accessToken,
+              refresh_token: refreshToken,
+            });
+            if (setErr) {
+              // setSession basarisiz — yine de getSession dene (Supabase otomatik islemis olabilir)
+            }
+          }
+        }
+
         let attempts = 0;
         const trySession = async () => {
           attempts++;
