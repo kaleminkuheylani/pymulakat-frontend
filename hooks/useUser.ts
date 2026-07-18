@@ -179,7 +179,6 @@ async function fetchMe(): Promise<UserResponse | null> {
     // res artık ApiUser | null (eski fetch kaldırıldı, authAPI.getMe() kullanılıyor)
     return res;
   } catch (e) {
-    console.error("useUser fetch error:", e);
     return null;
   }
 }
@@ -213,7 +212,6 @@ export function useUser() {
       if (!mountedRef.current) return;
       const message =
         err instanceof Error ? err.message : "Bilinmeyen hata";
-      console.error("useUser fetch error:", message);
       setError(message);
       setUser(null);
     } finally {

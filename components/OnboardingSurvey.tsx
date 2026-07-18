@@ -78,7 +78,6 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
     // Once localStorage
     const lsDismissed = localStorage.getItem(STORAGE_KEY(userId));
     if (lsDismissed) {
-      console.log("[OnboardingSurvey] localStorage dismissed — skip");
       setOpen(false);
       return;
     }
@@ -89,25 +88,20 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
     const elapsed = Date.now() - firstVisit;
     const enoughTime = elapsed >= SHOW_DELAY_MS;
     const enoughAttempts = totalAttempts >= MIN_ATTEMPTS;
-    console.log(`[OnboardingSurvey] elapsed: ${Math.round(elapsed/1000)}s, attempts: ${totalAttempts}`);
     if (!enoughTime && !enoughAttempts) {
-      console.log("[OnboardingSurvey] henuz erken (15dk VEYA 2+ soru bekleniyor)");
       setOpen(false);
       return;
     }
 
     // Graceful: Sadece kesin dismissed:true ise gizle.
-    console.log("[OnboardingSurvey] kosul saglandi, backend kontrolu...");
     (async () => {
       setLoading(true);
       try {
         const res = await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey/status", {
           credentials: "include",
         });
-        console.log("[OnboardingSurvey] status response:", res.status);
         if (res.status === 200) {
           const data = await res.json();
-          console.log("[OnboardingSurvey] data:", data);
           if (data.dismissed === true) {
             localStorage.setItem(STORAGE_KEY(userId), "1");
             setOpen(false);
@@ -116,7 +110,6 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
         }
         setTimeout(() => setOpen(true), 1500);
       } catch (e) {
-        console.log("[OnboardingSurvey] fetch error, fallback show:", e);
         setTimeout(() => setOpen(true), 1500);
       } finally {
         setLoading(false);
@@ -142,12 +135,9 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
         });
         if (!res.ok) {
           const errText = await res.text();
-          console.error(`[OnboardingSurvey] POST basarisiz (status ${res.status}):`, errText);
         } else {
-          console.log("[OnboardingSurvey] POST basarili, DB\'ye kaydedildi");
         }
       } catch (e) {
-        console.error("[OnboardingSurvey] POST network/network error:", e);
       } finally {
         // Lokal: her durumda dismissed isaretle (kullaniciyi rahatsiz etme)
         localStorage.setItem(STORAGE_KEY(userId), "1");

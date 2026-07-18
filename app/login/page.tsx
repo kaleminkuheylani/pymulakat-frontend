@@ -53,7 +53,6 @@ const inlineAuthAPI = {
     });
 
     if (error) {
-      console.error("[AUTH] signInWithPassword error:", error);
       if (error.message?.toLowerCase().includes("email not confirmed")) {
         throw new Error("E-posta adresin doğrulanmamış");
       }
@@ -64,7 +63,6 @@ const inlineAuthAPI = {
     }
 
     if (!data.session || !data.user) {
-      console.error("[AUTH] Session veya user yok:", data);
       throw new Error("Oturum açılamadı");
     }
 
@@ -90,7 +88,6 @@ const inlineAuthAPI = {
           document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
         } catch { /* ignore */ }
       } catch (e) {
-        console.error("[AUTH] Storage yazma hatasi:", e);
       }
     }
 

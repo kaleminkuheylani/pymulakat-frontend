@@ -36,12 +36,6 @@ export async function GET(req: NextRequest) {
     });
 
     // 2026-07-14 v3 DEBUG: Header flow + response log
-    console.log("[ai-feedback/usage proxy]", {
-      authHeader: req.headers.get("authorization")?.slice(0, 30),
-      cookieLength: cookieHeader.length,
-      backendStatus: backendRes.status,
-      backendResponse: (await backendRes.clone().text()).slice(0, 200),
-    });
 
     // Backend response'unu olduğu gibi geçir (status + body + Set-Cookie!)
     // 2026-07-14 v2: Set-Cookie header forward KRITIK — yoksa backend'in

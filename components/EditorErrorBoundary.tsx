@@ -53,7 +53,6 @@ export class EditorErrorBoundary extends Component<Props, State> {
 
   componentDidCatch(error: Error, errorInfo: ErrorInfo): void {
     if (typeof console !== "undefined") {
-      console.error("[EditorErrorBoundary]", error.message, errorInfo.componentStack);
     }
     // Analytics burada bağlanabilir.
   }

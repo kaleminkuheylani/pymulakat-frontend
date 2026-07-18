@@ -82,7 +82,6 @@ export async function POST(req: NextRequest) {
       revalidateTag(tag, "default");
       invalidatedTags.push(tag);
     } catch (e) {
-      console.error(`[revalidate] tag error: ${tag}`, e);
     }
   }
   // Backward compat: tek string tag
@@ -91,7 +90,6 @@ export async function POST(req: NextRequest) {
       revalidateTag(body.tag, "default");
       invalidatedTags.push(body.tag);
     } catch (e) {
-      console.error(`[revalidate] tag error: ${body.tag}`, e);
     }
   }
 
@@ -101,7 +99,6 @@ export async function POST(req: NextRequest) {
       revalidatePath(p);
       invalidatedPaths.push(p);
     } catch (e) {
-      console.error(`[revalidate] path error: ${p}`, e);
     }
   }
   // Backward compat: tek string path
@@ -110,7 +107,6 @@ export async function POST(req: NextRequest) {
       revalidatePath(body.path);
       invalidatedPaths.push(body.path);
     } catch (e) {
-      console.error(`[revalidate] path error: ${body.path}`, e);
     }
   }
 

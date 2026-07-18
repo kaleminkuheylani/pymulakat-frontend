@@ -76,7 +76,6 @@ export async function GET(req: NextRequest) {
     fetch(`${apiBase}/api/v2/categories`, { cache: "no-store" }),
     fetch(`${apiBase}/api/v2/questions/all?limit=500`, { cache: "no-store" }),
   ]).catch((err) => {
-    console.error("[api/sitemap] fetch err:", err);
     return [null, null] as const;
   });
 
@@ -89,7 +88,6 @@ export async function GET(req: NextRequest) {
   if (qRes && qRes.ok) {
     const qData = await qRes.json();
     questions = qData.data || qData.items || qData || [];
-    console.log(`[api/sitemap] inline fetch: ${questions.length} questions`);
   }
 
   // 2026-07-18: pandas scope'tan cikarildi — sitemap'te de filtrele
@@ -110,7 +108,6 @@ export async function GET(req: NextRequest) {
     .map((slug) =>
       toEntry(`${BASE_URL}/interviews/${slug}`, now, "weekly", 0.8),
     );
-
 
   // pandas sorulari artik sitemap'te yok
   const questionEntries: SitemapEntry[] = questions

@@ -160,7 +160,6 @@ function CallbackInner() {
         await trySession();
       } catch (err: any) {
         if (redirected) return;
-        console.error("Callback error:", err);
         setStatus("error");
         setMessage(err?.message || "Bilinmeyen hata");
         toast.error("İşlem başarısız", { description: err?.message });

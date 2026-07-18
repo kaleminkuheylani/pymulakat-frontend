@@ -185,7 +185,6 @@ export function usePyodide(): UsePyodideReturn {
             try {
               await installSandboxPolicy(py);
             } catch (policyErr) {
-              console.error("[usePyodide] sandbox policy yüklenemedi:", policyErr);
             }
             pyodideRef.current = py;
           })(),
@@ -196,7 +195,6 @@ export function usePyodide(): UsePyodideReturn {
         setStatus("error");
         // 📌 Raw error.message UI'a sızmaz — sabit hardcoded mesaj
         setErrorMsg("Çalıştırma ortamı yüklenemedi");
-        console.error("[usePyodide] init failed:", err);
         throw err;
       }
     })();
@@ -397,7 +395,6 @@ export function usePyodide(): UsePyodideReturn {
       } catch (e: any) {
         const rawMsg = e?.message || String(e);
         const last = lastErrorLine(rawMsg);
-        console.error("[runWithCustomInput] failed:", rawMsg, "args:", args, "userCode:", userCode?.slice(0, 200));
         return {
           actual: undefined,
           errorLine: last || rawMsg,

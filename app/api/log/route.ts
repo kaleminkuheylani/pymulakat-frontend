@@ -23,18 +23,6 @@ export async function POST(req: NextRequest) {
 
     // Vercel'in runtime log'larına düşür (Functions → Logs'dan okunur)
     // eslint-disable-next-line no-console
-    console.log(
-      `[CLIENT-${body.type?.toUpperCase() || "LOG"}]`,
-      JSON.stringify({
-        message: body.message?.substring(0, 500),
-        source: body.source,
-        url: body.url,
-        ua: body.userAgent?.substring(0, 200),
-        appVersion: body.appVersion,
-        timestamp: body.timestamp || Date.now(),
-        stack: body.stack?.split("\n").slice(0, 5).join("\n"),
-      })
-    );
 
     return NextResponse.json({ ok: true });
   } catch (err) {

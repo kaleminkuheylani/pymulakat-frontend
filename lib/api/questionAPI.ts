@@ -76,13 +76,11 @@ export async function getAllQuestions(params?: {
       "/api/v2/questions/all",
       { params, next: { revalidate: 0 }, cache: "no-store" },
     );
-    console.log(`[getAllQuestions] params=${JSON.stringify(params)} keys=${data && typeof data === "object" ? Object.keys(data).join(",") : typeof data}`);
     if (Array.isArray(data)) return data;
     if (Array.isArray(data?.data)) return data.data as ApiQuestion[];
     if (Array.isArray(data?.items)) return data.items as ApiQuestion[];
     return [];
   } catch (err) {
-    console.error(`[getAllQuestions] ERROR params=${JSON.stringify(params)}:`, err);
     return [];
   }
 }
@@ -383,7 +381,6 @@ export function slugifyTitle(title: string): string {
   return s;
 }
 
-
 /**
  * Toplam soru sayısını DB'den dinamik çek (hardcoded değer yerine).
  * 9 pillar sayfa + Hero + python-egitimi FAQ bu fonksiyonu kullanır.
@@ -397,7 +394,6 @@ export async function getTotalQuestionCount(): Promise<number> {
     return 0;  // Hata durumunda 0 (UI "yükleniyor" yerine gizler)
   }
 }
-
 
 /**
  * Belirli bir kategorideki soru sayısını DB'den dinamik çek.

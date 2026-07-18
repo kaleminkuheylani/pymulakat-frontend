@@ -73,11 +73,9 @@ export async function getAllCategories(): Promise<CategoryMeta[]> {
     cacheTs = Date.now();
     return Array.from(map.values());
   } catch (e) {
-    console.error("[categoryAPI] getAllCategories error:", e);
     return [];
   }
 }
-
 
 /**
  * Tek bir kategorinin metadata'sini slug ile getir.

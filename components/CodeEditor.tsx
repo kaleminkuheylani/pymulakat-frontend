@@ -18,7 +18,6 @@ import {
   useState,
 } from "react";
 
-
 // 2026-07-15: Language extension builder
 // python → cm.python() (lang-python, gelismis Python highlight)
 // javascript → cm.javascriptLanguage (StreamLanguage.define() wrap edilmis, JS highlight)
@@ -398,13 +397,11 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
         // 2026-07-16: Dil degisimi logu (debug)
         if (typeof window !== "undefined" && (window as any).__pyMulakatDebug) {
           // eslint-disable-next-line no-console
-          console.log(`[CodeEditor] language=${language}, exts=`, newExts.length, "of", Object.keys(cm).filter(k => k.includes("python") || k.includes("javascript") || k.includes("lang")));
         }
         view.dispatch({ effects: compartment.reconfigure(newExts) });
       } catch (e) {
         // 2026-07-16: Hata olursa logla (debug)
         // eslint-disable-next-line no-console
-        console.error("[CodeEditor] language reconfigure failed:", e, { language });
       }
     }, [language]);
 

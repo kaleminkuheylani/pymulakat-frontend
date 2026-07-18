@@ -178,7 +178,6 @@ export async function installSandboxPolicy(py: any): Promise<void> {
   try {
     await py.runPythonAsync(POLICY_PY);
   } catch (e) {
-    console.error(`[sandbox] policy yüklenemedi (v${POLICY_VERSION}):`, e);
     throw e;
   }
 }

@@ -56,7 +56,6 @@ export default function LessonRunner({ code: initialCode, label = "kod.py" }: { 
       try {
         await installSandboxPolicy(py);
       } catch (policyErr) {
-        console.error("[LessonRunner] sandbox policy yüklenemedi:", policyErr);
       }
       pyRef.current = py;
       setLoading(false);

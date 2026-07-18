@@ -16,14 +16,6 @@ export default function GlobalError({
 }) {
   useEffect(() => {
     // Hatayı konsola yaz + tarayıcı bilgisi ekle
-    console.error("[GlobalError]", error);
-    console.error("[GlobalError] URL:", window.location.href);
-    console.error("[GlobalError] UA:", navigator.userAgent);
-    console.error("[GlobalError] Online:", navigator.onLine);
-    console.error(
-      "[GlobalError] Cookie:",
-      document.cookie.substring(0, 200)
-    );
   }, [error]);
 
   return (

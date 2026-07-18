@@ -53,7 +53,6 @@ export default function PythonOnlineEditor() {
         try {
           await installSandboxPolicy(py);
         } catch (policyErr) {
-          console.error("[PythonOnline] sandbox policy yüklenemedi:", policyErr);
           // Kullanıcıyı bloklamadan devam et (degraded mode); hata konsola düşer
         }
         pyodideRef.current = py;
@@ -62,7 +61,6 @@ export default function PythonOnlineEditor() {
       })();
       return pyodideReadyRef.current;
     } catch (e: any) {
-      console.error("[ensurePyodide]", e);
       setPyStatus("error");
       setErrorMsg("Python yüklenemedi. Sayfayı yenile.");
       throw e;
