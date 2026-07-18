@@ -32,7 +32,7 @@ import { BASE_URL } from "@/lib/seo";
 export const revalidate = 60; // 2026-07-18: gecici cache bypass (slug migration sonrasi 3600)
 
 export const metadata: Metadata = {
-  title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
+  title: "Python ve JavaScript Mülakat Soruları",
   description:
     "Python ve JavaScript mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack. 7 kategori, 100+ soru.",
   keywords: [
