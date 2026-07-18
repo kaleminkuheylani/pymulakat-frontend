@@ -73,11 +73,6 @@ const nextConfig = {
     ];
   },
 
-  transpilePackages: ["pyodide"],
-};
-
-export default nextConfig;
-
   // 2026-07-18: /python-egitimi ve /blog liste sayfasi kaldirildi, /blog/sifirdan-zirveye'ye yonlendir
   async redirects() {
     return [
@@ -98,3 +93,7 @@ export default nextConfig;
       },
     ];
   },
+  transpilePackages: ["pyodide"],
+};
+
+export default nextConfig;
