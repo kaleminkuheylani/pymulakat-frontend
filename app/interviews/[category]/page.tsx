@@ -47,6 +47,9 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const cat = await getCategoryMeta(category);
   if (!cat) return { title: "Kategori Bulunamadı | Python Mülakat" };
 
+  // 2026-07-18: pandas scope'tan cikarildi (CATEGORY_SLUGS'ta yok zaten,
+  // notFound 404 dondurur). Metadata yine de uretilir (defensive).
+
   const label = cat.label ?? category;
   return {
     title: `${label} Mülakat Soruları | Python Mülakat`,
@@ -79,9 +82,15 @@ export default async function CategoryPage({ params }: PageProps) {
     notFound();
   }
 
+  // 2026-07-18: pandas scope'tan cikarildi — 410 Gone
+  if (category === "pandas") {
+    notFound(); // CATEGORY_SLUGS'ta yok zaten, notFound 404 dondurur
+  }
+
   // Kategori meta
   const cat = await getCategoryMeta(category);
   if (!cat) notFound();
+
 
   // Bu kategorinin soruları
   const questions = await getAllQuestions({ category, limit: 500 });

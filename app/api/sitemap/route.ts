@@ -92,8 +92,10 @@ export async function GET(req: NextRequest) {
     console.log(`[api/sitemap] inline fetch: ${questions.length} questions`);
   }
 
+  // 2026-07-18: pandas scope'tan cikarildi — sitemap'te de filtrele
   const categoryEntries: SitemapEntry[] = categories
     .map((c) => c.slug)
+    .filter((slug) => slug !== "pandas")
     .filter((slug): slug is string => Boolean(slug))
     .map((slug) =>
       toEntry(`${BASE_URL}${getCategoryUrl(slug)}`, now, "weekly", 0.85),
@@ -110,8 +112,9 @@ export async function GET(req: NextRequest) {
     );
 
 
+  // pandas sorulari artik sitemap'te yok
   const questionEntries: SitemapEntry[] = questions
-    .filter((q) => q.category && (q.title || q.slug))
+    .filter((q) => q.category && q.category !== "pandas" && (q.title || q.slug))
     .map((q) =>
       toEntry(
         `${BASE_URL}/interviews/${q.category}/${q.slug || (q.title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`,

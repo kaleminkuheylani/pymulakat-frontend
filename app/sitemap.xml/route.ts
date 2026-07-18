@@ -81,8 +81,10 @@ export async function GET() {
     questions = qData.data || qData.items || qData || [];
   }
 
+  // 2026-07-18: pandas scope'tan cikarildi
   const categoryEntries: SitemapEntry[] = categories
     .map((c) => c.slug)
+    .filter((slug) => slug !== "pandas")
     .filter((slug): slug is string => Boolean(slug))
     .map((slug) =>
       toEntry(`${BASE_URL}${getCategoryUrl(slug)}`, now, "weekly", 0.85),
@@ -98,8 +100,9 @@ export async function GET() {
       toEntry(`${BASE_URL}/interviews/${slug}`, now, "weekly", 0.8),
     );
 
+  // pandas sorulari artik sitemap'te yok
   const questionEntries: SitemapEntry[] = questions
-    .filter((q) => q.category && (q.title || q.slug))
+    .filter((q) => q.category && q.category !== "pandas" && (q.title || q.slug))
     .map((q) =>
       toEntry(
         `${BASE_URL}/interviews/${q.category}/${q.slug || (q.title || "").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`,

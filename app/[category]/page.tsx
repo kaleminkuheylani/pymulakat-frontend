@@ -65,6 +65,7 @@ export async function generateMetadata({
     return { title: "Kategori bulunamadı | Python Mülakat" };
   }
 
+
   const { meta, questions } = await getCategoryPageData(category);
   if (!meta) {
     return { title: "Kategori bulunamadı | Python Mülakat" };
@@ -229,6 +230,7 @@ export default async function CategoryPage({
   if (!isCanonicalCategory(category)) {
     notFound();
   }
+
 
   // DB'den kategori meta + soru listesi
   // (lib/api/questionAPI.ts → getCategoryPageData, tag'li cache'li)
