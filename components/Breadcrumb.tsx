@@ -22,7 +22,7 @@ export interface BreadcrumbItem {
 }
 
 export interface BreadcrumbProps {
-  category: string; // DB category (örn. "python-basics")
+  category: string; // DB category (örn. "programlama-temelleri")
   slug: string; // soru slug
   title: string; // soru title
 }

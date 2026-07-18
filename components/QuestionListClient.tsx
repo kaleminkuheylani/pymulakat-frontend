@@ -12,7 +12,7 @@ import { useEffect, useState } from "react";
 import { listQuestionsByCategory } from "@/lib/api/questionAPI";
 
 export interface QuestionListClientProps {
-  /** Filtrelenecek kategori (örn. "python-basics", "dynamic-programming") */
+  /** Filtrelenecek kategori (örn. "programlama-temelleri", "dynamic-programming") */
   category: string;
   /** Çoklu kategori (yeni: birleşik liste için) — filter'ı genişletir */
   categories?: string[];

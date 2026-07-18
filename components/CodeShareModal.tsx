@@ -91,7 +91,7 @@ export default function CodeShareModal({
   //    Server slug ile senkron tutulmazsa kırık link olur.
   const shareUrl = (() => {
     if (typeof window === "undefined") return undefined;
-    const base = `${window.location.origin}/interviews/${category || "python-basics"}`;
+    const base = `${window.location.origin}/interviews/${category || "programlama-temelleri"}`;
     const path = slug || (title ? slugifyTitleLocal(title) : "");
     return path ? `${base}/${path}` : undefined;
   })();

@@ -33,7 +33,7 @@ export function WorkspaceSidebarMobile({
         interview={interview}
         testCases={testCases}
         isGuest={isGuest}
-        category={interview.category || "python-basics"}
+        category={interview.category || "programlama-temelleri"}
         id={String(interview.id)}
         hintsList={hintsList}
         revealedHints={revealedHints}

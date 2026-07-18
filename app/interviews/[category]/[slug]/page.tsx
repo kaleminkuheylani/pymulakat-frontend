@@ -1,7 +1,7 @@
 // app/interviews/[category]/[id]/page.tsx
 // SEO-optimized: server-side metadata, HowTo schema, breadcrumb, related questions
-// Supports BOTH slug-based URLs (/interviews/python-basics/palindrom-kontrol)
-// AND legacy ID URLs (/interviews/python-basics/3) — slug gelirse ID'ye resolve eder
+// Supports BOTH slug-based URLs (/interviews/programlama-temelleri/palindrom-kontrol)
+// AND legacy ID URLs (/interviews/programlama-temelleri/3) — slug gelirse ID'ye resolve eder
 //
 // <Pin className="w-3 h-3 inline" /> CSV-FIRST: Yeni eklenen sorular henüz DB'de olmayabilir (Railway deploy
 // gecikebilir). Bu yüzden önce CSV'den (jsDelivr CDN, GitHub main) çekiyoruz,
@@ -123,7 +123,7 @@ function csvToSEOQuestion(q: ApiQuestion, actualId: number, slug: string): SEOQu
 
 
 function displayToInternal(display: string): string {
-  // legacyDisplayToDb: /heap → heap, /python-temelleri → python-basics, vb.
+  // legacyDisplayToDb: /heap → heap, /python-temelleri → programlama-temelleri, vb.
   return legacyDisplayToDb("/" + display) ?? display;
 }
 
@@ -342,7 +342,7 @@ function buildFaqSchema(q: SEOQuestion, baseUrl: string) {
       name: `Python'da ${funcName} fonksiyonu nasıl yazılır?`,
       acceptedAnswer: {
         "@type": "Answer",
-        text: `Python'da ${funcName} fonksiyonunu yazmak için ${q.category || "python-basics"} kategorisindeki bu soruyu interaktif editörde çözebilirsiniz. Başlangıç kodu (starter_code) ve beklenen test case'leri sayfada yer alır. Çözüm: ${url}`,
+        text: `Python'da ${funcName} fonksiyonunu yazmak için ${q.category || "programlama-temelleri"} kategorisindeki bu soruyu interaktif editörde çözebilirsiniz. Başlangıç kodu (starter_code) ve beklenen test case'leri sayfada yer alır. Çözüm: ${url}`,
       },
     });
   }

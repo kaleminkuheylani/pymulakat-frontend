@@ -111,7 +111,7 @@ import type { LucideIcon } from "lucide-react";
 
 // ─── 9 pillar kategori icon mapping ───────────────────────────
 export const CATEGORY_ICONS: Record<string, LucideIcon> = {
-  "python-basics": Code,
+  "programlama-temelleri": Code,
   "data-structures": Layers,
   "list-dict": ListTree,
   "algorithms": Cpu,
@@ -215,7 +215,7 @@ export const STAT_ICONS = {
 // ─── Inline emoji → lucide replacement helper ──────────────────
 //   Kullanım: <Icon name="python-basics" className="..." />
 //   Eski: <span>🐍</span>
-//   Yeni: <Icon name="python-basics" />
+//   Yeni: <Icon name="programlama-temelleri" />
 export type IconName =
   | keyof typeof CATEGORY_ICONS
   | keyof typeof LEVEL_ICONS

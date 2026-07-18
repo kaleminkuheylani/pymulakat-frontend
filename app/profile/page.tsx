@@ -102,7 +102,7 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
         <span className="text-4xl mb-3 block"><FileText className="w-3.5 h-3.5 inline" /></span>
         <p className="text-slate-400 text-sm">Henüz deneme yapmadın.</p>
         <Link
-          href="/interviews/python-basics"
+          href="/interviews/programlama-temelleri"
           className="inline-block mt-3 text-amber-400 hover:text-amber-300 text-sm underline"
         >
           İlk sorunu çözmeye başla →
@@ -116,7 +116,7 @@ function RecentAttempts({ attempts, loading }: { attempts: AttemptResponse[]; lo
       {attempts.map((attempt) => {
         // Orphans: eski 6, 17, 51 — yeni DB'de yok, ESKİ rozet
         const isOrphaned = attempt.is_orphaned === true;
-        const targetHref = `/interviews/${attempt.category || "python-basics"}/${
+        const targetHref = `/interviews/${attempt.category || "programlama-temelleri"}/${
           attempt.question_slug ||
           (attempt.question_id as any)?.slug ||
           (attempt.question_title ? slugifyTitle(attempt.question_title) : String(attempt.question_id))
@@ -453,7 +453,7 @@ export default function ProfilePage() {
             →
           </Link>
           <Link
-            href="/interviews/python-basics"
+            href="/interviews/programlama-temelleri"
             className="flex items-center justify-between p-5 rounded-2xl border border-white/10 bg-gradient-to-br from-indigo-500/[0.08] to-transparent hover:border-indigo-500/30 transition-colors group"
           >
             <div>

@@ -90,7 +90,7 @@ export function useRecommendations(limit: number = 10) {
 
 async function computeLocalRecommendations(user: any, limit: number): Promise<ScoredItem[]> {
   const ctx: UserContext = {
-    top_categories: ["python-basics", "strings"],
+    top_categories: ["programlama-temelleri", "strings"],
     weak_categories: [],
     success_rate: user?.success_rate || 0,
     solved_ids: [],
@@ -132,8 +132,8 @@ async function computeLocalRecommendations(user: any, limit: number): Promise<Sc
     .slice(0, limit);
 
   const tutorialItems: ScoredItem[] = [
-    { type: "tutorial" as const, id: 8, title: "Python Değişken Nedir?", slug: "python-degisken-nedir", category: "python-basics", score: 50, reason: "📖 Yeni başlangıç rehberi" },
-    { type: "tutorial" as const, id: 9, title: "Python If-Else Koşulları", slug: "python-if-else-kosullar", category: "python-basics", score: 50, reason: "📖 Yeni başlangıç rehberi" },
+    { type: "tutorial" as const, id: 8, title: "Python Değişken Nedir?", slug: "python-degisken-nedir", category: "programlama-temelleri", score: 50, reason: "📖 Yeni başlangıç rehberi" },
+    { type: "tutorial" as const, id: 9, title: "Python If-Else Koşulları", slug: "python-if-else-kosullar", category: "programlama-temelleri", score: 50, reason: "📖 Yeni başlangıç rehberi" },
   ];
 
   return [...questionItems, ...tutorialItems].sort((a, b) => b.score - a.score).slice(0, limit);

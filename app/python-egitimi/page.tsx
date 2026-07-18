@@ -198,7 +198,7 @@ const faqJsonLd = {
       name: "Eğitimden sonra ne yapmalıyım?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Üç adım: 1) /interviews sayfasındaki ${totalCount} sorudan kendi seviyene uygun olanları çöz (başlangıç: python-basics). 2) Bir mini proje yap (örn: hava durumu CLI, todo API, basit web scraper). 3) GitHub'da paylaş ve açık kaynak projelere katkıda bulunmaya başla. Junior pozisyonu için 3-6 aylık pratik yeterli olabilir.",
+        text: "Üç adım: 1) /interviews sayfasındaki ${totalCount} sorudan kendi seviyene uygun olanları çöz (başlangıç: programlama-temelleri). 2) Bir mini proje yap (örn: hava durumu CLI, todo API, basit web scraper). 3) GitHub'da paylaş ve açık kaynak projelere katkıda bulunmaya başla. Junior pozisyonu için 3-6 aylık pratik yeterli olabilir.",
       },
     },
   ],
@@ -330,7 +330,7 @@ export default async function PythonEgitimiPage() {
                 <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center font-bold text-rose-300">4</div>
                 <div>
                   <h3 className="font-bold text-white mb-1">4. Hafta — Veri Yapıları + Mülakat Pratiği</h3>
-                  <p className="text-sm text-white/65">Class, __init__, inheritance. Sonra <Link href="/interviews" className="text-amber-300 hover:underline">/interviews</Link>'da başlangıç sorularını çöz (python-basics, list-dict).</p>
+                  <p className="text-sm text-white/65">Class, __init__, inheritance. Sonra <Link href="/interviews" className="text-amber-300 hover:underline">/interviews</Link>'da başlangıç sorularını çöz (programlama-temelleri, list-dict).</p>
                 </div>
               </div>
             </div>

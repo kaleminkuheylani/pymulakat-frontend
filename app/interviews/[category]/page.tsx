@@ -94,7 +94,7 @@ export default async function CategoryPage({ params }: PageProps) {
 
   // Bu kategorinin soruları
   const questions = await getAllQuestions({ category, limit: 500 });
-  const Icon = CATEGORY_ICONS[category] ?? CATEGORY_ICONS["python-basics"];
+  const Icon = CATEGORY_ICONS[category] ?? CATEGORY_ICONS["programlama-temelleri"];
 
   return (
     <main className="min-h-screen bg-[#050816] text-white">

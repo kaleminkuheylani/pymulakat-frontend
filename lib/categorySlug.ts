@@ -5,11 +5,11 @@
 // 2026-07-13 refactor (kullanici direktifi "seoyu kırıyor suan"):
 //   ESKİ: Canonical = display URL (/temelleri, /veri-yapilari, /liste-sozluk, ...)
 //         SEO kötü: Türkçe karakterler, çok uzun, kısaltılmış formlar.
-//   YENİ: Canonical = DB slug (/python-basics, /data-structures, /list-dict, ...)
+//   YENİ: Canonical = DB slug (/programlama-temelleri, /data-structures, /list-dict, ...)
 //         SEO iyi: İngilizce, kısa, tutarlı, Google-friendly.
 //
 // Legacy display URL'ler → 308 → canonical DB slug URL.
-//   /temelleri            → /python-basics
+//   /temelleri            → /programlama-temelleri
 //   /veri-yapilari        → /data-structures
 //   /liste-sozluk         → /list-dict
 //   /pandas               → 410 Gone (scope'tan cikarildi, 2026-07-18)
@@ -17,18 +17,20 @@
 //   /heap                 → /heap (DB slug aynı)
 //   /stack                → /stack (DB slug aynı)
 //   /dinamik-programlama  → /dynamic-programming
-//   /python-temelleri     → /python-basics (legacy alias)
+//   /python-temelleri     → /programlama-temelleri (legacy alias)
 //
 // Canonical top-level dynamic route: app/[category]/page.tsx
-//   - URL = /{db_slug} (örn. /python-basics, /heap)
+//   - URL = /{db_slug} (örn. /programlama-temelleri, /heap)
 //   - 8 path pre-rendered (ISR 1h, DB-FIRST)
 //   - dynamicParams=true → yeni kategori eklenince otomatik
 //
 // Soru detay URL'i (değişmedi): /interviews/{db}/{slug}
 
-// ─── 8 canonical DB slug — sıralama sitemap/sidebar için ────
+// ─── 7 canonical DB slug — sıralama sitemap/sidebar için ────
+// 2026-07-18: "python-basics" → "programlama-temelleri" (Türkçe slug).
+// Python bağımlılığı URL'de de kaldırıldı, marka dili tutarlı.
 export const CATEGORY_SLUGS = [
-  "python-basics",
+  "programlama-temelleri",
   "data-structures",
   "list-dict",
   "algorithms",
@@ -51,7 +53,7 @@ export type CategorySlug = (typeof CATEGORY_SLUGS)[number];
 //   - stack              → "Yığın / Stack"          (evrensel)
 //   - dynamic-programming→ "Dinamik Programlama"    (evrensel)
 export const CATEGORY_LABEL: Record<string, string> = {
-  "python-basics": "Programlama Temelleri",
+  "programlama-temelleri": "Programlama Temelleri",
   "data-structures": "Veri Yapıları",
   "list-dict": "Listeler & Sözlükler",
   algorithms: "Algoritmalar",
@@ -63,7 +65,7 @@ export const CATEGORY_LABEL: Record<string, string> = {
 // ─── DB slug → kısa açıklama (kategori kartı alt metni için) ──
 // 2026-07-18: Python'a bağımlı metin kaldırıldı.
 export const CATEGORY_DESCRIPTION: Record<string, string> = {
-  "python-basics":
+  "programlama-temelleri":
     "Değişkenler, döngüler, koşullar, fonksiyonlar, string işlemleri. Python ve JavaScript için ortak temel.",
   "data-structures":
     "List, dict, set, tuple, deque, generators. Dil-bağımsız veri yapıları.",
@@ -82,13 +84,15 @@ export const CATEGORY_DESCRIPTION: Record<string, string> = {
 // 308 = kalıcı redirect, SEO juice yeni URL'ye aktarılır.
 const LEGACY_DISPLAY_TO_DB: Record<string, string> = {
   // Türkçe display URL'ler (eski 8 pillar statik sayfalar)
-  temelleri: "python-basics",
+  temelleri: "programlama-temelleri",
   "veri-yapilari": "data-structures",
   "liste-sozluk": "list-dict",
   "algoritma-sorulari": "algorithms",
   "dinamik-programlama": "dynamic-programming",
   // Legacy alias
-  "python-temelleri": "python-basics",
+  "python-temelleri": "programlama-temelleri",
+  // 2026-07-18: Eski python-basics slug'ı → yeni Türkçe slug (308)
+  "python-basics": "programlama-temelleri",
 };
 
 // ─── Public API ─────────────────────────────────────────────
@@ -147,8 +151,8 @@ export function listAllLegacyDisplaySlugs(): string[] {
 //   4) 1 seviye kelimesi (junior/mülakat) — funnel
 // ───────────────────────────────────────────────────────────────
 const CATEGORY_SEO_KEYWORDS: Record<string, readonly string[]> = {
-  // ── python-basics ────────────────────────────────────────
-  "python-basics": [
+  // ── programlama-temelleri ────────────────────────────────
+  "programlama-temelleri": [
     "python soru bankası",
     "python temel sorular ve çözümleri",
     "açıklamalı python soruları",

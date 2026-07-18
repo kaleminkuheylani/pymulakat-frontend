@@ -43,7 +43,7 @@ export default function QuestionDescriptionContent({
   const metaRelated = relatedIds.map((rid) => ({
     id: rid,
     title: `Soru #${rid}`, // Title DB'den linked fetch ile gelir (ileride batch)
-    category: interview.category || "python-basics",
+    category: interview.category || "programlama-temelleri",
     level: interview.level || "beginner",
     slug: String(rid),
   }));
@@ -280,7 +280,7 @@ export default function QuestionDescriptionContent({
             {relatedToShow.map((rq) => (
               <Link
                 key={rq.id}
-                href={`/interviews/${slugifyCategory(rq.category || "python-basics")}/${rq.slug || String(rq.id)}`}
+                href={`/interviews/${slugifyCategory(rq.category || "programlama-temelleri")}/${rq.slug || String(rq.id)}`}
                 className="flex items-center gap-2.5 p-3 rounded-lg bg-white/[0.03] hover:bg-white/[0.06] border border-white/10 hover:border-cyan-500/30 transition-all group"
               >
                 <span className="flex-1 text-sm text-white/80 group-hover:text-white line-clamp-2">

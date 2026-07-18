@@ -584,7 +584,7 @@ else:
                 <strong className="text-amber-200">if/else</strong> ve{" "}
                 <strong className="text-amber-200">for/while</strong> programlamanın %80'idir.
                 Bu ikisini öğrendiğinde Python'da basit projeler yazabilir,{" "}
-                <Link href="/interviews/python-basics" className="text-amber-300 hover:text-amber-200 underline">
+                <Link href="/interviews/programlama-temelleri" className="text-amber-300 hover:text-amber-200 underline">
                   20 temel soruyu
                 </Link>{" "}
                 çözebilirsin.
@@ -599,7 +599,7 @@ else:
               </ul>
               <p className="text-white/80 leading-relaxed">
                 3 gün sonra{" "}
-                <Link href="/interviews/python-basics" className="text-amber-300 hover:text-amber-200 underline">
+                <Link href="/interviews/programlama-temelleri" className="text-amber-300 hover:text-amber-200 underline">
                   Python Temelleri kategorisindeki 20 soruyu
                 </Link>{" "}
                 çöz — hepsi bu temelleri test ediyor.
@@ -617,7 +617,7 @@ else:
               PYBlog&apos;a dön
             </Link>
             <Link
-              href="/interviews/python-basics"
+              href="/interviews/programlama-temelleri"
               className="inline-flex items-center gap-2 text-sm text-amber-300 hover:text-amber-200 transition-colors"
             >
               Hemen pratik yap

@@ -251,7 +251,7 @@ export async function getQuestionTests(
  *   backend .eq('category', X) ile DB-side filtre yapar.
  *
  * @example
- *   const { meta, questions } = await getCategoryPageData("python-basics");
+ *   const { meta, questions } = await getCategoryPageData("programlama-temelleri");
  */
 export async function getCategoryPageData(
   categorySlug: string

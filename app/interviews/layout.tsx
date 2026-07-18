@@ -94,7 +94,7 @@ export default function InterviewsLayout({
           "@type": "ListItem",
           position: 3,
           name: "Python Temel Konular Alıştırma Soruları",
-          url: `${siteUrl}/interviews/python-basics`,
+          url: `${siteUrl}/interviews/programlama-temelleri`,
           description:
             "Döngüler, koşullar, fonksiyonlar ve Python sözdizimi. Sıfırdan başlayanlar için temel sorular.",
         },

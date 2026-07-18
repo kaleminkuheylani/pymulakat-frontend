@@ -94,7 +94,7 @@ export default async function InterviewsGridPage() {
         {/* ─── Kategori grid (sade/düz) ──────────────────── */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {categories.map((cat) => {
-            const Icon = CATEGORY_ICONS[cat.slug] ?? CATEGORY_ICONS["python-basics"];
+            const Icon = CATEGORY_ICONS[cat.slug] ?? CATEGORY_ICONS["programlama-temelleri"];
             return (
               <Link
                 key={cat.slug}

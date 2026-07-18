@@ -72,7 +72,7 @@ export default function PersonalFlow({ flow, error }: { flow: FlowResponse | nul
     <div className="space-y-4">
       <FlowSection
         title="✨ Senin İçin Seçtiklerimiz"
-        subtitle={context.is_authenticated ? `${context.solved_categories?.[0] || context.top_categories?.[0] || "python-basics"} kategorisinde başarılısın · daha fazlası için` : "Genel öneriler — giriş yaparak kişiselleştir"}
+        subtitle={context.is_authenticated ? `${context.solved_categories?.[0] || context.top_categories?.[0] || "programlama-temelleri"} kategorisinde başarılısın · daha fazlası için` : "Genel öneriler — giriş yaparak kişiselleştir"}
         accent="indigo" icon="✨"
         emptyText="Henüz öneri yok. Birkaç soru çözdükten sonra kişiselleştirilmiş öneriler görünür."
         items={personalItems}
@@ -142,7 +142,7 @@ function buildHref(item: FlowItem): { href: string; ok: boolean } {
   // Question: slug varsa slug, yoksa ID (interview sayfası ikisini de kabul ediyor)
   if (item.type === "question") {
     if (item.slug) return { href: `/interviews/${item.category}/${item.slug}`, ok: true };
-    if (item.id) return { href: `/interviews/${item.category || "python-basics"}/${item.id}`, ok: true };
+    if (item.id) return { href: `/interviews/${item.category || "programlama-temelleri"}/${item.id}`, ok: true };
     return { href: "", ok: false };
   }
   // Tutorial: slug primary, ID yok
