@@ -78,6 +78,36 @@ export const metadata: Metadata = {
 // JSON-LD: Course + HowTo + FAQPage + BreadcrumbList
 // ═══════════════════════════════════════════════════════
 
+// ─── JSON-LD: Article (Course + Article birlikte) ─────────────
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": `${PAGE_URL}#article`,
+  headline: "Algoritma Labirenti — 30 Dakikada 6 Problemi Çöz",
+  description:
+    "6 seviyeli interaktif algoritma kasabası: filtrele, max bul, palindrom, iki sayı toplamı, anagram. Her seviyede 2 test case (kolay + edge), ikisi de geçmeli. 30 dakikada tamamla.",
+  image: `${BASE_URL}/og-default.png`,
+  datePublished: "2026-07-18",
+  dateModified: "2026-07-18",
+  inLanguage: "tr-TR",
+  articleSection: "Eğitim",
+  keywords: "algoritma soruları, interaktif algoritma dersi, python algoritma pratiği, 30 dakikada algoritma, kodlama egzersizi",
+  author: {
+    "@type": "Organization",
+    name: "Python Mülakat",
+    url: BASE_URL,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Python Mülakat",
+    logo: {
+      "@type": "ImageObject",
+      url: `${BASE_URL}/og-default.png`,
+    },
+  },
+  mainEntityOfPage: PAGE_URL,
+};
+
 const courseSchema = {
   "@context": "https://schema.org",
   "@type": "Course",
@@ -199,6 +229,10 @@ export default function Page() {
   return (
     <div className="min-h-screen bg-[#050816] text-white">
       {/* JSON-LD */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) } as any}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) } as any}

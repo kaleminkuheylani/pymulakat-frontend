@@ -45,14 +45,14 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { category } = await params;
   const cat = await getCategoryMeta(category);
-  if (!cat) return { title: "Kategori Bulunamadı | Python Mülakat" };
+  if (!cat) return { title: "Kategori Bulunamadı" };
 
   // 2026-07-18: pandas scope'tan cikarildi (CATEGORY_SLUGS'ta yok zaten,
   // notFound 404 dondurur). Metadata yine de uretilir (defensive).
 
   const label = cat.label ?? category;
   return {
-    title: `${label} Mülakat Soruları | Python Mülakat`,
+    title: `${label} Mülakat Soruları`,
     description:
       cat.description ??
       `${label} kategorisindeki Python mülakat soruları. ${cat.question_count ?? 0} soru, açıklama, ipuçları.`,
@@ -63,7 +63,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       "yazılım mülakat hazırlık",
     ],
     openGraph: {
-      title: `${label} Mülakat Soruları | Python Mülakat`,
+      title: `${label} Mülakat Soruları`,
       description: cat.description ?? `${label} kategorisindeki Python mülakat soruları.`,
       url: `${BASE_URL}/interviews/${category}`,
       type: "website",

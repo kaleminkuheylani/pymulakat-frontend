@@ -17,7 +17,7 @@ import {
 } from "lucide-react";
 import { notFound } from "next/navigation";
 import { BASE_URL } from "@/lib/seo";
-import { getPost } from "../posts";
+import { getAllPosts, getPost } from "../posts";
 
 export const revalidate = 3600;
 
@@ -121,6 +121,7 @@ const PYTHON_NESTED = `for i in range(3):
 export default async function ProgramlamaTemelleriPage() {
   const post = await getPost("programlama-temelleri");
   if (!post) notFound();
+  const OTHER_POSTS = (await getAllPosts()).filter((p) => p.slug !== "programlama-temelleri").slice(0, 3);
 
   const articleSchema = {
     "@context": "https://schema.org",
@@ -624,7 +625,23 @@ else:
               <ArrowRight className="w-4 h-4" />
             </Link>
           </div>
-        </article>
+                {/* ── İlgili Yazılar ────────────────────────────────── */}
+        <section className="rounded-2xl border border-white/10 bg-white/[0.02] p-6 space-y-4">
+          <h3 className="text-sm font-bold uppercase tracking-wider text-white/60">İlgili Yazılar</h3>
+          <div className="grid sm:grid-cols-2 gap-3">
+            {OTHER_POSTS.map((p) => (
+              <Link key={p.slug} href={`/blog/${p.slug}`} className="group p-4 rounded-xl border border-white/10 hover:border-amber-500/30 transition-colors">
+                <div className="text-sm font-semibold mb-1 group-hover:text-amber-300 transition-colors line-clamp-2">{p.title}</div>
+                <div className="text-xs text-white/60 line-clamp-2">{p.excerpt}</div>
+              </Link>
+            ))}
+            <Link href="/interviews" className="group p-4 rounded-xl border border-white/10 hover:border-amber-500/30 transition-colors">
+              <div className="text-sm font-semibold mb-1 group-hover:text-amber-300 transition-colors">Mülakat Sorularına Geç</div>
+              <div className="text-xs text-white/60">7 kategori, 98 soru — yazıları okudun, şimdi pratik yap.</div>
+            </Link>
+          </div>
+        </section>
+      </article>
       </main>
     </>
   );

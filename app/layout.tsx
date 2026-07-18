@@ -59,8 +59,10 @@ export const metadata: Metadata = {
   },
 
   description:
-    // 2026-07-18: 155 char SEO limit + 've JavaScript' tutarlı
-    "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 8 kategori, 100+ soru.",
+    // 2026-07-18 v14: 155 char SEO limit + 've JavaScript' tutarlı.
+    // 2026-07-18 fix: 8 kategori → 7 kategori (pandas kaldırıldı), 100+ → 98 (gerçek sayı).
+    //   Yanlış sayı Google'ın snippet'inde tutarsızlık yaratıyor, CTR düşürüyor.
+    "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 7 kategori, 98 soru.",
 
   keywords: [
     // Temel / Yeni başlayan
@@ -174,7 +176,7 @@ export const metadata: Metadata = {
     // 2026-07-18: 've JavaScript' tutarlı — H1 ile aynı
     title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
     description:
-      "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 8 kategori, 100+ soru.",
+      "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 7 kategori, 98 soru.",
     images: [
       {
         url: "https://pythonmulakat.com/og-default.png",

@@ -77,6 +77,36 @@ export const metadata: Metadata = {
 };
 
 // ─── JSON-LD: Course (eğitim içeriği) ───────────────────────
+// ─── JSON-LD: Article (Course + Article birlikte — Google News / Top Stories icin) ───
+const articleSchema = {
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "@id": `${PAGE_URL}#article`,
+  headline: "Sıfırdan Zirveye: 30 Dakikada Programlama Öğren",
+  description:
+    "Hiç kod yazmamış biri için 8 görevli Python dersi (30 dk). Print, değişken, if/else, for/while, fonksiyon. Tarayıcıda yaz, anında test et. Ücretsiz.",
+  image: `${BASE_URL}/og-default.png`,
+  datePublished: "2026-07-18",
+  dateModified: "2026-07-18",
+  inLanguage: "tr-TR",
+  articleSection: "Eğitim",
+  keywords: "sıfırdan programlama öğren, python başlangıç, 30 dakikada python, interaktif python dersi, kodlama temelleri",
+  author: {
+    "@type": "Organization",
+    name: "Python Mülakat",
+    url: BASE_URL,
+  },
+  publisher: {
+    "@type": "Organization",
+    name: "Python Mülakat",
+    logo: {
+      "@type": "ImageObject",
+      url: `${BASE_URL}/og-default.png`,
+    },
+  },
+  mainEntityOfPage: PAGE_URL,
+};
+
 const courseSchema = {
   "@context": "https://schema.org",
   "@type": "Course",
@@ -197,6 +227,10 @@ export default function SifirdanZirveyePage() {
   return (
     <>
       {/* Structured Data — 4 JSON-LD schema */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(articleSchema) } as any}
+      />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(courseSchema) }}
@@ -337,7 +371,7 @@ export default function SifirdanZirveyePage() {
               Tüm Mülakat Kategorileri
             </div>
             <div className="text-xs text-white/60">
-              70+ soru: Veri Yapıları, Algoritmalar, Heap, Stack, DP
+              7 kategori, 98 soru: Veri Yapıları, Algoritmalar, DP
             </div>
           </Link>
           <Link
@@ -360,6 +394,28 @@ export default function SifirdanZirveyePage() {
             </div>
             <div className="text-xs text-white/60">
               if/else, for/while, örneklerle açıklama
+            </div>
+          </Link>
+          <Link
+            href="/blog/algoritma-labirenti"
+            className="block p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-amber-500/30 transition-colors"
+          >
+            <div className="text-sm font-semibold text-white mb-1">
+              Algoritma Labirenti
+            </div>
+            <div className="text-xs text-white/60">
+              6 seviye, 12 test case — interaktif algoritma pratiği
+            </div>
+          </Link>
+          <Link
+            href="/blog/teknik-terimler"
+            className="block p-4 rounded-xl border border-white/10 bg-white/[0.02] hover:border-amber-500/30 transition-colors"
+          >
+            <div className="text-sm font-semibold text-white mb-1">
+              Teknik Terimler Sözlüğü
+            </div>
+            <div className="text-xs text-white/60">
+              Binary, interpreter, IDE, memory — benzetmelerle
             </div>
           </Link>
         </div>
