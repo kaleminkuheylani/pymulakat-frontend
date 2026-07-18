@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const post = await getPost("algoritma-nedir");
   if (!post) return { title: "Yazı Bulunamadı" };
   return {
-    title: `${post.title} | PYBlog — Python Mülakat`,
+    title: `${post.title} | PYBlog`,
     description:
       "Algoritma nedir? Sandviç örneği, akış şeması, bubble sort ve 5 sebep ile öğren. Algoritma örnekleri, akış şeması nasıl çizilir, sıkça sorulan sorular — hepsi bu rehberde.",
     keywords: [

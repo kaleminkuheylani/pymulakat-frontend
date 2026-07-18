@@ -31,7 +31,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const post = await getPost("teknik-terimler");
   if (!post) return { title: "Yazı Bulunamadı" };
   return {
-    title: `${post.title} | PYBlog — Python Mülakat`,
+    title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
       "yazılım teknik terimler",
