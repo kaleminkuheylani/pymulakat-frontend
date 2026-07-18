@@ -77,3 +77,24 @@ const nextConfig = {
 };
 
 export default nextConfig;
+
+  // 2026-07-18: /python-egitimi ve /blog liste sayfasi kaldirildi, /blog/sifirdan-zirveye'ye yonlendir
+  async redirects() {
+    return [
+      {
+        source: "/python-egitimi",
+        destination: "/blog/sifirdan-zirveye",
+        permanent: true, // 308
+      },
+      {
+        source: "/python-egitimi/:slug",
+        destination: "/blog/sifirdan-zirveye",
+        permanent: true,
+      },
+      {
+        source: "/blog",
+        destination: "/blog/sifirdan-zirveye",
+        permanent: true,
+      },
+    ];
+  },
