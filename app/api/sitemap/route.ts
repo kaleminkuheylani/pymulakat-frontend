@@ -111,12 +111,24 @@ export async function GET(req: NextRequest) {
       ),
     );
 
-  // 4. Ders sayfaları
+  // 4. Blog yazilari (PYBlog — Google'in dizine eklemesi icin)
+  const BLOG_POSTS = [
+    { slug: "algoritma-nedir", date: "2026-07-17" },
+    { slug: "programlama-temelleri", date: "2026-07-18" },
+    { slug: "sifirdan-zirveye", date: "2026-07-18" },
+    { slug: "teknik-terimler", date: "2026-07-18" },
+  ];
+  const blogEntries: SitemapEntry[] = BLOG_POSTS.map((p) =>
+    toEntry(`${BASE_URL}/blog/${p.slug}`, p.date, "monthly", 0.7),
+  );
+
+  // 5. Ders sayfaları
   const all = [
     ...staticEntries,
     ...categoryEntries,
     ...interviewsCategoryEntries,
     ...questionEntries,
+    ...blogEntries,
   ];
   const xml = toXml(all);
 
