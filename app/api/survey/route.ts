@@ -1,6 +1,6 @@
 // app/api/survey/route.ts
 //
-// 2026-07-18: Onboarding anket API proxy.
+// 2026-07-18: Onboarding anket API proxy (redeploy trigger).
 // Frontend bu endpoint'i çağırır, cookie auth'u Vercel proxy'de yönetilir
 // (sb-*-auth-token httpOnly cookie) → backend'e Bearer olarak iletilir.
 
