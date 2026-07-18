@@ -259,9 +259,11 @@ export async function getCategoryPageData(
   meta: Awaited<ReturnType<typeof listCategories>>[number] | null;
   questions: ApiQuestion[];
 }> {
+  // 2026-07-18: DB-FIRST — canonical slug = DB slug.
+  // "programlama-temelleri" slug'i DB'de olmali; SQL migration tamamlanmali.
   const [allCats, allQs] = await Promise.all([
     listCategories(),
-    listQuestionsByCategory(categorySlug), // DB-side filtre (heap → sadece heap)
+    listQuestionsByCategory(categorySlug), // DB-side filtre
   ]);
   return {
     meta: allCats.find((c) => c.slug === categorySlug) ?? null,
