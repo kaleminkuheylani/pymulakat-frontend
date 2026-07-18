@@ -14,6 +14,15 @@ export interface BlogPostMeta {
 
 const POSTS: BlogPostMeta[] = [
   {
+    slug: "programlama-temelleri",
+    title: "Programlama Temelleri Nedir? — if else ve Döngü Örnekleri (Python)",
+    excerpt:
+      "Bir programın temel yapı taşları: if/else koşul ifadeleri, for ve while döngüleri. 5 somut örnek, akış şeması, FAQ ve Python kodu ile yeni başlayanlar için temiz bir giriş.",
+    date: "2026-07-18",
+    readingMinutes: 7,
+    tags: ["temeller", "koşul ifadeleri", "döngüler", "python başlangıç"],
+  },
+  {
     slug: "algoritma-nedir",
     title: "Algoritma Nedir? — Sandviçten Kodlamaya Bir Yolculuk",
     excerpt:

@@ -65,8 +65,10 @@ interface Category {
 }
 
 export default async function InterviewsGridPage() {
+  // 2026-07-18: getAllCategories() DB'den direkt cekiyor (degistirilmedi).
+  // Pandas/OOP/SQLite scope'tan cikarildi — DB'den kullanici silecek.
+  // queue zaten yok ama defensive filtre korundu.
   const allCategories = (await getAllCategories()) as Category[];
-  // queue kategorisini filtrele (varsa)
   const categories = allCategories.filter((c) => c.slug !== "queue");
 
   return (
