@@ -107,6 +107,7 @@ const articleSchema = {
     },
   },
   mainEntityOfPage: `${BASE_URL}/blog/teknik-terimler`,
+  articleSection: "Sözlük",
   keywords:
     "yazılım teknik terimler, programlama terimleri sözlük, binary ne demek, machine code nedir, interpreter nedir, derleyici nedir",
 };

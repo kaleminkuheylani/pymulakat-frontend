@@ -140,6 +140,7 @@ export default async function ProgramlamaTemelleriPage() {
     "keywords":
       "programlama temelleri, if else örnekleri, for döngüsü, while döngüsü, koşul ifadeleri, python başlangıç",
     "inLanguage": "tr-TR",
+    "articleSection": "Eğitim",
   };
 
   const faqSchema = {

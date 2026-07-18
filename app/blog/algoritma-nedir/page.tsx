@@ -128,6 +128,7 @@ export default async function AlgoritmaNedirPage() {
     "keywords":
       "algoritma nedir, algoritma örnekleri, akış şeması, bubble sort, pseudo kod, yazılım mülakat",
     "inLanguage": "tr-TR",
+    "articleSection": "Eğitim",
   };
 
   const faqSchema = {

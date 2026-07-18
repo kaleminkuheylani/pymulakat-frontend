@@ -4,10 +4,9 @@ import Script from "next/script";
 import { BASE_URL } from "@/lib/seo";
 
 export const metadata: Metadata = {
-  title: {
-    default: "Python Alıştırma Soruları | Yeni Başlayanlar İçin",
-    template: "%s | Python Alıştırma Soruları",
-  },
+  // 2026-07-18 v14: nested layout'ta title sadece string (template inherit değil,
+  //   "Y | Python Mülakat | Python Alıştırma Soruları" double-suffix önlendi).
+  title: "Mülakat Soruları | Python Mülakat",
   description:
     "Python öğrenmeye yeni başlayanlar için interaktif python soruları. Veri tipleri, kontrol yapıları, basit uygulamalar ve algoritma ile seviye bazlı hazırlan.",
   keywords: [
@@ -40,14 +39,14 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "tr_TR",
-    title: "Python Alıştırma Soruları | Yeni Başlayanlar İçin",
+    title: "Mülakat Soruları | Python Mülakat",
     description:
       "Python öğrenmeye yeni başlayanlar için interaktif alıştırma soruları. Veri tipleri, kontrol yapıları ve algoritma konuları.",
-    siteName: "Python Alıştırma Soruları",
+    siteName: "Python Mülakat",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Python Alıştırma Soruları | Yeni Başlayanlar İçin",
+    title: "Mülakat Soruları | Python Mülakat",
     description:
       "Veri tipleri, kontrol yapıları ve algoritma. Seviye bazlı Python soruları ile mülakatlara hazırlanın.",
   },
@@ -64,7 +63,7 @@ export default function InterviewsLayout({
   const collectionSchema = {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
-    name: "Python Alıştırma Soruları",
+    name: "Python Mülakat",
     description: metadata.description,
     inLanguage: "tr",
     url: `${siteUrl}/interviews`,
