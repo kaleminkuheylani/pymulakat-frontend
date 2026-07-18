@@ -236,7 +236,7 @@ export default function DashboardHome() {
 
   return (
     <>
-      <OnboardingSurvey userId={user.id} />
+      <OnboardingSurvey userId={user.id} totalAttempts={user.total_attempts || 0} />
       <div className="space-y-5">
           {/* Üst Bar — kullanıcı + stats + tablar */}
           <div className="space-y-3">

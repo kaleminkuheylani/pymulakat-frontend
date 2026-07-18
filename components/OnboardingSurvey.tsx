@@ -14,6 +14,7 @@ import { Sparkles, X, ChevronRight, ChevronLeft, Check } from "lucide-react";
 
 interface Props {
   userId: string;
+  totalAttempts?: number; // Dashboard'dan gelen toplam cozulen soru sayisi
 }
 
 // ─── Secenekler ─────────────────────────────────────────
@@ -50,11 +51,20 @@ const AGE_RANGES = [
 
 const STORAGE_KEY = (uid: string) => `pm_survey_dismissed_${uid}`;
 
-export default function OnboardingSurvey({ userId }: Props) {
+const FIRST_VISIT_KEY = "pm_dashboard_first_visit";
+const SHOW_DELAY_MS = 15 * 60 * 1000; // 15 dakika
+const MIN_ATTEMPTS = 2; // 2 soru cozuldukten sonra
+
+export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
   const [open, setOpen] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [step, setStep] = useState(0); // 0, 1, 2
+
+  // Ilk dashboard ziyareti timestamp (15dk kural icin)
+  if (typeof window !== "undefined" && !localStorage.getItem(FIRST_VISIT_KEY)) {
+    localStorage.setItem(FIRST_VISIT_KEY, String(Date.now()));
+  }
 
   // Cevaplar
   const [source, setSource] = useState<string>("");
@@ -73,9 +83,21 @@ export default function OnboardingSurvey({ userId }: Props) {
       return;
     }
 
+    // Zamanlama kontrolu: 15dk gectiyse VEYA 2+ soru cozulmusse goster
+    const firstVisitStr = localStorage.getItem(FIRST_VISIT_KEY);
+    const firstVisit = firstVisitStr ? Number(firstVisitStr) : Date.now();
+    const elapsed = Date.now() - firstVisit;
+    const enoughTime = elapsed >= SHOW_DELAY_MS;
+    const enoughAttempts = totalAttempts >= MIN_ATTEMPTS;
+    console.log(`[OnboardingSurvey] elapsed: ${Math.round(elapsed/1000)}s, attempts: ${totalAttempts}`);
+    if (!enoughTime && !enoughAttempts) {
+      console.log("[OnboardingSurvey] henuz erken (15dk VEYA 2+ soru bekleniyor)");
+      setOpen(false);
+      return;
+    }
+
     // Graceful: Sadece kesin dismissed:true ise gizle.
-    // 401/500/network/200+dismissed:false → GOSTER
-    console.log("[OnboardingSurvey] mount, userId:", userId);
+    console.log("[OnboardingSurvey] kosul saglandi, backend kontrolu...");
     (async () => {
       setLoading(true);
       try {
@@ -91,8 +113,6 @@ export default function OnboardingSurvey({ userId }: Props) {
             setOpen(false);
             return;
           }
-        } else {
-          console.log("[OnboardingSurvey] non-200, fallback show. status:", res.status);
         }
         setTimeout(() => setOpen(true), 1500);
       } catch (e) {
@@ -102,14 +122,14 @@ export default function OnboardingSurvey({ userId }: Props) {
         setLoading(false);
       }
     })();
-  }, [userId]);
+  }, [userId, totalAttempts]);
 
   // ── 2) Submit: Gonder veya Atla ──────────────────────────
   const submit = useCallback(
     async (dismissed: boolean) => {
       setSubmitting(true);
       try {
-        await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey", {
+        const res = await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -117,14 +137,19 @@ export default function OnboardingSurvey({ userId }: Props) {
             source: source || "skip",
             rating: rating || "skip",
             age_range: ageRange || "skip",
-            dismissed: true, // her zaman dismissed (gonder veya atla fark etmez)
+            dismissed: true,
           }),
         });
-        // Lokal: dismissed olarak isaretle
-        localStorage.setItem(STORAGE_KEY(userId), "1");
-        setOpen(false);
-      } catch {
-        // Hata olursa da kapat (kullaniciyi rahatsiz etme)
+        if (!res.ok) {
+          const errText = await res.text();
+          console.error(`[OnboardingSurvey] POST basarisiz (status ${res.status}):`, errText);
+        } else {
+          console.log("[OnboardingSurvey] POST basarili, DB\'ye kaydedildi");
+        }
+      } catch (e) {
+        console.error("[OnboardingSurvey] POST network/network error:", e);
+      } finally {
+        // Lokal: her durumda dismissed isaretle (kullaniciyi rahatsiz etme)
         localStorage.setItem(STORAGE_KEY(userId), "1");
         setOpen(false);
       } finally {
