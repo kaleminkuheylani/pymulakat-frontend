@@ -76,7 +76,7 @@ export default function OnboardingSurvey({ userId }: Props) {
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch("/api/v2/survey/status", {
+        const res = await fetch("/api/onboarding-survey/status", {
           credentials: "include",
         });
         if (res.status === 401) {
@@ -109,7 +109,7 @@ export default function OnboardingSurvey({ userId }: Props) {
     async (dismissed: boolean) => {
       setSubmitting(true);
       try {
-        await fetch("/api/v2/survey", {
+        await fetch("/api/onboarding-survey", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
