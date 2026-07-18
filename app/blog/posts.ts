@@ -23,6 +23,15 @@ const POSTS: BlogPostMeta[] = [
     tags: ["temeller", "koşul ifadeleri", "döngüler", "python başlangıç"],
   },
   {
+    slug: "sifirdan-zirveye",
+    title: "Sıfırdan Zirveye: 30 Dakikada Programlama Öğren",
+    excerpt:
+      "Hiç kod yazmamış biri için 8 kısa görev. Tarayıcıda Python — kurulum yok. Yaz, çalıştır, test geçince sonraki açılır. Print, değişkenler, if/else, fonksiyonlar, for/while.",
+    date: "2026-07-18",
+    readingMinutes: 30,
+    tags: ["sıfırdan", "interaktif", "temeller", "yeni başlayan"],
+  },
+  {
     slug: "algoritma-nedir",
     title: "Algoritma Nedir? — Sandviçten Kodlamaya Bir Yolculuk",
     excerpt:
