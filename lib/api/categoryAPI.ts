@@ -59,7 +59,7 @@ export async function getAllCategories(): Promise<CategoryMeta[]> {
       if (!cat.slug) continue;
       map.set(cat.slug, {
         slug: cat.slug,
-        // 2026-07-18: "Programlama Mülakatı" pozisyonlaması.
+        // 2026-07-18: "Programlama Mülakatı" pozisyonlaması (cache invalidation).
         // DB-First olduğu için label/description DB'den gelir, ama
         // Python'a bağımlı etiketleri frontend canonical map ile override ederiz.
         // (DB'de "Python Temelleri" yazıyorsa bile UI'da "Programlama Temelleri" görünür)
