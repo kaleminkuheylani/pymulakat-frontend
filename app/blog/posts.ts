@@ -49,6 +49,15 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 12,
     tags: ["temel kavramlar", "teknik terimler", "yazılıma giriş", "sözlük"],
   },
+  {
+    slug: "algoritma-labirenti",
+    title: "Algoritma Labirenti — 30 Dakikada 6 Algoritma Problemini Çöz",
+    excerpt:
+      "İnteraktif algoritma kasabası: 6 seviye, 12 test case. Filtrele, max bul, palindrom, iki sayı toplamı, anagram. İki test case'i de geçmeden sonraki seviyeye geçemezsin. 30 dakikada kasabayı çöz.",
+    date: "2026-07-18",
+    readingMinutes: 30,
+    tags: ["algoritma", "interaktif", "labirent", "30 dakika", "problem çözme"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
