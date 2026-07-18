@@ -38,35 +38,50 @@ export default function SectionBlock({
   const pyodideRef = useRef<any>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
-  const ensurePyodide = useCallback(async () => {
-    if (pyodideRef.current) return pyodideRef.current;
-    if (pyStatus === "loading") {
-      await new Promise((r) => setTimeout(r, 100));
-      return pyodideRef.current;
-    }
+  // Mount'ta pyodide yuklemeye basla (lazy load degil — kullanici Calistir'a basinca hazir olsun)
+  useEffect(() => {
+    if (pyodideRef.current) return;
+    let script: HTMLScriptElement | null = null;
     setPyStatus("loading");
-    try {
-      // @ts-ignore — window.loadPyodide runtime'da set edilecek
-      if (!window.loadPyodide) {
-        await new Promise<void>((resolve, reject) => {
-          const s = document.createElement("script");
-          s.src = `${PYODIDE_BASE}pyodide.js`;
-          s.onload = () => resolve();
-          s.onerror = () => reject(new Error("pyodide.js yüklenemedi"));
-          document.head.appendChild(s);
-        });
-      }
+    script = document.createElement("script");
+    script.src = `${PYODIDE_BASE}pyodide.js`;
+    script.async = true;
+    script.onload = () => {
       // @ts-ignore
-      const py = await window.loadPyodide({ indexURL: PYODIDE_BASE });
-      pyodideRef.current = py;
-      setPyStatus("ready");
-      return py;
-    } catch (e: any) {
-      setPyError(e?.message || "Pyodide yüklenemedi");
+      if (typeof window.loadPyodide === "function") {
+        // @ts-ignore
+        window.loadPyodide({ indexURL: PYODIDE_BASE })
+          .then((py: any) => {
+            pyodideRef.current = py;
+            setPyStatus("ready");
+          })
+          .catch((e: any) => {
+            setPyError(e?.message || "Pyodide başlatılamadı");
+            setPyStatus("error");
+          });
+      } else {
+        setPyError("loadPyodide global fonksiyonu bulunamadı");
+        setPyStatus("error");
+      }
+    };
+    script.onerror = () => {
+      setPyError(`pyodide.js yüklenemedi (${PYODIDE_BASE}pyodide.js) — Network/CSP`);
       setPyStatus("error");
-      throw e;
+    };
+    document.head.appendChild(script);
+    return () => {
+      // Component unmount'ta script'i kaldirma (global state)
+    };
+  }, []);
+
+  // Eski ensurePyodide kaldirildi — artik mount'ta yukleniyor
+  const waitReady = useCallback(async () => {
+    while (pyStatus !== "ready") {
+      if (pyStatus === "error") throw new Error(pyError || "Pyodide yüklenemedi");
+      await new Promise((r) => setTimeout(r, 100));
     }
-  }, [pyStatus]);
+    return pyodideRef.current;
+  }, [pyStatus, pyError]);
 
   useEffect(() => {
     setCode(section.exercise.starter);
@@ -78,7 +93,8 @@ export default function SectionBlock({
     setOutput("");
     setStatus("running");
     try {
-      const py = await ensurePyodide();
+      const py = await waitReady();
+      if (!py) throw new Error("Pyodide yüklenemedi");
       let captured = "";
       py.setStdout({ batched: (s: string) => { captured += s + "\n"; } });
       py.setStderr({ batched: (s: string) => { captured += s + "\n"; } });
