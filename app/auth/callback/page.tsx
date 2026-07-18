@@ -158,9 +158,9 @@ function CallbackInner() {
             });
 
             if (setErr) {
-              // setSession basarisiz — localStorage'a dogrudan yaz
-              // Supabase bir sonraki getSession()'da okur
+              // setSession basarisiz — gercek hatayi logla
               const storageKey = "sb-pymulakat-auth-token";
+              console.warn("supabase setSession failed:", setErr.message);
               const sessionData = [{
                 access_token: accessToken,
                 refresh_token: refreshToken,
