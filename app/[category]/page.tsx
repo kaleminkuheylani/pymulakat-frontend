@@ -38,6 +38,7 @@ import {
   getCategoryLabel,
   listAllCategorySlugs,
   getCategorySeoKeywords,
+  CATEGORY_DESCRIPTION,
 } from "@/lib/categorySlug";
 import QuestionListItem from "@/components/QuestionListItem";
 
@@ -76,7 +77,8 @@ export async function generateMetadata({
   const label = getCategoryLabel(category);
   // 2026-07-13: Conversion-friendly description — soru sayısı + ücretsiz katıl CTA.
   //   Google snippet'ında 155-160 char hedefiyle kırpılabilir.
-  const desc = meta.description ||
+  // 2026-07-18: Canonical CATEGORY_DESCRIPTION (Programlama pozisyonu)
+  const desc = CATEGORY_DESCRIPTION[category] ?? meta.description ??
     `${label} soru bankası: ${questions.length} açıklamalı Python mülakat sorusu. Tarayıcıda çöz, test case'lerle dene, AI geri bildirim al. Şimdilik ücretsiz.`;
   const canonical = `${BASE_URL}/${category}`;
 
@@ -123,12 +125,15 @@ function buildCollectionPageSchema(
   category: string,
   baseUrl: string
 ) {
-  const label = meta.label ?? category;
+  // 2026-07-18: Canonical label
+  const label = getCategoryLabel(category);
+  // 2026-07-18: Canonical description
+  const desc = CATEGORY_DESCRIPTION[category] ?? meta.description ?? `${label} konusunda mülakat soruları.`;
   return {
     "@context": "https://schema.org",
     "@type": "CollectionPage",
     name: `${label} Soruları`,
-    description: meta.description ?? `${label} konusunda Python mülakat soruları.`,
+    description: desc,
     url: `${baseUrl}/${category}`,
     isPartOf: { "@type": "WebSite", name: "PythonMulakat", url: baseUrl },
     mainEntity: { "@type": "ItemList", numberOfItems: questionCount },
