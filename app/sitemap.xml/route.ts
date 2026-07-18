@@ -108,6 +108,7 @@ export async function GET() {
     { slug: "algoritma-nedir", date: "2026-07-17" },
     { slug: "programlama-temelleri", date: "2026-07-18" },
     { slug: "sifirdan-zirveye", date: "2026-07-18" },
+    { slug: "teknik-terimler", date: "2026-07-18" },
   ];
   const blogEntries: SitemapEntry[] = BLOG_POSTS.map((p) =>
     toEntry(`${BASE_URL}/blog/${p.slug}`, p.date, "monthly", 0.7),

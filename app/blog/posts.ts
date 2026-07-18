@@ -40,6 +40,15 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 7,
     tags: ["algoritma", "temel kavramlar", "akış şeması", "bubble sort"],
   },
+  {
+    slug: "teknik-terimler",
+    title: "Programlamanın Temel Teknik Terimleri — Binary, Machine Code, Interpreter ve Daha Fazlası",
+    excerpt:
+      "Yazılımda sık duyulan ama kimsenin düzgün anlatmadığı 20+ teknik terim: binary, machine code, interpreter, derleyici, IDE, runtime. Mutfak, restoran, elektrik ve tercüman benzetmeleriyle.",
+    date: "2026-07-18",
+    readingMinutes: 12,
+    tags: ["temel kavramlar", "teknik terimler", "yazılıma giriş", "sözlük"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
