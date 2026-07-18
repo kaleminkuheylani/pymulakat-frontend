@@ -68,12 +68,14 @@ export default function OnboardingSurvey({ userId }: Props) {
     // Once localStorage
     const lsDismissed = localStorage.getItem(STORAGE_KEY(userId));
     if (lsDismissed) {
+      console.log("[OnboardingSurvey] localStorage dismissed — skip");
       setOpen(false);
       return;
     }
 
-    // Backend'den kontrol (dismissed = true ise gosterme)
-    console.log("[OnboardingSurvey] mount, userId:", userId, "lsDismissed:", lsDismissed);
+    // Graceful: Sadece kesin dismissed:true ise gizle.
+    // 401/500/network/200+dismissed:false → GOSTER
+    console.log("[OnboardingSurvey] mount, userId:", userId);
     (async () => {
       setLoading(true);
       try {
@@ -81,29 +83,21 @@ export default function OnboardingSurvey({ userId }: Props) {
           credentials: "include",
         });
         console.log("[OnboardingSurvey] status response:", res.status);
-        if (res.status === 401) {
-          // Auth yoksa sessizce gec (kullanici login olmamis)
-          console.log("[OnboardingSurvey] 401 - user not authenticated");
-          setOpen(false);
-          return;
-        }
-        if (!res.ok) {
-          console.log("[OnboardingSurvey] not OK:", res.status, await res.text());
-          setOpen(false);
-          return;
-        }
-        const data = await res.json();
-        console.log("[OnboardingSurvey] data:", data);
-        if (data.dismissed) {
-          localStorage.setItem(STORAGE_KEY(userId), "1");
-          setOpen(false);
+        if (res.status === 200) {
+          const data = await res.json();
+          console.log("[OnboardingSurvey] data:", data);
+          if (data.dismissed === true) {
+            localStorage.setItem(STORAGE_KEY(userId), "1");
+            setOpen(false);
+            return;
+          }
         } else {
-          // 1.5s gecikme — sayfa acilsin sonra modal gorunur
-          setTimeout(() => setOpen(true), 1500);
+          console.log("[OnboardingSurvey] non-200, fallback show. status:", res.status);
         }
+        setTimeout(() => setOpen(true), 1500);
       } catch (e) {
-        console.log("[OnboardingSurvey] fetch error:", e);
-        setOpen(false);
+        console.log("[OnboardingSurvey] fetch error, fallback show:", e);
+        setTimeout(() => setOpen(true), 1500);
       } finally {
         setLoading(false);
       }
