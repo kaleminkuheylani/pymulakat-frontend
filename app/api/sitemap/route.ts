@@ -19,15 +19,6 @@ import { getCategoryUrl } from "@/lib/categorySlug";
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
-const LESSON_SLUGS = [
-  "temel-kavramlar",
-  "kontrol-yapilari",
-  "fonksiyonlar",
-  "veri-yapilari",
-  "oop",
-  "ileri-konular",
-];
-
 interface SitemapEntry {
   loc: string;
   lastmod: string;
@@ -62,7 +53,6 @@ export async function GET(req: NextRequest) {
     toEntry(`${BASE_URL}/`, now, "daily", 1.0),
     toEntry(`${BASE_URL}/interviews`, now, "daily", 0.9),
     toEntry(`${BASE_URL}/python-online`, now, "monthly", 0.85),
-    toEntry(`${BASE_URL}/python-egitimi`, now, "monthly", 0.85),
     toEntry(`${BASE_URL}/python-kodlari`, now, "monthly", 0.85),
     toEntry(`${BASE_URL}/about`, now, "monthly", 0.7),
     toEntry(`${BASE_URL}/login`, now, "monthly", 0.5),
@@ -122,16 +112,11 @@ export async function GET(req: NextRequest) {
     );
 
   // 4. Ders sayfaları
-  const lessonEntries: SitemapEntry[] = LESSON_SLUGS.map((slug) =>
-    toEntry(`${BASE_URL}/python-egitimi/${slug}`, now, "monthly", 0.7),
-  );
-
   const all = [
     ...staticEntries,
     ...categoryEntries,
     ...interviewsCategoryEntries,
     ...questionEntries,
-    ...lessonEntries,
   ];
   const xml = toXml(all);
 
