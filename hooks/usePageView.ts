@@ -15,7 +15,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { apiFetch } from "@/lib/api";
+
 
 const SESSION_KEY = "pymulakat_session_id_v1";
 const THROTTLE_MS = 5_000;
@@ -63,12 +63,16 @@ export function usePageView(): void {
       referrer = "";
     }
 
-    // Fire-and-forget (analytics UX bozmamali)
-    apiFetch("/api/v2/analytics/track", {
-      method: "POST",
-      body: { path, referrer, session_id: sessionId },
-    }).catch(() => {
-      // Sessizce yut (network hatası, 5xx, vb.)
-    });
+    // 2026-07-18: Custom analytics track KALDIRILDI
+    // - Sebep: admin panel kaldirildi, backend analytics router da yok
+    // - 404 spam: /api/v2/analytics/track her sayfa view'da 404 donuyordu
+    // - Alternatif: Vercel Analytics (zaten kuruldu, page views otomatik)
+    // - Ileride: Supabase page_view tablosu + yeni router eklenebilir
+    //
+    // Vercel Analytics sayfa view'leri otomatik trackliyor, o yuzden
+    // burada ek call'a gerek yok.
+    void path;
+    void referrer;
+    void sessionId;
   }, []);
 }
