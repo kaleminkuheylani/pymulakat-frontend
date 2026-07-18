@@ -259,28 +259,12 @@ export async function getCategoryPageData(
   meta: Awaited<ReturnType<typeof listCategories>>[number] | null;
   questions: ApiQuestion[];
 }> {
-  // 2026-07-18: DB-FIRST — canonical slug = DB slug.
-  // "programlama-temelleri" henüz DB'ye migrate edilmediyse eski "python-basics"
-  // ile dene (graceful degradation). SQL migration tamamlanınca bu blok no-op olur.
-  const LEGACY_SLUG_BRIDGE: Record<string, string> = {
-    "programlama-temelleri": "python-basics",
-  };
-
-  // 1) Önce canonical slug ile dene
-  let [allCats, allQs] = await Promise.all([
+  // 2026-07-18: DB-FIRST — canonical slug = DB slug. Bridge YOK.
+  // "programlama-temelleri" slug'i DB'de olmali; SQL migration gerekli.
+  const [allCats, allQs] = await Promise.all([
     listCategories(),
-    listQuestionsByCategory(categorySlug),
+    listQuestionsByCategory(categorySlug), // DB-side filtre
   ]);
-
-  // 2) Sonuç boş + bridge varsa eski slug ile dene
-  if (allQs.length === 0 && LEGACY_SLUG_BRIDGE[categorySlug]) {
-    const legacySlug = LEGACY_SLUG_BRIDGE[categorySlug];
-    [allCats, allQs] = await Promise.all([
-      listCategories(),
-      listQuestionsByCategory(legacySlug),
-    ]);
-  }
-
   return {
     meta: allCats.find((c) => c.slug === categorySlug) ?? null,
     questions: allQs,
