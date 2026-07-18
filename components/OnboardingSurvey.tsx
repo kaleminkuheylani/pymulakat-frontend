@@ -152,7 +152,6 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
         // Lokal: her durumda dismissed isaretle (kullaniciyi rahatsiz etme)
         localStorage.setItem(STORAGE_KEY(userId), "1");
         setOpen(false);
-      } finally {
         setSubmitting(false);
       }
     },
