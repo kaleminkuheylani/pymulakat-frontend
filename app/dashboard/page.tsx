@@ -309,7 +309,7 @@ export default function DashboardHome() {
                 href="/python-kodlari"
                 icon="📚"
                 title="Kodlar"
-                description="17 snippet, 6 kategori: algoritma, OOP, veri yapısı."
+                description="17 snippet, 6 kategori: algoritma, veri yapısı, dinamik programlama."
                 color="purple"
               />
               <FeatureCard

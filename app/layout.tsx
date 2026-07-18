@@ -79,13 +79,7 @@ export const metadata: Metadata = {
     "python list dict tuple set soruları",
     "python string manipülasyon örnekleri",
 
-    // OOP
-    "nesne yönelimli programlama python türkçe",
-    "python oop alıştırma",
-    "python class inheritance örnekleri",
-    "python encapsulation polymorphism",
-
-    // Uygulama / Mülakat
+// Uygulama / Mülakat
     "python mülakat hazırlık",
     "python başlangıç soruları",       // YENİ: 400-800 hacim
     "python sınav soruları",            // YENİ: 1K-2K hacim ⭐
@@ -103,9 +97,6 @@ export const metadata: Metadata = {
     "python online",                    // 📌 Ubersuggest: 9.9K vol, SEO 27, ₺53 CPC
 
     // Veritabanı / Kütüphaneler
-    "python sqlite3 soruları",
-    "python sqlite3 alıştırma",
-    "python pandas alıştırma soruları",
     "python veri bilimi mülakat",
 
     // Platform odaklı (marka)
@@ -200,7 +191,7 @@ export const metadata: Metadata = {
     // 2026-07-15: JS desteği
     title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
     description:
-      "Türkçe interaktif Python ve JavaScript mülakat soruları. OOP, veri tipleri, SQLite, sandbox, Web Worker runtime ve anlık AI geri bildirimi.",
+      "Türkçe interaktif Python ve JavaScript mülakat soruları. Veri yapıları, algoritma, dinamik programlama, sandbox ve anlık AI geri bildirimi.",
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -310,10 +301,9 @@ const siteJsonLd = {
       teaches: [
         "Python veri tipleri",
         "JavaScript temelleri",
-        "OOP temelleri",
-        "SQLite3 ile veritabanı",
-        "Pandas ile veri analizi",
-        "Algoritmik düşünme",
+        "Algoritma temelleri",
+        "Veri yapıları temelleri",
+            "Algoritmik düşünme",
         "Dinamik programlama",
       ],
       isAccessibleForFree: true,
@@ -349,39 +339,15 @@ const siteJsonLd = {
           name: "Python'a yeni başlayanlar mülakatta hangi konulardan soru alır?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Yeni başlayanlar için en sık sorulan konular şunlardır: veri tipleri (list, dict, tuple, set, string), nesne yönelimli programlama temelleri (class, __init__, inheritance, encapsulation, polymorphism), temel Python uygulamaları, SQLite ile veritabanı işlemleri (CRUD, JOIN) ve algoritmik düşünme (beyin fırtınası) sorularıdır.",
+            text: "Yeni başlayanlar için en sık sorulan konular şunlardır: veri tipleri (list, dict, tuple, set, string), kontrol yapıları (if/else, for, while), fonksiyonlar, list comprehension, temel algoritma ve veri yapıları sorularıdır.",
           },
         },
-        {
-          "@type": "Question",
-          name: "Python OOP alıştırma soruları nasıl çalışılır?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Class tanımlama, __init__ metodu, kalıtım (inheritance), polimorfizm ve kapsülleme (encapsulation) konularında interaktif sandbox'ta kod yazarak pratik yapabilirsiniz. Her çözümün ardından yapay zekâdan anında geri bildirim alırsınız.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Python sqlite3 alıştırma soruları nasıl çözülür?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Python sqlite3 modülü ile veritabanı bağlantısı kurma, tablo oluşturma, CRUD işlemleri (INSERT, SELECT, UPDATE, DELETE) ve basit JOIN sorguları en çok sorulan konulardır. Tüm bu işlemleri platformdaki sandbox ortamında pratik edebilirsiniz.",
-          },
-        },
-        {
-          "@type": "Question",
-          name: "Pandas alıştırma soruları ile nasıl pratik yapılır?",
-          acceptedAnswer: {
-            "@type": "Answer",
-            text: "Gerçek veri setleri üzerinde veri temizleme (cleaning), gruplama (groupby), birleştirme (merge) ve görselleştirme pratikleri yaparak interaktif sandbox'ta kod çalıştırarak hazırlanabilirsiniz.",
-          },
-        },
-        {
+{
           "@type": "Question",
           name: "Python veri bilimi mülakatına nasıl hazırlanılır?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Pandas (veri temizleme, groupby, merge), Scikit-learn (pipeline, cross-validation, feature engineering), istatistik (A/B testi, dağılım), SQL ve zaman serisi analizi en sık sorulan ileri düzey konulardır. Platformumuzda bu konuların her biri için interaktif sorular mevcuttur.",
+            text: "Algoritma (sıralama, arama, graf), veri yapıları (liste, dict, set, heap, stack, queue), dinamik programlama ve ileri konular en sık sorulan ileri düzey konulardır. Platformumuzda bu konuların her biri için interaktif sorular mevcuttur.",
           },
         },
         {
@@ -407,7 +373,7 @@ const siteJsonLd = {
           name: "Python eğitimi için en iyi kaynak hangisidir?",
           acceptedAnswer: {
             "@type": "Answer",
-            text: "Python eğitimi için interaktif pratik en etkili yöntemdir. pythonmulakat.com sıfırdan ileri seviyeye kadar tüm konularda (veri tipleri, OOP, SQLite, Pandas, algoritma) hazır sorular, otomatik test ve yapay zekâ destekli geri bildirim sunar.",
+            text: "Python eğitimi için interaktif pratik en etkili yöntemdir. pythonmulakat.com sıfırdan ileri seviyeye kadar tüm konularda (veri tipleri, algoritma, veri yapıları, dinamik programlama) hazır sorular, otomatik test ve yapay zekâ destekli geri bildirim sunar.",
           },
         },
         {

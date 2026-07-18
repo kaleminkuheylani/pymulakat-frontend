@@ -89,7 +89,7 @@ export async function GET() {
     );
 
   // 2026-07-16: /interviews/{category} kategori listesi sayfalari (yeni route)
-  // 8 canonical slug (python-basics, data-structures, list-dict, pandas,
+  // 7 canonical slug (python-basics, data-structures, list-dict, algorithms,
   // algorithms, heap, stack, dynamic-programming)
   const interviewsCategoryEntries: SitemapEntry[] = categories
     .map((c) => c.slug)

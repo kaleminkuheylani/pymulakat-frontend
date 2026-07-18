@@ -119,7 +119,7 @@ const howtoJsonLd = {
       "@type": "HowToStep",
       position: 1,
       name: "İstediğin snippeti seç",
-      text: "6 kategoriden birini seç (Başlangıç, Algoritmalar, Veri Yapıları, Dosya İşlemleri, Web/API, OOP & Patterns). Seviye etiketinden zorluk görünür.",
+      text: "5 kategoriden birini seç (Başlangıç, Algoritmalar, Veri Yapıları, Dosya İşlemleri, Web/API). Seviye etiketinden zorluk görünür.",
     },
     {
       "@type": "HowToStep",
@@ -163,7 +163,7 @@ const faqJsonLd = {
       name: "Hangi seviyeden başlamalıyım?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Her snippetin sağ üstünde seviye etiketi var (Başlangıç / Orta / İleri). Programlamaya yeniysen Başlangıç kategorisinden başla; temelin varsa doğrudan Algoritmalar veya OOP & Patterns'a geçebilirsin.",
+        text: "Her snippetin sağ üstünde seviye etiketi var (Başlangıç / Orta / İleri). Programlamaya yeniysen Başlangıç kategorisinden başla; temelin varsa doğrudan Algoritmalar veya Veri Yapıları'na geçebilirsin.",
       },
     },
     {
@@ -262,7 +262,7 @@ export default function PythonKodlariPage() {
                 Python öğrenmeye yeni başlayan birinin en büyük sorunu şudur: “<strong className="text-purple-300">Kendi başıma ne yazacağımı bilemiyorum.</strong>” Bir tutorial’ı okuyup bitiriyorsun, ekranın başına geçiyorsun, ama ne yapacağını bilmiyorsun — çünkü tutorial sana <em>başkasının</em> yazdığı kodu gösterdi, <em>sen yazmayı</em> öğretmedi. Bu sayfa o boşluğu kapatmak için hazırlandı: altı kategoride düzenlenmiş, derlenmiş, üzerinde uzun uzun düşünülmüş <strong className="text-purple-300">kısa ve net 21 snippet</strong> burada. Başlangıç kategorisinden başlayıp string ters çevirme, palindrom kontrolü, EBOB hesaplama, listedeki tekrar eden elemanları kaldırma gibi <em>günlük hayatta gerçekten işine yarayacak</em> küçük kodlarla başlıyorsun. Bunlar sırf “akademik egzersiz” değil, gerçek bir veri yapısı, gerçek bir problem: yani bunları bir yarışma çözümünde, bir otomasyon betiğinde, bir web projesinde <em>kopyala-yapıştır</em> ile değil, gerçek bir ihtiyaç karşısında yazacak hâle geliyorsun.
               </p>
               <p>
-                İkinci adımda Algoritmalar kategorisinde binary search, quick sort, fibonacci’nin memoization’lı versiyonu, “iki sayının toplamı” klasikleri var. Bu snippetler <strong className="text-purple-300">mülakatlarda ve teknik görüşmelerde</strong> sürekli sorulan problemler — burada görmüş olmak, ileride bu algoritmaları duyduğunda “onu nereden biliyorum” diye düşünmeni sağlıyor. Veri Yapıları kategorisinde stack, queue ve linked list var; bu kodlar soyut veri yapısının <em>gerçek Python’da nasıl göründüğünü</em> gözüne sokuyor — üniversitede gördüğün “kavramsal” bilgi yerine, “ben şu sınıfı yazıp push/pop yaptığımda arka planda gerçekten şu oluyor” diye somut karşılığını alıyorsun. Dosya İşlemleri, Web/API ve OOP & Patterns kategorileri de <em>iş dünyasında her gün kullandığın araçları</em> gösteriyor: JSON okuma/yazma, CSV ayrıştırma, URL parametreleri ile çalışma, regex ile email doğrulama, dekoratörle fonksiyon zamanlama, dataclass ile veri modeli, context manager ile kaynak yönetimi. Bunların <em>her biri</em> çalışan projede karşına çıkacak pratik bilgiler.
+                İkinci adımda Algoritmalar kategorisinde binary search, quick sort, fibonacci’nin memoization’lı versiyonu, “iki sayının toplamı” klasikleri var. Bu snippetler <strong className="text-purple-300">mülakatlarda ve teknik görüşmelerde</strong> sürekli sorulan problemler — burada görmüş olmak, ileride bu algoritmaları duyduğunda “onu nereden biliyorum” diye düşünmeni sağlıyor. Veri Yapıları kategorisinde stack, queue ve linked list var; bu kodlar soyut veri yapısının <em>gerçek Python’da nasıl göründüğünü</em> gözüne sokuyor — üniversitede gördüğün “kavramsal” bilgi yerine, “ben şu sınıfı yazıp push/pop yaptığımda arka planda gerçekten şu oluyor” diye somut karşılığını alıyorsun. Dosya İşlemleri ve Web/API kategorileri de <em>iş dünyasında her gün kullandığın araçları</em> gösteriyor: JSON okuma/yazma, CSV ayrıştırma, URL parametreleri ile çalışma, regex ile email doğrulama, dekoratörle fonksiyon zamanlama, dataclass ile veri modeli, context manager ile kaynak yönetimi. Bunların <em>her biri</em> çalışan projede karşına çıkacak pratik bilgiler.
               </p>
               <p>
                 Bu kütüphanenin en büyük avantajı <strong className="text-purple-300">okumaya teşvik etmesi</strong>: her snippetin üstünde bir <em>seviye etiketi</em> var (Başlangıç / Orta / İleri), kısa bir açıklama var, kodu görmek için “Kodu görüntüle”ye tıklamak gerekiyor — yani önce kodu kendin yazmayı deniyorsun, sonra tıklayıp doğru cevabı inceliyorsun. Bir adım daha ileri gitmek istersen snippetin altındaki <em>“Online editörde çalıştır”</em> butonuna basıp kodu tarayıcıda açıp üzerinde oynayarak davranışını gözlemliyorsun. Bu da <strong className="text-purple-300">referans defterin</strong> olmuş oluyor: bir algoritmayı, bir kalıbı, bir standart kütüphane kullanımını unuttuğunda buraya dönüp 30 saniyede doğru yazılışını bulabiliyorsun. Yeni başlayan biri olarak en kritik şey yalıtılmış syntax bilgisi değil, <em>“bu kalıbı şurada kullanacağım”</em> içgüdüsü — ve bu içgüdü, başkalarının yazdığı temiz ve çalışan kodu art arda okumaktan geçiyor.

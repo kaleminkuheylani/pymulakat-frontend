@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     template: "%s | Python Alıştırma Soruları",
   },
   description:
-    "Python öğrenmeye yeni başlayanlar için interaktif python soruları. OOP, veri tipleri, SQLite3, basit uygulamalar, beyin fırtınası ve sklearn gibi modüllerle seviye bazlı hazırlan.",
+    "Python öğrenmeye yeni başlayanlar için interaktif python soruları. Veri tipleri, kontrol yapıları, basit uygulamalar ve algoritma ile seviye bazlı hazırlan.",
   keywords: [
     // Yeni başlayan odaklı — tüm modüller
     "python yeni başlayanlar python",
@@ -27,7 +27,6 @@ export const metadata: Metadata = {
     "python interaktif sandbox",
     "pythonda kendini geliştirmek isteyenler için alıştırmalar",
     "python fundamentals",
-    "python pandas soruları",
     "sklearn mülakat soruları başlangıç",
     // Genel
     "python öğren",
@@ -43,14 +42,14 @@ export const metadata: Metadata = {
     locale: "tr_TR",
     title: "Python Alıştırma Soruları | Yeni Başlayanlar İçin",
     description:
-      "Python öğrenmeye yeni başlayanlar için interaktif alıştırma soruları. OOP, veri tipleri, SQLite3 ve daha fazlası.",
+      "Python öğrenmeye yeni başlayanlar için interaktif alıştırma soruları. Veri tipleri, kontrol yapıları ve algoritma konuları.",
     siteName: "Python Alıştırma Soruları",
   },
   twitter: {
     card: "summary_large_image",
     title: "Python Alıştırma Soruları | Yeni Başlayanlar İçin",
     description:
-      "OOP, veri tipleri, SQLite3, beyin fırtınası ve daha fazlası. Seviye bazlı Python soruları ile mülakatlara hazırlanın.",
+      "Veri tipleri, kontrol yapıları ve algoritma. Seviye bazlı Python soruları ile mülakatlara hazırlanın.",
   },
   alternates: { canonical: "/interviews" },
 };
@@ -73,13 +72,12 @@ export default function InterviewsLayout({
       "@type": "ItemList",
       name: "Modül Bazlı Python Soru Listeleri",
       description:
-        "Yeni başlayanlardan ileri seviyeye Python modülleri: OOP, veri tipleri, SQLite3, basit uygulamalar, beyin fırtınası, sklearn, pandas ve daha fazlası.",
+        "Yeni başlayanlardan ileri seviyeye Python modülleri: veri tipleri, basit uygulamalar, beyin fırtınası ve algoritma konuları.",
       itemListElement: [
         // ── Yeni başlayan / temel modüller ──────────────────
         {
           "@type": "ListItem",
           position: 1,
-          name: "Python OOP Alıştırma Soruları",
           url: `${siteUrl}/interviews/oop`,
           description:
             "Class, inheritance, encapsulation ve polimorfizm konularında başlangıç düzeyi interaktif sorular.",
@@ -111,10 +109,6 @@ export default function InterviewsLayout({
         {
           "@type": "ListItem",
           position: 5,
-          name: "SQLite3 Python Alıştırma Soruları",
-          url: `${siteUrl}/interviews/sqlite3`,
-          description:
-            "Python sqlite3 modülü ile bağlantı, CRUD işlemleri ve temel SQL sorguları.",
         },
         {
           "@type": "ListItem",
@@ -136,8 +130,6 @@ export default function InterviewsLayout({
         {
           "@type": "ListItem",
           position: 8,
-          name: "Pandas Alıştırma Soruları",
-          url: `${siteUrl}/interviews/pandas`,
           description:
             "Veri temizleme, groupby, merge, pivot table ve zaman serisi. Türkçe interaktif sandbox.",
         },

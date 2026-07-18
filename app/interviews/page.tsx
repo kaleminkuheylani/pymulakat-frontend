@@ -11,7 +11,7 @@
 //   - Server component (initial HTML dolu)
 //   - DB-FIRST: getAllCategories() (1 saat cache)
 //   - ISR: revalidate=3600 (kategori eklenince/silinince revalidate)
-//   - 8 kategori: python-basics, data-structures, list-dict, pandas,
+// (pandas 2026-07-18 scope'tan cikarildi — CATEGORY_SLUGS'tan kaldirildi)
 //     algorithms, heap, stack, dynamic-programming
 //   - Sade/düz tasarım: icon + label + description + count
 //   - Lucide icon (lib/icons.ts → CATEGORY_ICONS)
@@ -34,7 +34,7 @@ export const revalidate = 3600;
 export const metadata: Metadata = {
   title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
   description:
-    "Python ve JavaScript mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack, pandas. 8 kategori, 100+ soru.",
+    "Python ve JavaScript mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack. 7 kategori, 100+ soru.",
   keywords: [
     "python mülakat soruları",
     "python kategori",
@@ -42,7 +42,6 @@ export const metadata: Metadata = {
     "dinamik programlama",
     "veri yapıları soruları",
     "heap stack mülakat",
-    "pandas soruları",
   ],
   openGraph: {
     title: "Python ve JavaScript Mülakat Soruları",

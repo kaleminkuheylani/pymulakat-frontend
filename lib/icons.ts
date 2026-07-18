@@ -114,7 +114,6 @@ export const CATEGORY_ICONS: Record<string, LucideIcon> = {
   "python-basics": Code,
   "data-structures": Layers,
   "list-dict": ListTree,
-  "pandas": Database,
   "algorithms": Cpu,
   "dynamic-programming": Brain,
   "heap": Mountain,

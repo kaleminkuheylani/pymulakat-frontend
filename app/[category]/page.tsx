@@ -2,8 +2,8 @@
 //
 // TEK DİNAMİK ROUTE — 8 kategori top-level DB-slug URL'sinden render.
 //
-// URL: /{db_slug} (örn. /python-basics, /heap, /pandas, /data-structures)
-// - Canonical 8: python-basics, data-structures, list-dict, pandas,
+// URL: /{db_slug} (örn. /python-basics, /heap, /data-structures)
+// - Canonical 7: python-basics, data-structures, list-dict, algorithms,
 //   algorithms, heap, stack, dynamic-programming
 // - SEO iyi: İngilizce, kısa, tutarlı (2026-07-13 kullanıcı direktifi)
 //

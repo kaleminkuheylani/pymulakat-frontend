@@ -12,7 +12,7 @@
 //   /temelleri            → /python-basics
 //   /veri-yapilari        → /data-structures
 //   /liste-sozluk         → /list-dict
-//   /pandas               → /pandas (DB slug aynı, redirect gereksiz)
+//   /pandas               → 410 Gone (scope'tan cikarildi, 2026-07-18)
 //   /algoritma-sorulari   → /algorithms
 //   /heap                 → /heap (DB slug aynı)
 //   /stack                → /stack (DB slug aynı)
@@ -31,7 +31,6 @@ export const CATEGORY_SLUGS = [
   "python-basics",
   "data-structures",
   "list-dict",
-  "pandas",
   "algorithms",
   "heap",
   "stack",
@@ -45,7 +44,6 @@ export const CATEGORY_LABEL: Record<string, string> = {
   "python-basics": "Python Temelleri",
   "data-structures": "Python Veri Yapıları",
   "list-dict": "Python Liste & Sözlük",
-  pandas: "Python Pandas",
   algorithms: "Python Algoritma",
   heap: "Python Heap",
   stack: "Python Stack",
@@ -157,14 +155,7 @@ const CATEGORY_SEO_KEYWORDS: Record<string, readonly string[]> = {
     "python liste mülakat soruları",
   ],
 
-  // ── pandas ───────────────────────────────────────────────
-  pandas: [
-    "pandas soru bankası",
-    "python pandas alıştırma soruları",
-    "pandas mülakat soruları türkçe",
-    "pandas groupby örnekleri",
-    "veri bilimi mülakat soruları",
-  ],
+  // pandas 2026-07-18 scope'tan cikarildi,
 
   // ── heap ─────────────────────────────────────────────────
   heap: [

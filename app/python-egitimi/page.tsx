@@ -11,7 +11,7 @@ import { DEFAULT_RELATED_CATEGORIES } from "../../components/defaultRelatedCateg
 export const metadata: Metadata = {
   title: "Python Eğitimi — Başlangıçtan İleri Seviye Türkçe Rehber",
   description:
-    "Python öğren — Türkçe, ücretsiz eğitim. Değişkenler, OOP, async, veri yapıları. Her ders kod örnekleri ve online editör.",
+    "Python öğren — Türkçe, ücretsiz eğitim. Değişkenler, kontrol yapıları, fonksiyonlar, veri yapıları. Her ders kod örnekleri ve online editör.",
   keywords: [
     "python eğitimi",
     "python dersleri",
@@ -182,7 +182,7 @@ const faqJsonLd = {
       name: "Mülakat hazırlığı için hangi sırayla ilerlemeliyim?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Önerilen sıra: 1) Temel Kavramlar 2) Kontrol Yapıları 3) Fonksiyonlar 4) Veri Yapıları 5) OOP 6) İleri Konular. Her dersin sonunda mülakat sorularına geçiş için /interviews sayfasına git. En etkili yol: dersi oku → ödevi yap → 5 ilgili mülakat sorusunu çöz.",
+        text: "Önerilen sıra: 1) Temel Kavramlar 2) Kontrol Yapıları 3) Fonksiyonlar 4) Veri Yapıları 5) İleri Konular. Her dersin sonunda mülakat sorularına geçiş için /interviews sayfasına git. En etkili yol: dersi oku → ödevi yap → 5 ilgili mülakat sorusunu çöz.",
       },
     },
     {
@@ -190,7 +190,7 @@ const faqJsonLd = {
       name: "Python ile ne yapabilirim?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Python ile yapabileceklerin: web geliştirme (Django, Flask, FastAPI), veri bilimi (Pandas, NumPy, scikit-learn), makine öğrenmesi (PyTorch, TensorFlow), otomasyon ve scripting (dosya işlemleri, web scraping), veri analizi (Jupyter notebook), DevOps, oyun geliştirme (Pygame). Hangi alana yönelirsen yönel, bu eğitimin temelleri geçerli.",
+        text: "Python ile yapabileceklerin: web geliştirme (Django, Flask, FastAPI), makine öğrenmesi (PyTorch, TensorFlow), otomasyon ve scripting (dosya işlemleri, web scraping), veri analizi (Jupyter notebook), DevOps, oyun geliştirme (Pygame). Hangi alana yönelirsen yönel, bu eğitimin temelleri geçerli.",
       },
     },
     {
@@ -329,7 +329,7 @@ export default async function PythonEgitimiPage() {
               <div className="flex gap-4">
                 <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-rose-500/20 border border-rose-500/30 flex items-center justify-center font-bold text-rose-300">4</div>
                 <div>
-                  <h3 className="font-bold text-white mb-1">4. Hafta — OOP + Mülakat Pratiği</h3>
+                  <h3 className="font-bold text-white mb-1">4. Hafta — Veri Yapıları + Mülakat Pratiği</h3>
                   <p className="text-sm text-white/65">Class, __init__, inheritance. Sonra <Link href="/interviews" className="text-amber-300 hover:underline">/interviews</Link>'da başlangıç sorularını çöz (python-basics, list-dict).</p>
                 </div>
               </div>
@@ -348,7 +348,7 @@ export default async function PythonEgitimiPage() {
               <FaqItem q="Python'u ne kadar sürede öğrenebilirim?" a="Haftada 5-7 saat ile 8-10 haftada başlangıçtan veri yapılarına. Düzenli pratik ile 3 ayda junior seviye." />
               <FaqItem q="Hangi editör/IDE kullanmalıyım?" a="VS Code (ücretsiz, Python extension ile) veya PyCharm Community. Kurulum istemiyorsan bu sitedeki /python-online tarayıcıda çalışır." />
               <FaqItem q="Mülakat hazırlığı için hangi sırayla ilerlemeliyim?" a="6 dersi sırayla bitir → /interviews'da 5 ilgili soruyu çöz. Her ders + pratik döngüsü en etkili yol." />
-              <FaqItem q="Python ile ne yapabilirim?" a="Web (Django, FastAPI), veri bilimi (Pandas, NumPy), ML (PyTorch), otomasyon, scraping, DevOps, oyun. Hangi alan olursa olsun temeller aynı." />
+              <FaqItem q="Python ile ne yapabilirim?" a="Web (Django, FastAPI), ML (PyTorch), otomasyon, scraping, DevOps, oyun. Hangi alan olursa olsun temeller aynı." />
               <FaqItem q="Eğitimden sonra ne yapmalıyım?" a="1) /interviews'da ${totalCount} sorudan seviyene uygun olanları çöz. 2) Mini proje yap. 3) GitHub'da paylaş." />
             </div>
           </section>

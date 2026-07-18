@@ -15,7 +15,6 @@ export const CATEGORIES: Category[] = [
   { slug: "veri-yapilari", name: "Veri Yapıları", icon: "📚", description: "Stack, queue, linked list, tree." },
   { slug: "dosya-islemleri", name: "Dosya İşlemleri", icon: "📁", description: "Dosya okuma/yazma, JSON, CSV." },
   { slug: "web-api", name: "Web & API", icon: "🌐", description: "HTTP, JSON API, regex." },
-  { slug: "oop-patterns", name: "OOP & Patterns", icon: "🧬", description: "Sınıf tasarımı, dekoratör, singleton." },
 ];
 
 export interface CodeSample {
@@ -336,7 +335,7 @@ reader = csv.DictReader(StringIO(csv_text))
 for row in reader:
     print(row)`,
     useCase: "Veri analizi, ETL, raporlama, e-ticaret ürün listesi.",
-    realWorld: "Banka ekstreleri (CSV), müşteri verisi içe aktarma, anket sonuçları, Pandas öncesi hızlı okuma.",
+    realWorld: "Banka ekstreleri (CSV), müşteri verisi içe aktarma, anket sonuçları, hızlı okuma.",
     commonMistakes: "Delimiter'ı yanlış tahmin etmek (noktalı virgül), header=None unutmak, büyük dosyada csv.reader yerine DictReader performansı.",
   },
 
@@ -383,84 +382,6 @@ print(is_valid_email("ali.test@com"))  # False`,
     commonMistakes: "Çok basit regex (@ olsun yeter) → RFC 5321 standartlarını kaçırmak, server-side validation'ı atlamak."
   },
 
-  // ── OOP & PATTERNS ──
-  {
-    slug: "decorator-zamanlama",
-    category: "oop-patterns",
-    title: "Dekoratör — Fonksiyon Zamanlama",
-    description: "Bir fonksiyonun çalışma süresini ölçen dekoratör.",
-    level: "İleri",
-    code: `import time
-from functools import wraps
-
-def timer(fn):
-    @wraps(fn)
-    def wrapper(*args, **kwargs):
-        t0 = time.perf_counter()
-        out = fn(*args, **kwargs)
-        ms = (time.perf_counter() - t0) * 1000
-        print(f'{fn.__name__} {ms:.2f} ms')
-        return out
-    return wrapper
-
-@timer
-def yavas():
-    sum(range(1_000_00))
-
-yavas()  # 'yavas ~1.5 ms'`,
-    useCase: "Performans ölçümü, loglama, caching, yetkilendirme, retry logic.",
-    realWorld: "Flask/Django view dekoratörleri (@login_required), retry decorator'lar, cache (@lru_cache), auth middleware.",
-    commonMistakes: "functools.wraps kullanmamak (orijinal fonksiyon metadata'sı kaybolur), *args/**kwargs unutmak."
-  },
-  {
-    slug: "dataclass-kullanimi",
-    category: "oop-patterns",
-    title: "Dataclass Kullanımı",
-    description: "@dataclass ile boilerplate'siz sınıf tanımı.",
-    level: "Orta",
-    code: `from dataclasses import dataclass, field
-from typing import List
-
-@dataclass
-class Ogrenci:
-    ad: str
-    yas: int
-    notlar: List[int] = field(default_factory=list)
-
-    def ortalama(self) -> float:
-        return sum(self.notlar) / len(self.notlar) if self.notlar else 0.0
-
-o = Ogrenci("Ali", 20, [80, 90, 75])
-print(o)                # Ogrenci(ad='Ali', yas=20, notlar=[80, 90, 75])
-print(o.ortalama())     # 81.6666...`,
-    useCase: "Veri modeli tanımı, DTO, config objesi, ORM alternatifi basit kayıtlar.",
-    realWorld: "API request/response modelleri, ETL row temsili, test fixture'ları, fonfig objeleri.",
-    commonMistakes: "Mutable default alanlarda field(default_factory=list) kullanmamak, post_init'te mutasyon, hashable olmadığını unutmak.",
-  },
-  {
-    slug: "context-manager",
-    category: "oop-patterns",
-    title: "Context Manager — contextlib",
-    description: "with deyimini destekleyen sınıf yazmak (timer örneği).",
-    level: "İleri",
-    code: `import time
-from contextlib import contextmanager
-
-@contextmanager
-def zamanlayici(label="block"):
-    t0 = time.perf_counter()
-    try:
-        yield
-    finally:
-        ms = (time.perf_counter() - t0) * 1000
-        print(f'{label}: {ms:.2f} ms')
-
-with zamanlayici("islem"):
-    sum(range(100_000))`,
-    useCase: "Kaynak yönetimi (dosya, bağlantı), transaction yönetimi, lock/timer, test setup/teardown.",
-    realWorld: "Database transaction (with conn.begin()), dosya işlemleri, profil/debug context, thread lock.",
-    commonMistakes: "__enter__'de exception fırlatmak, __exit__'te hata yutmak (return True), generator-based CM'de yield'i unutmak."
-  },
 ];
 
 export function getCategory(slug: string) {
