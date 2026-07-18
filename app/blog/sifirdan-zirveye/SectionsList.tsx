@@ -1,8 +1,3 @@
-// app/blog/sifirdan-zirveye/SectionsRenderer.tsx
-//
-// 2026-07-18: Client component — sections sırayla render, unlock logic.
-// ProgressTopbar + SectionBlock'ları yönetir.
-
 "use client";
 
 import { useSifirProgress } from "./hooks/useProgress";
@@ -14,15 +9,14 @@ import Link from "next/link";
 
 const ALL_IDS: SectionId[] = SECTIONS.map((s) => s.id);
 
-export default function SectionsRenderer() {
+export default function SectionsList() {
   const { completed, mounted, markComplete } = useSifirProgress();
 
   return (
-    <div className="min-h-screen bg-[#050816] text-white">
+    <>
       <ProgressTopbar />
 
       <article className="max-w-3xl mx-auto px-4 py-10 md:py-16">
-        {/* Hero */}
         <header className="mb-12">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium mb-4">
             <Sparkles className="w-3 h-3" />
@@ -38,11 +32,9 @@ export default function SectionsRenderer() {
           </p>
         </header>
 
-        {/* Bölümler */}
         {mounted ? (
           SECTIONS.map((section, i) => {
-            const locked =
-              i > 0 && !completed.includes(ALL_IDS[i - 1] as SectionId);
+            const locked = i > 0 && !completed.includes(ALL_IDS[i - 1] as SectionId);
             return (
               <SectionBlock
                 key={section.id}
@@ -56,7 +48,6 @@ export default function SectionsRenderer() {
             );
           })
         ) : (
-          // Hydration öncesi placeholder (server-side'da hep locked göstermemek için)
           SECTIONS.map((section, i) => (
             <div
               key={section.id}
@@ -65,7 +56,6 @@ export default function SectionsRenderer() {
           ))
         )}
 
-        {/* Bitti */}
         {mounted && completed.length === SECTIONS.length && (
           <div className="mt-12 p-8 rounded-2xl bg-gradient-to-br from-amber-500/15 to-amber-700/10 border border-amber-500/30 text-center">
             <Sparkles className="w-8 h-8 text-amber-300 mx-auto mb-3" />
@@ -93,6 +83,6 @@ export default function SectionsRenderer() {
           </div>
         )}
       </article>
-    </div>
+    </>
   );
 }

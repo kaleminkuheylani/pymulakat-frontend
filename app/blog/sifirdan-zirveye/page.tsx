@@ -6,7 +6,7 @@
 
 import type { Metadata } from "next";
 import Link from "next/link";
-import SectionsRenderer from "./SectionsRenderer";
+import SectionsList from "./SectionsList";
 import { BASE_URL } from "@/lib/seo";
 import { SECTIONS, TOTAL_MINUTES } from "./data/sections";
 
@@ -225,7 +225,7 @@ export default function SifirdanZirveyePage() {
         </p>
       </div>
 
-      <SectionsRenderer />
+      <SectionsList />
 
       {/* ─── SEO Content Block ─── */}
       <section className="max-w-3xl mx-auto px-4 pb-16">
