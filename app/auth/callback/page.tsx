@@ -139,20 +139,41 @@ function CallbackInner() {
         // ─── OAUTH (Google/GitHub/etc) flow ───────────────
         setMessage("OAuth girişi tamamlanıyor...");
 
-        // PKCE flow: Supabase detectSessionInUrl=true hash'ten session'i otomatik olusturur.
-        // Yine de fallback olarak setSession deneyelim.
+        // Hash'ten access_token ve refresh_token al, Supabase localStorage'a yaz
+        // Supabase auth.getSession() otomatik okur, tarayici kapatilip acilsa bile session devam eder
         const hash = typeof window !== "undefined" ? window.location.hash : "";
         if (hash.includes("access_token")) {
           const params = new URLSearchParams(hash.slice(1));
           const accessToken = params.get("access_token");
           const refreshToken = params.get("refresh_token");
+          const expiresIn = parseInt(params.get("expires_in") || "3600", 10);
+          const expiresAt = Math.floor(Date.now() / 1000) + expiresIn;
+          const tokenType = params.get("token_type") || "bearer";
+
           if (accessToken && refreshToken) {
+            // Once setSession dene (Supabase internal state'i gunceller)
             const { error: setErr } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
             });
+
             if (setErr) {
-              // setSession basarisiz — yine de getSession dene (Supabase otomatik islemis olabilir)
+              // setSession basarisiz — localStorage'a dogrudan yaz
+              // Supabase bir sonraki getSession()'da okur
+              const storageKey = "sb-pymulakat-auth-token";
+              const sessionData = [{
+                access_token: accessToken,
+                refresh_token: refreshToken,
+                expires_in: expiresIn,
+                expires_at: expiresAt,
+                token_type: tokenType,
+                user: null,  // getSession sonra doldurur
+              }];
+              try {
+                localStorage.setItem(storageKey, JSON.stringify(sessionData));
+              } catch (e) {
+                // ignore
+              }
             }
           }
         }
