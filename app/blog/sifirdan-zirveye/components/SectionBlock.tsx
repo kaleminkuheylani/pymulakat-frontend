@@ -1,15 +1,14 @@
 // app/blog/sifirdan-zirveye/components/SectionBlock.tsx
 //
 // 2026-07-18: Tek section — anlatım + örnek + interaktif soru.
-// Kilitli ise sadece kilit ekranı gösterilir (anlatım/soru gizli).
+// Kendi mini Pyodide runner (usePyodide hook stdout capture etmiyor).
 
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import Link from "next/link";
 import { Lock, Play, CheckCircle2, RotateCcw, HelpCircle, Sparkles, ArrowRight, Code2 } from "lucide-react";
 import type { Section } from "../data/sections";
-import { usePyodide, type TestCase } from "@/hooks/usePyodide";
 
 interface Props {
   section: Section;
@@ -19,6 +18,9 @@ interface Props {
   completed: boolean;
   onComplete: () => void;
 }
+
+const PYODIDE_VERSION = "v0.27.7";
+const PYODIDE_BASE = `/pyodide/${PYODIDE_VERSION}/full/`;
 
 export default function SectionBlock({
   section,
@@ -31,51 +33,72 @@ export default function SectionBlock({
   const [code, setCode] = useState(section.exercise.starter);
   const [output, setOutput] = useState<string>("");
   const [status, setStatus] = useState<"idle" | "running" | "pass" | "fail">("idle");
+  const [pyStatus, setPyStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
+  const [pyError, setPyError] = useState<string | null>(null);
+  const pyodideRef = useRef<any>(null);
   const taRef = useRef<HTMLTextAreaElement>(null);
 
-  const { status: pyStatus, errorMsg, runTests, runWithCustomInput } = usePyodide();
-  const isPyLoading = pyStatus === "loading" || pyStatus === "idle";
-  const isPyRunning = pyStatus === "running";
+  const ensurePyodide = useCallback(async () => {
+    if (pyodideRef.current) return pyodideRef.current;
+    if (pyStatus === "loading") {
+      await new Promise((r) => setTimeout(r, 100));
+      return pyodideRef.current;
+    }
+    setPyStatus("loading");
+    try {
+      // @ts-ignore — window.loadPyodide runtime'da set edilecek
+      if (!window.loadPyodide) {
+        await new Promise<void>((resolve, reject) => {
+          const s = document.createElement("script");
+          s.src = `${PYODIDE_BASE}pyodide.js`;
+          s.onload = () => resolve();
+          s.onerror = () => reject(new Error("pyodide.js yüklenemedi"));
+          document.head.appendChild(s);
+        });
+      }
+      // @ts-ignore
+      const py = await window.loadPyodide({ indexURL: PYODIDE_BASE });
+      pyodideRef.current = py;
+      setPyStatus("ready");
+      return py;
+    } catch (e: any) {
+      setPyError(e?.message || "Pyodide yüklenemedi");
+      setPyStatus("error");
+      throw e;
+    }
+  }, [pyStatus]);
 
-  // Test stratejisi: print() ciktisini yakalamak icin wrapper.
-  // Section.exercise.expected'a gore iki mod:
-  //   - expected bos degilse: print ciktisini wrap'leyerek karsilastir
-  //   - Bu mini versiyon: kodu sarip print ciktisini disari ver
+  useEffect(() => {
+    setCode(section.exercise.starter);
+    setOutput("");
+    setStatus("idle");
+  }, [section.id]);
+
   const runTest = async () => {
     setOutput("");
     setStatus("running");
     try {
-      // Kullanici kodunu sar — tum print'leri capture et
-      // "from io import StringIO; sys.stdout = StringIO()" hacki yerine
-      // Daha basit: kodu oldugu gibi calistir, Pyodide runTests fonksiyonu cagirir
-      // Section'da function_name yok — print tabanli, ozel wrapper kullanalim
-      const wrapped = `
-import sys, io
-_captured = io.StringIO()
-_original_stdout = sys.stdout
-sys.stdout = _captured
-try:
-    exec(${JSON.stringify(code)})
-finally:
-    sys.stdout = _original_stdout
-_captured.getvalue()
-`;
-      const result = await runWithCustomInput(
-        wrapped,
-        "_runner",  // dummy function name
-        []
-      );
-      const actual = typeof result.actual === "string" ? result.actual : String(result.actual ?? "");
+      const py = await ensurePyodide();
+      let captured = "";
+      py.setStdout({ batched: (s: string) => { captured += s + "\n"; } });
+      py.setStderr({ batched: (s: string) => { captured += s + "\n"; } });
+      try {
+        await py.runPythonAsync(code);
+      } finally {
+        py.setStdout({ batched: () => {} });
+        py.setStderr({ batched: () => {} });
+      }
+      const actual = captured.trimEnd();
       const expected = section.exercise.expected.trim();
       setOutput(actual);
-      if (actual.trim() === expected) {
+      if (actual === expected) {
         setStatus("pass");
         onComplete();
       } else {
         setStatus("fail");
       }
     } catch (e: any) {
-      setOutput(`Hata: ${e?.errorCategory ?? "bilinmeyen"} — ${e?.errorLine ?? ""}`);
+      setOutput(`Hata: ${e?.message ?? String(e)}`);
       setStatus("fail");
     }
   };
@@ -86,7 +109,8 @@ _captured.getvalue()
     setStatus("idle");
   };
 
-  // Kilitli: sadece placeholder
+  const isPyLoading = pyStatus === "loading" || pyStatus === "idle";
+
   if (locked) {
     return (
       <div
@@ -119,7 +143,6 @@ _captured.getvalue()
           : "border-white/10 bg-white/[0.02]"
       }`}
     >
-      {/* Header */}
       <div className="flex items-center gap-3 mb-5">
         <div
           className={`w-10 h-10 rounded-lg flex items-center justify-center text-xs font-bold ${
@@ -143,14 +166,12 @@ _captured.getvalue()
         )}
       </div>
 
-      {/* Anlatım */}
       <div className="space-y-3 mb-6 text-white/80 leading-relaxed text-[15px]">
         {section.anlatim.map((p, i) => (
           <p key={i}>{p}</p>
         ))}
       </div>
 
-      {/* Örnek kod */}
       {section.ornek && (
         <div className="mb-6">
           <div className="text-[10px] uppercase tracking-widest text-white/40 font-semibold mb-2 flex items-center gap-1.5">
@@ -163,7 +184,6 @@ _captured.getvalue()
         </div>
       )}
 
-      {/* Soru başlığı */}
       <div className="mb-4 p-4 rounded-xl bg-amber-500/[0.08] border border-amber-500/25">
         <div className="text-[10px] uppercase tracking-widest text-amber-300 font-bold mb-1.5 flex items-center gap-1.5">
           <Sparkles className="w-3 h-3" />
@@ -177,7 +197,6 @@ _captured.getvalue()
         </p>
       </div>
 
-      {/* Editör */}
       <div className="mb-3">
         <textarea
           ref={taRef}
@@ -189,12 +208,17 @@ _captured.getvalue()
         />
       </div>
 
-      {/* Actions */}
+      {pyError && (
+        <div className="mb-3 p-3 rounded-lg bg-rose-500/[0.08] border border-rose-500/30 text-xs text-rose-200">
+          Pyodide hatası: {pyError}
+        </div>
+      )}
+
       <div className="flex items-center gap-2 mb-4">
         <button
           type="button"
           onClick={runTest}
-          disabled={isPyLoading || status === "running"}
+          disabled={isPyLoading || status === "running" || pyStatus === "error"}
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-amber-500 hover:bg-amber-400 disabled:opacity-50 disabled:cursor-not-allowed text-black text-sm font-bold transition-colors"
         >
           <Play className="w-3.5 h-3.5" />
@@ -214,7 +238,6 @@ _captured.getvalue()
         </button>
       </div>
 
-      {/* Output */}
       {(output || status !== "idle") && (
         <div
           className={`rounded-lg border p-3 mb-3 ${
@@ -248,7 +271,6 @@ _captured.getvalue()
         </div>
       )}
 
-      {/* Yardım linki */}
       {section.yardimLink && (
         <div className="pt-3 border-t border-white/5">
           <Link
