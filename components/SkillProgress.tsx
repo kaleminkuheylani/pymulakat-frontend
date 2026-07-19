@@ -17,165 +17,17 @@ interface SkillStats {
   avgPass: number;
 }
 
-// Canonical skill buckets. Language (Python/JS) split is intentionally avoided.
-const SKILL_KEYWORDS: Record<string, string[]> = {
-  strings: [
-    "string",
-    "slicing",
-    "split",
-    "regex",
-    "casefold",
-    "normalize",
-    "palindrome",
-    "anagram",
-    "string temizleme",
-    "string normalization",
-    "substring",
-    "concat",
-    "format",
-    "f-string",
-  ],
-  functions: [
-    "function",
-    "fonksiyon",
-    "lambda",
-    "def",
-    "parametre",
-    "arg",
-    "kwarg",
-    "recursive",
-    "recursion",
-    "özyineleme",
-    "base case",
-  ],
-  "if-else": [
-    "if",
-    "else",
-    "elif",
-    "koşullu",
-    "kontrol yapıları",
-    "condition",
-    "ternary",
-  ],
-  loops: [
-    "loop",
-    "loops",
-    "for",
-    "while",
-    "döngü",
-    "iteration",
-    "iterasyon",
-    "enumerate",
-    "range",
-  ],
-  lists: [
-    "list",
-    "liste",
-    "array",
-    "dizi",
-    "in-place swap",
-    "reversed",
-    "slicing",
-    "comprehension",
-    "nested list",
-  ],
-  dictionaries: [
-    "dict",
-    "dictionary",
-    "sözlük",
-    "counter",
-    "defaultdict",
-    "collections",
-    "hashmap",
-    "hash table",
-    "key-value",
-  ],
-  math: [
-    "math",
-    "matematik",
-    "modulo",
-    "asal",
-    "prime",
-    "eratosthenes",
-    "öklid",
-    "gcd",
-    "ebob",
-    "factorial",
-    "fibonacci",
-    "numeric",
-    "sayı",
-    "arithmetic",
-    "kümülatif",
-    "accumulate",
-    "sum",
-  ],
-  algorithms: [
-    "algorithm",
-    "algoritma",
-    "binary search",
-    "ikili arama",
-    "dynamic programming",
-    "dinamik programlama",
-    "greedy",
-    "divide and conquer",
-    "two pointers",
-    "sliding window",
-    "kayan pencere",
-    "memoization",
-  ],
-  sorting: [
-    "sort",
-    "sıralama",
-    "merge sort",
-    "quick sort",
-    "heap sort",
-    "bubble sort",
-    "sorted",
-    "ordering",
-  ],
-  "data-structures": [
-    "stack",
-    "queue",
-    "deque",
-    "heap",
-    "linked list",
-    "tree",
-    "binary tree",
-    "graph",
-    "veri yapısı",
-    "data structure",
-    "dfs",
-    "bfs",
-  ],
-  files: ["file", "dosya", "csv", "json", "with", "io", "read", "write"],
-  oop: [
-    "class",
-    "object",
-    "oop",
-    "inheritance",
-    "encapsulation",
-    "polymorphism",
-    "nesne",
-    "init",
-    "self",
-  ],
-  "error-handling": ["exception", "try", "except", "error", "hata", "raise"],
-  sets: ["set", "küme", "intersection", "union", "difference", "subset"],
-  tuples: ["tuple", "demet"],
-};
+// related_concepts zaten Supabase'de var. Burada sadece normalize edip
+// Python/JS gibi dil ayrımını yapmamaya dikkat ediyoruz.
+const LANGUAGE_TOKENS = ["python", "javascript", "js"];
 
-function normalizeConceptToSkills(concept: string): string[] {
-  const c = concept.toLowerCase().trim();
-  const matched: string[] = [];
-  for (const [skill, keywords] of Object.entries(SKILL_KEYWORDS)) {
-    if (keywords.some((kw) => c.includes(kw.toLowerCase()))) {
-      matched.push(skill);
-    }
+function normalizeSkill(label: string): string {
+  let s = label.toLowerCase().trim().replace(/\s+/g, " ");
+  for (const tok of LANGUAGE_TOKENS) {
+    s = s.replace(new RegExp(`\\b${tok}\\b`, "g"), "").trim();
   }
-  if (matched.length === 0) {
-    matched.push(c);
-  }
-  return matched;
+  s = s.replace(/^[,.:;]+|[,.:;]+$/g, "").trim();
+  return s || "diğer";
 }
 
 function computeStats(questions: ApiQuestion[], attempts: ApiAttemptResponse[]): SkillStats[] {
@@ -191,12 +43,12 @@ function computeStats(questions: ApiQuestion[], attempts: ApiAttemptResponse[]):
     const qSkillSet = new Set<string>();
     questionSkills.set(q.id, qSkillSet);
     for (const concept of q.related_concepts || []) {
-      for (const skill of normalizeConceptToSkills(concept)) {
-        qSkillSet.add(skill);
-        const set = skillTotals.get(skill) ?? new Set<number>();
-        set.add(q.id);
-        skillTotals.set(skill, set);
-      }
+      const skill = normalizeSkill(concept);
+      if (!skill || skill === "diğer") continue;
+      qSkillSet.add(skill);
+      const set = skillTotals.get(skill) ?? new Set<number>();
+      set.add(q.id);
+      skillTotals.set(skill, set);
     }
   }
 
