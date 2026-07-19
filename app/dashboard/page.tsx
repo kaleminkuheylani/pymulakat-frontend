@@ -14,8 +14,10 @@ import { useUser } from "../../hooks/useUser";
 import OnboardingSurvey from "../../components/OnboardingSurvey";
 import StatsOverview from "../../components/dashboard/StatsOverview";
 import { getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
+import { getAchievements } from "../../lib/api/achievementsAPI";
 import { getAllPosts } from "../blog/posts";
-import { BookOpen, ArrowRight } from "lucide-react";
+import { BookOpen, ArrowRight, Trophy, X } from "lucide-react";
+import type { ApiNewlyUnlockedAchievement } from "../../lib/api/types";
 
 // 📌 Lazy load — initial bundle'dan cikar (mobil performans)
 const PersonalFlow = dynamic(() => import("../../components/dashboard/PersonalFlow"), {
@@ -84,6 +86,7 @@ export default function DashboardHome() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [allPosts, setAllPosts] = useState<Awaited<ReturnType<typeof getAllPosts>>>([]);
+  const [newUnlocks, setNewUnlocks] = useState<ApiNewlyUnlockedAchievement[]>([]);
 
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   // Mounted guard (TS strict mode + Vercel SWC uyumluluğu icin explicit type)
@@ -167,6 +170,18 @@ export default function DashboardHome() {
     return () => clearInterval(interval);
   }, [fetchFlow, fetchCommunity]);
 
+  // Yeni kazanılan başarılar (dashboard'a gelince göster)
+  useEffect(() => {
+    if (!user?.id) return;
+    getAchievements()
+      .then((data) => {
+        if (data?.new_unlocked?.length) {
+          setNewUnlocks(data.new_unlocked);
+        }
+      })
+      .catch(() => {});
+  }, [user?.id]);
+
   // 📌 Misafir için: layout.tsx auth guard var. Buraya user gelirse üye demektir.
   // Bu yüzden null yerine bir erken return yok.
   // ÖNEMLİ: dashboard guest'te layout guard'i sayesinde /login'e yönlendirilir,
@@ -177,6 +192,9 @@ export default function DashboardHome() {
   return (
     <>
       <OnboardingSurvey userId={user.id} totalAttempts={user.total_attempts || 0} />
+      {newUnlocks.length > 0 && (
+        <NewAchievementBanner items={newUnlocks} onClose={() => setNewUnlocks([])} />
+      )}
       <div className="space-y-5">
           {/* Üst Bar — kullanıcı + stats + tablar */}
           <div className="space-y-3">
@@ -377,5 +395,51 @@ function BlogWidget({ posts }: { posts: Awaited<ReturnType<typeof getAllPosts>> 
         ))}
       </div>
     </section>
+  );
+}
+
+function NewAchievementBanner({
+  items,
+  onClose,
+}: {
+  items: ApiNewlyUnlockedAchievement[];
+  onClose: () => void;
+}) {
+  const total = items.reduce((sum, i) => sum + (i.points || 0), 0);
+  return (
+    <div className="rounded-2xl border border-amber-500/30 bg-gradient-to-r from-amber-500/15 to-transparent p-4 animate-in fade-in slide-in-from-top-2 duration-500">
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-xl bg-amber-500/20 flex items-center justify-center shrink-0">
+            <Trophy className="w-5 h-5 text-amber-300" />
+          </div>
+          <div>
+            <h3 className="text-sm font-bold text-white">
+              {items.length} yeni başarı kazandın!
+            </h3>
+            <p className="text-xs text-white/60">
+              Toplam +{total} puan
+            </p>
+          </div>
+        </div>
+        <button
+          onClick={onClose}
+          className="p-1 rounded-lg hover:bg-white/10 text-white/50 hover:text-white transition-colors"
+          aria-label="Kapat"
+        >
+          <X className="w-4 h-4" />
+        </button>
+      </div>
+      <div className="mt-3 flex flex-wrap gap-2">
+        {items.map((item) => (
+          <div
+            key={item.id}
+            className="text-xs px-2.5 py-1 rounded-full bg-white/10 text-amber-200 border border-amber-500/20"
+          >
+            {item.title} (+{item.points})
+          </div>
+        ))}
+      </div>
+    </div>
   );
 }

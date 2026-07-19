@@ -155,9 +155,16 @@ export interface ApiAchievement {
   unlocked: boolean;
 }
 
+export interface ApiNewlyUnlockedAchievement {
+  id: string;
+  title: string;
+  points: number;
+}
+
 export interface ApiAchievementResponse {
   items: ApiAchievement[];
   groups: Record<string, ApiAchievement[]>;
+  new_unlocked: ApiNewlyUnlockedAchievement[];
   unlocked_count: number;
   total: number;
   achievement_points: number;
