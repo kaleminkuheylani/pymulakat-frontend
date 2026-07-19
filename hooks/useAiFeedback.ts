@@ -91,10 +91,10 @@ function readByokKey(): string | null {
 //   Authorization header + cookie'yi otomatik forward eder.
 // 2026-07-14 v15: Authorization: Bearer <jwt> header eklendi
 //   (Supabase JWT localStorage'dan alinip fetch'e ekleniyor).
-import { extractAccessToken } from "./useUser";
+import { getAccessToken } from "../lib/auth";
 
 function getAuthHeaders(): Record<string, string> {
-  const token = extractAccessToken();
+  const token = getAccessToken();
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
@@ -286,7 +286,7 @@ export function useAiFeedback(): AiFeedbackState {
         //   Vercel proxy'den backend'e iletir, backend jwt.decode ile
         //   user_id alır. BYOK user limit muaf (bu header göndermese de
         //   olur, ama göndermek zarar etmez).
-        const authToken = extractAccessToken();
+        const authToken = getAccessToken();
         if (authToken) headers["Authorization"] = `Bearer ${authToken}`;
 
         const res = await fetch("/api/ai-feedback", {

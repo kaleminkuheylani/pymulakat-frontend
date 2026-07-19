@@ -1,237 +1,141 @@
+// app/auth/callback/page.tsx
+//
+// 2026-07-19: SADE — sadece hash'ten session'i alip returnUrl'e yonlendir.
+// Supabase setSession yapar + /api/auth/session httpOnly cookie yazar + sentinel
+// cookie'yi set eder. Tum detaylar: lib/auth-client.ts + hooks/useSupabaseBrowser.ts.
+
 "use client";
 
 import { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
 import { toast } from "sonner";
-import { getSupabaseBrowser } from "../../../hooks/useSupabaseBrowser";
-import { notifyAuthChange } from "../../../hooks/useUser";
-
-type CallbackType = "magiclink" | "signup" | "recovery" | "oauth" | "unknown";
-
-function classifyCallback(searchParams: URLSearchParams): CallbackType {
-  // Öncelik: ?type= explicit
-  const explicit = searchParams.get("type");
-  if (explicit === "recovery") return "recovery";
-  if (explicit === "signup") return "signup";
-  if (explicit === "magiclink") return "magiclink";
-
-  // Supabase URL'inde token_hash varsa → email confirmation veya recovery
-  if (searchParams.get("token_hash")) {
-    // Supabase token_hash'i nonce ile birlikte kullanır; tip yoksa signup varsay
-    return "signup";
-  }
-
-  // Hash fragment (#access_token=...) — OAuth legacy implicit flow
-  // (PKCE aksine Supabase bazen implicit doner, ozellikle signInWithOAuth)
-  if (typeof window !== "undefined" && window.location.hash.includes("access_token")) {
-    return "oauth";
-  }
-
-  return "oauth";
-}
+import { getSupabaseBrowser } from "@/hooks/useSupabaseBrowser";
+import { notifyAuthChange } from "@/hooks/useUser";
 
 function CallbackInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [status, setStatus] = useState<"loading" | "success" | "error">("loading");
-  const [message, setMessage] = useState<string>("İşlem gerçekleştiriliyor...");
+  const [message, setMessage] = useState("İşlem gerçekleştiriliyor...");
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    let redirected = false;
+    let cancelled = false;
 
-    const handleCallback = async () => {
+    async function handle() {
+      const supabase = getSupabaseBrowser();
+      if (!supabase) {
+        setError("Supabase client yüklenemedi");
+        return;
+      }
+      const returnUrl = searchParams.get("returnUrl") || "/dashboard";
+      const type = searchParams.get("type"); // "signup" | "recovery" | null
+      const tokenHash = searchParams.get("token_hash");
+
       try {
-        const supabase = getSupabaseBrowser();
-        if (!supabase) {
-          throw new Error("Supabase client yüklenemedi");
-        }
-
-        const callbackType = classifyCallback(searchParams);
-        const returnUrl = searchParams.get("returnUrl") || "/dashboard";
-
-        // ─── RECOVERY flow ─────────────────────────────────
-        if (callbackType === "recovery") {
-          setMessage("Şifre sıfırlama linki doğrulanıyor...");
-          const { data, error } = await supabase.auth.getSession();
-
-          if (error) throw error;
-
-          if (data.session) {
-            // Recovery session aktif → reset-password sayfasına yönlendir
-            setStatus("success");
-            toast.success("Şifre sıfırlama hazır 🔐");
-            setTimeout(() => router.push("/auth/reset-password"), 400);
-            return;
-          }
-
-          // Session yoksa: token_hash ile OTP verify gerekebilir
-          const tokenHash = searchParams.get("token_hash");
-          if (tokenHash) {
-            const { error: verifyErr } = await supabase.auth.verifyOtp({
-              token_hash: tokenHash,
-              type: "recovery",
-            });
-            if (verifyErr) throw verifyErr;
-            setStatus("success");
-            toast.success("Şifre sıfırlama hazır 🔐");
-            setTimeout(() => router.push("/auth/reset-password"), 400);
-            return;
-          }
-
-          throw new Error("Geçersiz veya süresi dolmuş sıfırlama linki");
-        }
-
-        // ─── SIGNUP (email confirmation) flow ────────────
-        if (callbackType === "signup") {
-          setMessage("E-posta adresin doğrulanıyor...");
-          const tokenHash = searchParams.get("token_hash");
-          if (!tokenHash) throw new Error("Doğrulama token'ı eksik");
-
+        // ── Email confirmation / recovery (token_hash ile) ──
+        if (tokenHash && (type === "signup" || type === "recovery")) {
+          setMessage(type === "recovery" ? "Şifre sıfırlama linki doğrulanıyor..." : "E-posta adresin doğrulanıyor...");
           const { error: verifyErr } = await supabase.auth.verifyOtp({
             token_hash: tokenHash,
-            type: "signup",
+            type: type as "signup" | "recovery",
           });
-
           if (verifyErr) throw verifyErr;
+          if (cancelled) return;
 
-          // Session oluştuysa backend tarafında is_verified=true yapılır mı?
-          // Backend register'da email_confirm=False kullanıyor; doğrulama sonrası
-          // profile.is_verified güncellenmeli. Burada sadece UI'ya bildiriyoruz.
-          setStatus("success");
-          toast.success("E-posta doğrulandı! 🎉");
           notifyAuthChange();
-
-          redirected = true;
-          setTimeout(() => router.push(returnUrl), 800);
+          toast.success(type === "recovery" ? "Şifre sıfırlama hazır" : "E-posta doğrulandı!");
+          if (type === "recovery") {
+            router.push("/auth/reset-password");
+          } else {
+            router.push(returnUrl);
+          }
           return;
         }
 
-        // ─── MAGIC LINK flow ──────────────────────────────
-        if (callbackType === "magiclink") {
-          setMessage("Magic link doğrulanıyor...");
-          // createBrowserClient + detectSessionInUrl=true bunu otomatik handle eder.
-          // Yine de fallback:
-          let attempts = 0;
-          const trySession = async () => {
-            attempts++;
-            const { data, error } = await supabase.auth.getSession();
-            if (error) throw error;
-
-            if (data.session) {
-              setStatus("success");
-              toast.success("Giriş başarılı! 🎉");
-              notifyAuthChange();
-              redirected = true;
-              setTimeout(() => router.push(returnUrl), 600);
-              return;
-            }
-            if (attempts < 5) {
-              setTimeout(trySession, 800);
-            } else {
-              throw new Error("Session oluşturulamadı — link süresi dolmuş olabilir");
-            }
-          };
-          await trySession();
-          return;
-        }
-
-        // ─── OAUTH (Google/GitHub/etc) flow ───────────────
-        setMessage("OAuth girişi tamamlanıyor...");
-
-        // Hash'ten access_token ve refresh_token al, hem Supabase localStorage'a
-        // hem de /api/auth/session ile httpOnly cookie'ye yaz. Backend
-        // /auth/me Bearer header + cookie ikisini de kabul eder.
+        // ── OAuth (hash fragment access_token ile) ──
         const hash = typeof window !== "undefined" ? window.location.hash : "";
         if (hash.includes("access_token")) {
+          setMessage("OAuth girişi tamamlanıyor...");
           const params = new URLSearchParams(hash.slice(1));
           const accessToken = params.get("access_token");
           const refreshToken = params.get("refresh_token");
-          const expiresIn = parseInt(params.get("expires_in") || "3600", 10);
-          const expiresAt = Math.floor(Date.now() / 1000) + expiresIn;
-          const tokenType = params.get("token_type") || "bearer";
 
-          if (accessToken && refreshToken) {
-            // (A) /api/auth/session → httpOnly cookie'ler yazılır
-            try {
-              await fetch("/api/auth/session", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                credentials: "include",
-                body: JSON.stringify({
-                  access_token: accessToken,
-                  refresh_token: refreshToken,
-                }),
-              });
-            } catch (e) {
-              // ignore — localStorage fallback aşağıda
-            }
+          if (!accessToken || !refreshToken) {
+            throw new Error("OAuth token eksik");
+          }
 
-            // (B) setSession — Supabase internal state'i gunceller
-            const { error: setErr } = await supabase.auth.setSession({
+          // (A) httpOnly cookie'ler — middleware server-side auth gate için
+          try {
+            await fetch("/api/auth/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ access_token: accessToken, refresh_token: refreshToken }),
+            });
+          } catch {
+            // localStorage fallback zaten setSession'ı deneyecek
+          }
+
+          // (B) Supabase internal state — setSession başarısızsa localStorage fallback
+          const { error: setErr } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken,
+          });
+          if (setErr) {
+            console.warn("supabase setSession failed:", setErr.message);
+            const storageKey = "sb-pymulakat-auth-token";
+            const expiresIn = parseInt(params.get("expires_in") || "3600", 10);
+            const sessionData = [{
               access_token: accessToken,
               refresh_token: refreshToken,
-            });
-
-            if (setErr) {
-              // setSession basarisiz — gercek hatayi logla
-              console.warn("supabase setSession failed:", setErr.message);
-              const storageKey = "sb-pymulakat-auth-token";
-              const sessionData = [{
-                access_token: accessToken,
-                refresh_token: refreshToken,
-                expires_in: expiresIn,
-                expires_at: expiresAt,
-                token_type: tokenType,
-                user: null,
-              }];
-              try {
-                localStorage.setItem(storageKey, JSON.stringify(sessionData));
-              } catch (e) {
-                // ignore
-              }
-            }
-
-            // (C) Sentinel cookie — middleware server-side auth gate için
+              expires_in: expiresIn,
+              expires_at: Math.floor(Date.now() / 1000) + expiresIn,
+              token_type: params.get("token_type") || "bearer",
+              user: null,
+            }];
             try {
-              document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
+              localStorage.setItem(storageKey, JSON.stringify(sessionData));
             } catch {
-              // ignore
+              /* ignore */
             }
           }
+
+          if (cancelled) return;
+          notifyAuthChange();
+          toast.success("OAuth girişi başarılı");
+          // URL'den hash'i temizle (history temiz kalsın)
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+          router.push(returnUrl);
+          return;
         }
 
+        // ── Magic link (Supabase implicit session'i otomatik set eder) ──
+        setMessage("Magic link doğrulanıyor...");
         let attempts = 0;
-        const trySession = async () => {
-          attempts++;
-          const { data, error } = await supabase.auth.getSession();
-          if (error) throw error;
-
+        while (attempts < 5) {
+          const { data } = await supabase.auth.getSession();
           if (data.session) {
-            setStatus("success");
-            toast.success("OAuth girişi başarılı! 🎉");
+            if (cancelled) return;
             notifyAuthChange();
-            redirected = true;
-            setTimeout(() => router.push(returnUrl), 600);
+            toast.success("Giriş başarılı");
+            router.push(returnUrl);
             return;
           }
-          if (attempts < 5) {
-            setTimeout(trySession, 800);
-          } else {
-            throw new Error("OAuth callback başarısız");
-          }
-        };
-        await trySession();
-      } catch (err: any) {
-        if (redirected) return;
-        setStatus("error");
-        setMessage(err?.message || "Bilinmeyen hata");
-        toast.error("İşlem başarısız", { description: err?.message });
+          attempts++;
+          await new Promise((r) => setTimeout(r, 800));
+        }
+        throw new Error("Session oluşturulamadı — link süresi dolmuş olabilir");
+      } catch (e: any) {
+        if (cancelled) return;
+        setError(e?.message || "Bilinmeyen hata");
+        toast.error("İşlem başarısız", { description: e?.message });
         setTimeout(() => router.push("/login"), 2500);
       }
-    };
+    }
 
-    handleCallback();
+    handle();
+    return () => { cancelled = true; };
   }, [router, searchParams]);
 
   return (
@@ -241,26 +145,18 @@ function CallbackInner() {
         animate={{ opacity: 1, y: 0 }}
         className="text-center max-w-md"
       >
-        {status === "loading" && (
+        {error ? (
+          <>
+            <div className="text-6xl mb-4">❌</div>
+            <p className="text-red-400 text-lg">İşlem başarısız</p>
+            <p className="text-white/50 text-sm mt-2">{error}</p>
+            <p className="text-white/40 text-xs mt-3">Login sayfasına yönlendiriliyorsunuz...</p>
+          </>
+        ) : (
           <>
             <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin mx-auto mb-4" />
             <p className="text-white text-lg">{message}</p>
             <p className="text-white/50 text-sm mt-2">Lütfen bekleyin</p>
-          </>
-        )}
-        {status === "success" && (
-          <>
-            <div className="text-6xl mb-4">✅</div>
-            <p className="text-white text-lg">İşlem başarılı!</p>
-            <p className="text-white/50 text-sm mt-2">Yönlendiriliyorsunuz...</p>
-          </>
-        )}
-        {status === "error" && (
-          <>
-            <div className="text-6xl mb-4">❌</div>
-            <p className="text-red-400 text-lg">İşlem başarısız</p>
-            <p className="text-white/50 text-sm mt-2">{message}</p>
-            <p className="text-white/40 text-xs mt-3">Login sayfasına yönlendiriliyorsunuz...</p>
           </>
         )}
       </motion.div>

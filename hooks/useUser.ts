@@ -1,8 +1,14 @@
-// hooks/useUser.ts — Supabase SSR tabanlı, çoklu kaynaklardan token çıkarımı + auto-refresh.
+// hooks/useUser.ts — Tek hook: Supabase client + /auth/me fetch + auto-refresh.
+//
+// 2026-07-19: SADELESTIRILDI — lib/auth.ts'teki getAccessToken TEK KAYNAK
+// oldu. extractAccessToken ve tryRefreshToken helperlari burada duplicate
+// olarak yasamaktaydi, hepsi kaldirildi. Supabase kendi autoRefreshToken
+// mekanizmasini yonetir; biz sadece /auth/me'yi cagiriyoruz.
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getSupabaseBrowser, clearAuthSentinel } from "./useSupabaseBrowser";
 import { authAPI } from "../lib/api/authAPI";
+import { hasAccessToken } from "../lib/auth";
 
 const AUTH_EVENT = "auth-state-changed";
 
@@ -27,158 +33,13 @@ export function notifyAuthChange() {
   }
 }
 
-// ═══════════════════════════════════════════════════════════════
-/**
- * Supabase'in kullandığı storage key'leri dahil tüm olası konumlardan access_token çıkar.
- * @supabase/ssr hem localStorage hem cookie kullanabilir; biz her iki kaynağı da tarıyoruz.
- */
-export function extractAccessToken(): string | null {
-  if (typeof window === "undefined") return null;
-
-  // 1) Bilinen storage key'ler
-  const knownKeys = [
-    "sb-pymulakat-auth-token",
-    "sb-pymulakat-auth-token-code-verifier", // PKCE
-  ];
-  for (const key of knownKeys) {
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) continue;
-      const parsed = JSON.parse(raw);
-      const token =
-        parsed?.access_token ||
-        parsed?.currentSession?.access_token ||
-        parsed?.session?.access_token;
-      if (token) return token;
-    } catch {
-      // ignore
-    }
-  }
-
-  // 2) "-auth-token" ile biten tüm key'leri tara
-  for (let i = 0; i < localStorage.length; i++) {
-    const key = localStorage.key(i);
-    if (!key || !key.endsWith("-auth-token") || knownKeys.includes(key)) continue;
-    try {
-      const raw = localStorage.getItem(key);
-      if (!raw) continue;
-      const parsed = JSON.parse(raw);
-      const token =
-        parsed?.access_token ||
-        parsed?.currentSession?.access_token ||
-        parsed?.session?.access_token;
-      if (token) return token;
-    } catch {
-      // ignore
-    }
-  }
-
-  // 3) Plain "token" key'i (backend'in eski login endpoint'i için fallback)
-  const plain = localStorage.getItem("token");
-  if (plain) return plain;
-
-  // 4) Cookies (SSR tarayıcıya yazabilir)
-  if (typeof document !== "undefined") {
-    const cookies = document.cookie.split(";");
-    for (const c of cookies) {
-      const [k, v] = c.trim().split("=");
-      if (k && v && (k.includes("auth-token") || k.includes("access-token"))) {
-        try {
-          const decoded = decodeURIComponent(v);
-          // JWT formatı (header.payload.signature)
-          if (decoded.startsWith("eyJ")) return decoded;
-          const parsed = JSON.parse(decoded);
-          if (parsed?.access_token) return parsed.access_token;
-          if (parsed?.[0]?.access_token) return parsed[0].access_token;
-        } catch {
-          // raw jwt olabilir
-          if (v.startsWith("eyJ")) return v;
-        }
-      }
-    }
-  }
-
-  return null;
-}
-
-/**
- * Refresh token ile yeni access token al. Storage'i de günceller.
- * Returns true if refresh succeeded.
- */
-async function tryRefreshToken(): Promise<boolean> {
-  if (typeof window === "undefined") return false;
-
-  try {
-    // Try Supabase client first (preferred)
-    const supabase = getSupabaseBrowser();
-    if (supabase) {
-      const { data, error } = await supabase.auth.refreshSession();
-      if (!error && data?.session?.access_token) {
-        return true; // Supabase kendi storage'ini günceller
-      }
-    }
-
-    // Fallback: backend refresh endpoint (yoksa false)
-    const raw = localStorage.getItem("sb-pymulakat-auth-token");
-    if (!raw) return false;
-    const parsed = JSON.parse(raw);
-    const refreshToken = parsed?.refresh_token;
-    if (!refreshToken) return false;
-
-    const json = await authAPI.refreshToken(refreshToken);
-    if (!json) return false;
-    const newAccess = json.access_token;
-    const newRefresh = json.refresh_token || refreshToken;
-    if (!newAccess) return false;
-
-    const expiresAt = json?.expires_at
-      ? Math.floor(new Date(json.expires_at).getTime() / 1000)
-      : Math.floor(Date.now() / 1000) + 3600;
-
-    // 📌 Canonical depolama: Supabase yönettiği JSON. Plain 'token' ve
-    // 'refresh_token' artık yazılmıyor — extractAccessToken fallback olarak
-    // okumaya devam ediyor (eski session'lardan gelen plain token'lar için)
-    const updated = {
-      ...parsed,
-      access_token: newAccess,
-      refresh_token: newRefresh,
-      expires_at: expiresAt,
-    };
-    localStorage.setItem("sb-pymulakat-auth-token", JSON.stringify(updated));
-
-    return true;
-  } catch {
-    return false;
-  }
-}
-
 async function fetchMe(): Promise<UserResponse | null> {
   if (typeof window === "undefined") return null;
-
-  let token = extractAccessToken();
-  if (!token) return null;
+  if (!hasAccessToken()) return null;
 
   try {
-    const doFetch = (accessToken: string) =>
-      authAPI.getMe();
-
-        let res = await doFetch(token);
-
-    // 401 gelirse refresh_token ile yeni access_token al
-    if (res === null) {
-      // null response, refresh deneyebiliriz
-      const refreshed = await tryRefreshToken();
-      if (refreshed) {
-        token = extractAccessToken();
-        if (token) {
-          res = await doFetch(token);
-        }
-      }
-    }
-
-    // res artık ApiUser | null (eski fetch kaldırıldı, authAPI.getMe() kullanılıyor)
-    return res;
-  } catch (e) {
+    return await authAPI.getMe();
+  } catch {
     return null;
   }
 }
@@ -229,8 +90,7 @@ export function useUser() {
     // hemen set et. Bu sayede login olan kullanici sayfayi kapatsa
     // bile cookie TTL boyunca (24 saat) auth-gated sayfalara erisebilir.
     try {
-      const token = extractAccessToken();
-      if (token) {
+      if (hasAccessToken()) {
         document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
       }
     } catch {
