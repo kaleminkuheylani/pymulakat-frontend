@@ -56,13 +56,17 @@ export function getSupabaseBrowser(): SupabaseClient | null {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      // 2026-07-19: detectSessionInUrl=false — Supabase v2 + @supabase/ssr
-      // auto-detect sayfa yüklendiğinde URL'i okur, ama server-side redirect
-      // ile code gelirse client bunu gormez. /auth/callback page.tsx useEffect
-      // içinde exchangeCodeForSession(code) MANUEL cagirir (guvenilir).
+      // 2026-07-19: detectSessionInUrl=false — server-side redirect ile code
+      // geldiginde auto-detect gostermiyor. /auth/callback page.tsx useEffect
+      // icinde exchangeCodeForSession(code) MANUEL cagirir.
       detectSessionInUrl: false,
       flowType: "pkce",
       storageKey: "sb-pymulakat-auth-token",
+      // PKCE code_verifier burada saklanir. localStorage explicit ver
+      // (default'ta @supabase/ssr cookies kullanir, ama cookie'ler PKCE flow'da
+      // kaybolabiliyor). localStorage'a yazarsak ayni browser context'te
+      // callback'te kesinlikle okunur.
+      storage: typeof window !== "undefined" ? window.localStorage : undefined,
     },
     cookies: {
       // setAll: @supabase/ssr'nin default documentCookieSetAll davranışını
