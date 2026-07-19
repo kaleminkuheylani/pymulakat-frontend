@@ -113,7 +113,7 @@ export default function SkillProgress({ questions }: Props) {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    getMyAttempts(1000)
+    getMyAttempts(100)
       .then((data) => {
         if (!cancelled) {
           setAttempts(data);
@@ -122,7 +122,8 @@ export default function SkillProgress({ questions }: Props) {
       })
       .catch((e) => {
         if (!cancelled) {
-          setError("Denemeler alınamadı.");
+          const message = e instanceof Error ? e.message : "Bilinmeyen hata";
+          setError(`Denemeler alınamadı: ${message}`);
           setLoading(false);
         }
       });
