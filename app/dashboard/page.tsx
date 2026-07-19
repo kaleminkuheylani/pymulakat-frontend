@@ -13,7 +13,7 @@ import Link from "next/link";
 import { useUser } from "../../hooks/useUser";
 import OnboardingSurvey from "../../components/OnboardingSurvey";
 import StatsOverview from "../../components/dashboard/StatsOverview";
-import { getAllQuestions, getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
+import { getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
 import { getAllPosts } from "../blog/posts";
 import { BookOpen, ArrowRight } from "lucide-react";
 
