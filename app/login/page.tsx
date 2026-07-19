@@ -10,8 +10,6 @@ import Link from "next/link";
 import { LogIn } from "lucide-react";
 import { toast } from "sonner";
 
-import { signInWithOAuth } from "@/lib/auth-client";
-
 // ─── Background ──────────────────────────────────────────────
 function GridBackground() {
   return (
@@ -63,13 +61,11 @@ function LoginContent() {
   async function handleOAuth(provider: "google" | "github") {
     if (pending) return;
     setPending(provider);
-    const result = await signInWithOAuth({ provider, returnUrl });
-    if (!result.ok) {
-      toast.error(`${provider === "google" ? "Google" : "GitHub"} ile giriş başlatılamadı`, {
-        description: result.error,
-      });
-      setPending(null);
-    }
+    // 2026-07-19: Server-side OAuth flow — /api/auth/oauth/[provider]
+    // Supabase server client ile code_verifier'i server cookie'ye yazar,
+    // /auth/callback server route'unda exchange edilir. PKCE localStorage
+    // cross-storage sorunu tamamen kalkar.
+    window.location.assign(`/api/auth/oauth/${provider}?returnUrl=${encodeURIComponent(returnUrl)}`);
   }
 
   return (
