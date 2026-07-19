@@ -53,7 +53,27 @@ function CallbackInner() {
         }
         if (data?.session) {
           if (cancelled) return;
+          // /api/auth/session — httpOnly cookie yaz (middleware auth gate icin)
+          try {
+            await fetch("/api/auth/session", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({
+                access_token: data.session.access_token,
+                refresh_token: data.session.refresh_token,
+              }),
+            });
+          } catch {
+            // ignore
+          }
           notifyAuthChange();
+          // Sentinel cookie — middleware server-side auth gate
+          try {
+            document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
+          } catch {
+            // ignore
+          }
           window.history.replaceState(null, "", window.location.pathname);
           toast.success("Giriş başarılı");
           router.push(returnUrl);
