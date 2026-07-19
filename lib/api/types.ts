@@ -275,12 +275,16 @@ export interface ApiRecommendationItem {
   slug?: string;
   body?: string;
   tags?: string[];
-  score: number;
+  score?: number;
   reason: string;
   created_at?: string;
   view_count?: number;
   attempt_count?: number;
   reply_count?: number;
+  success?: boolean;
+  passed_tests?: number;
+  total_tests?: number;
+  section?: string;
 }
 
 
@@ -289,7 +293,8 @@ export interface ApiRecommendationFlow {
     personal: ApiRecommendationItem[];
     recent: ApiRecommendationItem[];
     popular: ApiRecommendationItem[];
-    next_level: ApiRecommendationItem[];
+    recent_attempts?: ApiRecommendationItem[];
+    next_level?: ApiRecommendationItem[];
     recommended?: ApiRecommendationItem[];
   };
   context: ApiRecommendationContext;
@@ -317,13 +322,16 @@ export interface ApiRecommendation {
 
 export interface ApiRecommendationContext {
   is_authenticated: boolean;
-  top_categories: string[];
+  top_categories?: string[];
   solved_categories?: string[];
+  solved_ids?: number[];
   success_rate?: number;
   target_level?: string;
+  current_level?: string;
   recent_category?: string | null;
   user_level?: string | null;
   total_attempts?: number;
+  total_items?: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════

@@ -28,7 +28,7 @@ import { getAllQuestions } from "@/lib/api/questionAPI";
 import { CATEGORY_ICONS } from "@/lib/icons";
 import { CATEGORY_SLUGS, getCategoryUrl } from "@/lib/categorySlug";
 import { BASE_URL } from "@/lib/seo";
-import QuestionListItem from "@/components/QuestionListItem";
+import SolvedQuestionList from "@/components/SolvedQuestionList";
 
 // ISR — 1 saatte bir yenile
 export const revalidate = 3600;
@@ -134,23 +134,12 @@ export default async function CategoryPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* ─── Soru listesi ────────────────────────────── */}
-        <ul className="space-y-3" data-ssr-interviews-list>
-          {questions.length === 0 ? (
-            <li className="text-white/50 text-sm py-8 text-center">
-              Bu kategoride henüz soru yok.
-            </li>
-          ) : (
-            questions.map((q) => (
-              <QuestionListItem
-                key={q.id}
-                question={q}
-                categorySlug={category}
-                categoryLabel={cat.label ?? category}
-              />
-            ))
-          )}
-        </ul>
+        {/* ─── Soru listesi (+ çözüldü rozeti) ─────────── */}
+        <SolvedQuestionList
+          questions={questions}
+          categorySlug={category}
+          categoryLabel={cat.label ?? category}
+        />
 
         {/* ─── Diğer kategoriler ───────────────────────── */}
         <OtherCategoriesNav currentSlug={category} />

@@ -1,21 +1,11 @@
-// components/QuestionListItem.tsx
+﻿// components/QuestionListItem.tsx
 //
 // TEK KAYNAK — kategori landing ve ana /interviews liste sayfası
 // aynı zengin kart component'ini kullanır.
-//
-// Gösterilen alanlar (DB-FIRST, tüm alanlar opsiyonel):
-//   - title (zorunlu)
-//   - description (ilk 2 satır, clamp)
-//   - level (beginner | intermediate | advanced) — renk kodlu
-//   - complexity (varsa, e.g. "O(n log n)") — badge
-//   - tags (varsa) — chip'ler
-//   - category label (sadece /interviews ana listede görünür)
-//   - function_name (varsa) — önizleme
-//
-// Lucide icon, no emoji, no span (memory kuralı).
+// solved prop ile "Çözüldü" rozeti gösterilir.
 
 import Link from "next/link";
-import { Code2, ArrowRight, Clock, Tag, Sparkles } from "lucide-react";
+import { Code2, ArrowRight, Clock, Tag, Sparkles, CheckCircle2 } from "lucide-react";
 import type { ApiQuestion } from "@/lib/api/types";
 
 export interface QuestionListItemProps {
@@ -26,6 +16,8 @@ export interface QuestionListItemProps {
   categorySlug: string;
   /** Compact mod — function_name / tags gizli, daha sıkı kart. */
   compact?: boolean;
+  /** Kullanıcı bu soruyu başarıyla çözdüyse true. */
+  solved?: boolean;
 }
 
 const LEVEL_STYLES: Record<string, string> = {
@@ -47,6 +39,7 @@ export default function QuestionListItem({
   categoryLabel,
   categorySlug,
   compact = false,
+  solved = false,
 }: QuestionListItemProps) {
   const href = `/interviews/${categorySlug}/${question.slug ?? question.id}`;
   const desc = question.description?.split("\n").slice(0, 2).join("\n").trim();
@@ -57,16 +50,31 @@ export default function QuestionListItem({
     <li>
       <Link
         href={href}
-        className="block bg-white/[0.03] border border-white/10 rounded-lg p-4 hover:bg-white/[0.06] hover:border-white/20 transition-colors group"
+        className={`block border rounded-lg p-4 transition-colors group ${
+          solved
+            ? "bg-emerald-500/[0.06] border-emerald-500/25 hover:bg-emerald-500/[0.1] hover:border-emerald-500/40"
+            : "bg-white/[0.03] border-white/10 hover:bg-white/[0.06] hover:border-white/20"
+        }`}
       >
         <div className="flex items-start gap-3">
-          <Code2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-1" />
+          {solved ? (
+            <CheckCircle2 className="w-4 h-4 text-emerald-400 flex-shrink-0 mt-1" />
+          ) : (
+            <Code2 className="w-4 h-4 text-amber-400 flex-shrink-0 mt-1" />
+          )}
           <div className="flex-1 min-w-0">
             <div className="flex items-center justify-between gap-2 mb-1.5">
-              <h2 className="text-base font-semibold text-white truncate group-hover:text-amber-200 transition-colors">
-                {question.title}
+              <h2 className="text-base font-semibold text-white truncate group-hover:text-amber-200 transition-colors flex items-center gap-2 min-w-0">
+                <span className="truncate">{question.title}</span>
               </h2>
-              <ArrowRight className="w-4 h-4 text-white/30 flex-shrink-0 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+              <div className="flex items-center gap-2 shrink-0">
+                {solved && (
+                  <span className="text-[10px] px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 font-semibold uppercase tracking-wide">
+                    Çözüldü
+                  </span>
+                )}
+                <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
+              </div>
             </div>
 
             {desc && (
@@ -76,14 +84,12 @@ export default function QuestionListItem({
             )}
 
             <div className="flex items-center gap-1.5 flex-wrap">
-              {/* Level — renk kodlu */}
               <span
                 className={`text-[10px] px-1.5 py-0.5 rounded border uppercase tracking-wider font-medium ${levelClass(question.level)}`}
               >
                 {question.level || "unknown"}
               </span>
 
-              {/* Complexity — O(n) tarzı */}
               {showComplexity && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-cyan-500/10 border border-cyan-500/20 text-cyan-300 inline-flex items-center gap-1">
                   <Clock className="w-2.5 h-2.5" />
@@ -91,7 +97,6 @@ export default function QuestionListItem({
                 </span>
               )}
 
-              {/* Topic — tek kelime konu */}
               {!compact && question.topic && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-indigo-300 inline-flex items-center gap-1">
                   <Sparkles className="w-2.5 h-2.5" />
@@ -99,14 +104,12 @@ export default function QuestionListItem({
                 </span>
               )}
 
-              {/* Category label — sadece /interviews ana listede */}
               {categoryLabel && (
                 <span className="text-[10px] px-1.5 py-0.5 rounded bg-white/5 border border-white/10 text-white/60">
                   {categoryLabel}
                 </span>
               )}
 
-              {/* Tags — en fazla 3 */}
               {showTags &&
                 (question.tags ?? []).slice(0, 3).map((t) => (
                   <span
@@ -124,7 +127,6 @@ export default function QuestionListItem({
               )}
             </div>
 
-            {/* Function signature preview (opsiyonel) */}
             {!compact && question.function_name && (
               <div className="mt-2 text-[10px] text-white/40 font-mono">
                 def <strong className="text-white/60">{question.function_name}</strong>(...)

@@ -44,6 +44,9 @@ interface FlowItem {
   created_at?: string;
   view_count?: number;
   attempt_count?: number;
+  success?: boolean;
+  passed_tests?: number;
+  total_tests?: number;
 }
 
 interface FlowResponse {
@@ -51,12 +54,14 @@ interface FlowResponse {
     personal: FlowItem[];
     recent: FlowItem[];
     popular: FlowItem[];
-    next_level: FlowItem[];
+    recent_attempts?: FlowItem[];
+    next_level?: FlowItem[];
     recommended?: FlowItem[];
   };
   context: {
     is_authenticated: boolean;
     solved_categories: string[];
+    solved_ids?: number[];
     top_categories?: string[];
     weak_categories?: string[];
     success_rate: number;
@@ -68,70 +73,6 @@ interface FlowResponse {
   items?: FlowItem[];
   next_cursor?: string | null;
   source?: string;
-}
-
-// 📌 Local fallback: backend /flow endpoint'i yoksa veya timeout olursa
-// Soru listesini backend'den çeker (DB source of truth).
-const EMPTY: FlowResponse = {
-  sections: { personal: [], recent: [], popular: [], next_level: [] },
-  context: { is_authenticated: false, solved_categories: [], success_rate: 0, target_level: "beginner" },
-  items: [],
-  next_cursor: null,
-  source: "empty",
-};
-
-async function buildLocalFallback(isAuthed: boolean = false): Promise<FlowResponse> {
-  try {
-    const all = await getAllQuestions();
-
-    const now = Date.now();
-    const items: FlowItem[] = all
-      .filter((q) => q.slug)
-      .map((q) => ({
-        type: "question" as const,
-        id: q.id,
-        title: q.title,
-        category: q.category,
-        level: q.level || "beginner",
-        slug: q.slug ?? "",
-        score: 100 - q.id,
-        reason: "📌 Öneri",
-        created_at: new Date(now - q.id * 86400000).toISOString(),
-        view_count: 0,
-        attempt_count: 0,
-      }));
-
-    // recent: en yüksek ID = en yeni eklenen
-    const recent = items.slice().sort((a, b) => b.id - a.id).slice(0, 5);
-    // personal: ilk 5 ID (temel sorular)
-    const personal = items.slice(0, 5);
-    // popular: klasik 1-15
-    const popular = items.filter((i) => i.id >= 1 && i.id <= 15).slice(0, 5);
-    // recommended: 6-25
-    const recommended = items.filter((i) => i.id >= 6 && i.id <= 25).slice(0, 5);
-
-    for (const p of popular) p.reason = "🔥 Klasik — mülakatlarda sıkça çıkıyor";
-    for (const r of recent) r.reason = `🆕 #${r.id} — yakın zamanda eklendi`;
-    return {
-      sections: { personal, recent, popular, next_level: recommended, recommended },
-      context: {
-        is_authenticated: isAuthed,
-        solved_categories: [],
-        top_categories: [],
-        weak_categories: [],
-        success_rate: 0,
-        target_level: "beginner",
-        current_level: "beginner",
-        total_attempts: 0,
-        total_items: items.length,
-      },
-      items: [...personal, ...popular, ...recent, ...recommended],
-      next_cursor: null,
-      source: "local-fallback",
-    };
-  } catch {
-    return { ...EMPTY, context: { ...EMPTY.context, is_authenticated: isAuthed } };
-  }
 }
 
 export default function DashboardHome() {
@@ -265,7 +206,7 @@ export default function DashboardHome() {
 
           {/* 2 TAB */}
           <div className="flex gap-1 border-white/10">
-            <TabButton active={tab === "personal"} onClick={() => setTab("personal")} label="✨ Sana Özel" count={flow ? ((flow.sections?.personal?.length || 0) + (flow.sections?.recent?.length || 0) + (flow.sections?.popular?.length || 0) + (flow.sections?.next_level?.length || 0)) : 0} />
+            <TabButton active={tab === "personal"} onClick={() => setTab("personal")} label="✨ Sana Özel" count={flow ? ((flow.sections?.personal?.length || 0) + (flow.sections?.recent?.length || 0) + (flow.sections?.popular?.length || 0) + (flow.sections?.recent_attempts?.length || 0)) : 0} />
             <TabButton active={tab === "community"} onClick={() => setTab("community")} label="💬 Topluluk" count={community.length} />
           </div>
 

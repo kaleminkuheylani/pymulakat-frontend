@@ -359,6 +359,21 @@ export async function getCommunityRecommendations(limit = 15): Promise<ApiPagina
   }
 }
 
+/**
+ * Kullanicinin basariyla cozdugu soru id listesi (liste rozeti).
+ */
+export async function getSolvedQuestionIds(): Promise<number[]> {
+  try {
+    const data = await apiFetch<{ solved_ids: number[] }>(
+      "/api/v2/recommendations/solved-ids",
+      { auth: true }
+    );
+    return Array.isArray(data?.solved_ids) ? data.solved_ids.map(Number) : [];
+  } catch {
+    return [];
+  }
+}
+
 // ═══════════════════════════════════════════════════════════════
 // ─── slugifyTitle ────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════
