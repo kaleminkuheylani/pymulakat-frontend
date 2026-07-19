@@ -130,14 +130,16 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     }
   }
 
-  // 4) Auth header (opsiyonel, browser'da localStorage'dan)
+  // 4) Auth: server-side cookie'ye guven (sb-pymulakat-auth-token).
+  //    2026-07-19: Bearer header KALDIRILDI — Supabase yeni projeler ES256
+  //    public key rotate edebiliyor, JWKS bazen 2-3sn gecikmeli oluyor, ve
+  //    browser localStorage'daki access_token ile cookie'deki access_token
+  //    farkli olabiliyor (server-side exchange vs client getSession). Cookie
+  //    Supabase'in kanonik kaynagi; backend zaten sb-*-auth-token cookie'sini
+  //    okuyor. credentials: 'include' ile otomatik gider.
   if (auth && typeof window !== "undefined") {
-    try {
-      const token = extractTokenForAuth();
-      if (token) finalHeaders["Authorization"] = `Bearer ${token}`;
-    } catch {
-      // ignore
-    }
+    if (rest.credentials === undefined) rest.credentials = "include";
+  }
   }
 
   // 5) Next.js fetch init
