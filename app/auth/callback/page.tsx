@@ -12,6 +12,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { getSupabaseBrowser } from "@/hooks/useSupabaseBrowser";
 import { notifyAuthChange } from "@/hooks/useUser";
+import { setAuthSentinel } from "@/lib/auth-sentinel";
 
 function CallbackInner() {
   const router = useRouter();
@@ -69,11 +70,7 @@ function CallbackInner() {
           }
           notifyAuthChange();
           // Sentinel cookie — middleware server-side auth gate
-          try {
-            document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
-          } catch {
-            // ignore
-          }
+          setAuthSentinel();
           window.history.replaceState(null, "", window.location.pathname);
           toast.success("Giriş başarılı");
           router.push(returnUrl);

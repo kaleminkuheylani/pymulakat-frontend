@@ -6,9 +6,10 @@
 // mekanizmasini yonetir; biz sadece /auth/me'yi cagiriyoruz.
 
 import { useState, useEffect, useCallback, useRef } from "react";
-import { getSupabaseBrowser, clearAuthSentinel } from "./useSupabaseBrowser";
+import { getSupabaseBrowser } from "./useSupabaseBrowser";
 import { authAPI } from "../lib/api/authAPI";
 import { hasAccessToken } from "../lib/auth";
+import { setAuthSentinel, clearAuthSentinel } from "../lib/auth-sentinel";
 
 const AUTH_EVENT = "auth-state-changed";
 
@@ -86,16 +87,10 @@ export function useUser() {
   }, []);
 
   useEffect(() => {
-    // 📌 Mount sirasinda mevcut session varsa middleware cookie'yi
-    // hemen set et. Bu sayede login olan kullanici sayfayi kapatsa
-    // bile cookie TTL boyunca (24 saat) auth-gated sayfalara erisebilir.
-    try {
-      if (hasAccessToken()) {
-        document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
-      }
-    } catch {
-      // ignore
-    }
+    // 📌 Mount sirasinda mevcut session varsa sentinel cookie yaz.
+    // 2026-07-19: lib/auth-sentinel.ts'e delege — 4 dosyada duplicate
+    // document.cookie satiri vardi, hepsi tek kaynakta toplandi.
+    if (hasAccessToken()) setAuthSentinel();
 
     fetchUser();
 
@@ -104,21 +99,8 @@ export function useUser() {
     let sub: { unsubscribe: () => void } | null = null;
     if (supabase) {
       const { data } = supabase.auth.onAuthStateChange((_event, session) => {
-        // 📌 Middleware'in (Edge runtime) görebileceği server-readable cookie.
-        // Supabase kendi storage'ini yazar (sb-pymulakat-auth-token) ama
-        // chunked/base64url encoding, cookie name varyasyonlari gibi nedenlerle
-        // middleware her zaman bulamiyor. Bu yüzden bizzat bir 'pymulakat_auth'
-        // sentinel cookie set ediyoruz — middleware bunu ilk sirada kontrol eder.
-        try {
-          if (session?.access_token) {
-            // 1 gün TTL, path=/, SameSite=Lax (CSRF korumasi + middleware erişimi)
-            document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
-          } else {
-            document.cookie = "pymulakat_auth=; path=/; max-age=0; SameSite=Lax";
-          }
-        } catch {
-          // ignore (SSR veya cookie disable)
-        }
+        if (session?.access_token) setAuthSentinel();
+        else clearAuthSentinel();
         fetchUser();
       });
       sub = data.subscription;
@@ -175,8 +157,9 @@ export function useUser() {
     //     birakabilir, özellikle custom setAll wrapper'i ile), suspenders =
     //     localStorage. İkisi de elle nuke edilir.
     if (typeof document !== "undefined") {
+      // Sentinel cookie — tek kaynak lib/auth-sentinel.ts
+      clearAuthSentinel();
       const cookieNamesToDelete = [
-        "pymulakat_auth",
         "sb-pymulakat-auth-token",
         "sb-pymulakat-auth-token-code-verifier",
         "token",
@@ -220,8 +203,6 @@ export function useUser() {
     // (4) React state + broadcast (storage event'i dinleyen diger tab'lara da)
     setUser(null);
     notifyAuthChange();
-
-    try { clearAuthSentinel(); } catch { /* ignore */ }
   }, []);
 
   return { user, loading, error, refresh, logout };

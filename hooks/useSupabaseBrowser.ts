@@ -12,31 +12,9 @@
 import { createBrowserClient } from "@supabase/ssr";
 import { serialize, parse } from "cookie";
 import type { SupabaseClient } from "@supabase/supabase-js";
+import { setAuthSentinel, clearAuthSentinel } from "../lib/auth-sentinel";
 
 let _client: SupabaseClient | null = null;
-
-/**
- * Sentinel cookie'yi document.cookie'ye yaz. Login sonrası server tarafında
- * /python-egitimi ve /python-kodlari guard'larını geçmek için.
- */
-function writeSentinelCookie(): void {
-  if (typeof document === "undefined") return;
-  try {
-    document.cookie =
-      "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
-  } catch {
-    /* ignore */
-  }
-}
-
-function clearSentinelCookie(): void {
-  if (typeof document === "undefined") return;
-  try {
-    document.cookie = "pymulakat_auth=; path=/; max-age=0; SameSite=Lax";
-  } catch {
-    /* ignore */
-  }
-}
 
 export function getSupabaseBrowser(): SupabaseClient | null {
   if (typeof window === "undefined") return null;
@@ -80,7 +58,7 @@ export function getSupabaseBrowser(): SupabaseClient | null {
         const hasAuthToken = cookies.some((c) =>
           /auth-token(?!-code-verifier)/.test(c.name)
         );
-        if (hasAuthToken) writeSentinelCookie();
+        if (hasAuthToken) setAuthSentinel();
       },
       // getAll: @supabase/ssr default documentCookieGetAll davranışı
       getAll: () => {
@@ -97,13 +75,6 @@ export function getSupabaseBrowser(): SupabaseClient | null {
   });
 
   return _client;
-}
-
-/**
- * Logout'ta sentinel'i temizle. useUser.ts içinden çağrılabilir.
- */
-export function clearAuthSentinel(): void {
-  clearSentinelCookie();
 }
 
 /** Client'ı sıfırla (logout sonrası veya env değişikliği için). */
