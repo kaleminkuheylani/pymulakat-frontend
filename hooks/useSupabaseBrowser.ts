@@ -10,9 +10,9 @@
 // HEPSİNDE middleware cookie'yi görür.
 
 import { createBrowserClient } from "@supabase/ssr";
-import { serialize, parse } from "cookie";
+import { serialize } from "cookie";
 import type { SupabaseClient } from "@supabase/supabase-js";
-import { setAuthSentinel, clearAuthSentinel } from "../lib/auth-sentinel";
+import { setAuthSentinel } from "../lib/auth-sentinel";
 
 let _client: SupabaseClient | null = null;
 
@@ -40,11 +40,6 @@ export function getSupabaseBrowser(): SupabaseClient | null {
       detectSessionInUrl: false,
       flowType: "pkce",
       storageKey: "sb-pymulakat-auth-token",
-      // PKCE code_verifier burada saklanir. localStorage explicit ver
-      // (default'ta @supabase/ssr cookies kullanir, ama cookie'ler PKCE flow'da
-      // kaybolabiliyor). localStorage'a yazarsak ayni browser context'te
-      // callback'te kesinlikle okunur.
-      storage: typeof window !== "undefined" ? window.localStorage : undefined,
     },
     cookies: {
       // setAll: @supabase/ssr'nin default documentCookieSetAll davranışını
@@ -60,16 +55,17 @@ export function getSupabaseBrowser(): SupabaseClient | null {
         );
         if (hasAuthToken) setAuthSentinel();
       },
-      // getAll: @supabase/ssr default documentCookieGetAll davranışı
+      // getAll: document.cookie'yi {name,value} dizisine çevir.
       getAll: () => {
         if (typeof document === "undefined") return [];
-        const parsed = parse(document.cookie || "");
-        if (!parsed) return [];
-        const arr = Array.isArray(parsed) ? parsed : Object.values(parsed);
-        return (arr as any[]).map((c: any) => ({
-          name: c.name ?? "",
-          value: c.value ?? "",
-        }));
+        return document.cookie.split(";").map((part) => {
+          const idx = part.indexOf("=");
+          if (idx === -1) return { name: part.trim(), value: "" };
+          return {
+            name: part.slice(0, idx).trim(),
+            value: part.slice(idx + 1).trim(),
+          };
+        });
       },
     },
   });
