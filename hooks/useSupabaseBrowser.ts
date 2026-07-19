@@ -57,7 +57,11 @@ export function getSupabaseBrowser(): SupabaseClient | null {
       persistSession: true,
       autoRefreshToken: true,
       detectSessionInUrl: true,
-      flowType: "pkce",
+      // 2026-07-19: "implicit" — Supabase yeni PKCE flow @supabase/ssr'nin
+      // code_verifier cookie'lerini SSR arayüzünde kaybedebiliyor ("PKCE code
+      // verifier not found in storage"). Implicit flow access_token'i hash
+      // fragment'te doner, code_verifier gerektirmez — daha guvenilir.
+      flowType: "implicit",
       storageKey: "sb-pymulakat-auth-token",
     },
     cookies: {
