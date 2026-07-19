@@ -28,9 +28,17 @@ export { ApiError };
  * 📌 SADECE burada tanımlı — başka yerde process.env.NEXT_PUBLIC_API_URL
  *    veya hardcoded URL YASAK.
  */
+function normalizeApiBase(url: string): string {
+  if (!url) return url;
+  // Yanlışlıkla NEXT_PUBLIC_API_URL /api ile bitirilirse çift prefix oluşmasın
+  // (örn. .../api + /auth/me → .../api/auth/me 404). Proje FastAPI root'unda
+  // /auth ve /api/v2 route'larına sahip; base URL host+port olmalı.
+  return url.replace(/\/api\/?$/, "").replace(/\/+$/, "");
+}
+
 function resolveServerBase(): string {
   // RSC'ler server'da çalışır — internal URL tercih et
-  return (
+  return normalizeApiBase(
     process.env.INTERNAL_API_URL ||
     process.env.NEXT_PUBLIC_API_URL ||
     "https://pymulakat-backend-production.up.railway.app"
@@ -39,7 +47,7 @@ function resolveServerBase(): string {
 
 function resolveClientBase(): string {
   // Browser bundle'da NEXT_PUBLIC_* env'leri inline edilir
-  return (
+  return normalizeApiBase(
     process.env.NEXT_PUBLIC_API_URL ||
     "https://pymulakat-backend-production.up.railway.app"
   );
