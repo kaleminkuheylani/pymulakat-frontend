@@ -29,30 +29,53 @@ function CallbackInner() {
         return;
       }
       const returnUrl = searchParams.get("returnUrl") || "/dashboard";
+      const code = searchParams.get("code");
+      const errorParam = searchParams.get("error_description") || searchParams.get("error");
 
-      // Supabase client zaten URL'deki ?code=xxx'i detectSessionInUrl=true
-      // ile otomatik algilayip exchange yapti. getSession() ile kontrol et.
-      let attempts = 0;
-      while (attempts < 10) {
-        const { data } = await supabase.auth.getSession();
-        if (data.session) {
+      // OAuth provider hatasi (user cancel vs.)
+      if (errorParam) {
+        setError(errorParam);
+        setTimeout(() => router.push("/login"), 2500);
+        return;
+      }
+
+      // PKCE flow: ?code=xxx'i manuel exchange et. Supabase v2 + @supabase/ssr
+      // detectSessionInUrl=true sayfa yuklendiginde URL'i okur, ama burada
+      // server-side redirect ile code geliyor — Supabase auto-detect gormez.
+      // Manuel exchangeCodeForSession en guvenilir yol.
+      if (code) {
+        setMessage("OAuth girişi tamamlanıyor...");
+        const { data, error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+        if (exchangeErr) {
+          setError(exchangeErr.message);
+          setTimeout(() => router.push("/login"), 2500);
+          return;
+        }
+        if (data?.session) {
           if (cancelled) return;
           notifyAuthChange();
-          // Hash'i temizle
-          if (typeof window !== "undefined") {
-            window.history.replaceState(null, "", window.location.pathname + window.location.search);
-          }
+          window.history.replaceState(null, "", window.location.pathname);
           toast.success("Giriş başarılı");
           router.push(returnUrl);
           return;
         }
-        attempts++;
-        await new Promise((r) => setTimeout(r, 500));
+        setError("Session oluşturulamadı");
+        setTimeout(() => router.push("/login"), 2500);
+        return;
       }
 
-      // 10 denemede session olusmadi — hata
-      const errParam = searchParams.get("error_description") || searchParams.get("error");
-      setError(errParam || "Session oluşturulamadı");
+      // Code yoksa — mevcut session'i kontrol et
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        if (cancelled) return;
+        notifyAuthChange();
+        window.history.replaceState(null, "", window.location.pathname);
+        toast.success("Giriş başarılı");
+        router.push(returnUrl);
+        return;
+      }
+
+      setError("Session oluşturulamadı");
       setTimeout(() => router.push("/login"), 2500);
     }
 
