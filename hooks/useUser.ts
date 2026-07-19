@@ -8,7 +8,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { getSupabaseBrowser } from "./useSupabaseBrowser";
 import { authAPI } from "../lib/api/authAPI";
-import { hasAccessToken } from "../lib/auth";
+import { isAuthenticatedClient } from "../lib/auth";
 import { setAuthSentinel, clearAuthSentinel } from "../lib/auth-sentinel";
 
 const AUTH_EVENT = "auth-state-changed";
@@ -36,7 +36,7 @@ export function notifyAuthChange() {
 
 async function fetchMe(): Promise<UserResponse | null> {
   if (typeof window === "undefined") return null;
-  if (!hasAccessToken()) return null;
+  if (!isAuthenticatedClient()) return null;
 
   try {
     return await authAPI.getMe();
@@ -87,11 +87,9 @@ export function useUser() {
   }, []);
 
   useEffect(() => {
-    // 📌 Mount sirasinda mevcut session varsa sentinel cookie yaz.
-    // 2026-07-19: lib/auth-sentinel.ts'e delege — 4 dosyada duplicate
-    // document.cookie satiri vardi, hepsi tek kaynakta toplandi.
-    if (hasAccessToken()) setAuthSentinel();
-
+    // 📌 Sentinel cookie login/OAuth callback sirasinda setAuthSentinel()
+    // ile zaten yazilir; burada sadece fetchUser tetiklenir (isAuthenticatedClient
+    // sentinel'i fetchMe icinde kontrol eder).
     fetchUser();
 
     // Supabase tab'lar arası session değişikliğini dinle
