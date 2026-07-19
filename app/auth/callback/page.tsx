@@ -139,8 +139,9 @@ function CallbackInner() {
         // ─── OAUTH (Google/GitHub/etc) flow ───────────────
         setMessage("OAuth girişi tamamlanıyor...");
 
-        // Hash'ten access_token ve refresh_token al, Supabase localStorage'a yaz
-        // Supabase auth.getSession() otomatik okur, tarayici kapatilip acilsa bile session devam eder
+        // Hash'ten access_token ve refresh_token al, hem Supabase localStorage'a
+        // hem de /api/auth/session ile httpOnly cookie'ye yaz. Backend
+        // /auth/me Bearer header + cookie ikisini de kabul eder.
         const hash = typeof window !== "undefined" ? window.location.hash : "";
         if (hash.includes("access_token")) {
           const params = new URLSearchParams(hash.slice(1));
@@ -151,7 +152,22 @@ function CallbackInner() {
           const tokenType = params.get("token_type") || "bearer";
 
           if (accessToken && refreshToken) {
-            // Once setSession dene (Supabase internal state'i gunceller)
+            // (A) /api/auth/session → httpOnly cookie'ler yazılır
+            try {
+              await fetch("/api/auth/session", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                credentials: "include",
+                body: JSON.stringify({
+                  access_token: accessToken,
+                  refresh_token: refreshToken,
+                }),
+              });
+            } catch (e) {
+              // ignore — localStorage fallback aşağıda
+            }
+
+            // (B) setSession — Supabase internal state'i gunceller
             const { error: setErr } = await supabase.auth.setSession({
               access_token: accessToken,
               refresh_token: refreshToken,
@@ -159,21 +175,28 @@ function CallbackInner() {
 
             if (setErr) {
               // setSession basarisiz — gercek hatayi logla
-              const storageKey = "sb-pymulakat-auth-token";
               console.warn("supabase setSession failed:", setErr.message);
+              const storageKey = "sb-pymulakat-auth-token";
               const sessionData = [{
                 access_token: accessToken,
                 refresh_token: refreshToken,
                 expires_in: expiresIn,
                 expires_at: expiresAt,
                 token_type: tokenType,
-                user: null,  // getSession sonra doldurur
+                user: null,
               }];
               try {
                 localStorage.setItem(storageKey, JSON.stringify(sessionData));
               } catch (e) {
                 // ignore
               }
+            }
+
+            // (C) Sentinel cookie — middleware server-side auth gate için
+            try {
+              document.cookie = "pymulakat_auth=1; path=/; max-age=86400; SameSite=Lax";
+            } catch {
+              // ignore
             }
           }
         }
