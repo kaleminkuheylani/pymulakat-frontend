@@ -19,6 +19,8 @@ export interface UserResponse {
   email: string;
   is_verified?: boolean;
   points?: number;
+  attempt_points?: number;
+  achievement_points?: number;
   total_attempts?: number;
   success_count?: number;
   fail_count?: number;

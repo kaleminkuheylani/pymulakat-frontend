@@ -97,6 +97,8 @@ export interface ApiUser {
   username: string;
   is_verified?: boolean;
   points?: number;
+  attempt_points?: number;
+  achievement_points?: number;
   total_attempts?: number;
   success_count?: number;
   fail_count?: number;
@@ -134,6 +136,8 @@ export interface ApiUserStats {
   success_count: number;
   fail_count: number;
   points: number;
+  attempt_points?: number;
+  achievement_points?: number;
   success_rate: number;
 }
 
