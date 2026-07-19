@@ -1,19 +1,16 @@
 // app/login/page.tsx
 //
-// 2026-07-19: SADE — sadece iki auth yolu: (1) email+password, (2) Google/GitHub OAuth.
-// Tüm auth is mantigi lib/auth-client.ts'te kanonize edildi; bu sayfa sadece UI.
-// Inline createClient, GridBackground, Navbar, duplicate icon componentleri kaldirildi.
+// 2026-07-19: SADECE OAuth — Google + GitHub. Email/sifre kaldirildi.
 
 "use client";
 
-import { Suspense, useState, FormEvent } from "react";
-import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
-import { Lock } from "lucide-react";
+import { LogIn } from "lucide-react";
 import { toast } from "sonner";
 
-import { notifyAuthChange } from "@/hooks/useUser";
-import { signInWithPassword, signInWithOAuth } from "@/lib/auth-client";
+import { signInWithOAuth } from "@/lib/auth-client";
 
 // ─── Background ──────────────────────────────────────────────
 function GridBackground() {
@@ -57,162 +54,73 @@ function GitHubIcon({ className }: { className?: string }) {
   );
 }
 
-// ─── Login Form ─────────────────────────────────────────────
-function LoginFormInner() {
-  const router = useRouter();
+// ─── Login Content ───────────────────────────────────────────
+function LoginContent() {
   const searchParams = useSearchParams();
   const returnUrl = searchParams.get("returnUrl") || "/dashboard";
-
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    if (isLoading) return;
-    setIsLoading(true);
-    try {
-      const result = await signInWithPassword({ email, password });
-      if (!result.ok) {
-        if (result.needsVerification) {
-          toast.error("E-posta adresin doğrulanmamış", {
-            description: "E-postandaki 6 haneli kodu kullan. Yeni kod istersen aşağıdaki sayfadan talep edebilirsin.",
-            duration: 6000,
-          });
-          router.push(`/register?email=${encodeURIComponent(result.email || email)}`);
-          return;
-        }
-        toast.error(result.error || "Giriş başarısız");
-        return;
-      }
-      notifyAuthChange();
-      toast.success("Giriş başarılı! Hoş geldiniz");
-      router.push(returnUrl);
-    } finally {
-      setIsLoading(false);
-    }
-  }
+  const [pending, setPending] = useState<"google" | "github" | null>(null);
 
   async function handleOAuth(provider: "google" | "github") {
-    if (isLoading) return;
-    setIsLoading(true);
-    try {
-      const result = await signInWithOAuth({ provider, returnUrl });
-      if (!result.ok) {
-        toast.error(`${provider === "google" ? "Google" : "GitHub"} ile giriş başlatılamadı`, {
-          description: result.error,
-        });
-        setIsLoading(false);
-      }
-      // basariliysa Supabase yonlendirir, bu component unload olur
-    } catch (e: any) {
-      toast.error("Beklenmeyen hata", { description: e?.message });
-      setIsLoading(false);
+    if (pending) return;
+    setPending(provider);
+    const result = await signInWithOAuth({ provider, returnUrl });
+    if (!result.ok) {
+      toast.error(`${provider === "google" ? "Google" : "GitHub"} ile giriş başlatılamadı`, {
+        description: result.error,
+      });
+      setPending(null);
     }
   }
 
-  const inputClass =
-    "w-full rounded-xl p-3.5 bg-white/5 border border-white/10 text-white placeholder-white/30 text-sm focus:outline-none focus:border-amber-500/50 focus:ring-2 focus:ring-amber-500/20 transition-all";
-
   return (
-    <div className="relative z-10 flex items-center justify-center min-h-[calc(100vh-80px)] px-6 py-12">
+    <div className="relative z-10 flex items-center justify-center min-h-screen px-6 py-12">
       <div className="relative w-full max-w-md">
         <div className="absolute -inset-1 bg-gradient-to-r from-indigo-500/20 via-amber-500/20 to-indigo-500/20 rounded-3xl blur-xl opacity-75" />
         <div className="relative border border-white/10 bg-[#0a0e1a]/90 backdrop-blur-xl rounded-3xl p-8 md:p-10 shadow-2xl">
           {/* Header */}
           <div className="text-center mb-8">
             <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-indigo-500 to-amber-400 mb-4 shadow-lg shadow-amber-400/20">
-              <Lock className="w-8 h-8 text-white" />
+              <LogIn className="w-8 h-8 text-white" />
             </div>
-            <h1 className="text-3xl font-bold text-white mb-2">Tekrar Hoş Geldiniz</h1>
+            <h1 className="text-3xl font-bold text-white mb-2">Hoş Geldiniz</h1>
             <p className="text-white/50 text-sm">
-              Şifrenle giriş yap veya Google/GitHub ile devam et
+              Devam etmek için Google veya GitHub hesabınızla giriş yapın
             </p>
           </div>
 
-          {/* Form */}
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-white/70 text-sm font-medium mb-2">E-posta Adresi</label>
-              <input
-                type="email"
-                name="email"
-                placeholder="ornek@pythonmulakat.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={inputClass}
-                required
-                disabled={isLoading}
-                autoComplete="email"
-              />
-            </div>
-
-            <div>
-              <label className="block text-white/70 text-sm font-medium mb-2">Şifre</label>
-              <input
-                type="password"
-                name="password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={inputClass}
-                required
-                disabled={isLoading}
-                autoComplete="current-password"
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={isLoading}
-              className={`w-full rounded-xl p-4 font-bold text-lg transition-all ${
-                isLoading
-                  ? "bg-amber-800 cursor-not-allowed text-white/50"
-                  : "bg-gradient-to-r from-amber-400 to-amber-500 text-[#050816] hover:shadow-lg hover:shadow-amber-400/40"
-              }`}
-            >
-              {isLoading ? "Giriş Yapılıyor..." : "Şifre ile Giriş Yap"}
-            </button>
-          </form>
-
-          {/* Divider */}
-          <div className="relative my-6">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10" />
-            </div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <mark className="bg-[#0a0e1a] px-2 text-white/40">veya sosyal hesap ile</mark>
-            </div>
-          </div>
-
-          {/* OAuth */}
-          <div className="grid grid-cols-2 gap-3">
+          {/* OAuth Buttons */}
+          <div className="space-y-3">
             <button
               onClick={() => handleOAuth("google")}
-              disabled={isLoading}
+              disabled={pending !== null}
               type="button"
-              className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl text-white text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full px-4 py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl text-white text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-3"
             >
-              <GoogleIcon className="w-4 h-4" />
-              Google
+              <GoogleIcon className="w-5 h-5" />
+              {pending === "google" ? "Yönlendiriliyor..." : "Google ile Devam Et"}
             </button>
             <button
               onClick={() => handleOAuth("github")}
-              disabled={isLoading}
+              disabled={pending !== null}
               type="button"
-              className="px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl text-white text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+              className="w-full px-4 py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl text-white text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-3"
             >
-              <GitHubIcon className="w-4 h-4" />
-              GitHub
+              <GitHubIcon className="w-5 h-5" />
+              {pending === "github" ? "Yönlendiriliyor..." : "GitHub ile Devam Et"}
             </button>
           </div>
 
-          {/* Footer */}
-          <p className="text-center mt-6 text-white/50 text-sm">
-            Hesabınız yok mu?{" "}
-            <Link href="/register" className="text-amber-400 hover:text-amber-300 font-semibold transition-colors">
-              Kayıt Ol
+          {/* Info */}
+          <p className="text-center mt-6 text-white/40 text-xs leading-relaxed">
+            Devam ederek{" "}
+            <Link href="/terms" className="text-white/60 hover:text-amber-300 underline underline-offset-2">
+              Kullanım Koşulları
+            </Link>{" "}
+            ve{" "}
+            <Link href="/privacy" className="text-white/60 hover:text-amber-300 underline underline-offset-2">
+              Gizlilik Politikası
             </Link>
+            'nı kabul etmiş olursunuz.
           </p>
         </div>
       </div>
@@ -229,11 +137,10 @@ export default function LoginPage() {
         fallback={
           <div className="flex flex-col items-center justify-center min-h-screen">
             <div className="w-12 h-12 border-4 border-amber-500 border-t-transparent rounded-full animate-spin" />
-            <p className="text-white/50 mt-4 text-sm">Yükleniyor...</p>
           </div>
         }
       >
-        <LoginFormInner />
+        <LoginContent />
       </Suspense>
     </div>
   );
