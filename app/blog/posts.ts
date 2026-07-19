@@ -76,6 +76,15 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 11,
     tags: ["javascript", "hoisting", "var let const", "kapsam", "mülakat"],
   },
+  {
+    slug: "javascript-async-await",
+    title: "JavaScript async/await ve Promise Nedir? — Asenkron Programlama (Örneklerle)",
+    excerpt:
+      "JavaScript async/await, Promise ve event loop kavramı net açıklamayla: callback hell'den promise chain'e, .then().catch()'den async/await'e, paralel-await sıralı-await farkı, mulakat tuzakları.",
+    date: "2026-07-19",
+    readingMinutes: 14,
+    tags: ["javascript", "async", "await", "promise", "asenkron", "mülakat"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
