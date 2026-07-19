@@ -8,7 +8,7 @@
 //   - Lucide icon (span yok, emoji yok, no inline svg)
 
 import Link from "next/link";
-import { ChevronLeft, ChevronRight, Home, Code2, Zap } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Code2, Zap, LayoutDashboard } from "lucide-react";
 import { Question } from "@/lib/api/types";
 import { UserResponse } from "@/hooks/useUser";
 import { getCategoryUrl } from "@/lib/categorySlug";
@@ -160,6 +160,15 @@ export default function WorkspaceHeader({
             <span className="hidden sm:inline">JavaScript</span>
           </button>
         </div>
+
+        <Link
+          href="/dashboard"
+          className="flex items-center gap-1.5 px-2 sm:px-3 py-1.5 rounded-lg bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10 transition-colors text-xs"
+          title="Dashboard'a dön"
+        >
+          <LayoutDashboard className="w-3.5 h-3.5" />
+          <span className="hidden sm:inline">Dashboard</span>
+        </Link>
 
         {user && (
           <div className="flex items-center gap-2 px-2 sm:px-3 py-1.5 rounded-lg bg-indigo-500/10 border border-indigo-500/20">

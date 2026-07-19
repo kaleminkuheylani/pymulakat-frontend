@@ -1,5 +1,5 @@
 "use client";
-import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle, Code2, TestTube, Terminal, Sparkles } from "lucide-react";
+import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle, Code2, TestTube, Terminal, Sparkles, LayoutDashboard } from "lucide-react";
 import { errorMessage } from "@/lib/errorMessage";
 import { getCategoryUrl } from "@/lib/categorySlug";
 
@@ -424,6 +424,9 @@ export default function WorkspaceMobileClient({
           <div className="text-[10px] text-white/40 truncate">{category}</div>
           <div className="text-xs font-bold text-white truncate">{interview.title}</div>
         </div>
+        <Link href="/dashboard" className="p-1.5 rounded-md bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10" title="Dashboard">
+          <LayoutDashboard className="w-3.5 h-3.5" />
+        </Link>
         {/* Üst toggle: Soru (📖) ↔ Editör (🖥️). Diğer 3 tab alt nav'da. */}
         <div className="flex items-center gap-1 mr-1">
           <button
