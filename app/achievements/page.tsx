@@ -19,6 +19,7 @@ import {
   Loader2,
   AlertCircle,
 } from "lucide-react";
+import * as LucideIcons from "lucide-react";
 
 const groupTitles: Record<string, string> = {
   first: "İlk Adımlar",
@@ -142,6 +143,11 @@ export default function AchievementsPage() {
 
 function AchievementCard({ item }: { item: ApiAchievement }) {
   const unlocked = item.unlocked;
+  const iconName = item.icon
+    .split("-")
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join("");
+  const Icon = (LucideIcons as any)[iconName] || Award;
   return (
     <div
       className={`
@@ -163,7 +169,7 @@ function AchievementCard({ item }: { item: ApiAchievement }) {
             ${unlocked ? "bg-amber-500/20 text-amber-300" : "bg-white/5 text-white/40"}
           `}
         >
-          <Award className="w-5 h-5" />
+          <Icon className="w-5 h-5" />
         </div>
         <div className="flex-1 min-w-0">
           <h3 className={`text-sm font-semibold truncate ${unlocked ? "text-white" : "text-white/60"}`}>
