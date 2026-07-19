@@ -117,6 +117,7 @@ export async function GET(req: NextRequest) {
     { slug: "programlama-temelleri", date: "2026-07-18" },
     { slug: "sifirdan-zirveye", date: "2026-07-18" },
     { slug: "javascript-closure-nedir", date: "2026-07-19" },
+    { slug: "javascript-hoisting", date: "2026-07-19" },
     { slug: "algoritma-labirenti", date: "2026-07-18" },
     { slug: "teknik-terimler", date: "2026-07-18" },
   ];

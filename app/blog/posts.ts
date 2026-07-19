@@ -67,6 +67,15 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 12,
     tags: ["javascript", "closure", "kapsam", "mülakat", "ileri javascript"],
   },
+  {
+    slug: "javascript-hoisting",
+    title: "JavaScript Hoisting Nedir? — var, let, const ve Fonksiyon Yükseltme (Örneklerle)",
+    excerpt:
+      "JavaScript hoisting kavramı net açıklamayla: değişkenler nasıl yukarı çekilir, var-let-const farkı, fonksiyon deklarasyonu vs ifadesi, temporal dead zone ve mulakat tuzakları.",
+    date: "2026-07-19",
+    readingMinutes: 11,
+    tags: ["javascript", "hoisting", "var let const", "kapsam", "mülakat"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
