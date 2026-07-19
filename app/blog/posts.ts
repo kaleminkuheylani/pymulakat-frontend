@@ -58,6 +58,15 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 30,
     tags: ["algoritma", "interaktif", "labirent", "30 dakika", "problem çözme"],
   },
+  {
+    slug: "javascript-closure-nedir",
+    title: "JavaScript Closure Nedir? — Kapsam ve Fonksiyon Hafızası (Örneklerle)",
+    excerpt:
+      "JavaScript'in en çok sorulan mülakat konusu: closure nedir, nasıl çalışır, hangi problemi çözer. Gerçek dünya benzetmeleri, 5 kod örneği, mülakat SSS ve sık yapılan hatalar.",
+    date: "2026-07-19",
+    readingMinutes: 12,
+    tags: ["javascript", "closure", "kapsam", "mülakat", "ileri javascript"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
