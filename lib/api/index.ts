@@ -10,6 +10,7 @@
 
 import type { ApiErrorBody } from "./types";
 import { ApiError } from "./types";
+import { getAccessToken } from "../auth";
 
 export { ApiError };
 
@@ -138,15 +139,15 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
     }
   }
 
-  // 4) Auth: server-side cookie'ye guven (sb-pymulakat-auth-token).
-  //    2026-07-19: Bearer header KALDIRILDI — Supabase yeni projeler ES256
-  //    public key rotate edebiliyor, JWKS bazen 2-3sn gecikmeli oluyor, ve
-  //    browser localStorage'daki access_token ile cookie'deki access_token
-  //    farkli olabiliyor (server-side exchange vs client getSession). Cookie
-  //    Supabase'in kanonik kaynagi; backend zaten sb-*-auth-token cookie'sini
-  //    okuyor. credentials: 'include' ile otomatik gider.
+  // 4) Auth: cross-origin FastAPI'ye cookie gitmez (SameSite + domain farki).
+  //    Bu yuzden browser'da Bearer header zorunlu. Cookie sadece same-origin
+  //    Next.js route'lari icin ek guvence (credentials: include).
   if (auth && typeof window !== "undefined") {
     if (rest.credentials === undefined) rest.credentials = "include";
+    if (!finalHeaders.Authorization && !finalHeaders.authorization) {
+      const token = getAccessToken();
+      if (token) finalHeaders.Authorization = `Bearer ${token}`;
+    }
   }
 
   // 5) Next.js fetch init
