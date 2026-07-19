@@ -117,12 +117,13 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
     })();
   }, [userId, totalAttempts]);
 
-  // ── 2) Submit: Gonder veya Atla ──────────────────────────
+  // ── 2) Submit: Gonder veya Atla (her ikisi de kalici dismiss) ──
   const submit = useCallback(
-    async (dismissed: boolean) => {
+    async (_dismissed: boolean) => {
       setSubmitting(true);
       try {
-        const res = await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey", {
+        // Her durumda dismissed=true — Atla da kalici, tekrar gosterme
+        await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey", {
           method: "POST",
           credentials: "include",
           headers: { "Content-Type": "application/json" },
@@ -133,13 +134,9 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
             dismissed: true,
           }),
         });
-        if (!res.ok) {
-          const errText = await res.text();
-        } else {
-        }
       } catch (e) {
+        // network hatasi olsa da localStorage'a yaz
       } finally {
-        // Lokal: her durumda dismissed isaretle (kullaniciyi rahatsiz etme)
         localStorage.setItem(STORAGE_KEY(userId), "1");
         setOpen(false);
         setSubmitting(false);
