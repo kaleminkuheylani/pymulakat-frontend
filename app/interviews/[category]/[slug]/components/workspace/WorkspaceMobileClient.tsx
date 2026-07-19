@@ -140,7 +140,7 @@ export default function WorkspaceMobileClient({
   // Slug veya ID — slug ise by-slug API, ID ise by-id API kullan
   const isNumericId = /^\d+$/.test(id);
   const questionSlugOrId = isNumericId ? null : id;
-  let questionId = isNumericId ? parseInt(id, 10) : 0;
+  const [questionId, setQuestionId] = useState(isNumericId ? parseInt(id, 10) : 0);
 
   // ─── Effects ──
   // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi).
@@ -209,7 +209,7 @@ export default function WorkspaceMobileClient({
         }
         setInterview(q);
         setCode(q.starter_code || "");
-        if (q.id) questionId = q.id;
+        if (q.id) setQuestionId(q.id);
       } catch (e) {
         if (!cancelled) toast.error("Soru yüklenemedi", { description: "Bağlantını kontrol et." });
       }

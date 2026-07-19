@@ -85,7 +85,7 @@ export default function WorkspaceClient({
   // Slug veya ID — slug ise önce by-slug API ile soruyu çek (ID'yi oradan al)
   const isNumericId = /^\d+$/.test(id);
   const questionSlugOrId = isNumericId ? null : id;
-  let questionId = isNumericId ? parseInt(id, 10) : 0;
+  const [questionId, setQuestionId] = useState(isNumericId ? parseInt(id, 10) : 0);
 
   // Hooks
   const router = useRouter();
@@ -230,11 +230,11 @@ export default function WorkspaceClient({
         setInterview(q);
         if (q.starter_code) setCode(q.starter_code);
         // ID'yi sonradan set et ki submitAttempt'ta kullanabilelim
-        if (q.id) questionId = q.id;
+        if (q.id) setQuestionId(q.id);
 
         // Test case'leri arka planda yükle (crash etmesin, soru zaten geldi)
         try {
-          const tc = await questionsAPI.getTests(questionId);
+          const tc = await questionsAPI.getTests(q.id);
           if (!cancelled && tc) setTestCases(tc);
         } catch (tcErr) {;
         }
