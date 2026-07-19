@@ -132,6 +132,20 @@ function deepEqual(a: any, b: any): boolean {
   if (a === b) return true;
   if (a == null && b == null) return true;
   if (a == null || b == null) return false;
+  // Boolean ↔ string: Python True/False vs DB "True"/"False"
+  if (typeof a === "boolean" && typeof b === "string") {
+    const lb = b.toLowerCase().trim();
+    if (a === true && lb === "true") return true;
+    if (a === false && lb === "false") return true;
+  }
+  if (typeof a === "string" && typeof b === "boolean") {
+    const la = a.toLowerCase().trim();
+    if (la === "true" && b === true) return true;
+    if (la === "false" && b === false) return true;
+  }
+  // None ↔ "None" / null
+  if (a === null && typeof b === "string" && b.toLowerCase().trim() === "none") return true;
+  if (typeof a === "string" && a.toLowerCase().trim() === "none" && b === null) return true;
   // Sayı ↔ numeric string toleransı: "5" ile 5 eşit sayılır
   if (typeof a === "number" && typeof b === "string") {
     const nb = Number(b);
