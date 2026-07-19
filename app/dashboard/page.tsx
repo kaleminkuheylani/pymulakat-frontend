@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useUser } from "../../hooks/useUser";
 import OnboardingSurvey from "../../components/OnboardingSurvey";
+import StatsOverview from "../../components/dashboard/StatsOverview";
 import { getAllQuestions, getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
 import { getAllPosts } from "../blog/posts";
 import { BookOpen, ArrowRight } from "lucide-react";
@@ -161,21 +162,6 @@ export default function DashboardHome() {
     };
   }, []);
 
-  // Token helper (desktop submitAttempt ile aynı mantık)
-  const getToken = (): string | null => {
-    if (typeof window === "undefined") return null;
-    try {
-      const raw = localStorage.getItem("sb-pymulakat-auth-token");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed?.access_token) return parsed.access_token;
-      }
-    } catch {
-      // ignore
-    }
-    return localStorage.getItem("token");
-  };
-
   const fetchFlow = useCallback(async (showSpinner = false) => {
     if (showSpinner) setRefreshing(true);
     setFlowError(null);
@@ -273,13 +259,8 @@ export default function DashboardHome() {
               </button>
             </div>
 
-            {/* 📌 Quick stats — dashboard'a girer girmez görsün */}
-            <div className="grid grid-cols-4 gap-2">
-              <MiniStat icon="📊" value={user.total_attempts || 0} label="Deneme" color="amber" />
-              <MiniStat icon="✅" value={user.success_count || 0} label="Başarılı" color="emerald" />
-              <MiniStat icon="🎯" value={`%${Math.round(user.success_rate || 0)}`} label="Oran" color="indigo" />
-              <MiniStat icon="⭐" value={user.points || 0} label="Puan" color="rose" />
-            </div>
+            {/* 📌 Rich stats overview */}
+            <StatsOverview user={user} />
           </div>
 
           {/* 2 TAB */}
@@ -364,25 +345,6 @@ function TabButton({ active, onClick, label, count }: { active: boolean; onClick
       )}
       {active && <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-gradient-to-r from-indigo-500 via-amber-500 to-emerald-500" />}
     </button>
-  );
-}
-
-// ─── Mini Stat (ana sayfa üst barı) ─────────────
-type Accent = "indigo" | "amber" | "rose" | "emerald";
-
-function MiniStat({ icon, value, label, color }: { icon: string; value: any; label: string; color: Accent }) {
-  const colors: Record<Accent, string> = {
-    indigo: "border-indigo-500/30 bg-indigo-500/5",
-    amber: "border-amber-500/30 bg-amber-500/5",
-    rose: "border-rose-500/30 bg-rose-500/5",
-    emerald: "border-emerald-500/30 bg-emerald-500/5",
-  };
-  return (
-    <div className={`border ${colors[color]} rounded-xl p-2 text-center`}>
-      <div className="text-base mb-0.5">{icon}</div>
-      <div className="text-sm font-bold text-white">{value}</div>
-      <div className="text-[10px] text-white/40">{label}</div>
-    </div>
   );
 }
 
