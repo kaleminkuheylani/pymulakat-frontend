@@ -1,7 +1,9 @@
 // lib/auth-client.ts
 //
 // TEK KAYNAK — Supabase browser client uzerinden OAuth islemleri.
-// 2026-07-19: Sadece OAuth (Google + GitHub). Email/sifre akisi kaldirildi.
+// Browser-side signInWithOAuth cagirir, PKCE code_verifier browser
+// localStorage'da saklanir, /auth/callback?code=xxx Supabase client
+// tarafindan otomatik algilanir (detectSessionInUrl=true).
 
 import { getSupabaseBrowser } from "../hooks/useSupabaseBrowser";
 import type { Provider } from "@supabase/supabase-js";
@@ -13,8 +15,8 @@ export interface SignInResult {
 
 /**
  * OAuth (google / github) akisi — Supabase provider'a yonlendirir.
- * Callback URL returnUrl parametresi tasir. Auth state Supabase tarfindan
- * yonetilir; token'lar hash fragment ile callback'e gelir.
+ * PKCE code_verifier browser localStorage'da olusturulur, callback'te
+ * ayni client tarafindan okunur.
  */
 export async function signInWithOAuth(payload: {
   provider: Provider;

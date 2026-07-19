@@ -56,10 +56,12 @@ export function getSupabaseBrowser(): SupabaseClient | null {
     auth: {
       persistSession: true,
       autoRefreshToken: true,
-      // 2026-07-19: detectSessionInUrl=false — callback artik server-side
-      // route.ts'te isleniyor, browser'da tekrar islemeye gerek yok.
-      // PKCE code_verifier cookie server tarafindan yonetiliyor.
-      detectSessionInUrl: false,
+      // 2026-07-19: detectSessionInUrl=true geri açıldı. Supabase client
+      // /auth/callback?code=xxx'i otomatik algılayıp exchangeCodeForSession
+      // çağırır. PKCE code_verifier localStorage'da saklanır, aynı browser
+      // context'te callback'te okunabilir (önceki cross-storage sorunu
+      // server-side signInWithOAuth + server-side exchange kombinasyonu yüzündendi).
+      detectSessionInUrl: true,
       flowType: "pkce",
       storageKey: "sb-pymulakat-auth-token",
     },
