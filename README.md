@@ -4,7 +4,7 @@ Python mülakat hazırlık platformu. Next.js 16 + React 19 + Supabase Auth + Ta
 
 ## ✨ Özellikler
 
-- 🔐 **Tam auth akışı** — Supabase ile sign up, login, magic link, OAuth, şifre sıfırlama, email doğrulama
+- 🔐 **OAuth giriş** — Google ve GitHub ile hızlı kayıt/giriş
 - 🧪 **Test case motoru** — Tarayıcıda Pyodide ile Python çalıştırma, anlık test feedback
 - 🎨 **Modern UI** — Dark theme, framer-motion animasyonları, sonner toast'lar, Monaco editor
 - 📱 **Responsive** — Hem desktop hem mobil için optimize edilmiş workspace
@@ -62,10 +62,8 @@ frontend/
 
 ## 🔐 Auth Akışları
 
-- **Sign up** → Email doğrulama linki (`/auth/callback?type=signup`)
-- **Magic link** → Tek tıkla giriş (`/auth/callback?type=magiclink`)
-- **OAuth** → Google/GitHub callback (`/auth/callback`)
-- **Şifre sıfırlama** → `/auth/forgot-password` → email linki → `/auth/callback?type=recovery` → `/auth/reset-password`
+- **OAuth ile giriş/kayıt** → Google veya GitHub (`/auth/callback`)
+- Email/şifre ve magic link kaldırıldı (2026-07-19).
 
 ## 🐦 Bedava Twitter Paylaşımı
 

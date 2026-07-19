@@ -1,27 +1,15 @@
 // lib/api/authAPI.ts
 //
 // 📌 Auth endpoint'leri için TEK MODÜL.
-// Backend (FastAPI) ile Supabase Auth birlikte çalışır:
-//   - Login/register/verify: Supabase Auth (client-side createClient)
-//   - /auth/me, /auth/refresh, /auth/logout, attempts, stats: FastAPI
-//
-// Tüm browser tarafı çağrılar index.ts'teki apiFetch üzerinden gider.
-// localStorage / cookie yönetimi lib/auth.ts'te kalır (getAccessToken).
-//
-// 📌 lib/auth.ts ile birlikte çalışır:
-//   - lib/auth.ts : token extractor (canonical, backward compat)
-//   - lib/api/authAPI.ts : backend auth endpoint'leri
-//   - lib/api/index.ts : apiFetch + ApiError
+// 2026-07-19: Email/sifre akislari kaldirildi. Sadece OAuth ile giris/kayit.
+//   - OAuth islemleri lib/auth-client.ts + @supabase/ssr uzerinden gider.
+//   - /auth/me, attempts, stats gibi korumali endpoint'ler FastAPI'ye gider.
 //
 // Browser'da token gereken her endpoint'te `auth: true` opsiyonu kullanılır
 // (apiFetch otomatik Authorization header ekler).
 
 import { apiFetch, API_BASE } from "./index";
-import type {
-  ApiUser,
-  ApiAuthResponse,
-  ApiMessageResponse,
-} from "./types";
+import type { ApiUser, ApiUserStats, ApiAttemptResponse } from "./types";
 
 // ═══════════════════════════════════════════════════════════════
 // ─── Me / Profile ────────────────────────────────────────────
@@ -38,87 +26,6 @@ export async function getMe(): Promise<ApiUser | null> {
   } catch {
     return null;
   }
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ─── Login / Register / Verify ────────────────────────────────
-// ═══════════════════════════════════════════════════════════════
-
-/**
- * Backend /auth/login (FastAPI route — legacy fallback).
- * NOT: Login akışı Supabase createClient üzerinden gider
- * (bkz. app/login/page.tsx). Bu helper legacy backend endpoint'i içindir.
- */
-export async function login(payload: {
-  email: string;
-  password: string;
-}): Promise<ApiAuthResponse> {
-  return apiFetch<ApiAuthResponse>("/auth/login", {
-    method: "POST",
-    body: payload,
-  });
-}
-
-/**
- * Backend /auth/register — yeni kullanıcı.
- * 6 haneli doğrulama kodu response.message içinde döner (dev ortamı).
- */
-export async function register(payload: {
-  username: string;
-  email: string;
-  password: string;
-  privacy_policy_consent?: boolean;
-}): Promise<ApiMessageResponse> {
-  return apiFetch<ApiMessageResponse>("/auth/register", {
-    method: "POST",
-    body: payload,
-  });
-}
-
-/**
- * Backend /auth/verify-email — 6 haneli kodu doğrula.
- */
-export async function verifyEmail(payload: {
-  email: string;
-  code: number;
-}): Promise<ApiMessageResponse> {
-  return apiFetch<ApiMessageResponse>("/auth/verify-email", {
-    method: "POST",
-    body: payload,
-  });
-}
-
-/**
- * Backend /auth/resend-code — yeni doğrulama kodu gönder.
- */
-export async function resendCode(email: string): Promise<ApiMessageResponse> {
-  return apiFetch<ApiMessageResponse>("/auth/resend-code", {
-    method: "POST",
-    body: { email },
-  });
-}
-
-// ═══════════════════════════════════════════════════════════════
-// ─── Token refresh ───────────────────────────────────────────
-// ═══════════════════════════════════════════════════════════════
-
-/**
- * Backend /auth/refresh — refresh_token ile yeni access_token al.
- * Storage güncellemesi lib/auth.ts extractAccessToken tarafından yapılır.
- */
-export async function refreshToken(refreshTokenValue: string): Promise<{
-  access_token: string;
-  refresh_token?: string;
-  expires_at?: number | string;
-}> {
-  return apiFetch<{
-    access_token: string;
-    refresh_token?: string;
-    expires_at?: number | string;
-  }>("/auth/refresh", {
-    method: "POST",
-    body: { refresh_token: refreshTokenValue },
-  });
 }
 
 // ═══════════════════════════════════════════════════════════════
@@ -151,32 +58,6 @@ export interface ApiAttemptPayload {
   success: boolean;
   execution_time_ms: number;
   hints_used?: number;
-}
-
-export interface ApiAttemptResponse {
-  id: string | number;
-  user_id: string;
-  question_id: number;
-  question_title?: string;
-  question_slug?: string;
-  question_category?: string;
-  is_orphaned?: boolean;
-  category?: string;
-  passed_tests: number;
-  total_tests: number;
-  success: boolean;
-  execution_time_ms: number;
-  hints_used?: number;
-  created_at: string;
-  user_code?: string;
-}
-
-export interface ApiUserStats {
-  total_attempts: number;
-  success_count: number;
-  fail_count: number;
-  points: number;
-  success_rate: number;
 }
 
 /**
@@ -251,11 +132,6 @@ export { API_BASE };
 /** Namespace export: import { authAPI } from "./authAPI"; authAPI.getMe() */
 export const authAPI = {
   getMe,
-  login,
-  register,
-  verifyEmail,
-  resendCode,
-  refreshToken,
   deleteAccount,
   submitAttempt,
   getMyAttempts,

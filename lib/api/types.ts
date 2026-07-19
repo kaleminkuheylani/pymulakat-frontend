@@ -129,6 +129,32 @@ export interface ApiMessageResponse {
   expires_in_minutes?: number;
 }
 
+export interface ApiUserStats {
+  total_attempts: number;
+  success_count: number;
+  fail_count: number;
+  points: number;
+  success_rate: number;
+}
+
+export interface ApiAttemptResponse {
+  id: string | number;
+  user_id: string;
+  question_id: number;
+  question_title?: string;
+  question_slug?: string;
+  question_category?: string;
+  is_orphaned?: boolean;
+  category?: string;
+  passed_tests: number;
+  total_tests: number;
+  success: boolean;
+  execution_time_ms: number;
+  hints_used?: number;
+  created_at: string;
+  user_code?: string;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // ─── Form (community) ────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════
@@ -402,4 +428,4 @@ export type QuestionTests = ApiQuestionTests;
 /** @deprecated Use ApiTestCase */
 export type TestCase = ApiTestCase;
 /** @deprecated Use ApiAttemptResponse */
-export type AttemptResponse = import("./authAPI").ApiAttemptResponse;
+export type AttemptResponse = ApiAttemptResponse;
