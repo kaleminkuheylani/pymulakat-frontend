@@ -1,7 +1,8 @@
-"use client";
+﻿"use client";
 
 import { useState } from "react";
 import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
 import { signInWithOAuth } from "@/lib/auth-client";
 
 function GoogleIcon({ className }: { className?: string }) {
@@ -68,18 +69,27 @@ export default function OAuthButtons({ returnUrl, mode = "login" }: OAuthButtons
         onClick={() => handleOAuth("google")}
         disabled={pending !== null}
         type="button"
-        className="w-full px-4 py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl text-white text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+        className="group w-full px-4 py-3.5 bg-white text-slate-900 hover:bg-white/95 border border-white/20 rounded-xl text-sm font-semibold transition-all disabled:opacity-55 flex items-center justify-center gap-3 shadow-lg shadow-white/5 hover:shadow-white/10 active:scale-[0.99]"
       >
-        <GoogleIcon className="w-5 h-5" />
+        {pending === "google" ? (
+          <Loader2 className="w-5 h-5 animate-spin text-slate-700" />
+        ) : (
+          <GoogleIcon className="w-5 h-5" />
+        )}
         {pending === "google" ? "Yönlendiriliyor..." : googleLabel}
       </button>
+
       <button
         onClick={() => handleOAuth("github")}
         disabled={pending !== null}
         type="button"
-        className="w-full px-4 py-3.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-amber-500/30 rounded-xl text-white text-sm font-medium transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+        className="group w-full px-4 py-3.5 bg-[#0d1117] hover:bg-[#161b22] border border-white/12 hover:border-white/20 rounded-xl text-white text-sm font-semibold transition-all disabled:opacity-55 flex items-center justify-center gap-3 shadow-lg shadow-black/20 active:scale-[0.99]"
       >
-        <GitHubIcon className="w-5 h-5" />
+        {pending === "github" ? (
+          <Loader2 className="w-5 h-5 animate-spin text-white/80" />
+        ) : (
+          <GitHubIcon className="w-5 h-5" />
+        )}
         {pending === "github" ? "Yönlendiriliyor..." : githubLabel}
       </button>
     </div>
