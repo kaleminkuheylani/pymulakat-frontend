@@ -140,7 +140,6 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
   if (auth && typeof window !== "undefined") {
     if (rest.credentials === undefined) rest.credentials = "include";
   }
-  }
 
   // 5) Next.js fetch init
   const init: RequestInit & { next?: ApiFetchOptions["next"] } = {
