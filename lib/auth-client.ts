@@ -33,6 +33,9 @@ export async function signInWithOAuth(payload: {
       ...(payload.provider === "google"
         ? { queryParams: { access_type: "offline", prompt: "consent" } }
         : {}),
+      ...(payload.provider === "github"
+        ? { scopes: "read:user user:email" }
+        : {}),
     },
   });
   if (error) {
