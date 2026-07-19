@@ -231,7 +231,7 @@ export default function DashboardHome() {
 
           {/* 📌 Quick Access Hub — dashboard merkeziyet burada.
               4 özellik tek bakışta: Sorular (misafir public),
-              Online Compiler (misafir public, deneme amaçli),
+              Skill Ağacı (misafir public),
               Kodlar (üye), Eğitimler (üye). Tek başlangıç noktası. */}
           <section>
             <div className="flex items-center justify-between mb-3">
@@ -251,10 +251,10 @@ export default function DashboardHome() {
                 color="indigo"
               />
               <FeatureCard
-                href="/python-online"
-                icon="⚡"
-                title="Online Compiler"
-                description="Sorudan bağımsız deneme: tarayıcıda Python yaz ve çalıştır."
+                href="/skill-agaci"
+                icon="🌳"
+                title="Skill Ağacı"
+                description="Konular ve kavramlar arası ilişkileri keşfet."
                 color="amber"
                 highlight
               />
@@ -317,7 +317,7 @@ function TabButton({ active, onClick, label, count }: { active: boolean; onClick
 
 // ─── Feature Card (Quick Access Hub) ──────────────
 // Dashboard'ın merkezde olduğunu vurgulayan 4 hızlı erişim kartı.
-// Online Compiler HERKESE AÇIK (misafir dahil), diğer 3 üye gerektirir.
+// Skill Ağacı HERKESE AÇIK (misafir dahil), diğer 3 üye gerektirir.
 interface FeatureCardProps {
   href: string;
   icon: string;

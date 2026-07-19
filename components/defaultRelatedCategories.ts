@@ -46,11 +46,11 @@ export const DEFAULT_RELATED_CATEGORIES: RelatedCategory[] = [
     gradient: "indigo-amber",
   },
   {
-    href: "/python-online",
+    href: "/skill-agaci",
     icon: Terminal,
-    title: "Python Online Editör",
+    title: "Skill Ağacı",
     description:
-      "Kurulum yok, hesap yok. Tarayıcıda Python 3.12 kodu yaz, Pyodide ile anında çalıştır.",
+      "Konular arası ilişkileri keşfet; her soru için bağlantılı kategoriler ve kavramları gör.",
     gradient: "amber-indigo",
   },
 ];

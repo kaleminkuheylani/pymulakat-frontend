@@ -1,6 +1,6 @@
 // components/CategoryPageTemplate.tsx
 // TÜM kategori sayfaları için paylaşılan görsel iskelet.
-// python-kodlari, python-egitimi, python-online, algoritma-sorulari,
+// python-kodlari, python-egitimi, skill-agaci, algoritma-sorulari,
 // dinamik-programlama — hepsi bu template'i kullanır.
 
 import Link from "next/link";

@@ -46,8 +46,8 @@ export default function Footer() {
                 </a>
               </li>
               <li>
-                <a href="/python-online" className="hover:text-white transition-colors">
-                  Online Editör
+                <a href="/skill-agaci" className="hover:text-white transition-colors">
+                  Skill Ağacı
                 </a>
               </li>
               <li>

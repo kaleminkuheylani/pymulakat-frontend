@@ -1218,11 +1218,11 @@ def en_buyuk(liste):
               <ArrowRight className="w-4 h-4" />
             </Link>
             <Link
-              href="/python-online"
+              href="/skill-agaci"
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-lg bg-white/10 text-white font-semibold hover:bg-white/15 transition-colors"
             >
               <Terminal className="w-4 h-4" />
-              Online Compiler
+              Skill Ağacı
             </Link>
           </div>
         </section>

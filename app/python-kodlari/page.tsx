@@ -130,8 +130,8 @@ const howtoJsonLd = {
     {
       "@type": "HowToStep",
       position: 3,
-      name: "Online editörde çalıştır",
-      text: "Kart içindeki 'Online editörde çalıştır' butonuna bas. Kod yeni sekmede /python-online sayfasına snippet parametresiyle açılır ve Pyodide üzerinden tarayıcıda doğrudan çalışır. Kurulum gerekmez.",
+      name: "Skill ağacında gör",
+      text: "Kart içindeki 'Skill ağacında gör' butonuna bas. Kod ilgili kategori ve kavramlarla /skill-agaci sayfasında açılır. Kurulum gerekmez.",
     },
   ],
 };
@@ -147,7 +147,7 @@ const faqJsonLd = {
       name: "Bu Python kodlarını çalıştırmak için kurulum yapmam gerekiyor mu?",
       acceptedAnswer: {
         "@type": "Answer",
-        text: "Hayır. /python-online sayfasındaki editörde Pyodide üzerinden tarayıcıda direkt çalışır. Python kurmana gerek yok. İstediğin snippeti seçip 'Online editörde çalıştır' butonuna bas, kod otomatik yüklenir.",
+        text: "Evet. /skill-agaci sayfasında snippetin bağlı olduğu kategoriyi ve kavramları gör, ardından /interviews sayfasında pratik yap. Python kurmana gerek yok.",
       },
     },
     {
@@ -332,7 +332,7 @@ export default function PythonKodlariPage() {
                           <code>{s.code}</code>
                         </pre>
                         <div className="mt-2 flex items-center gap-2 text-[10px] text-white/40">
-                          {/* 📌 Koşullu: user varsa direkt /python-online, yoksa /login?returnUrl=... */}
+                          {/* 📌 Koşullu: user varsa direkt /skill-agaci, yoksa /login?returnUrl=... */}
                           <PlayButton snippetSlug={s.slug} />
                           <CopyButton code={s.code} />
                         </div>
@@ -347,8 +347,8 @@ export default function PythonKodlariPage() {
           <section className="p-6 rounded-2xl bg-gradient-to-br from-indigo-500/10 via-purple-500/5 to-transparent border border-indigo-500/20">
             <h2 className="text-xl font-bold mb-3">💡 Öneri</h2>
             <p className="text-sm text-white/70 leading-relaxed mb-3">
-              Bu örnekleri sadece kopyalama. Her birini <Link href="/python-online" className="text-amber-300 hover:underline">online editörde</Link> aç,
-              değiştir, boz, tekrar dene. Bir hatayla karşılaşmak, gerçek öğrenmenin başladığı yerdir.
+              Bu örnekleri sadece kopyalama. Her birini <Link href="/skill-agaci" className="text-amber-300 hover:underline">skill ağacında</Link> incele,
+              bağlı kavramları ve kategorileri keşfet, ardından /interviews'de pratik yap. Bir hatayla karşılaşmak, gerçek öğrenmenin başladığı yerdir.
             </p>
             <p className="text-sm text-white/70 leading-relaxed">
               Kapsamlı öğrenmek istiyorsan <Link href="/python-egitimi" className="text-amber-300 hover:underline">Python eğitimi</Link>ne,

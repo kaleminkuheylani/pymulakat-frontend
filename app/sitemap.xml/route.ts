@@ -42,7 +42,7 @@ export async function GET() {
   const staticEntries: SitemapEntry[] = [
     toEntry(`${BASE_URL}/`, now, "daily", 1.0),
     toEntry(`${BASE_URL}/interviews`, now, "daily", 0.9),
-    toEntry(`${BASE_URL}/python-online`, now, "monthly", 0.85),
+    toEntry(`${BASE_URL}/skill-agaci`, now, "monthly", 0.85),
     toEntry(`${BASE_URL}/python-egitimi`, now, "monthly", 0.85),
     toEntry(`${BASE_URL}/python-kodlari`, now, "monthly", 0.85),
     toEntry(`${BASE_URL}/about`, now, "monthly", 0.7),
