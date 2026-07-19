@@ -53,9 +53,28 @@ function CallbackInner() {
           return;
         }
 
-        // ── OAuth (hash fragment access_token ile) ──
+        // ── OAuth: PKCE (code parametresi) veya implicit (hash access_token) ──
+        const url = new URL(window.location.href);
+        const code = url.searchParams.get("code");
         const hash = typeof window !== "undefined" ? window.location.hash : "";
+
+        if (code) {
+          // PKCE flow — Supabase yeni default
+          setMessage("OAuth girişi tamamlanıyor...");
+          const { data, error: exchangeErr } = await supabase.auth.exchangeCodeForSession(code);
+          if (exchangeErr) throw exchangeErr;
+          if (!data?.session) throw new Error("Session oluşturulamadı");
+
+          if (cancelled) return;
+          notifyAuthChange();
+          toast.success("OAuth girişi başarılı");
+          window.history.replaceState(null, "", window.location.pathname + window.location.search);
+          router.push(returnUrl);
+          return;
+        }
+
         if (hash.includes("access_token")) {
+          // Implicit flow (legacy — eski Supabase projeleri)
           setMessage("OAuth girişi tamamlanıyor...");
           const params = new URLSearchParams(hash.slice(1));
           const accessToken = params.get("access_token");
@@ -104,7 +123,6 @@ function CallbackInner() {
           if (cancelled) return;
           notifyAuthChange();
           toast.success("OAuth girişi başarılı");
-          // URL'den hash'i temizle (history temiz kalsın)
           window.history.replaceState(null, "", window.location.pathname + window.location.search);
           router.push(returnUrl);
           return;
