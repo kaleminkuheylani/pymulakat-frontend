@@ -7,6 +7,7 @@ import { getAllCategories } from "@/lib/api/categoryAPI";
 import { listQuestionsByCategory } from "@/lib/api/questionAPI";
 import { getCategoryLabel } from "@/lib/categorySlug";
 import type { ApiQuestion } from "@/lib/api/types";
+import SkillProgress from "@/components/SkillProgress";
 
 export const metadata: Metadata = {
   title: "Skill Ağacı — Python Mülakat Konu Haritası",
@@ -52,6 +53,9 @@ export default async function SkillTreePage() {
       };
     })
   );
+
+  // Flattened list for the client-side progress component
+  const allQuestions = categoryData.flatMap((c) => c.questions);
 
   // Build concept -> categories map and id -> category map
   const conceptToCategories = new Map<string, Set<string>>();
@@ -105,6 +109,7 @@ export default async function SkillTreePage() {
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid gap-6">
+          <SkillProgress questions={allQuestions} />
           {categoryData.map((cat) => (
             <section
               key={cat.slug}
