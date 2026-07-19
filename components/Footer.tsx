@@ -109,7 +109,7 @@ export default function Footer() {
               </li>
               <li className="flex items-center gap-2">
                 🧠
-                Gemini AI
+                DeepSeek AI
               </li>
               <li className="flex items-center gap-2">
                 🗄️

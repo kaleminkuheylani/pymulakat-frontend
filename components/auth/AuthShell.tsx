@@ -81,60 +81,60 @@ function BrandMark({ compact = false }: { compact?: boolean }) {
 
 function FeaturePanel() {
   return (
-    <div className="relative h-full flex flex-col justify-between p-8 lg:p-12 xl:p-14">
-      <div>
-        <BrandMark />
-
-        <div className="mt-10 lg:mt-14 max-w-lg">
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium mb-5">
-            <Sparkles className="w-3.5 h-3.5" />
-            Yapay zeka destekli mülakat platformu
-          </div>
-
-          <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight leading-[1.15] text-white mb-4">
-            Mülakata hazırlan,
-            <br />
-            <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
-              tarayıcıda kod yaz
-            </span>
-          </h2>
-
-          <p className="text-white/60 text-sm xl:text-base leading-relaxed mb-8 max-w-md">
-            Gerçek mülakat soruları, anında test çıktısı ve yapay zekâ geri bildirimi.
-            Kurulum yok — hesap aç, hemen çözmeye başla.
-          </p>
-
-          <ul className="space-y-3.5">
-            {HIGHLIGHTS.map(({ icon: Icon, title, body }) => (
-              <li
-                key={title}
-                className="flex gap-3.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3.5 hover:bg-white/[0.05] hover:border-white/10 transition-colors"
-              >
-                <div className="shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-amber-400/10 border border-white/10 flex items-center justify-center">
-                  <Icon className="w-4 h-4 text-amber-300" />
-                </div>
-                <div className="min-w-0">
-                  <p className="text-sm font-semibold text-white">{title}</p>
-                  <p className="text-xs text-white/50 leading-relaxed mt-0.5">{body}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+    <div className="relative h-full w-full flex items-center justify-center px-8 lg:px-12 xl:px-16 py-12">
+      <div className="w-full max-w-md">
+        <div className="mb-8 flex justify-center lg:justify-start">
+          <BrandMark />
         </div>
-      </div>
 
-      <div className="mt-10 pt-6 border-t border-white/[0.06]">
-        <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/45">
-          {TRUST.map((item) => (
-            <span key={item} className="inline-flex items-center gap-1.5">
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-              {item}
-            </span>
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium mb-5">
+          <Sparkles className="w-3.5 h-3.5" />
+          DeepSeek destekli mülakat platformu
+        </div>
+
+        <h2 className="text-3xl xl:text-4xl font-extrabold tracking-tight leading-[1.15] text-white mb-4">
+          Mülakata hazırlan,
+          <br />
+          <span className="bg-gradient-to-r from-amber-300 via-amber-400 to-amber-500 bg-clip-text text-transparent">
+            tarayıcıda kod yaz
+          </span>
+        </h2>
+
+        <p className="text-white/60 text-sm xl:text-base leading-relaxed mb-8">
+          Gerçek mülakat soruları, anında test çıktısı ve DeepSeek geri bildirimi.
+          Kurulum yok — hesap aç, hemen çözmeye başla.
+        </p>
+
+        <ul className="space-y-3">
+          {HIGHLIGHTS.map(({ icon: Icon, title, body }) => (
+            <li
+              key={title}
+              className="flex gap-3.5 rounded-2xl border border-white/[0.06] bg-white/[0.03] px-4 py-3.5 hover:bg-white/[0.05] hover:border-white/10 transition-colors"
+            >
+              <div className="shrink-0 w-10 h-10 rounded-xl bg-gradient-to-br from-indigo-500/20 to-amber-400/10 border border-white/10 flex items-center justify-center">
+                <Icon className="w-4 h-4 text-amber-300" />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm font-semibold text-white">{title}</p>
+                <p className="text-xs text-white/50 leading-relaxed mt-0.5">{body}</p>
+              </div>
+            </li>
           ))}
-        </div>
-        <div className="mt-4 flex items-center gap-2 text-[11px] text-white/35">
-          <ShieldCheck className="w-3.5 h-3.5 text-emerald-400/80" />
-          Verilerin şifreli saklanır · hesap silme tek tıkla
+        </ul>
+
+        <div className="mt-8 pt-6 border-t border-white/[0.06]">
+          <div className="flex flex-wrap gap-x-5 gap-y-2 text-xs text-white/45">
+            {TRUST.map((item) => (
+              <span key={item} className="inline-flex items-center gap-1.5">
+                <Check className="w-3.5 h-3.5 text-emerald-400" />
+                {item}
+              </span>
+            ))}
+          </div>
+          <div className="mt-4 flex items-center gap-2 text-[11px] text-white/35">
+            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400/80" />
+            Verilerin şifreli saklanır · hesap silme tek tıkla
+          </div>
         </div>
       </div>
     </div>
@@ -150,7 +150,7 @@ export default function AuthShell({ mode, returnUrl }: AuthShellProps) {
   const isLogin = mode === "login";
   const title = isLogin ? "Tekrar hoş geldin" : "Hesabını oluştur";
   const subtitle = isLogin
-    ? "Dashboard, ilerleme ve AI feedback için giriş yap."
+    ? "Dashboard, ilerleme ve DeepSeek feedback için giriş yap."
     : "Ücretsiz hesap aç — kurulum yok, hemen kodlamaya başla.";
   const switchLabel = isLogin ? "Hesabın yok mu?" : "Zaten hesabın var mı?";
   const switchHref = isLogin
@@ -162,14 +162,14 @@ export default function AuthShell({ mode, returnUrl }: AuthShellProps) {
     <div className="relative min-h-screen w-full bg-[#050816] text-white overflow-x-hidden">
       <GridBackground />
 
-      <div className="relative z-10 min-h-screen flex flex-col lg:flex-row">
+      <div className="relative z-10 min-h-screen max-w-6xl mx-auto flex flex-col lg:flex-row lg:items-stretch">
         {/* Left brand panel — desktop */}
-        <aside className="hidden lg:flex lg:w-[52%] xl:w-[55%] border-r border-white/[0.06]">
+        <aside className="hidden lg:flex lg:w-1/2 border-r border-white/[0.06]">
           <FeaturePanel />
         </aside>
 
         {/* Right auth card */}
-        <main className="flex-1 flex flex-col min-h-screen lg:min-h-0">
+        <main className="flex-1 lg:w-1/2 flex flex-col min-h-screen lg:min-h-0">
           {/* Mobile top bar */}
           <div className="lg:hidden flex items-center justify-between px-5 pt-5 pb-2">
             <BrandMark compact />
@@ -181,8 +181,8 @@ export default function AuthShell({ mode, returnUrl }: AuthShellProps) {
             </Link>
           </div>
 
-          <div className="flex-1 flex items-center justify-center px-5 py-8 sm:px-8 lg:px-10 xl:px-14">
-            <div className="w-full max-w-[420px]">
+          <div className="flex-1 flex items-center justify-center px-5 py-10 sm:px-8">
+            <div className="w-full max-w-[400px]">
               {/* Mobile value strip */}
               <div className="lg:hidden mb-7 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4">
                 <p className="text-sm font-semibold text-white mb-1.5 flex items-center gap-2">
@@ -190,7 +190,7 @@ export default function AuthShell({ mode, returnUrl }: AuthShellProps) {
                   Python & JS mülakat platformu
                 </p>
                 <p className="text-xs text-white/50 leading-relaxed mb-3">
-                  AI feedback · hazır testler · tarayıcıda kod · kurulum yok
+                  DeepSeek feedback · hazır testler · tarayıcıda kod · kurulum yok
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {TRUST.slice(0, 3).map((t) => (
@@ -247,7 +247,7 @@ export default function AuthShell({ mode, returnUrl }: AuthShellProps) {
                     <ul className="space-y-2">
                       {[
                         "İlerleme ve istatistiklerin kaydedilir",
-                        "AI feedback günlük hakkın açılır",
+                        "DeepSeek feedback günlük hakkın açılır",
                         "Kişisel soru önerileri devreye girer",
                       ].map((line) => (
                         <li key={line} className="flex items-start gap-2 text-xs text-white/50">

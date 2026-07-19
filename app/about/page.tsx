@@ -106,7 +106,7 @@ export default function AboutPage() {
               Yapay Zekâ ile Üretilmiş Sorular
             </h3>
             <p className="text-sm text-white/60 leading-relaxed">
-              Her soru Gemini tarafından taslaklanır, biz düzenleriz. AI burada
+              Her soru DeepSeek tarafından taslaklanır, biz düzenleriz. AI burada
               içerik üreticisi değil, hızlandırıcı. Pedagojik kararlar insanda.
             </p>
           </div>
