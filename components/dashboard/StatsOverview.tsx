@@ -68,11 +68,11 @@ function formatDuration(totalSeconds?: number): string {
 }
 
 function getRank(points = 0): { name: string; color: Accent; nextThreshold?: number } {
-  if (points >= 5000) return { name: "Efsane", color: "violet" };
-  if (points >= 2000) return { name: "Usta", color: "indigo", nextThreshold: 5000 };
-  if (points >= 1000) return { name: "Kalfa", color: "sky", nextThreshold: 2000 };
-  if (points >= 300) return { name: "Çırak", color: "emerald", nextThreshold: 1000 };
-  return { name: "Başlangıç", color: "amber", nextThreshold: 300 };
+  if (points >= 15000) return { name: "Efsane", color: "violet" };
+  if (points >= 7000) return { name: "Usta", color: "indigo", nextThreshold: 15000 };
+  if (points >= 2500) return { name: "Kalfa", color: "sky", nextThreshold: 7000 };
+  if (points >= 500) return { name: "Çırak", color: "emerald", nextThreshold: 2500 };
+  return { name: "Başlangıç", color: "amber", nextThreshold: 500 };
 }
 
 function StatCard({

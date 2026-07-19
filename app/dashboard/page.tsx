@@ -85,14 +85,6 @@ export default function DashboardHome() {
   const [refreshing, setRefreshing] = useState(false);
   const [allPosts, setAllPosts] = useState<Awaited<ReturnType<typeof getAllPosts>>>([]);
 
-  // PYBlog yazilari — ilk render'da
-  useEffect(() => {
-    let cancelled = false;
-    getAllPosts().then((p) => {
-      if (!cancelled) setAllPosts(p);
-    }).catch(() => {});
-    return () => { cancelled = true; };
-  }, []);
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   // Mounted guard (TS strict mode + Vercel SWC uyumluluğu icin explicit type)
   const mountedRef = useRef<boolean>(true);
@@ -139,8 +131,17 @@ export default function DashboardHome() {
   }, []);
 
   useEffect(() => {
+    let cancelled = false;
     setLoading(true);
-    Promise.all([fetchFlow(false), fetchCommunity()]).finally(() => setLoading(false));
+    const load = async () => {
+      const postsPromise = getAllPosts()
+        .then((p) => { if (!cancelled) setAllPosts(p); })
+        .catch(() => {});
+      await Promise.all([fetchFlow(false), fetchCommunity(), postsPromise]);
+      if (!cancelled) setLoading(false);
+    };
+    load();
+    return () => { cancelled = true; };
   }, [fetchFlow, fetchCommunity]);
 
   // Event-based refresh
@@ -157,12 +158,12 @@ export default function DashboardHome() {
     };
   }, [fetchFlow, fetchCommunity]);
 
-  // Auto-refresh 60s
+  // Auto-refresh 5 dakika — background, spinner'sız
   useEffect(() => {
     const interval = setInterval(() => {
-      fetchFlow(true);
+      fetchFlow(false);
       fetchCommunity();
-    }, 60000);
+    }, 300000);
     return () => clearInterval(interval);
   }, [fetchFlow, fetchCommunity]);
 
