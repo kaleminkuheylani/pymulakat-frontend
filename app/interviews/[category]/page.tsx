@@ -61,6 +61,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       `${label} python`,
       "python mülakat",
       "yazılım mülakat hazırlık",
+      ...(category === "algorithms" ? [
+        "javascript array method soruları",
+        "javascript es6 soruları",
+        "javascript async await örnekleri",
+        "javascript event loop",
+      ] : []),
     ],
     openGraph: {
       title: `${label} Mülakat Soruları`,
