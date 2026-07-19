@@ -85,7 +85,6 @@ export default function WorkspaceClient({
   // Slug veya ID — slug ise önce by-slug API ile soruyu çek (ID'yi oradan al)
   const isNumericId = /^\d+$/.test(id);
   const questionSlugOrId = isNumericId ? null : id;
-  const [questionId, setQuestionId] = useState(isNumericId ? parseInt(id, 10) : 0);
 
   // Hooks
   const router = useRouter();
@@ -105,6 +104,17 @@ export default function WorkspaceClient({
   // 📌 SSR'dan gelen initial değerlerle başlat — misafirler de test case'leri görsün,
   //    ilk fetch'te flicker olmasın.
   const [interview, setInterview] = useState<Question | null>(initialInterviewProp ?? null);
+  // questionId state: slug URL + SSR path'te let=0 kalıyordu → attempt question_id=0
+  const [questionId, setQuestionId] = useState<number>(() => {
+    const fromSsr = Number(initialInterviewProp?.id || 0);
+    if (fromSsr > 0) return fromSsr;
+    return isNumericId ? parseInt(id, 10) : 0;
+  });
+  // interview yüklendiğinde id'yi senkron tut
+  useEffect(() => {
+    const qid = Number(interview?.id || 0);
+    if (qid > 0 && qid !== questionId) setQuestionId(qid);
+  }, [interview?.id]); // eslint-disable-line react-hooks/exhaustive-deps
   const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCasesProp ?? null);
   const [code, setCode] = useState(initialInterviewProp?.starter_code || "");
   // 2026-07-15: Dil degisince Python starter → JS starter otomatik yukle
@@ -229,14 +239,15 @@ export default function WorkspaceClient({
         }
         setInterview(q);
         if (q.starter_code) setCode(q.starter_code);
-        // ID'yi sonradan set et ki submitAttempt'ta kullanabilelim
-        if (q.id) setQuestionId(q.id);
+        const qid = Number(q.id || 0);
+        if (qid > 0) setQuestionId(qid);
 
         // Test case'leri arka planda yükle (crash etmesin, soru zaten geldi)
         try {
-          const tc = await questionsAPI.getTests(q.id);
+          const tc = await questionsAPI.getTests(qid > 0 ? qid : questionId);
           if (!cancelled && tc) setTestCases(tc);
-        } catch (tcErr) {;
+        } catch (tcErr) {
+          // silent
         }
       } catch (e) {
         if (!cancelled) setError("Soru yüklenemedi — bağlantını kontrol et.");
@@ -254,10 +265,18 @@ export default function WorkspaceClient({
     async (success: boolean, passedTests: number, totalTests: number, executionMs: number) => {
       // 🚦 Race-safe: eş zamanlı çift submit engeli (in-flight ref)
       if (inFlightRef.current) return;
+      // question_id zorunlu — 0 ile insert etmeyelim
+      const qid = Number(questionId || interview?.id || 0);
+      if (!qid || qid <= 0) {
+        toast.error("Attempt kaydedilemedi", {
+          description: "Soru kimliği bulunamadı. Sayfayı yenileyip tekrar dene.",
+        });
+        return;
+      }
       inFlightRef.current = true;
 
       const payload: AttemptPayload = {
-        question_id: questionId,
+        question_id: qid,
         // user_code gonderilmiyor — KVKK
         passed_tests: passedTests,
         total_tests: totalTests,
@@ -277,7 +296,7 @@ export default function WorkspaceClient({
             description: "Kodunu gözden geçirip tekrar dene.",
           });
         }
-      } catch (e) {;
+      } catch (e) {
         toast.error("Attempt kaydedilemedi", {
           description: errorMessage(e) || "Token veya sunucu hatası olabilir.",
         });
@@ -285,7 +304,7 @@ export default function WorkspaceClient({
         inFlightRef.current = false;
       }
     },
-    [attemptSubmitted, questionId, code, revealedHints]
+    [questionId, interview?.id, revealedHints]
   );
 
   // Run tests
@@ -585,11 +604,13 @@ function GuestEditorFallback({
 
 async function sendAttempt(payload: AttemptPayload): Promise<void> {
   // authAPI.submitAttempt — typed + auth header otomatik (lib/api/authAPI.ts)
-  // Token varlığını lib/auth.ts üzerinden kontrol et
+  if (!payload.question_id || payload.question_id <= 0) {
+    throw new Error("Geçersiz question_id");
+  }
   const { getAccessToken } = await import("@/lib/auth");
   const token = getAccessToken();
-  if (!token) {;
-    return;
+  if (!token) {
+    throw new Error("Oturum bulunamadı — tekrar giriş yap");
   }
   try {
     await submitAttemptAPI({

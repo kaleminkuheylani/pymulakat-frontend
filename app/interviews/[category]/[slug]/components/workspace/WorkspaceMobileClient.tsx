@@ -124,6 +124,21 @@ export default function WorkspaceMobileClient({
   const [tab, setTab] = useState<Tab>("editor");
   const [resultModal, setResultModal] = useState<{ results: any[]; errorLines: string[]; passed: number; total: number } | null>(null);
 
+  const category = initialParams?.category || "";
+  const id = initialParams?.id || "";
+  const isNumericId = /^\d+$/.test(id);
+  const questionSlugOrId = isNumericId ? null : id || null;
+  // questionId state: slug URL + SSR path'te let=0 kalıyordu → attempt question_id=0
+  const [questionId, setQuestionId] = useState<number>(() => {
+    const fromSsr = Number(initialInterview?.id || 0);
+    if (fromSsr > 0) return fromSsr;
+    return isNumericId ? parseInt(id, 10) : 0;
+  });
+  useEffect(() => {
+    const qid = Number(interview?.id || 0);
+    if (qid > 0 && qid !== questionId) setQuestionId(qid);
+  }, [interview?.id]); // eslint-disable-line react-hooks/exhaustive-deps
+
   // ─── Guards ──
   if (!initialParams || !initialParams.category || !initialParams.id) {
     return (
@@ -135,12 +150,6 @@ export default function WorkspaceMobileClient({
       </div>
     );
   }
-
-  const { category, id } = initialParams;
-  // Slug veya ID — slug ise by-slug API, ID ise by-id API kullan
-  const isNumericId = /^\d+$/.test(id);
-  const questionSlugOrId = isNumericId ? null : id;
-  const [questionId, setQuestionId] = useState(isNumericId ? parseInt(id, 10) : 0);
 
   // ─── Effects ──
   // Hydration sonrasinda SSR content blogunu kaldir (duplicate onlemi).
@@ -209,7 +218,8 @@ export default function WorkspaceMobileClient({
         }
         setInterview(q);
         setCode(q.starter_code || "");
-        if (q.id) setQuestionId(q.id);
+        const qid = Number(q.id || 0);
+        if (qid > 0) setQuestionId(qid);
       } catch (e) {
         if (!cancelled) toast.error("Soru yüklenemedi", { description: "Bağlantını kontrol et." });
       }
@@ -241,23 +251,27 @@ export default function WorkspaceMobileClient({
   const submitAttempt = useCallback(
     async (success: boolean, passed: number, total: number, durationMs: number) => {
       if (!user || !interview) return;
-      // authAPI.submitAttempt — typed + auth header otomatik (lib/api/authAPI.ts)
-      // Token varlığını lib/auth.ts üzerinden kontrol et
+      const qid = Number(questionId || interview?.id || 0);
+      if (!qid || qid <= 0) return;
       const { getAccessToken } = await import("@/lib/auth");
       const token = getAccessToken();
       if (!token) return;
       try {
         await submitAttemptAPI({
-          question_id: questionId,
+          question_id: qid,
           passed_tests: passed,
           total_tests: total,
           success,
           execution_time_ms: durationMs,
         });
-      } catch (e) {;
+        if (typeof window !== "undefined") {
+          window.dispatchEvent(new CustomEvent("pm:attempt-submitted"));
+        }
+      } catch (e) {
+        // silent
       }
     },
-    [user, interview, questionId, code]
+    [user, interview, questionId]
   );
 
   const handleRun = useCallback(async () => {
