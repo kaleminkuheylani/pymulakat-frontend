@@ -137,6 +137,28 @@ export interface ApiUserStats {
   success_rate: number;
 }
 
+// ═══════════════════════════════════════════════════════════════
+// ─── Achievements ──────────────────────────────────────────────
+// ═══════════════════════════════════════════════════════════════
+
+export interface ApiAchievement {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+  points: number;
+  group: string;
+  unlocked: boolean;
+}
+
+export interface ApiAchievementResponse {
+  items: ApiAchievement[];
+  groups: Record<string, ApiAchievement[]>;
+  unlocked_count: number;
+  total: number;
+  achievement_points: number;
+}
+
 export interface ApiAttemptResponse {
   id: string | number;
   user_id: string;

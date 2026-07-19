@@ -49,6 +49,7 @@ export async function GET() {
     toEntry(`${BASE_URL}/login`, now, "monthly", 0.5),
     toEntry(`${BASE_URL}/register`, now, "monthly", 0.6),
     toEntry(`${BASE_URL}/terms`, now, "yearly", 0.3),
+    toEntry(`${BASE_URL}/achievements`, now, "weekly", 0.6),
   ];
 
   const apiBase =

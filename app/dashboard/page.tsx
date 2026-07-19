@@ -246,6 +246,13 @@ export default function DashboardHome() {
                 description="17 snippet, 6 kategori: algoritma, veri yapısı, dinamik programlama."
                 color="purple"
               />
+              <FeatureCard
+                href="/achievements"
+                icon="🏆"
+                title="Başarılar"
+                description="Kazanılmış rozetleri ve puanlarını gör, yeni hedefler belirle."
+                color="emerald"
+              />
             </div>
           </section>
 
