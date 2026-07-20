@@ -318,11 +318,11 @@ export default function WorkspaceClient({
       const result = await runTests(
         code,
         testCases.function_name,
-        // ApiTestCase[] → RunTestCaseInput[] (input/expected string olmali, unknown stringify)
+        // ApiTestCase[] → RunTestCaseInput[] (useCodeRunner type-aware serialization yapar)
         (testCases.test_cases as any[]).map((tc: any, i: number) => ({
           name: tc.description ?? `Test ${i + 1}`,
-          input: String(tc.input ?? ""),
-          expected: String(tc.expected ?? ""),
+          input: tc.input ?? "",
+          expected: tc.expected ?? "",
           isHidden: tc.is_hidden,
         }))
       );

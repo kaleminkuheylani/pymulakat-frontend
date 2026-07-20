@@ -16,7 +16,6 @@ import {
   PyodideRunResult,
   TestCase,
   TestRunResult,
-  deepEqual,
 } from "./usePyodide";
 import type { ErrorCategory } from "../lib/errorClassifier";
 import {
@@ -30,8 +29,8 @@ export type SupportedLanguage = "python" | "javascript";
 
 export interface RunTestCaseInput {
   name?: string;
-  input: string;
-  expected: string;
+  input: any;
+  expected: any;
   isHidden?: boolean;
 }
 
@@ -101,6 +100,60 @@ function normalizeErrorCategory(c: ErrorCategory | undefined | null): ErrorCateg
   return c ?? null;
 }
 
+// 2026-07-20: JS runner type-aware parse + deep equality
+function tryParseJsValue(s: string): any {
+  if (s === "") return s;
+  try {
+    return JSON.parse(s);
+  } catch {
+    return s;
+  }
+}
+
+function jsDeepEqual(a: any, b: any): boolean {
+  if (a === b) return true;
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
+
+  // boolean <-> string
+  if (typeof a === "boolean" && typeof b === "string") {
+    return (a && b.toLowerCase() === "true") || (!a && b.toLowerCase() === "false");
+  }
+  if (typeof a === "string" && typeof b === "boolean") {
+    return (b && a.toLowerCase() === "true") || (!b && a.toLowerCase() === "false");
+  }
+
+  // number <-> numeric string
+  if (typeof a === "number" && typeof b === "string") {
+    const nb = Number(b);
+    return !Number.isNaN(nb) && a === nb;
+  }
+  if (typeof a === "string" && typeof b === "number") {
+    const na = Number(a);
+    return !Number.isNaN(na) && na === b;
+  }
+
+  // null <-> "null" / "None" / "none"
+  if (a === null && typeof b === "string" && b.toLowerCase() in { null: 1, none: 1 }) return true;
+  if (typeof a === "string" && b === null && a.toLowerCase() in { null: 1, none: 1 }) return true;
+
+  // array
+  if (Array.isArray(a) && Array.isArray(b)) {
+    if (a.length !== b.length) return false;
+    return a.every((x, i) => jsDeepEqual(x, b[i]));
+  }
+
+  // object (plain)
+  if (typeof a === "object" && typeof b === "object") {
+    const keysA = Object.keys(a);
+    const keysB = Object.keys(b);
+    if (keysA.length !== keysB.length) return false;
+    return keysA.every((k) => jsDeepEqual(a[k], b[k]));
+  }
+
+  return false;
+}
+
 export function useCodeRunner(initial: SupportedLanguage = "python"): UseCodeRunnerReturn {
   const [language, setLanguageState] = useState<SupportedLanguage>(initial);
   const jsRunnerRef = useRef<JsRunner | null>(null);
@@ -143,28 +196,38 @@ export function useCodeRunner(initial: SupportedLanguage = "python"): UseCodeRun
         for (let i = 0; i < testCases.length; i++) {
           const tc = testCases[i];
           try {
-            // 2026-07-16: input JSON-aware — eğer parse edilebilirse object/array olarak geç
-            const tcInput = tc.input;
-            let jsInput: string;
-            try {
-              const parsed = JSON.parse(tcInput);
-              jsInput = JSON.stringify(parsed);
-            } catch {
-              jsInput = tcInput;
-            }
+            // 2026-07-20: Type-aware input serialization — raw value'yu JSON string'e çevir
+            const jsInput: string =
+              tc.input === undefined || tc.input === null
+                ? ""
+                : typeof tc.input === "string"
+                  ? tc.input
+                  : JSON.stringify(tc.input);
+
             const r: JsRunResult = await runner.run({
               code: userCode,
               input: jsInput,
               fnName: functionName,
               timeoutMs: 5_000,
             });
+
             const actual = r.stdout.trim();
-            const expected = String(tc.expected).trim();
-            const passed = r.ok && deepEqual(actual, expected);
+            const expectedRaw =
+              tc.expected === undefined || tc.expected === null
+                ? ""
+                : typeof tc.expected === "string"
+                  ? tc.expected
+                  : JSON.stringify(tc.expected);
+            const expected = typeof expectedRaw === "string" ? expectedRaw.trim() : expectedRaw;
+
+            const actualVal = tryParseJsValue(actual);
+            const expectedVal = tryParseJsValue(expected);
+            const passed = r.ok && jsDeepEqual(actualVal, expectedVal);
+
             results.push({
               name: tc.name ?? `Test ${i + 1}`,
               passed,
-              input: tc.input,
+              input: typeof tc.input === "string" ? tc.input : JSON.stringify(tc.input),
               expected,
               actual,
               durationMs: r.durationMs,

@@ -273,16 +273,14 @@ export default function WorkspaceMobileClient({
     setErrorLines([]);
     setHasRunOnce(true); // AI Feedback butonu enable
     try {
-      // 2026-07-16: runnerRunTests — useCodeRunner dispatch (JS → Web Worker, Python → Pyodide)
-      // testCases'i string coercion ile RunTestCaseInput[] formatina cevir
-      // (ApiTestCase.input/expected unknown olabilir, useCodeRunner string bekliyor)
+      // 2026-07-20: useCodeRunner artık type-aware; input/expected'u ham haliyle geç
       const result = await runnerRunTests(
         code,
         testCases.function_name,
         testCases.test_cases.map((tc: any, i: number) => ({
           name: tc.description ?? `Test ${i + 1}`,
-          input: String(tc.input ?? ""),
-          expected: String(tc.expected ?? ""),
+          input: tc.input ?? "",
+          expected: tc.expected ?? "",
           isHidden: tc.is_hidden,
         }))
       );
