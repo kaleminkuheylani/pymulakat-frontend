@@ -37,9 +37,6 @@ export default function ReportBugButton({
   const [submitting, setSubmitting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  // Misafire render etme
-  if (isGuest) return null;
-
   const handleFile = useCallback((file: File) => {
     if (!file.type.startsWith("image/")) {
       toast.error("Sadece resim dosyasi kabul edilir");
@@ -88,6 +85,9 @@ export default function ReportBugButton({
     },
     [handleFile]
   );
+
+  // Misafire render etme
+  if (isGuest) return null;
 
   const handleSubmit = async () => {
     if (description.trim().length < 10) {
