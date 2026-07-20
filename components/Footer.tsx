@@ -94,26 +94,6 @@ export default function Footer() {
 
               <li>
 
-                <a href="/python-online" className="hover:text-white transition-colors">
-
-                  Online Editör
-
-                </a>
-
-              </li>
-
-              <li>
-
-                <a href="/python-egitimi" className="hover:text-white transition-colors">
-
-                  Python Eğitimi
-
-                </a>
-
-              </li>
-
-              <li>
-
                 <a href="/python-kodlari" className="hover:text-white transition-colors">
 
                   Hazır Kodlar
@@ -142,16 +122,6 @@ export default function Footer() {
 
               <li>
 
-                <a href="/blog/sifirdan-zirveye" className="hover:text-white transition-colors">
-
-                  PYBlog
-
-                </a>
-
-              </li>
-
-              <li>
-
                 <a href="/about" className="hover:text-white transition-colors">
 
                   Hakkında
@@ -165,16 +135,6 @@ export default function Footer() {
                 <a href="/terms" className="hover:text-white transition-colors">
 
                   Kullanım Şartları
-
-                </a>
-
-              </li>
-
-              <li>
-
-                <a href="/profile" className="hover:text-white transition-colors">
-
-                  Profil
 
                 </a>
 
