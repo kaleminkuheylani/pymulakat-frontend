@@ -130,6 +130,16 @@ export async function proxy(request: NextRequest) {
     return NextResponse.redirect(url, 308);
   }
 
+  // 0.75) Oturum açıksa anasayfa -> dashboard (302)
+  if (pathname === "/") {
+    const sentinel = request.cookies.get("pymulakat_auth")?.value;
+    if (sentinel === "1") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      return NextResponse.redirect(url, 302);
+    }
+  }
+
   // 1) www -> apex (308 Permanent)
   if (host.startsWith("www.")) {
     const url = request.nextUrl.clone();
