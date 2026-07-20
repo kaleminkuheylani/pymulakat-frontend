@@ -1,7 +1,7 @@
 // components/dashboard/StatsOverview.tsx
 // Kullanıcı istatistikleri — dashboard'u zenginleştiren görsel kartlar.
 
-import { Trophy, Target, Clock, TrendingUp, Award, CheckCircle2, XCircle, Zap } from "lucide-react";
+import { Trophy, Target, Clock, Award, CheckCircle2, XCircle, Zap, Flame } from "lucide-react";
 
 export interface UserStats {
   id: string;
@@ -100,51 +100,19 @@ function StatCard({
   );
 }
 
-function SuccessRateRing({ rate = 0 }: { rate?: number }) {
-  const safeRate = Math.max(0, Math.min(100, Math.round(rate || 0)));
-  const radius = 36;
-  const circumference = 2 * Math.PI * radius;
-  const offset = circumference - (safeRate / 100) * circumference;
-
-  return (
-    <div className="flex items-center gap-5 rounded-2xl border border-emerald-500/30 bg-emerald-500/10 p-4">
-      <div className="relative w-24 h-24 shrink-0">
-        <svg className="w-full h-full -rotate-90" viewBox="0 0 80 80">
-          <circle cx="40" cy="40" r={radius} stroke="currentColor" strokeWidth="8" fill="transparent" className="text-white/10" />
-          <circle
-            cx="40"
-            cy="40"
-            r={radius}
-            stroke="currentColor"
-            strokeWidth="8"
-            fill="transparent"
-            strokeDasharray={circumference}
-            strokeDashoffset={offset}
-            strokeLinecap="round"
-            className="text-emerald-400 transition-all duration-700"
-          />
-        </svg>
-        <div className="absolute inset-0 flex items-center justify-center">
-          <span className="text-lg font-bold text-white">%{safeRate}</span>
-        </div>
-      </div>
-      <div>
-        <div className="text-sm font-semibold text-emerald-300">Başarı Oranı</div>
-        <p className="text-xs text-white/50 mt-1">
-          {safeRate >= 80 ? "Harika!" : safeRate >= 50 ? "İyi gidiyorsun." : "Pratik yapmaya devam et."}
-        </p>
-      </div>
-    </div>
-  );
-}
-
-export default function StatsOverview({ user }: { user: UserStats }) {
+export default function StatsOverview({
+  user,
+  performance,
+}: {
+  user: UserStats;
+  performance?: { total_usage_seconds?: number; streak_count?: number };
+}) {
   const points = user.points || 0;
   const total = user.total_attempts || 0;
   const success = user.success_count || 0;
   const fail = user.fail_count ?? Math.max(0, total - success);
-  const rate = user.success_rate ?? (total > 0 ? Math.round((success / total) * 100) : 0);
-  const avgSeconds = user.solution_average_time || 0;
+  const usageSeconds = performance?.total_usage_seconds || 0;
+  const streak = performance?.streak_count || 0;
   const rank = getRank(points);
 
   return (
@@ -181,10 +149,10 @@ export default function StatsOverview({ user }: { user: UserStats }) {
         <StatCard icon={XCircle} value={fail.toLocaleString("tr-TR")} label="Başarısız" accent="rose" />
       </div>
 
-      {/* Secondary row: success rate + avg time */}
+      {/* Secondary row: total usage time + streak */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        <SuccessRateRing rate={rate} />
-        <StatCard icon={Clock} value={formatDuration(avgSeconds)} label="Ortalama Çözüm Süresi" accent="sky" />
+        <StatCard icon={Clock} value={formatDuration(usageSeconds)} label="Toplam Kullanım Süresi" accent="sky" />
+        <StatCard icon={Flame} value={streak > 0 ? `${streak} gün` : "—"} label="Günlük Streak" accent="emerald" />
       </div>
 
       {/* Mini progress hint */}

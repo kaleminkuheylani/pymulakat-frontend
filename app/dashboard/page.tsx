@@ -15,9 +15,10 @@ import OnboardingSurvey from "../../components/OnboardingSurvey";
 import StatsOverview from "../../components/dashboard/StatsOverview";
 import { getRecommendationFlow, getCommunityRecommendations } from "../../lib/api/questionAPI";
 import { getAchievements } from "../../lib/api/achievementsAPI";
+import { getPerformance } from "../../lib/api/authAPI";
 import { getAllPosts } from "../blog/posts";
 import { BookOpen, ArrowRight, Trophy, X } from "lucide-react";
-import type { ApiNewlyUnlockedAchievement } from "../../lib/api/types";
+import type { ApiNewlyUnlockedAchievement, ApiUserPerformance } from "../../lib/api/types";
 
 // 📌 Lazy load — initial bundle'dan cikar (mobil performans)
 const PersonalFlow = dynamic(() => import("../../components/dashboard/PersonalFlow"), {
@@ -87,6 +88,7 @@ export default function DashboardHome() {
   const [refreshing, setRefreshing] = useState(false);
   const [allPosts, setAllPosts] = useState<Awaited<ReturnType<typeof getAllPosts>>>([]);
   const [newUnlocks, setNewUnlocks] = useState<ApiNewlyUnlockedAchievement[]>([]);
+  const [performance, setPerformance] = useState<ApiUserPerformance | null>(null);
 
   const [lastUpdated, setLastUpdated] = useState<Date | null>(null);
   // Mounted guard (TS strict mode + Vercel SWC uyumluluğu icin explicit type)
@@ -182,6 +184,16 @@ export default function DashboardHome() {
       .catch(() => {});
   }, [user?.id]);
 
+  // Kullanıcı performans verileri (total usage + streak)
+  useEffect(() => {
+    if (!user?.id) return;
+    getPerformance()
+      .then((data) => {
+        if (data?.ok) setPerformance(data);
+      })
+      .catch(() => {});
+  }, [user?.id]);
+
   // 📌 Misafir için: layout.tsx auth guard var. Buraya user gelirse üye demektir.
   // Bu yüzden null yerine bir erken return yok.
   // ÖNEMLİ: dashboard guest'te layout guard'i sayesinde /login'e yönlendirilir,
@@ -220,7 +232,7 @@ export default function DashboardHome() {
             </div>
 
             {/* 📌 Rich stats overview */}
-            <StatsOverview user={user} />
+            <StatsOverview user={user} performance={performance ?? undefined} />
           </div>
 
           {/* 2 TAB */}
