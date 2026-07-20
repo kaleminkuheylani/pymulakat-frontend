@@ -190,8 +190,10 @@ export default function WorkspaceClient({
   // 📌 Scroll sıfırla: SSR block başta yer aldığı için kullanıcı scroll konumu
   //    editörün koordinatlarıyla eşleşmeyebiliyor; cursor yerleşimi kayıyordu.
   useEffect(() => {
-    const els = document.querySelectorAll('[data-ssr-question]');
-    els.forEach((el) => el.remove());
+    // SSR content'i gizle (silme - React removeChild hatası yaratır)
+    document.querySelectorAll('[data-ssr-question]').forEach((el) => {
+      (el as HTMLElement).style.display = 'none';
+    });
     if (typeof window !== "undefined") {
       window.scrollTo(0, 0);
     }

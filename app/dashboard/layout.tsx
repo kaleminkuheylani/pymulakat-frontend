@@ -4,7 +4,7 @@
 "use client";
 
 import { useUser } from "../../hooks/useUser";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -20,6 +20,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   // Layout'a user geldiyse authenticated demektir. Client-side redirect yok.
   const { user, loading, logout } = useUser();
   const pathname = usePathname();
+  const router = useRouter();
 
   // 2026-07-15: Dashboard'a gelince geri tuşunu inaktif yap
   //   - Mevcut sayfayı history'de replace et (back stack'e ekleme)
@@ -45,6 +46,13 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     window.addEventListener("popstate", handlePopState);
     return () => window.removeEventListener("popstate", handlePopState);
   }, []);
+
+  // Auth gerektirip giriş yapılmamışsa login'e yönlendir
+  useEffect(() => {
+    if (!loading && !user) {
+      router.replace(`/login?returnUrl=${encodeURIComponent(pathname)}`);
+    }
+  }, [loading, user, pathname, router]);
 
   // 2026-07-15: Çıkış → landing page'e yönlendir
   const handleLogout = async () => {
