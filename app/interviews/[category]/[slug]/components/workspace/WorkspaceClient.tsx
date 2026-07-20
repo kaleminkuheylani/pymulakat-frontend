@@ -18,6 +18,7 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
 import { useCodeRunner, type RunTestCaseResult } from "@/hooks/useCodeRunner";
+import { useSessionTracker } from "@/hooks/useSessionTracker";
 // starters.ts kullanilmiyor — JS sabit template inline
 import { CodeEditorRef } from "@/components/CodeEditor";
 import { GuestBanner } from "@/components/GuestBanner";
@@ -79,6 +80,7 @@ export default function WorkspaceClient({
   // Hooks
   const router = useRouter();
   const { user, loading: userLoading } = useUser();
+  useSessionTracker(!!user);
   // 2026-07-15: useCodeRunner — language dispatch (Pyodide Python + Web Worker JS)
   const runner = useCodeRunner();
   const {

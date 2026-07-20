@@ -141,6 +141,13 @@ export interface ApiUserStats {
   success_rate: number;
 }
 
+export interface ApiUserPerformance {
+  ok: boolean;
+  total_usage_seconds: number;
+  streak_count: number;
+  last_active_date?: string | null;
+}
+
 // ═══════════════════════════════════════════════════════════════
 // ─── Achievements ──────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════

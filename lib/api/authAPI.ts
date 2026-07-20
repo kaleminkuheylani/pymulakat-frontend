@@ -9,7 +9,7 @@
 // (apiFetch otomatik Authorization header ekler).
 
 import { apiFetch, API_BASE } from "./index";
-import type { ApiUser, ApiUserStats, ApiAttemptResponse } from "./types";
+import type { ApiUser, ApiUserStats, ApiAttemptResponse, ApiUserPerformance } from "./types";
 
 // ═══════════════════════════════════════════════════════════════
 // ─── Me / Profile ────────────────────────────────────────────
@@ -123,6 +123,39 @@ export async function incrementPlayCount(): Promise<{ count: number } | null> {
 }
 
 // ═══════════════════════════════════════════════════════════════
+// ─── User Performance (total usage time + streak) ───────────────
+// ═══════════════════════════════════════════════════════════════
+
+/**
+ * Oturumda geçirilen süreyi (saniye) backend'e gönder.
+ * Toplam kullanım süresi artırılır, streak güncellenir.
+ */
+export async function trackSession(seconds: number): Promise<ApiUserPerformance | null> {
+  try {
+    return await apiFetch<ApiUserPerformance>("/api/v2/users/me/session", {
+      method: "POST",
+      body: { seconds: Math.max(0, Math.floor(seconds)) },
+      auth: true,
+    });
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Kullanıcının toplam kullanım süresi ve streak değerlerini getir.
+ */
+export async function getPerformance(): Promise<ApiUserPerformance | null> {
+  try {
+    return await apiFetch<ApiUserPerformance>("/api/v2/users/me/performance", {
+      auth: true,
+    });
+  } catch {
+    return null;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════
 // ─── Re-exports ───────────────────────────────────────────────
 // ═══════════════════════════════════════════════════════════════
 
@@ -138,4 +171,6 @@ export const authAPI = {
   getMyStats,
   getPlayCount,
   incrementPlayCount,
+  trackSession,
+  getPerformance,
 };

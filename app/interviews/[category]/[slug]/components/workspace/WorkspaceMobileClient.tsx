@@ -17,7 +17,8 @@ import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
-import { usePyodide } from "@/hooks/usePyodide";  // pyStatus icin (Pyodide yükleme durumu)
+import { usePyodide } from "@/hooks/usePyodide";
+import { useSessionTracker } from "@/hooks/useSessionTracker";  // pyStatus icin (Pyodide yükleme durumu)
 import { questionsAPI, Question, QuestionTests } from "@/lib/api";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { GuestBanner } from "@/components/GuestBanner";
@@ -55,6 +56,7 @@ export default function WorkspaceMobileClient({
 }: Props) {
   const router = useRouter();
   const { user } = useUser();
+  useSessionTracker(!!user);
   // 2026-07-16: pyStatus icin usePyodide, runtime dispatch icin useCodeRunner
   // (Mobile'da setLanguage + runTests/runWithCustomInput useCodeRunner'dan gelir
   //  — bu sayede JS kodu Web Worker, Python kodu Pyodide ile calisir)
