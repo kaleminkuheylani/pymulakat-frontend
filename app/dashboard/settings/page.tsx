@@ -32,25 +32,6 @@ export default function SettingsPage() {
         />
       </Section>
 
-      {/* Gizlilik (KVKK) */}
-      <Section title="🔒 Gizlilik">
-        <Row
-          label="Hesap silme"
-          value={
-            <a
-              href="/profile#hesap-sil"
-              className="text-red-400 hover:underline text-sm"
-            >
-              Hesabı sil (KVKK)
-            </a>
-          }
-        />
-        <p className="text-xs text-white/40 mt-2">
-          KVKK md. 11 kapsamında hesabınız ve tüm verileriniz (attempt'ler,
-          istatistikler) silinir. İşlem geri alınamaz.
-        </p>
-      </Section>
-
       <div className="text-xs text-white/30 text-center pt-4">
         Daha fazla ayar yakında eklenecek.
       </div>
