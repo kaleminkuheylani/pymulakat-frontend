@@ -127,95 +127,83 @@ function loadScript(src: string): Promise<void> {
 }
 
 // ─── Deep equality for test outputs ────────────────────────────────────────
-// ─── Deep equality: tip bağımsız, sayı/string/bool/list dönüşümü tolerant
-
-function normalizeValue(v: any): any {
-  if (typeof v !== "string") return v;
-  const s = v.trim();
-  if (s === "") return s;
-
-  const lower = s.toLowerCase();
-  if (lower === "true") return true;
-  if (lower === "false") return false;
-  if (lower === "null" || lower === "none") return null;
-
-  // Doğrudan JSON parse: "5", "[1,2,3]", "\"hello\"", "null"
-  try {
-    return JSON.parse(s);
-  } catch {}
-
-  // Python literal'lerini JSON'a çevirerek dene
-  const normalized = s
-    .replace(/'/g, '"')
-    .replace(/\bTrue\b/g, "true")
-    .replace(/\bFalse\b/g, "false")
-    .replace(/\bNone\b/g, "null")
-    .replace(/^\(/, "[")
-    .replace(/\)$/, "]");
-  if (normalized !== s) {
-    try {
-      return JSON.parse(normalized);
-    } catch {}
+// Pyodide dict -> JS Map, set -> JS Set, list -> Array olarak dönebilir.
+// JSON.stringify(Map)="{}" gibi yanıltır; recursive value karşılaştırması gerekir.
+function toComparable(v: any): any {
+  if (v == null || typeof v !== "object") return v;
+  if (v instanceof Map) {
+    const obj: any = {};
+    v.forEach((val, key) => {
+      obj[key] = toComparable(val);
+    });
+    return obj;
   }
-
-  return s;
+  if (v instanceof Set) {
+    return Array.from(v).map(toComparable);
+  }
+  if (Array.isArray(v)) {
+    return v.map(toComparable);
+  }
+  const keys = Object.keys(v).sort();
+  const obj: any = {};
+  for (const k of keys) {
+    obj[k] = toComparable(v[k]);
+  }
+  return obj;
 }
 
-export function deepEqual(a: any, b: any): boolean {
-  const na = normalizeValue(a);
-  const nb = normalizeValue(b);
+function deepEqual(a: any, b: any): boolean {
+  if (a === b) return true;
+  if (a == null && b == null) return true;
+  if (a == null || b == null) return false;
 
-  if (na === nb) return true;
-  if (na == null && nb == null) return true;
-  if (na == null || nb == null) return false;
-
-  // Sayı ↔ numeric string toleransı
-  if (typeof na === "number" && typeof nb === "string") {
-    const nbNum = Number(nb);
-    if (!Number.isNaN(nbNum) && na === nbNum) return true;
+  // Boolean ↔ string: Python True/False vs DB "True"/"False"
+  if (typeof a === "boolean" && typeof b === "string") {
+    const lb = b.toLowerCase().trim();
+    if (a === true && lb === "true") return true;
+    if (a === false && lb === "false") return true;
   }
-  if (typeof na === "string" && typeof nb === "number") {
-    const naNum = Number(na);
-    if (!Number.isNaN(naNum) && naNum === nb) return true;
-  }
-
-  // Boolean ↔ string
-  if (typeof na === "boolean" && typeof nb === "string") {
-    const lb = nb.toLowerCase().trim();
-    if (na === true && lb === "true") return true;
-    if (na === false && lb === "false") return true;
-  }
-  if (typeof na === "string" && typeof nb === "boolean") {
-    const la = na.toLowerCase().trim();
-    if (la === "true" && nb === true) return true;
-    if (la === "false" && nb === false) return true;
+  if (typeof a === "string" && typeof b === "boolean") {
+    const la = a.toLowerCase().trim();
+    if (la === "true" && b === true) return true;
+    if (la === "false" && b === false) return true;
   }
 
-  // Object/array karşılaştırması — recursive (key order tolerant)
-  if (typeof na === "object" && typeof nb === "object") {
-    const aIsArr = Array.isArray(na);
-    const bIsArr = Array.isArray(nb);
-    if (aIsArr && bIsArr) {
-      if (na.length !== nb.length) return false;
-      for (let i = 0; i < na.length; i++) {
-        if (!deepEqual(na[i], nb[i])) return false;
-      }
-      return true;
+  // None ↔ "None" / null
+  if (a === null && typeof b === "string" && b.toLowerCase().trim() === "none") return true;
+  if (typeof a === "string" && a.toLowerCase().trim() === "none" && b === null) return true;
+
+  // Sayı ↔ numeric string toleransı: "5" ile 5 eşit sayılır
+  if (typeof a === "number" && typeof b === "string") {
+    const nb = Number(b);
+    if (!Number.isNaN(nb) && a === nb) return true;
+  }
+  if (typeof a === "string" && typeof b === "number") {
+    const na = Number(a);
+    if (!Number.isNaN(na) && na === b) return true;
+  }
+
+  // İki taraf da object/Map/Set/array ise recursive karşılaştır
+  if (typeof a === "object" && typeof b === "object") {
+    const ca = toComparable(a);
+    const cb = toComparable(b);
+
+    if (Array.isArray(ca) && Array.isArray(cb)) {
+      if (ca.length !== cb.length) return false;
+      return ca.every((x, i) => deepEqual(x, cb[i]));
     }
-    if (!aIsArr && !bIsArr && na !== null && nb !== null) {
-      const keysA = Object.keys(na);
-      const keysB = Object.keys(nb);
+
+    if (typeof ca === "object" && ca !== null && typeof cb === "object" && cb !== null) {
+      const keysA = Object.keys(ca);
+      const keysB = Object.keys(cb);
       if (keysA.length !== keysB.length) return false;
-      for (const k of keysA) {
-        if (!Object.prototype.hasOwnProperty.call(nb, k)) return false;
-        if (!deepEqual(na[k], nb[k])) return false;
-      }
-      return true;
+      return keysA.every((k) => k in cb && deepEqual(ca[k], cb[k]));
     }
-    return false;
+
+    return ca === cb;
   }
 
-  return na === nb;
+  return a === b;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
