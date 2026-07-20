@@ -127,40 +127,95 @@ function loadScript(src: string): Promise<void> {
 }
 
 // ─── Deep equality for test outputs ────────────────────────────────────────
-// ─── Deep equality: tip bağımsız, sayı/string dönüşümü tolerant ───
-function deepEqual(a: any, b: any): boolean {
-  if (a === b) return true;
-  if (a == null && b == null) return true;
-  if (a == null || b == null) return false;
-  // Boolean ↔ string: Python True/False vs DB "True"/"False"
-  if (typeof a === "boolean" && typeof b === "string") {
-    const lb = b.toLowerCase().trim();
-    if (a === true && lb === "true") return true;
-    if (a === false && lb === "false") return true;
+// ─── Deep equality: tip bağımsız, sayı/string/bool/list dönüşümü tolerant
+
+function normalizeValue(v: any): any {
+  if (typeof v !== "string") return v;
+  const s = v.trim();
+  if (s === "") return s;
+
+  const lower = s.toLowerCase();
+  if (lower === "true") return true;
+  if (lower === "false") return false;
+  if (lower === "null" || lower === "none") return null;
+
+  // Doğrudan JSON parse: "5", "[1,2,3]", "\"hello\"", "null"
+  try {
+    return JSON.parse(s);
+  } catch {}
+
+  // Python literal'lerini JSON'a çevirerek dene
+  const normalized = s
+    .replace(/'/g, '"')
+    .replace(/\bTrue\b/g, "true")
+    .replace(/\bFalse\b/g, "false")
+    .replace(/\bNone\b/g, "null")
+    .replace(/^\(/, "[")
+    .replace(/\)$/, "]");
+  if (normalized !== s) {
+    try {
+      return JSON.parse(normalized);
+    } catch {}
   }
-  if (typeof a === "string" && typeof b === "boolean") {
-    const la = a.toLowerCase().trim();
-    if (la === "true" && b === true) return true;
-    if (la === "false" && b === false) return true;
+
+  return s;
+}
+
+export function deepEqual(a: any, b: any): boolean {
+  const na = normalizeValue(a);
+  const nb = normalizeValue(b);
+
+  if (na === nb) return true;
+  if (na == null && nb == null) return true;
+  if (na == null || nb == null) return false;
+
+  // Sayı ↔ numeric string toleransı
+  if (typeof na === "number" && typeof nb === "string") {
+    const nbNum = Number(nb);
+    if (!Number.isNaN(nbNum) && na === nbNum) return true;
   }
-  // None ↔ "None" / null
-  if (a === null && typeof b === "string" && b.toLowerCase().trim() === "none") return true;
-  if (typeof a === "string" && a.toLowerCase().trim() === "none" && b === null) return true;
-  // Sayı ↔ numeric string toleransı: "5" ile 5 eşit sayılır
-  if (typeof a === "number" && typeof b === "string") {
-    const nb = Number(b);
-    if (!Number.isNaN(nb) && a === nb) return true;
+  if (typeof na === "string" && typeof nb === "number") {
+    const naNum = Number(na);
+    if (!Number.isNaN(naNum) && naNum === nb) return true;
   }
-  if (typeof a === "string" && typeof b === "number") {
-    const na = Number(a);
-    if (!Number.isNaN(na) && na === b) return true;
+
+  // Boolean ↔ string
+  if (typeof na === "boolean" && typeof nb === "string") {
+    const lb = nb.toLowerCase().trim();
+    if (na === true && lb === "true") return true;
+    if (na === false && lb === "false") return true;
   }
-  // Her iki taraf object ise (array dahil) JSON normalize karşılaştırması
-  if (typeof a === "object" && typeof b === "object") {
-    return JSON.stringify(a) === JSON.stringify(b);
+  if (typeof na === "string" && typeof nb === "boolean") {
+    const la = na.toLowerCase().trim();
+    if (la === "true" && nb === true) return true;
+    if (la === "false" && nb === false) return true;
   }
-  // Son çare: primitive karşılaştırması
-  return a === b;
+
+  // Object/array karşılaştırması — recursive (key order tolerant)
+  if (typeof na === "object" && typeof nb === "object") {
+    const aIsArr = Array.isArray(na);
+    const bIsArr = Array.isArray(nb);
+    if (aIsArr && bIsArr) {
+      if (na.length !== nb.length) return false;
+      for (let i = 0; i < na.length; i++) {
+        if (!deepEqual(na[i], nb[i])) return false;
+      }
+      return true;
+    }
+    if (!aIsArr && !bIsArr && na !== null && nb !== null) {
+      const keysA = Object.keys(na);
+      const keysB = Object.keys(nb);
+      if (keysA.length !== keysB.length) return false;
+      for (const k of keysA) {
+        if (!Object.prototype.hasOwnProperty.call(nb, k)) return false;
+        if (!deepEqual(na[k], nb[k])) return false;
+      }
+      return true;
+    }
+    return false;
+  }
+
+  return na === nb;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

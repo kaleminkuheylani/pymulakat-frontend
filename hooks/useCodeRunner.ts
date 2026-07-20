@@ -16,6 +16,7 @@ import {
   PyodideRunResult,
   TestCase,
   TestRunResult,
+  deepEqual,
 } from "./usePyodide";
 import type { ErrorCategory } from "../lib/errorClassifier";
 import {
@@ -142,23 +143,11 @@ export function useCodeRunner(initial: SupportedLanguage = "python"): UseCodeRun
         for (let i = 0; i < testCases.length; i++) {
           const tc = testCases[i];
           try {
-            // 2026-07-16: Python-typed expected (True/False/None) → JS literal
-            // Backend CSV/DB'den string geliyor ("True", "False", "None"),
-            // JS'te karşılaştırma için "true"/"false"/"null" olmalı
-            const normalizePythonLiteral = (s: string): string => {
-              if (s === "True") return "true";
-              if (s === "False") return "false";
-              if (s === "None") return "null";
-              return s;
-            };
             // 2026-07-16: input JSON-aware — eğer parse edilebilirse object/array olarak geç
-            // (örn. {"text": "racecar"} veya ["racecar", "hello"] → dict/array)
-            // Değilse raw string olarak geç
             const tcInput = tc.input;
             let jsInput: string;
             try {
               const parsed = JSON.parse(tcInput);
-              // Object/array ise JSON.stringify ile geri stringify (fonksiyon argümanı olarak)
               jsInput = JSON.stringify(parsed);
             } catch {
               jsInput = tcInput;
@@ -170,8 +159,8 @@ export function useCodeRunner(initial: SupportedLanguage = "python"): UseCodeRun
               timeoutMs: 5_000,
             });
             const actual = r.stdout.trim();
-            const expected = normalizePythonLiteral(String(tc.expected).trim());
-            const passed = r.ok && actual === expected;
+            const expected = String(tc.expected).trim();
+            const passed = r.ok && deepEqual(actual, expected);
             results.push({
               name: tc.name ?? `Test ${i + 1}`,
               passed,
