@@ -3,11 +3,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useUser } from "@/hooks/useUser";
 import { getMyAttempts } from "@/lib/api/authAPI";
+import { getAllQuestions } from "@/lib/api/questionAPI";
 import type { ApiQuestion, ApiAttemptResponse } from "@/lib/api/types";
-
-interface Props {
-  questions: ApiQuestion[];
-}
 
 interface SkillStats {
   label: string;
@@ -102,8 +99,9 @@ function computeStats(questions: ApiQuestion[], attempts: ApiAttemptResponse[]):
   return stats;
 }
 
-export default function SkillProgress({ questions }: Props) {
+export default function SkillProgress() {
   const { user, loading: userLoading } = useUser();
+  const [questions, setQuestions] = useState<ApiQuestion[]>([]);
   const [attempts, setAttempts] = useState<ApiAttemptResponse[] | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -113,9 +111,10 @@ export default function SkillProgress({ questions }: Props) {
     let cancelled = false;
     setLoading(true);
     setError(null);
-    getMyAttempts(100)
-      .then((data) => {
+    Promise.all([getAllQuestions({ limit: 1000 }), getMyAttempts(100)])
+      .then(([qs, data]) => {
         if (!cancelled) {
+          setQuestions(qs);
           setAttempts(data);
           setLoading(false);
         }
@@ -123,7 +122,7 @@ export default function SkillProgress({ questions }: Props) {
       .catch((e) => {
         if (!cancelled) {
           const message = e instanceof Error ? e.message : "Bilinmeyen hata";
-          setError(`Denemeler alınamadı: ${message}`);
+          setError(`Veriler alınamadı: ${message}`);
           setLoading(false);
         }
       });
