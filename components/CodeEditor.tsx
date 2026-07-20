@@ -309,19 +309,8 @@ export const CodeEditorMonaco = forwardRef<CodeEditorRef, Props>(
             } catch {
               // ignore — view zaten yoksa yut
             }
-            // Sonra container'ın içini temizle (artık DOM'da ne varsa)
-            // Bu, React'in unmount sırasında removeChild çağırdığında
-            // hostRef.current zaten boş olduğu için removeChild(container)
-            // her zaman geçerli kalır (parent hâlâ container'ın sahibidir).
-            try {
-              if (hostRef.current) {
-                while (hostRef.current.firstChild) {
-                  hostRef.current.removeChild(hostRef.current.firstChild);
-                }
-              }
-            } catch {
-              // ignore
-            }
+            // React host container'ı unmount sırasında kaldırır;
+            // manuel firstChild silme React'e ait düğümleri (örn. spinner) bozar.
             viewRef.current = null;
           };
         } catch (e: any) {
