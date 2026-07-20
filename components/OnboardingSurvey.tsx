@@ -11,6 +11,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { Sparkles, X, ChevronRight, ChevronLeft, Check } from "lucide-react";
+import { apiFetch } from "@/lib/api";
 
 interface Props {
   userId: string;
@@ -97,16 +98,13 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
     (async () => {
       setLoading(true);
       try {
-        const res = await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey/status", {
-          credentials: "include",
+        const data = await apiFetch<{ dismissed: boolean }>("/api/v2/survey/status", {
+          auth: true,
         });
-        if (res.status === 200) {
-          const data = await res.json();
-          if (data.dismissed === true) {
-            localStorage.setItem(STORAGE_KEY(userId), "1");
-            setOpen(false);
-            return;
-          }
+        if (data.dismissed === true) {
+          localStorage.setItem(STORAGE_KEY(userId), "1");
+          setOpen(false);
+          return;
         }
         setTimeout(() => setOpen(true), 1500);
       } catch (e) {
@@ -123,16 +121,15 @@ export default function OnboardingSurvey({ userId, totalAttempts = 0 }: Props) {
       setSubmitting(true);
       try {
         // Her durumda dismissed=true — Atla da kalici, tekrar gosterme
-        await fetch("https://pymulakat-backend-production.up.railway.app/api/v2/survey", {
+        await apiFetch("/api/v2/survey", {
           method: "POST",
-          credentials: "include",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
+          auth: true,
+          body: {
             source: source || "skip",
             rating: rating || "skip",
             age_range: ageRange || "skip",
             dismissed: true,
-          }),
+          },
         });
       } catch (e) {
         // network hatasi olsa da localStorage'a yaz
