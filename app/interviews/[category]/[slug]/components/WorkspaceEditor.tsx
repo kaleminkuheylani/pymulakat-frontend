@@ -294,9 +294,9 @@ export default function WorkspaceEditor({
               setActiveTab("examples");
               onRun();
             }}
-            disabled={isRunning || (pyStatus !== "ready" && pyStatus !== "idle")}
+            disabled={isGuest || isRunning || (pyStatus !== "ready" && pyStatus !== "idle")}
             className={`px-5 py-1.5 rounded-md text-xs font-bold transition-all flex items-center gap-2 ${
-              isRunning || (pyStatus !== "ready" && pyStatus !== "idle")
+              isGuest || isRunning || (pyStatus !== "ready" && pyStatus !== "idle")
                 ? "bg-white/5 text-white/30 cursor-not-allowed"
                 : isGuest
                 ? "bg-amber-500/10 border border-amber-400/40 text-amber-400 hover:bg-amber-500/20"
@@ -307,14 +307,6 @@ export default function WorkspaceEditor({
               <>
                 <div className="w-3 h-3 border-2 border-white/30 border-t-white/70 rounded-full animate-spin" />
                 Çalışıyor...
-              </>
-            ) : isGuest ? (
-              <>
-                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <rect x="3" y="11" width="18" height="11" rx="2" strokeWidth="2" />
-                  <path d="M7 11V7a5 5 0 0110 0v4" strokeWidth="2" />
-                </svg>
-                Giriş Yap & Çalıştır
               </>
             ) : (
               <>

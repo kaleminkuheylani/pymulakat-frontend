@@ -1,5 +1,5 @@
 "use client";
-import { Lock, Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle, Code2, TestTube, Terminal, Sparkles, LayoutDashboard } from "lucide-react";
+import { Printer, Rocket, PartyPopper, ListTree, BookOpen, AlertTriangle, Code2, TestTube, Terminal, Sparkles } from "lucide-react";
 import { errorMessage } from "@/lib/errorMessage";
 import { getCategoryUrl } from "@/lib/categorySlug";
 
@@ -15,7 +15,6 @@ import { getCategoryUrl } from "@/lib/categorySlug";
 
 import { useState, useEffect, useCallback, useRef } from "react";
 import { useRouter } from "next/navigation";
-import Link from "next/link";
 import { toast } from "sonner";
 import { useUser } from "@/hooks/useUser";
 import { usePyodide } from "@/hooks/usePyodide";  // pyStatus icin (Pyodide yükleme durumu)
@@ -424,9 +423,6 @@ export default function WorkspaceMobileClient({
           <div className="text-[10px] text-white/40 truncate">{category}</div>
           <div className="text-xs font-bold text-white truncate">{interview.title}</div>
         </div>
-        <Link href="/dashboard" className="p-1.5 rounded-md bg-white/5 border border-white/10 text-white/70 hover:text-white hover:bg-white/10" title="Dashboard">
-          <LayoutDashboard className="w-3.5 h-3.5" />
-        </Link>
         {/* Üst toggle: Soru (📖) ↔ Editör (🖥️). Diğer 3 tab alt nav'da. */}
         <div className="flex items-center gap-1 mr-1">
           <button
@@ -450,15 +446,7 @@ export default function WorkspaceMobileClient({
             <Code2 className="w-3.5 h-3.5" />
           </button>
         </div>
-        {readonly ? null : isGuest ? (
-          <Link
-            href={`/login?returnUrl=${encodeURIComponent(`/interviews/${category}/${id}`)}`}
-            className="px-3 py-1.5 rounded-lg bg-indigo-500 text-white text-[11px] font-bold hover:bg-indigo-400 transition-colors"
-            title="Giriş yapıp kodu çalıştır"
-          >
-            <Lock className="w-4 h-4 inline" /> Giriş Yap & Çalıştır
-          </Link>
-        ) : (
+        {readonly || isGuest ? null : (
           <button
             onClick={handleRun}
             disabled={running || pyStatus === "loading" || (pyStatus !== "ready" && pyStatus !== "idle")}

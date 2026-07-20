@@ -140,6 +140,15 @@ export default function Footer() {
 
               </li>
 
+              <li>
+
+                <a href="/login" className="hover:text-white transition-colors">
+
+                  Giriş Yap
+
+                </a>
+
+              </li>
 
             </ul>
 

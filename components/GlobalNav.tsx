@@ -54,6 +54,23 @@ export default function GlobalNav() {
 
         {loading ? (
             <div className="w-8 h-8 rounded-full bg-white/5 animate-pulse" />
+          ) : pathname === "/" ? (
+            // 2026-07-15: Landing page icin user bilgisi GIZLI (placeholder
+            // user'lar gizli kalmali). Sadece login/register CTA'lari.
+            <>
+              <Link
+                href="/login"
+                className="text-white/70 hover:text-white text-sm font-medium transition-colors"
+              >
+                Giriş Yap
+              </Link>
+              <Link
+                href="/register"
+                className="px-3 py-1.5 bg-gradient-to-r from-amber-400 to-amber-500 hover:from-amber-300 hover:to-amber-400 text-[#050816] font-bold text-xs md:text-sm rounded-lg transition-all"
+              >
+                Kayıt Ol
+              </Link>
+            </>
           ) : user ? (
             // User badge + dropdown
             <div className="relative" ref={menuRef}>

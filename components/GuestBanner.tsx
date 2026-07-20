@@ -43,14 +43,6 @@ export function GuestBanner({ feature }: GuestBannerProps) {
           )}
         </span>
       </div>
-      <div className="flex items-center gap-2 flex-shrink-0">
-        <Link
-          href={`/login?returnUrl=${returnUrl}`}
-          className="text-xs px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 border border-amber-500/30 text-amber-300 font-semibold transition-colors"
-        >
-          Giriş Yap
-        </Link>
-      </div>
     </motion.div>
   );
 }
