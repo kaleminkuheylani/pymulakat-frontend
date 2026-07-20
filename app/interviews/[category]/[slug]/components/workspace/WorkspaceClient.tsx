@@ -69,22 +69,12 @@ export default function WorkspaceClient({
   hasStudy = false,
   categoryLabel,
 }: Props) {
-  // ✅ Guard
-  if (!initialParams || !initialParams.category || !initialParams.id) {
-    return (
-      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
-          <p className="text-white/40 text-sm">Yükleniyor...</p>
-        </div>
-      </div>
-    );
-  }
-
-  const { category, id } = initialParams;
+  // Güvenli param çıkarımı; guard tüm hook'ların altına taşındı.
+  const category = initialParams?.category || "";
+  const id = initialParams?.id || "";
   // Slug veya ID — slug ise önce by-slug API ile soruyu çek (ID'yi oradan al)
   const isNumericId = /^\d+$/.test(id);
-  const questionSlugOrId = isNumericId ? null : id;
+  const questionSlugOrId = isNumericId ? null : id || null;
 
   // Hooks
   const router = useRouter();
@@ -376,6 +366,18 @@ export default function WorkspaceClient({
   const handleBackToList = () => {
     router.push(`/interviews/${category}`);
   };
+
+  // ✅ Guard
+  if (!initialParams || !initialParams.category || !initialParams.id) {
+    return (
+      <div className="min-h-screen bg-[#050816] flex items-center justify-center">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-12 h-12 border-4 border-indigo-500/30 border-t-indigo-500 rounded-full animate-spin" />
+          <p className="text-white/40 text-sm">Yükleniyor...</p>
+        </div>
+      </div>
+    );
+  }
 
   // ─── Render Guards ─────────────────────────────────────
   if (loading) {
