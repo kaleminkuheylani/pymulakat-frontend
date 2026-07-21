@@ -8,7 +8,7 @@
 // görsel sunum dekoratif.
 
 import Link from "next/link";
-import { ArrowRight, Sparkles, Check, Code2 } from "lucide-react";
+import { ArrowRight, Sparkles, Check, UserPlus } from "lucide-react";
 import TerminalMock from "./TerminalMock";
 import { getTotalQuestionCount } from "@/lib/api/questionAPI";
 
@@ -33,7 +33,7 @@ export default async function Hero() {
             {/* Tag pill */}
             <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/20 text-amber-300 text-xs font-medium mb-6">
               <Sparkles className="w-3.5 h-3.5" />
-              Şimdilik ücretsiz · Kurulum yok
+              Ücretsiz · Kurulum yok · Üye olmadan dene
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-extrabold tracking-tight leading-[1.1] mb-5">
@@ -56,18 +56,18 @@ export default async function Hero() {
             {/* CTA: Hesap aç, hemen başla */}
             <div className="flex flex-wrap gap-3 mb-6">
               <Link
-                href="/register"
+                href="/interviews"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition-colors shadow-lg shadow-amber-500/20"
               >
-                Hesap Aç, Hemen Başla
+                Hemen Dene
                 <ArrowRight className="w-4 h-4" />
               </Link>
               <Link
-                href="/login"
+                href="/register"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-white font-medium transition-colors"
               >
-                <Code2 className="w-4 h-4" />
-                Giriş
+                <UserPlus className="w-4 h-4" />
+                Üye Ol
               </Link>
             </div>
 
@@ -80,7 +80,7 @@ export default async function Hero() {
               ·
               <span className="flex items-center gap-1.5">
                 <Check className="w-3.5 h-3.5 text-emerald-400" />
-                5 dakikada hesap
+                Üye olmadan dene
               </span>
               ·
               <span className="flex items-center gap-1.5">

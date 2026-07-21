@@ -172,6 +172,7 @@ export default function WorkspaceClient({
   // 2026-07-14: Run en az 1 kez çağrıldı mı? (AI Feedback trigger)
   const [hasRunOnce, setHasRunOnce] = useState(false);
   const [seconds, setSeconds] = useState(0);
+  const isPublic = interview?.question_type === "public";
   const [showShareModal, setShowShareModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
@@ -298,14 +299,14 @@ export default function WorkspaceClient({
         inFlightRef.current = false;
       }
     },
-    [questionId, interview?.id, revealedHints]
+    [user, questionId, interview?.id, revealedHints]
   );
 
   // Run tests
   const handleRun = useCallback(async () => {
     // 📌 Misafire kod çalıştırma yok — GuestEditorGate zaten editor'i gizliyor;
-    // burasi son savunma. Return-ile sessizce cik, redirect yapma (state tutarliligi).
-    if (!user) return;
+    // Public sorularda auth gerekmez.
+    if (!user && !isPublic) return;
     if (isRunning || !testCases) return;
     // Python: Pyodide ready olmali; JS: Worker her zaman hazir
     if (language === "python" && pyStatus !== "ready" && pyStatus !== "idle") return;
@@ -365,7 +366,7 @@ export default function WorkspaceClient({
     } finally {
       setIsRunning(false);
     }
-  }, [user, isRunning, pyStatus, testCases, code, runTests, submitAttempt, category, id]);
+  }, [user, isPublic, isRunning, pyStatus, testCases, code, runTests, submitAttempt, category, id]);
 
   const handleBackToList = () => {
     router.push(`/interviews/${category}`);
@@ -437,6 +438,7 @@ export default function WorkspaceClient({
   //     var ama /auth/me henüz cevap vermedi, "yüklüyor gibi" davran
   //   - user null + userLoading false + localStorage'da token YOK → gerçek misafir
   const isGuest = (() => {
+    if (isPublic) return false; // Public sorular misafirlere de açık
     if (user) return false; // Kesinlikle login
     if (userLoading) return false; // Hâlâ yükleniyor
     if (typeof window !== "undefined") {

@@ -116,6 +116,7 @@ export default function WorkspaceMobileClient({
   const [interview, setInterview] = useState<Question | null>(initialInterview);
   const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCases);
   const [running, setRunning] = useState(false);
+  const isPublic = interview?.question_type === "public";
   const [results, setResults] = useState<any[]>([]);
   const [errorLines, setErrorLines] = useState<string[]>([]);
   // 2026-07-14: AI Feedback trigger — ilk Run sonrası enable olur
@@ -266,7 +267,8 @@ export default function WorkspaceMobileClient({
   const handleRun = useCallback(async () => {
     if (readonly) return; // Salt okunur önizleme — çalıştırma yok
     // 📌 Misafire kod çalıştırma yok — GuestEditorGate zaten editor'i gizliyor.
-    if (!user) return;  // hard stop (UI'da misafir Run butonunu bile görmez)
+    // Public sorularda auth gerekmez.
+    if (!user && !isPublic) return;
     if (!testCases || running || (pyStatus !== "ready" && pyStatus !== "idle")) return;
     setRunning(true);
     setResults([]);
@@ -298,7 +300,7 @@ export default function WorkspaceMobileClient({
     } finally {
       setRunning(false);
     }
-  }, [readonly, user, testCases, running, pyStatus, runnerRunTests, code, submitAttempt, category, interview, id]);
+  }, [readonly, user, isPublic, testCases, running, pyStatus, runnerRunTests, code, submitAttempt, category, interview, id]);
 
   // 2026-07-16: Custom input runner — useCodeRunner dispatch
   // (JS oldugunda Web Worker, Python'da Pyodide)
@@ -354,7 +356,7 @@ export default function WorkspaceMobileClient({
     );
   }
 
-  const isGuest = !user;
+  const isGuest = !user && !isPublic;
 
   return (
     // 📌 Android soft keyboard fix: 100dvh (dynamic viewport height), 100vh fallback.
