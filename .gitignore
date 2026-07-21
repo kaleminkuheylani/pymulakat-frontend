@@ -50,3 +50,19 @@ screenshot-alternatives.mjs
 
 **/*.bak
 **/API_MIGRATION_PLAN.md
+
+# Python venv
+.venv/
+venv/
+env/
+
+# Testing
+htmlcov/
+.coverage
+
+# Backup files & scratch
+data/*.bak
+.scratch/
+data/*.csv.bak-*
+QUESTIONS-v3.csv.bak*
+

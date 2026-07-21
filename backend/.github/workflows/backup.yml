@@ -1,0 +1,94 @@
+name: Database Backup
+
+on:
+  # Her Pazartesi 03:00 UTC (Türkiye 06:00) — düşük trafik zamanı
+  schedule:
+    - cron: "0 3 * * 1"
+  # Manuel tetikleme (test + acil backup)
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Yedekleme sebebi (log için)"
+        required: false
+        default: "manual"
+
+jobs:
+  backup:
+    name: PostgreSQL Backup
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    # Job-level env: tüm step'lerde geçerli (önceki bug: sadece tek step'te tanımlıydı)
+    env:
+      DB_URL: ${{ secrets.DB_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y postgresql-client
+
+      - name: Verify connection
+        run: |
+          echo "Testing DB connection..."
+          echo "DB_URL (first 50 chars): ${DB_URL:0:50}..."
+          # libpq connection string'i parçala (psql URI syntax bazı sürümlerde sorunlu)
+          # DB_URL: postgresql://user:pass@host:port/db
+          REGEX='postgresql://([^:]+):([^@]+)@([^:]+):([0-9]+)/(.+)'
+          if [[ $DB_URL =~ $REGEX ]]; then
+            export PGUSER="${BASH_REMATCH[1]}"
+            export PGPASSWORD="${BASH_REMATCH[2]}"
+            export PGHOST="${BASH_REMATCH[3]}"
+            export PGPORT="${BASH_REMATCH[4]}"
+            export PGDATABASE="${BASH_REMATCH[5]}"
+            # IPv4 zorla (GitHub Actions runner IPv6 unreachable)
+            # getent ahostsv4 yok, Python gethostbyname her zaman IPv4 döner
+            IPV4=$(python3 -c "import socket; print(socket.gethostbyname('$PGHOST'))" 2>/dev/null || echo "")
+            if [ -n "$IPV4" ]; then
+              echo "Resolved $PGHOST → $IPV4 (IPv4)"
+              export PGHOST="$IPV4"
+            else
+              echo "IPv4 resolve failed, hostname ile devam (IPv6 unreachable olabilir)"
+            fi
+            echo "Final: $PGUSER@$PGHOST:$PGPORT/$PGDATABASE"
+          else
+            echo "DB_URL regex parse edilemedi, raw URI deneniyor"
+          fi
+          psql -c "SELECT version();" -c "SELECT COUNT(*) AS table_count FROM information_schema.tables WHERE table_schema='public';"
+
+      - name: Run backup
+        run: bash scripts/backup_db.sh
+
+      - name: Verify backup integrity
+        run: |
+          echo "===Backup dosya bilgisi==="
+          ls -lh pymulakat-*.sql.gz | head
+          echo ""
+          echo "===İçerik önizleme (ilk 50 satır)==="
+          gunzip -c pymulakat-*.sql.gz | head -50
+          echo ""
+          echo "===SQL syntax validation (basit)==="
+          # Backup geçerli SQL mi? Tablo create count
+          gunzip -c pymulakat-*.sql.gz | grep -c "^CREATE TABLE" | xargs -I {} echo "Tablolar: {}"
+
+      - name: Upload as artifact (90 gün retention)
+        uses: actions/upload-artifact@v4
+        with:
+          name: pymulakat-db-backup-${{ github.run_id }}
+          path: pymulakat-*.sql.gz
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Summary
+        if: always()
+        run: |
+          echo "## DB Backup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- **Time:** $(date -u +%Y-%m-%dT%H:%M:%SZ)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Trigger:** ${{ github.event_name }} ${{ github.event.schedule || github.event.inputs.reason }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Size:** $(ls -lh pymulakat-*.sql.gz | awk '{print $5}')" >> $GITHUB_STEP_SUMMARY
+          echo "- **Artifact:** pymulakat-db-backup-${{ github.run_id }}" >> $GITHUB_STEP_SUMMARY
+          echo "- **Retention:** 90 gün" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "📥 Artifact indirme: Actions → run → Artifacts" >> $GITHUB_STEP_SUMMARY

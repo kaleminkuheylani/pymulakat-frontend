@@ -1,0 +1,68 @@
+# Dependencies
+node_modules/
+.pnpm-store/
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# Build outputs
+.next/
+dist/
+build/
+out/
+
+# Environment
+.env
+.env.local
+.env.*.local
+!.env.example
+
+# Logs
+*.log
+logs/
+cron.log
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+*.swp
+*.swo
+
+# TypeScript build info
+*.tsbuildinfo
+.tsbuildinfo
+
+# Vercel
+.vercel/
+
+# Bun
+bun.lockb
+# Python venv
+.venv/
+venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Logs
+*.log
+
+# Backup files (legacy content)
+data/*.bak
+*.bak
+
+# Local scripts (goreceli scriptler)
+.scratch/
+
+
+# Local CSV backups (timestamped)
+data/*.csv.bak-*
+QUESTIONS-v3.csv.bak*

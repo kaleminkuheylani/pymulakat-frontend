@@ -2,6 +2,8 @@
 
 // components/SolvedQuestionList.tsx
 // Client wrapper: solved_ids cekip QuestionListItem'lara solved prop verir.
+// In-Feed reklam parent'ta (server-render, soru listesinin sonunda).
+//   2026-07-21, kullanici direktifi: "ctr prank en yuksek planlarim ekle".
 
 import { useEffect, useState } from "react";
 import QuestionListItem from "@/components/QuestionListItem";
@@ -9,15 +11,17 @@ import { getSolvedQuestionIds } from "@/lib/api/questionAPI";
 import type { ApiQuestion } from "@/lib/api/types";
 import { isAuthenticatedClient } from "@/lib/auth";
 
+interface SolvedQuestionListProps {
+  questions: ApiQuestion[];
+  categorySlug: string;
+  categoryLabel: string;
+}
+
 export default function SolvedQuestionList({
   questions,
   categorySlug,
   categoryLabel,
-}: {
-  questions: ApiQuestion[];
-  categorySlug: string;
-  categoryLabel: string;
-}) {
+}: SolvedQuestionListProps) {
   const [solved, setSolved] = useState<Set<number>>(new Set());
 
   useEffect(() => {

@@ -9,6 +9,8 @@ import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
 import ClientOnly from "../components/ClientOnly";
 import CookieConsent from "../components/CookieConsent";
+import AdSenseMatchedContent from "../components/AdSenseMatchedContent";
+import AdSenseAnchor from "../components/AdSenseAnchor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -242,6 +244,9 @@ export const metadata: Metadata = {
     "revisit-after": "3 days",
     "rating": "general",
     "distribution": "global",
+    // Google AdSense hesap dogrulamasi (publisher ID)
+    // 2026-07-21: AdSense script zaten /head'de, bu meta verification icin
+    "google-adsense-account": "ca-pub-6019538059362110",
   },
 };
 
@@ -440,10 +445,11 @@ export default function RootLayout({
           `}
         </Script>
 
-        {/* AdSense */}
-        <Script
+        {/* Google AdSense — publisher ID ca-pub-6019538059362110
+            (kullanici direktifi 2026-07-21, native HTML script, framework-agnostic) */}
+        <script
+          async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6019538059362110"
-          strategy="afterInteractive"
           crossOrigin="anonymous"
         />
 
@@ -473,6 +479,10 @@ export default function RootLayout({
 
         {/* <Toaster position="top-right" theme="dark" richColors closeButton /> */}
         {children}
+        {/* Matched Content reklam (footer ustu, 728x90)
+            Sadece /interviews/* sayfalarinda — yasak sayfalar guard'lari
+            iceride (kullanici direktifi 2026-07-21: asla workspace/anasayfa/dashboard). */}
+        <AdSenseMatchedContent />
         <ClientOnly>
           <ConditionalFooter />
         </ClientOnly>
@@ -484,6 +494,9 @@ export default function RootLayout({
             (Vercel dashboard: https://vercel.com/dashboard/analytics) */}
         <Analytics />
         <SpeedInsights />
+
+        {/* Mobile sticky anchor reklam (sadece /interviews/*, md:ustunde gizli) */}
+        <AdSenseAnchor />
       </body>
     </html>
   );

@@ -29,9 +29,12 @@ import { CATEGORY_ICONS } from "@/lib/icons";
 import { CATEGORY_SLUGS, getCategoryUrl } from "@/lib/categorySlug";
 import { BASE_URL } from "@/lib/seo";
 import SolvedQuestionList from "@/components/SolvedQuestionList";
+import AdSense from "@/components/AdSense";
+import { ADSENSE_PUB_ID, ADSENSE_SLOTS } from "@/lib/adsenseSlots";
 
-// ISR — 1 saatte bir yenile
-export const revalidate = 3600;
+// ISR — 1 saatte bir yenile (GEÇICI: force-dynamic ISR cache invalidate icin)
+// export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 // dynamicParams: true → build sonrası DB'ye eklenen kategori on-demand render
 export const dynamicParams = true;
 
@@ -134,12 +137,25 @@ export default async function CategoryPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* ─── Soru listesi (+ çözüldü rozeti) ─────────── */}
+        {/* ─── Soru listesi (+ çözüldü rozeti + In-Feed reklam) ─────────── */}
         <SolvedQuestionList
           questions={questions}
           categorySlug={category}
           categoryLabel={cat.label ?? category}
         />
+        {/* In-Feed reklam (server-render, 4. pozisyon — soru listesinin sonunda).
+            Soru listesi <ul> oldugu icin reklam <li> olarak eklenir (server-render). */}
+        {questions.length >= 3 && (
+          <ul className="space-y-3 mt-3 list-none p-0">
+            <li className="list-none">
+              <AdSense
+                client={ADSENSE_PUB_ID}
+                slot={ADSENSE_SLOTS.IN_FEED}
+                format="in-feed"
+              />
+            </li>
+          </ul>
+        )}
 
         {/* ─── Diğer kategoriler ───────────────────────── */}
         <OtherCategoriesNav currentSlug={category} />

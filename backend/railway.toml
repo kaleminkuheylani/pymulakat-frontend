@@ -1,0 +1,13 @@
+# Railway cron config
+# Sitemap icin backend degil, Next.js native sitemap kullanilacak.
+# Bu yuzden sitemap-refresh cron yok.
+
+# KVKK retention: pg_cron ile Supabase'de yapiyoruz
+# https://supabase.com/docs/guides/database/postgres-cron
+# Bu yuzden Railway'de manuel cron trigger gerekmez.
+
+# Ornek: Gelecekte database backups icin
+# [[crons]]
+# name = "db-backup"
+# schedule = "0 2 * * *"
+# command = "echo 'Backup handled by Supabase automatic'"

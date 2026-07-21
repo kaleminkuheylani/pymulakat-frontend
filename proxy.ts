@@ -287,6 +287,19 @@ export async function proxy(request: NextRequest) {
   const interviewCategoryOnly = pathname.match(/^\/interviews\/([a-z0-9-]+)$/i);
   if (interviewCategoryOnly) {
     const dbSlug = interviewCategoryOnly[1];
+    // 2026-07-21: python-basics DB'de yok (CATEGORY_SLUGS'tan kaldirildi,
+    //   scope'lar temizlendi), ama /interviews/python-basics URL'ine
+    //   Google'dan trafik gelebilir. Legacy alias → /programlama-temelleri.
+    // 2026-07-21: pandas tamamen kaldirildi → /programlama-temelleri.
+    const LEGACY_TO_CANONICAL: Record<string, string> = {
+      "python-basics": "programlama-temelleri",
+      "pandas": "programlama-temelleri",
+    };
+    if (LEGACY_TO_CANONICAL[dbSlug]) {
+      const url = request.nextUrl.clone();
+      url.pathname = getCategoryUrl(LEGACY_TO_CANONICAL[dbSlug]);
+      return NextResponse.redirect(url, 308);
+    }
     if (isCanonicalCategory(dbSlug)) {
       const url = request.nextUrl.clone();
       url.pathname = getCategoryUrl(dbSlug);
@@ -308,8 +321,13 @@ export async function proxy(request: NextRequest) {
   const [, category, idOrSlug] = match;
 
   // Legacy/deprecated category alias'lar (eski URL'leri canlı kategoriye yönlendir)
+  // 2026-07-21: python-basics + pandas DB'de yok (CATEGORY_SLUGS'tan kaldirildi).
+  //   /interviews/python-basics/{slug} → /interviews/programlama-temelleri/{slug}
+  //   /interviews/pandas/{slug} → /interviews/programlama-temelleri/{slug}
   const CATEGORY_ALIASES: Record<string, string> = {
-    strings: "python-basics",        // strings → python-basics (deprecated)
+    strings: "programlama-temelleri",  // eski: python-basics (deprecated + DB'de yok)
+    "python-basics": "programlama-temelleri",  // 2026-07-21: DB'den kaldirildi
+    pandas: "programlama-temelleri",  // 2026-07-21: scope'tan tamamen cikarildi
   };
   if (CATEGORY_ALIASES[category]) {
     const url = request.nextUrl.clone();
