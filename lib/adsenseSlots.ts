@@ -15,7 +15,7 @@ export const ADSENSE_SLOTS = {
   /** Native, feed icinde, kategori landing 4. pozisyon. */
   IN_FEED: "2730741129",
   /** 728x90, footer ustu, ilgili icerik onerileri. */
-  MATCHED_CONTENT: "258655688",
+  MATCHED_CONTENT: "5987459852",
   /** Mobile sticky bottom (autorelaxed). */
   ANCHOR: "9232002070",
 } as const;
