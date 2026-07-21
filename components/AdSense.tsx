@@ -1,16 +1,17 @@
+"use client";
+
 // components/AdSense.tsx
-// Reusable AdSense reklam komponenti — SERVER COMPONENT (2026-07-21 fix).
+// Reusable AdSense reklam komponenti — CLIENT COMPONENT.
 //
-// Onceki: "use client" (useEffect ile push()) — server-render'da BOS render
-//   ediliyordu, JS mount edilmeden reklam gorunmuyordu. SEO + first-paint
-//   kaybi, hydration mismatch, ISR cache'de <ins> yok.
-// Yeni: Server component, inline <ins> + inline push() script.
-//   <ins> HTML'de hemen render edilir, JS yüklenmeden bile DOM'da.
-//   Push() inline script ile sayfa yüklenir yüklenmez tetiklenir.
+// 2026-07-21 FIX: Server component hatasını çözmek için client component yapıldı.
+// <script> tag'i React component içinde direct render edilemez — Next.js bunu yasaklıyor.
+// useEffect ile adsbygoogle.push() çağırıldığında dinamik olarak reklamlar render edilir.
 //
 // Kullanim:
 //   <AdSense slot="123" format="in-article" />
 //   <AdSense slot="456" format="in-feed" style={{ margin: '1.5rem 0' }} />
+
+import { useEffect } from "react";
 
 interface AdSenseProps {
   /** AdSense ad slot ID (AdSense panelden alinir). */
@@ -41,34 +42,36 @@ export default function AdSense({
   style,
   className,
 }: AdSenseProps) {
+  useEffect(() => {
+    // AdSense global variable'ını başlat
+    if (typeof window !== "undefined") {
+      (window as any).adsbygoogle = (window as any).adsbygoogle || [];
+      // Push AdSense'e yeni reklam render etmesini söyle
+      (window as any).adsbygoogle.push({});
+    }
+  }, [slot]); // slot değişirse yeniden tetikle
+
   // Anchor (mobile sticky alt) — full-width fixed bottom
   if (format === "anchor") {
     return (
-      <>
-        <ins
-          className={`adsbygoogle ${className ?? ""}`}
-          style={{
-            display: "block",
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 40,
-            background: "rgba(5, 8, 22, 0.95)",
-            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            ...style,
-          }}
-          data-ad-client={client}
-          data-ad-slot={slot}
-          data-ad-format="anchor"
-          data-ad-anchor-type="bottom"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
-          }}
-        />
-      </>
+      <ins
+        className={`adsbygoogle ${className ?? ""}`}
+        style={{
+          display: "block",
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 40,
+          background: "rgba(5, 8, 22, 0.95)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          ...style,
+        }}
+        data-ad-client={client}
+        data-ad-slot={slot}
+        data-ad-format="anchor"
+        data-ad-anchor-type="bottom"
+      />
     );
   }
 
@@ -88,11 +91,6 @@ export default function AdSense({
         data-full-width-responsive={
           format === "in-feed" || format === "matched-content" ? "true" : "false"
         }
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
-        }}
       />
     </div>
   );

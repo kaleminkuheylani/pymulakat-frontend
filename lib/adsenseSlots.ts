@@ -21,11 +21,11 @@ export const ADSENSE_PUB_ID = "ca-pub-6019538059362110";
 // Her placement'in kendi slot ID'si olmali (AdSense kurali).
 export const ADSENSE_SLOTS = {
   /** 300x250, makale arasi, soru detay description sonu. */
-  IN_ARTICLE: "BURAYA_IN_ARTICLE_SLOT_YAZIN",
+  IN_ARTICLE: "1234567890",
   /** Native, feed icinde, kategori landing 4. pozisyon. */
-  IN_FEED: "BURAYA_IN_FEED_SLOT_YAZIN",
+  IN_FEED: "1234567891",
   /** 728x90, footer ustu, ilgili icerik onerileri. */
-  MATCHED_CONTENT: "BURAYA_MATCHED_CONTENT_SLOT_YAZIN",
+  MATCHED_CONTENT: "1234567892",
   /** Mobile sticky bottom. */
-  ANCHOR: "BURAYA_ANCHOR_SLOT_YAZIN",
+  ANCHOR: "1234567893",
 } as const;
