@@ -89,9 +89,9 @@ export default function QuestionListItem({
                 )}
                 <span
                   title={
-                    showLock ? "Üye girişi gerekir" : "Herkese açık"
+                    showLock ? "Üye girişi gerekir" : isPublic ? "Herkese açık" : "Üyelere özel"
                   }
-                  className={showLock ? "text-amber-400" : "text-emerald-400"}
+                  className={isPublic ? "text-emerald-400" : "text-amber-400"}
                 >
                   {mounted ? (
                     showLock ? (
