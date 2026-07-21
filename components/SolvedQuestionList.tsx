@@ -5,7 +5,7 @@
 // In-Feed reklam ayri server component (SolvedListInFeed) — server-render.
 //   2026-07-21, kullanici direktifi: "ctr prank en yuksek planlarim ekle".
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, Fragment } from "react";
 import QuestionListItem from "@/components/QuestionListItem";
 import SolvedListInFeed from "./SolvedListInFeed";
 import { getSolvedQuestionIds } from "@/lib/api/questionAPI";
@@ -70,5 +70,3 @@ export default function SolvedQuestionList({
     </ul>
   );
 }
-
-import { Fragment } from "react";
