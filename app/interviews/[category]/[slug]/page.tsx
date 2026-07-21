@@ -21,6 +21,7 @@ import type { Metadata } from "next";
 import Workspace from "./components/workspace";
 import WorkspaceErrorBoundary from "@/components/workspace/WorkspaceErrorBoundary";
 import Breadcrumb from "@/components/Breadcrumb";
+import AdSense from "@/components/AdSense";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { findQuestion, slugifyTitle as csvSlugify } from "@/lib/api/questionAPI";
 import type { ApiQuestion, ApiQuestionTests } from "@/lib/api/types";
@@ -513,6 +514,13 @@ export default async function Page({ params, searchParams }: PageProps) {
             {ssrDescription}
           </div>
         )}
+
+        {/* In-Article AdSense reklam (CTR optimizasyonu, 2026-07-21)
+            Description sonrasi, ipuclari oncesi. Workspace (interaktif editor)
+            bu alanin altinda client component tarafindan replace edilir —
+            reklam JS yoksa da SSR HTML'de gorunur. */}
+        <AdSense slot="9232002070" format="in-article" />
+
         {ssrHints.length > 0 && (
           <div className="mt-6">
             <h2 className="text-lg sm:text-xl font-semibold mb-3 text-amber-400">İpuçları</h2>

@@ -134,11 +134,12 @@ export default async function CategoryPage({ params }: PageProps) {
           </div>
         </header>
 
-        {/* ─── Soru listesi (+ çözüldü rozeti) ─────────── */}
+        {/* ─── Soru listesi (+ çözüldü rozeti + In-Feed reklam) ─────────── */}
         <SolvedQuestionList
           questions={questions}
           categorySlug={category}
           categoryLabel={cat.label ?? category}
+          inFeedSlot="9232002070"
         />
 
         {/* ─── Diğer kategoriler ───────────────────────── */}

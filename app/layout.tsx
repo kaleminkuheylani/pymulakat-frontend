@@ -9,6 +9,8 @@ import GlobalNav from "../components/GlobalNav";
 import ConditionalFooter from "../components/ConditionalFooter";
 import ClientOnly from "../components/ClientOnly";
 import CookieConsent from "../components/CookieConsent";
+import AdSenseMatchedContent from "../components/AdSenseMatchedContent";
+import AdSenseAnchor from "../components/AdSenseAnchor";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -498,6 +500,10 @@ export default function RootLayout({
 
         {/* <Toaster position="top-right" theme="dark" richColors closeButton /> */}
         {children}
+        {/* Matched Content reklam (footer ustu, 728x90)
+            Sadece /interviews/* sayfalarinda — yasak sayfalar guard'lari
+            iceride (kullanici direktifi 2026-07-21: asla workspace/anasayfa/dashboard). */}
+        <AdSenseMatchedContent />
         <ClientOnly>
           <ConditionalFooter />
         </ClientOnly>
@@ -509,6 +515,9 @@ export default function RootLayout({
             (Vercel dashboard: https://vercel.com/dashboard/analytics) */}
         <Analytics />
         <SpeedInsights />
+
+        {/* Mobile sticky anchor reklam (sadece /interviews/*, md:ustunde gizli) */}
+        <AdSenseAnchor />
       </body>
     </html>
   );
