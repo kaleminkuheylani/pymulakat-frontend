@@ -451,17 +451,6 @@ export default function RootLayout({
           crossOrigin="anonymous"
         />
 
-        {/* Google AdSense — AMP Auto Ads (kullanici direktifi 2026-07-21)
-            NOT: Bu script AMP siteler icin. Sitemiz AMP degil (Next.js normal HTML),
-            ama AMP-auto-ads script'i zararsiz (browser custom element tanimaz, ignore eder).
-            Ileride AMP versiyonu eklenirse otomatik reklam gosterimi aktif olur.
-            Bkz: https://www.ampproject.org/docs/reference/components/amp-auto-ads */}
-        <script
-          async
-          custom-element="amp-auto-ads"
-          src="https://cdn.ampproject.org/v0/amp-auto-ads-0.1.js"
-        />
-
         {/* 📌 Pyodide artık self-hosted (Vercel CDN, aynı origin).
             Her sayfada preload/preconnect YAPMA — sadece workspace açılınca
             lazy yüklensin (~14MB tasarruf, LCP + Lighthouse mobile ↑).
@@ -476,11 +465,21 @@ export default function RootLayout({
             NOT: Sitemiz AMP degil, bu tag browser tarafindan ignore edilir.
             AMP versiyonu eklenirse otomatik reklam yerlesimi aktif olur.
             Bkz: https://www.ampproject.org/docs/reference/components/amp-auto-ads
-            AMP olmasa bile zararsiz: custom element tanimsizsa browser ignore eder. */}
-        {/* @ts-expect-error AMP custom element, TypeScript intrinsic types'da yok */}
-        <amp-auto-ads
-          type="adsense"
-          data-ad-client="ca-pub-6019538059362110"
+        {/* Google AdSense — manuel reklam blogu (kullanici direktifi 2026-07-21)
+            800x250 leaderboard reklam, data-ad-slot 9232002070.
+            GlobalNav'dan ONCE yerlestirilir (her sayfanin basinda gorunur). */}
+        <div className="w-full flex justify-center py-2">
+          <ins
+            className="adsbygoogle"
+            style={{ display: "inline-block", width: "800px", height: "250px" }}
+            data-ad-client="ca-pub-6019538059362110"
+            data-ad-slot="9232002070"
+          />
+        </div>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
+          }}
         />
 
         <ClientOnly fallback={<div style={{ height: 64 }} />}>

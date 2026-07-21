@@ -11,7 +11,7 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       // Next.js inline script + Pyodide WebAssembly + GTM + Google AdSense
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://pagead2.googlesyndication.com https://www.googletag.com https://cdn.ampproject.org",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://pagead2.googlesyndication.com https://www.googletag.com",
       // Tailwind inline style + Monaco editor
       "style-src 'self' 'unsafe-inline'",
       // Supabase storage + general image hosting + AdSense ad creatives
