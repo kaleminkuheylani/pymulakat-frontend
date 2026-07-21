@@ -5,7 +5,7 @@
 // solved prop ile "Çözüldü" rozeti gösterilir.
 
 import Link from "next/link";
-import { Code2, ArrowRight, Clock, Tag, Sparkles, CheckCircle2 } from "lucide-react";
+import { Code2, ArrowRight, Clock, Tag, Sparkles, CheckCircle2, Lock, Unlock } from "lucide-react";
 import type { ApiQuestion } from "@/lib/api/types";
 
 export interface QuestionListItemProps {
@@ -45,6 +45,7 @@ export default function QuestionListItem({
   const desc = question.description?.split("\n").slice(0, 2).join("\n").trim();
   const showTags = !compact && question.tags && question.tags.length > 0;
   const showComplexity = !compact && question.complexity;
+  const isPublic = (question.question_type ?? "public") === "public";
 
   return (
     <li>
@@ -73,6 +74,16 @@ export default function QuestionListItem({
                     Çözüldü
                   </span>
                 )}
+                <span
+                  title={isPublic ? "Herkese açık" : "Üye girişi gerekir"}
+                  className={isPublic ? "text-emerald-400" : "text-amber-400"}
+                >
+                  {isPublic ? (
+                    <Unlock className="w-4 h-4" />
+                  ) : (
+                    <Lock className="w-4 h-4" />
+                  )}
+                </span>
                 <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
               </div>
             </div>
