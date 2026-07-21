@@ -426,6 +426,20 @@ export default function RootLayout({
           `}
         </Script>
 
+        {/* Google tag (gtag.js) */}
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=AW-18336540598"
+          strategy="afterInteractive"
+        />
+        <Script id="gtag-config" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){window.dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'AW-18336540598');
+          `}
+        </Script>
+
         {/* 📌 Pyodide artık self-hosted (Vercel CDN, aynı origin).
             Her sayfada preload/preconnect YAPMA — sadece workspace açılınca
             lazy yüklensin (~14MB tasarruf, LCP + Lighthouse mobile ↑).
