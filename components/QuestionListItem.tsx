@@ -1,12 +1,17 @@
-﻿// components/QuestionListItem.tsx
+﻿"use client";
+
+// components/QuestionListItem.tsx
 //
 // TEK KAYNAK — kategori landing ve ana /interviews liste sayfası
 // aynı zengin kart component'ini kullanır.
 // solved prop ile "Çözüldü" rozeti gösterilir.
+// 2026-07-21: Kilit ikonu soru tipine ve oturum durumuna göre dinamik.
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { Code2, ArrowRight, Clock, Tag, Sparkles, CheckCircle2, Lock, Unlock } from "lucide-react";
 import type { ApiQuestion } from "@/lib/api/types";
+import { isAuthenticatedClient } from "@/lib/auth";
 
 export interface QuestionListItemProps {
   question: ApiQuestion;
@@ -47,6 +52,14 @@ export default function QuestionListItem({
   const showComplexity = !compact && question.complexity;
   const isPublic = (question.question_type ?? "public") === "public";
 
+  const [mounted, setMounted] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+    setIsAuthenticated(isAuthenticatedClient());
+  }, []);
+  const showLock = !isPublic && !isAuthenticated;
+
   return (
     <li>
       <Link
@@ -75,13 +88,19 @@ export default function QuestionListItem({
                   </span>
                 )}
                 <span
-                  title={isPublic ? "Herkese açık" : "Üye girişi gerekir"}
-                  className={isPublic ? "text-emerald-400" : "text-amber-400"}
+                  title={
+                    showLock ? "Üye girişi gerekir" : "Herkese açık"
+                  }
+                  className={showLock ? "text-amber-400" : "text-emerald-400"}
                 >
-                  {isPublic ? (
-                    <Unlock className="w-4 h-4" />
+                  {mounted ? (
+                    showLock ? (
+                      <Lock className="w-4 h-4" />
+                    ) : (
+                      <Unlock className="w-4 h-4" />
+                    )
                   ) : (
-                    <Lock className="w-4 h-4" />
+                    <span className="inline-block w-4 h-4" />
                   )}
                 </span>
                 <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
