@@ -1,37 +1,23 @@
 // components/AdSenseAnchor.tsx
 // Mobile sticky bottom anchor reklam.
-// 2026-07-21, kullanici direktifi: CTR optimizasyonu.
+// SERVER COMPONENT (2026-07-21 fix) + CSS ile mobile-only.
 //
-// YASAK sayfalar (kullanici direktifi "asla workspace anasayfa dashboard"):
-//   - / (anasayfa)
-//   - /dashboard/* (kisisel)
-//   - workspace client component (kod editoru)
-//
-// Sadece /interviews/* sayfalarinda mobile-only sticky alt reklam.
+// Onceki: "use client" + usePathname — server-render'da BOS, JS mount bekliyor.
+//   Sonuc: ISR cache'de <ins> yok, SEO + first-paint kaybi.
+// Yeni: Server component + CSS media query (md:ustunde gizle).
+//   <ins> HTML'de hemen render edilir, JS yüklenmeden bile DOM'da.
 
-"use client";
-
-import { usePathname } from "next/navigation";
 import AdSense from "./AdSense";
-
-const AD_SLOT = "9232002070";
+import { ADSENSE_SLOTS, ADSENSE_PUB_ID } from "@/lib/adsenseSlots";
 
 export default function AdSenseAnchor() {
-  const pathname = usePathname() || "";
-
-  // Sadece /interviews/* — kategori landing + detay sayfalari
-  // Workspace (/interviews/{cat}/{slug}) da bu prefix'te ama client mount
-  // sonrasi DOM'da bu reklam KALIR — workspace kendi container'inda
-  // ayri olarak mount edilir. Bu nedenle pathname ile guard YETERLI.
-  const isAllowed = pathname.startsWith("/interviews/");
-  if (!isAllowed) return null;
-
   return (
-    <>
-      {/* Mobile-only — CSS ile md:ustunde gizle (desktop'ta sticky bottom UX kotu) */}
-      <div className="block md:hidden" data-adsense-anchor>
-        <AdSense slot={AD_SLOT} format="anchor" />
-      </div>
-    </>
+    <div className="md:hidden" data-adsense-anchor>
+      <AdSense
+        client={ADSENSE_PUB_ID}
+        slot={ADSENSE_SLOTS.ANCHOR}
+        format="anchor"
+      />
+    </div>
   );
 }

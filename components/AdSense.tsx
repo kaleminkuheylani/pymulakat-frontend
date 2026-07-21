@@ -1,33 +1,25 @@
 // components/AdSense.tsx
-// Reusable AdSense reklam komponenti (2026-07-21, kullanici direktifi).
+// Reusable AdSense reklam komponenti — SERVER COMPONENT (2026-07-21 fix).
 //
-// CTR optimizasyonu: yuksek CTR placement'lar:
-//   - In-Article (300x250, icerik arasi)
-//   - In-Feed (native, liste icinde)
-//   - Matched Content (728x90, footer ustu)
-//   - Anchor/Sticky (mobile, alt)
-//
-// YASAK sayfalar (kullanici direktifi "asla workspace anasayfa dashboard"):
-//   - / (anasayfa)
-//   - /dashboard/* (kisisel)
-//   - /interviews/{cat}/{slug} workspace (kod editor)
+// Onceki: "use client" (useEffect ile push()) — server-render'da BOS render
+//   ediliyordu, JS mount edilmeden reklam gorunmuyordu. SEO + first-paint
+//   kaybi, hydration mismatch, ISR cache'de <ins> yok.
+// Yeni: Server component, inline <ins> + inline push() script.
+//   <ins> HTML'de hemen render edilir, JS yüklenmeden bile DOM'da.
+//   Push() inline script ile sayfa yüklenir yüklenmez tetiklenir.
 //
 // Kullanim:
-//   <AdSense slot="9232002070" format="in-article" />
-//   <AdSense slot="9232002070" format="in-feed" style={{ margin: '1.5rem 0' }} />
-
-"use client";
-
-import { useEffect } from "react";
+//   <AdSense slot="123" format="in-article" />
+//   <AdSense slot="456" format="in-feed" style={{ margin: '1.5rem 0' }} />
 
 interface AdSenseProps {
-  /** AdSense ad slot ID (AdSense panel'den alinir). */
+  /** AdSense ad slot ID (AdSense panelden alinir). */
   slot: string;
-  /** AdSense ad client (publisher ID). Default: env'den alinir. */
+  /** AdSense ad client (publisher ID). */
   client?: string;
   /**
    * Reklam formati:
-   * - "auto" (default): responsive, genelde in-article gibi davranir
+   * - "auto" (default): responsive
    * - "in-article": 300x250, makale arasi
    * - "in-feed": native, feed icinde
    * - "matched-content": 728x90, ilgili icerik
@@ -49,20 +41,7 @@ export default function AdSense({
   style,
   className,
 }: AdSenseProps) {
-  // push() — AdSense client'a "bu reklami yukle" sinyali
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    try {
-      // @ts-expect-error - window.adsbygoogle global'i AdSense script tarafindan set edilir
-      (window.adsbygoogle = window.adsbygoogle || []).push({});
-    } catch (e) {
-      // Hata durumunda sessiz (AdSense bazen reklam gostermez,
-      // bu durum click-through rate'i etkilemez)
-      console.warn("[AdSense] push() failed:", e);
-    }
-  }, [slot, format]);
-
-  // Anchor reklami mobile-only ve sticky alt
+  // Anchor (mobile sticky alt) — full-width fixed bottom
   if (format === "anchor") {
     return (
       <>
@@ -84,25 +63,37 @@ export default function AdSense({
           data-ad-format="anchor"
           data-ad-anchor-type="bottom"
         />
-        {/* Anchor icin ek push gerekli (ustteki useEffect yeterli) */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
+          }}
+        />
       </>
     );
   }
 
   // Normal reklam blogu (in-article, in-feed, matched-content, auto)
   return (
-    <ins
-      className={`adsbygoogle ${className ?? ""}`}
-      style={{
-        display: "block",
-        textAlign: "center",
-        margin: "1.5rem auto",
-        ...style,
-      }}
-      data-ad-client={client}
-      data-ad-slot={slot}
-      data-ad-format={format}
-      data-full-width-responsive={format === "in-feed" || format === "matched-content" ? "true" : "false"}
-    />
+    <div className={className} style={style}>
+      <ins
+        className="adsbygoogle"
+        style={{
+          display: "block",
+          textAlign: "center",
+          margin: "1.5rem auto",
+        }}
+        data-ad-client={client}
+        data-ad-slot={slot}
+        data-ad-format={format}
+        data-full-width-responsive={
+          format === "in-feed" || format === "matched-content" ? "true" : "false"
+        }
+      />
+      <script
+        dangerouslySetInnerHTML={{
+          __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
+        }}
+      />
+    </div>
   );
 }

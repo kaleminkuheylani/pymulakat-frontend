@@ -22,6 +22,7 @@ import Workspace from "./components/workspace";
 import WorkspaceErrorBoundary from "@/components/workspace/WorkspaceErrorBoundary";
 import Breadcrumb from "@/components/Breadcrumb";
 import AdSense from "@/components/AdSense";
+import { ADSENSE_SLOTS, ADSENSE_PUB_ID } from "@/lib/adsenseSlots";
 import { slugifyTitle } from "@/lib/questionMeta";
 import { findQuestion, slugifyTitle as csvSlugify } from "@/lib/api/questionAPI";
 import type { ApiQuestion, ApiQuestionTests } from "@/lib/api/types";
@@ -518,8 +519,12 @@ export default async function Page({ params, searchParams }: PageProps) {
         {/* In-Article AdSense reklam (CTR optimizasyonu, 2026-07-21)
             Description sonrasi, ipuclari oncesi. Workspace (interaktif editor)
             bu alanin altinda client component tarafindan replace edilir —
-            reklam JS yoksa da SSR HTML'de gorunur. */}
-        <AdSense slot="9232002070" format="in-article" />
+            reklam JS yoksa da SSR HTML'de gorunur (server-render). */}
+        <AdSense
+          client={ADSENSE_PUB_ID}
+          slot={ADSENSE_SLOTS.IN_ARTICLE}
+          format="in-article"
+        />
 
         {ssrHints.length > 0 && (
           <div className="mt-6">

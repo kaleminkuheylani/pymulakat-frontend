@@ -139,7 +139,6 @@ export default async function CategoryPage({ params }: PageProps) {
           questions={questions}
           categorySlug={category}
           categoryLabel={cat.label ?? category}
-          inFeedSlot="9232002070"
         />
 
         {/* ─── Diğer kategoriler ───────────────────────── */}
