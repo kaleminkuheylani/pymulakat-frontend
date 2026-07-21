@@ -86,27 +86,43 @@ export async function getAllQuestions(params?: {
 }
 
 /**
- * Sadece public soruları çek (question_type = public).
- * Backend desteklemiyorsa tüm sorular gelir; client-side fallback filtre uygulanır.
+ * Sadece public soruları çek.
+ * Yeni endpoint: /api/v2/questions/public
+ * Eski backend'e düşerse /api/v2/questions/all?question_type=public fallback.
  */
 export async function getPublicQuestions(limit = 6): Promise<ApiQuestion[]> {
+  const parseItems = (data: ApiPagination | ApiQuestion[]): ApiQuestion[] => {
+    if (Array.isArray(data)) return data;
+    if (Array.isArray(data?.data)) return data.data as ApiQuestion[];
+    return [];
+  };
+
   try {
     const data = await apiFetch<ApiPagination | ApiQuestion[]>(
-      "/api/v2/questions/all",
+      "/api/v2/questions/public",
       {
-        params: { question_type: "public", limit },
+        params: { limit },
         next: { revalidate: 0 },
         cache: "no-store",
       },
     );
-    const items = Array.isArray(data)
-      ? data
-      : Array.isArray(data?.data)
-        ? (data.data as ApiQuestion[])
-        : [];
-    return items.filter((q) => (q.question_type ?? "public") === "public");
+    return parseItems(data);
   } catch (err) {
-    return [];
+    // Fallback: eski backend /public endpoint'i desteklemiyorsa
+    try {
+      const data = await apiFetch<ApiPagination | ApiQuestion[]>(
+        "/api/v2/questions/all",
+        {
+          params: { question_type: "public", limit },
+          next: { revalidate: 0 },
+          cache: "no-store",
+        },
+      );
+      const items = parseItems(data);
+      return items.filter((q) => (q.question_type ?? "public") === "public");
+    } catch {
+      return [];
+    }
   }
 }
 

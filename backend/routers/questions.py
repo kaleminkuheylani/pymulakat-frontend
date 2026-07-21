@@ -216,6 +216,31 @@ def list_all_questions(
 
 
 # ═══════════════════════════════════════════════════════════════
+# ─── 2b. PUBLIC — GET /api/v2/questions/public ───────────
+# ═══════════════════════════════════════════════════════════════
+
+@router.get("/public", response_model=AllQuestionsResponse)
+def list_public_questions(
+    limit: int = Query(20, ge=1, le=100, description="Max sonuç (default: 20)"),
+    category: Optional[str] = Query(None, description="Kategori slug filtresi (örn. python-basics)"),
+):
+    """Sadece public soruları listele (question_type = public)."""
+    try:
+        kwargs: dict = {"question_type": "public"}
+        if category:
+            kwargs["category"] = category
+        filtered = filter_questions(**kwargs)
+        if limit:
+            filtered = filtered[:limit]
+        items = [_to_question_out(q, include_starter=False) for q in filtered]
+        return AllQuestionsResponse(data=items, total=len(items))
+    except Exception as e:
+        import traceback
+        logger.error(f"[questions/public] hatasi: {e}\n{traceback.format_exc()}")
+        raise HTTPException(500, f"DB hatasi: {str(e)[:200]}")
+
+
+# ═══════════════════════════════════════════════════════════════
 # ─── 3. DETAIL — GET /api/v2/questions/by-slug/{category}/{slug}
 # ═══════════════════════════════════════════════════════════════
 
