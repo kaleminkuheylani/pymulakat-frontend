@@ -463,27 +463,6 @@ export default function RootLayout({
         className={`${geistSans.variable} ${geistMono.variable} ${jetbrainsMono.variable} antialiased min-h-screen`}
         suppressHydrationWarning
       >
-        {/* Google AdSense — AMP Auto Ads (kullanici direktifi 2026-07-21)
-            NOT: Sitemiz AMP degil, bu tag browser tarafindan ignore edilir.
-            AMP versiyonu eklenirse otomatik reklam yerlesimi aktif olur.
-            Bkz: https://www.ampproject.org/docs/reference/components/amp-auto-ads
-        {/* Google AdSense — manuel reklam blogu (kullanici direktifi 2026-07-21)
-            800x250 leaderboard reklam, data-ad-slot 9232002070.
-            GlobalNav'dan ONCE yerlestirilir (her sayfanin basinda gorunur). */}
-        <div className="w-full flex justify-center py-2">
-          <ins
-            className="adsbygoogle"
-            style={{ display: "inline-block", width: "800px", height: "250px" }}
-            data-ad-client="ca-pub-6019538059362110"
-            data-ad-slot="9232002070"
-          />
-        </div>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
-          }}
-        />
-
         <ClientOnly fallback={<div style={{ height: 64 }} />}>
         <GlobalNav />
       </ClientOnly>
