@@ -56,7 +56,7 @@ export default async function Hero() {
             {/* CTA: Hesap aç, hemen başla */}
             <div className="flex flex-wrap gap-3 mb-6">
               <Link
-                href="/interviews"
+                href="/interviews/public"
                 className="inline-flex items-center gap-2 px-5 py-3 rounded-lg bg-amber-500 hover:bg-amber-400 text-slate-950 font-semibold transition-colors shadow-lg shadow-amber-500/20"
               >
                 Hemen Dene
