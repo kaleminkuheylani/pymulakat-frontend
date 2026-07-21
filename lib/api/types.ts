@@ -39,6 +39,8 @@ export interface ApiQuestion {
   meta_title?: string | null;
   meta_description?: string | null;
   meta_keywords?: string[];
+  /** Soru tipi: public | private (DB question_type kolonu). */
+  question_type?: string;
 }
 
 /**
