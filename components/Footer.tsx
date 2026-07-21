@@ -228,7 +228,7 @@ export default function Footer() {
 
             ·
 
-            İki kişi · saf niyet · saf Python · test kullanıcıları arıyoruz
+            İki kişi · saf niyet · saf Python
 
           </div>
 

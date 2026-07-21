@@ -10,7 +10,7 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Hakkımızda",
   description:
-    "İki kişilik bir ekip, bir amacı paylaşıyoruz: Yapay zeka destekli Python mülakat soru platformu. AI denetiminden geçirilmiş sorular, idealist pedagojik yaklaşım ve sıfır bütçe.",
+    "İki kişilik bir ekip, bir amacı paylaşıyoruz: Python mülakat soru platformu. Sorular uzman editörler tarafından hazırlanıp yapay zeka denetiminden geçirilir; idealist pedagojik yaklaşım ve şeffaf yöntem.",
 };
 
 // ─── Stiller (server component'te <style> tag'i inline) ────────
@@ -103,11 +103,12 @@ export default function AboutPage() {
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
             <div className="text-3xl mb-3">🤖</div>
             <h3 className="text-lg font-semibold mb-2 text-white">
-              Yapay Zekâ ile Üretilmiş Sorular
+              Editör Onaylı, Yapay Zekâ Destekli Sorular
             </h3>
             <p className="text-sm text-white/60 leading-relaxed">
-              Her soru DeepSeek tarafından taslaklanır, biz düzenleriz. AI burada
-              içerik üreticisi değil, hızlandırıcı. Pedagojik kararlar insanda.
+              Sorular önce uzman editörler tarafından hazırlanır ve onaylanır;
+              yapay zekâ sadece taslak ve öneri aşamasında destek olur. Pedagojik
+              kararlar ve nihai içerik her zaman insanda.
             </p>
           </div>
           <div className="rounded-2xl border border-white/10 bg-white/[0.02] p-6">
@@ -123,14 +124,13 @@ export default function AboutPage() {
           <div className="rounded-2xl border border-amber-500/30 bg-amber-500/[0.04] p-6">
             <div className="text-3xl mb-3">🧪</div>
             <h3 className="text-lg font-semibold mb-2 text-amber-300">
-              Test Kullanıcılar Topluyoruz
+              Birlikte Gelişiyoruz
             </h3>
             <p className="text-sm text-white/70 leading-relaxed">
-              Platform şu anda beta aşamasında. Aktif soru çözen, geri bildirim
-              veren, hata yakalayan test kullanıcıları arıyoruz. Sen de bir
-              öğrenciysen ya da Python'a yeni başlıyorsan, birlikte daha iyi
-              hale getirebiliriz. Geri bildirimlerin içerikleri, soruları ve
-              rehberleri doğrudan şekillendiriyor.
+              Aktif soru çözen, geri bildirim veren ve hata yakalayan
+              kullanıcılarımızla içerikleri, soruları ve rehberleri birlikte
+              şekillendiriyoruz. Sen de Python öğrenirken bize katıl, daha iyi
+              hale getirelim.
             </p>
             <a
               href="https://x.com/PythonMulakat"

@@ -79,8 +79,9 @@ export default function About() {
               Sorular Denetleniyor
             </h3>
             <p className="text-sm text-white/60 leading-relaxed">
-              Her soru AI feedback denetiminden geçirilir. Çözümler, test case'ler
-              ve ipuçları tutarlılık + doğruluk açısından sürekli kontrol altında.
+              Her soru önce uzman editörler tarafından incelenir ve onaylanır;
+              ardından AI feedback denetimiyle çözümler, test case'ler ve ipuçları
+              tutarlılık + doğruluk açısından sürekli kontrol altında.
             </p>
           </article>
         </div>
