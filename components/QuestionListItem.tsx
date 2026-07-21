@@ -51,6 +51,7 @@ export default function QuestionListItem({
   const showTags = !compact && question.tags && question.tags.length > 0;
   const showComplexity = !compact && question.complexity;
   const isPublic = (question.question_type ?? "public") === "public";
+  const isAuth = question.question_type === "auth";
 
   const [mounted, setMounted] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
@@ -89,9 +90,9 @@ export default function QuestionListItem({
                 )}
                 <span
                   title={
-                    showLock ? "Üye girişi gerekir" : isPublic ? "Herkese açık" : "Üyelere özel"
+                    showLock ? "Üye girişi gerekir" : isPublic ? "Herkese açık" : isAuth ? "Üyelere özel" : "Üyelere özel"
                   }
-                  className={isPublic ? "text-emerald-400" : "text-amber-400"}
+                  className={isPublic ? "text-emerald-400" : isAuth ? "text-amber-400" : "text-amber-400"}
                 >
                   {mounted ? (
                     showLock ? (
