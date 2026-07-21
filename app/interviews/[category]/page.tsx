@@ -32,8 +32,9 @@ import SolvedQuestionList from "@/components/SolvedQuestionList";
 import AdSense from "@/components/AdSense";
 import { ADSENSE_PUB_ID, ADSENSE_SLOTS } from "@/lib/adsenseSlots";
 
-// ISR — 1 saatte bir yenile
-export const revalidate = 3600;
+// ISR — 1 saatte bir yenile (GEÇICI: force-dynamic ISR cache invalidate icin)
+// export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 // dynamicParams: true → build sonrası DB'ye eklenen kategori on-demand render
 export const dynamicParams = true;
 

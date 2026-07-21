@@ -38,7 +38,8 @@ import { BASE_URL } from "@/lib/seo";
 //     tek endpoint değişince ilgili tüm cache'ler düşer
 // Not: Bu sayfayı `generateMetadata()` zaten yönetiyor; sayfanın kendisi
 // force-dynamic yerine ISR kullanıyor → build-time pre-render, runtime cache.
-export const revalidate = 3600;
+// export const revalidate = 3600;
+export const dynamic = "force-dynamic";
 export const dynamicParams = true;
 
 interface PageProps {
