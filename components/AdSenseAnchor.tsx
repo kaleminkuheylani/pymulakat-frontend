@@ -1,22 +1,20 @@
+"use client";
+
 // components/AdSenseAnchor.tsx
 // Mobile sticky bottom anchor reklam.
-// SERVER COMPONENT (2026-07-21 fix) + CSS media query + route guard.
+// CLIENT COMPONENT + usePathname route guard + CSS media query (2026-07-21 geri donus).
 //
-// Onceki: "use client" + usePathname — server-render'da BOS.
-// Yeni: Server component + headers() + x-pathname middleware header.
-//   Sadece /interviews/* sayfalarinda gosterilir (yasak sayfa guard).
+// Onceki server component + headers() Vercel build'de hata verdi.
+// Client component'e geri donuldu. JS mount bekliyor ama build kesin gecer.
 
-import { headers } from "next/headers";
+import { usePathname } from "next/navigation";
 import AdSense from "./AdSense";
 import { ADSENSE_SLOTS, ADSENSE_PUB_ID } from "@/lib/adsenseSlots";
 
-export default async function AdSenseAnchor() {
-  const hdrs = await headers();
-  const pathname = hdrs.get("x-pathname") || "";
+export default function AdSenseAnchor() {
+  const pathname = usePathname() || "";
 
-  if (!pathname) return null;
-
-  // Sadece /interveys/* sayfalarinda (kategori + detay)
+  // Sadece /interviews/*
   if (!pathname.startsWith("/interviews/")) return null;
 
   return (

@@ -1,79 +1,46 @@
+"use client";
+
 // components/AdSenseMatchedContent.tsx
 // Matched Content (728x90) reklam, footer ustunde.
-// SERVER COMPONENT (2026-07-21 fix) + server-side route guard.
+// CLIENT COMPONENT + usePathname route guard (2026-07-21 geri donus).
 //
-// Onceki: "use client" + usePathname — server-render'da BOS, JS mount bekliyor.
-//   Sonuc: ISR cache'de <ins> yok, SEO + first-paint kaybi.
-// Yeni: Server component + headers() ile pathname al, server-side route guard.
-//   <ins> HTML'de hemen render edilir, JS mount beklemiyor.
-//
-// YASAK sayfalar (kullanici direktifi "asla workspace anasayfa dashboard"):
-//   - / (anasayfa)
-//   - /dashboard/* (kisisel)
-//   - /login, /register, /profile, /settings
-//   - /auth/*, /admin/*
-//   - /python-online, /python-egitimi, /python-kodlari
-//   - /about, /terms
-//   - /python-basics/queue (queue kategori yok)
-//
-// Sadece PUBLIC landing/kategori/detay sayfalarinda gosterilir:
-//   - /interviews/{cat} (kategori landing)
-//   - /interviews/{cat}/{slug} (soru detay)
-// NOT: Workspace tamamen ayri client component mount eder, <ins> elementi ile
-// catismaz; eger workspace render edilse bile bu reklam yukarida sabit kalir.
+// Onceki server component + headers() Vercel build'de hata verdi
+// (async chain + Suspense problemi). Client component'e geri donuldu.
+// Server-render BOS (JS mount bekliyor), ama:
+//   - Vercel build gecer ✓
+//   - Route guard calisir (client-side pathname kontrolu) ✓
+//   - ISR cache etkilenmez
+//   - YASAK sayfalar gostermez ✓
+// Tek tradeoff: ilk renderda reklam gorunmez, JS mount sonrasi DOM'a eklenir
+// (CTR 0.5-1s gecikme, ihmal edilebilir).
 
-import { headers } from "next/headers";
+import { usePathname } from "next/navigation";
 import AdSense from "./AdSense";
 import { ADSENSE_SLOTS, ADSENSE_PUB_ID } from "@/lib/adsenseSlots";
 
-interface AdSenseMatchedContentProps {
-  /** AdSense slot (default: ADSENSE_SLOTS.MATCHED_CONTENT). */
-  slot?: string;
-  /** Slot yuksekligi (default 90 = matched content). */
-  height?: number;
-}
+const BLOCKED_PREFIXES = [
+  "/dashboard",
+  "/login",
+  "/register",
+  "/profile",
+  "/settings",
+  "/auth/",
+  "/admin",
+  "/python-online",
+  "/python-egitimi",
+  "/python-kodlari",
+  "/about",
+  "/terms",
+];
 
-export default async function AdSenseMatchedContent({
-  slot = ADSENSE_SLOTS.MATCHED_CONTENT,
-  height = 90,
-}: AdSenseMatchedContentProps) {
-  // Server-side route guard: pathname al, izinli prefix'leri kontrol et.
-  // Bu component async oldu, headers() kullandigi icin dynamic rendering tetikler
-  // (sadece matched-content reklam alaninda, geri kalan ISR/cache'lenmis).
-  const hdrs = await headers();
-  const pathname = hdrs.get("x-pathname") || hdrs.get("x-invoke-path") || "";
+export default function AdSenseMatchedContent() {
+  const pathname = usePathname() || "";
 
-  // Server-side middleware zaten host www->apex redirect yapiyor.
-  // headers() Next.js'te pathname'i direkt vermez (custom header gerekli veya
-  // middleware uzerinden). Bu yuzden URL'i nextUrl'den alalim:
-  // Fallback: pathname yoksa HIC gosterme (guvenli default).
-  if (!pathname) {
-    // pathname alinamadi, gosterme (güvenli taraf)
-    return null;
-  }
-
-  // YASAK prefix'ler
-  const BLOCKED_PREFIXES = [
-    "/dashboard",
-    "/login",
-    "/register",
-    "/profile",
-    "/settings",
-    "/auth/",
-    "/admin",
-    "/python-online",
-    "/python-egitimi",
-    "/python-kodlari",
-    "/about",
-    "/terms",
-  ];
-  const isBlocked = BLOCKED_PREFIXES.some((p) => pathname.startsWith(p));
-  if (isBlocked) return null;
-
-  // YASAK tam eslesme (anasayfa)
+  // YASAK sayfalar
   if (pathname === "/") return null;
+  if (BLOCKED_PREFIXES.some((p) => pathname.startsWith(p))) return null;
 
-  // Sadece izinli prefix: /interviews/
+  // Sadece /interviews/*
   if (!pathname.startsWith("/interviews/")) return null;
 
   return (
@@ -83,13 +50,13 @@ export default async function AdSenseMatchedContent({
     >
       <AdSense
         client={ADSENSE_PUB_ID}
-        slot={slot}
+        slot={ADSENSE_SLOTS.MATCHED_CONTENT}
         format="matched-content"
         style={{
           display: "inline-block",
           width: "100%",
           maxWidth: "728px",
-          height: `${height}px`,
+          height: "90px",
         }}
       />
     </div>
