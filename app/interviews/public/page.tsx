@@ -10,7 +10,7 @@ import QuestionListItem from "@/components/QuestionListItem";
  */
 export default async function PublicQuestionsPage() {
   const [questions, categories] = await Promise.all([
-    getPublicQuestions(20),
+    getPublicQuestions(36),
     getAllCategories(),
   ]);
 
@@ -50,6 +50,7 @@ export default async function PublicQuestionsPage() {
                   q.category ||
                   ""
                 }
+                showAccessIcon={false}
               />
             ))}
           </ul>

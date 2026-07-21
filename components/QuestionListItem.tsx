@@ -23,6 +23,8 @@ export interface QuestionListItemProps {
   compact?: boolean;
   /** Kullanıcı bu soruyu başarıyla çözdüyse true. */
   solved?: boolean;
+  /** Public sayfada erişim ikonunu gizle. */
+  showAccessIcon?: boolean;
 }
 
 const LEVEL_STYLES: Record<string, string> = {
@@ -45,6 +47,7 @@ export default function QuestionListItem({
   categorySlug,
   compact = false,
   solved = false,
+  showAccessIcon = true,
 }: QuestionListItemProps) {
   const href = `/interviews/${categorySlug}/${question.slug ?? question.id}`;
   const desc = question.description?.split("\n").slice(0, 2).join("\n").trim();
@@ -88,22 +91,24 @@ export default function QuestionListItem({
                     Çözüldü
                   </span>
                 )}
-                <span
-                  title={
-                    showLock ? "Üye girişi gerekir" : isPublic ? "Herkese açık" : isAuth ? "Üyelere özel" : "Üyelere özel"
-                  }
-                  className={isPublic ? "text-emerald-400" : isAuth ? "text-amber-400" : "text-amber-400"}
-                >
-                  {mounted ? (
-                    showLock ? (
-                      <Lock className="w-4 h-4" />
+                {showAccessIcon && (
+                  <span
+                    title={
+                      showLock ? "Üye girişi gerekir" : isPublic ? "Herkese açık" : isAuth ? "Üyelere özel" : "Üyelere özel"
+                    }
+                    className={isPublic ? "text-emerald-400" : isAuth ? "text-amber-400" : "text-amber-400"}
+                  >
+                    {mounted ? (
+                      showLock ? (
+                        <Lock className="w-4 h-4" />
+                      ) : (
+                        <Unlock className="w-4 h-4" />
+                      )
                     ) : (
-                      <Unlock className="w-4 h-4" />
-                    )
-                  ) : (
-                    <span className="inline-block w-4 h-4" />
-                  )}
-                </span>
+                      <span className="inline-block w-4 h-4" />
+                    )}
+                  </span>
+                )}
                 <ArrowRight className="w-4 h-4 text-white/30 group-hover:text-amber-400 group-hover:translate-x-0.5 transition-all" />
               </div>
             </div>
