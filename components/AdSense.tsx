@@ -1,16 +1,19 @@
+"use client";
+
 // components/AdSense.tsx
-// Reusable AdSense reklam komponenti — SERVER COMPONENT (2026-07-21 fix).
+// Reusable AdSense reklam komponenti — CLIENT COMPONENT (2026-07-21 robust SPA fix).
 //
-// Onceki: "use client" (useEffect ile push()) — server-render'da BOS render
-//   ediliyordu, JS mount edilmeden reklam gorunmuyordu. SEO + first-paint
-//   kaybi, hydration mismatch, ISR cache'de <ins> yok.
-// Yeni: Server component, inline <ins> + inline push() script.
-//   <ins> HTML'de hemen render edilir, JS yüklenmeden bile DOM'da.
-//   Push() inline script ile sayfa yüklenir yüklenmez tetiklenir.
+// Onceki: Server component, inline <ins> + inline push() script.
+//   Ancak inline script'ler Next.js client-side routing (SPA geçişi)
+//   sırasında browser tarafından TETİKLENMEZ. Bu yüzden navigasyon
+//   edildikten sonra reklamlar yüklenmiyordu ve boş kalıyordu.
+// Yeni: Client component, inline <ins> (SSR'da da görünür) + useEffect push().
+//   Hem SSR ile sayfa ilk yüklendiğinde hem de SPA navigasyonlarında
+//   reklamlar sorunsuz tetiklenir. Hydration mismatch olmaması için
+//   <ins> elemanları server ile eşzamanlı render edilir.
 //
-// Kullanim:
-//   <AdSense slot="123" format="in-article" />
-//   <AdSense slot="456" format="in-feed" style={{ margin: '1.5rem 0' }} />
+
+import { useEffect, useRef } from "react";
 
 interface AdSenseProps {
   /** AdSense ad slot ID (AdSense panelden alinir). */
@@ -41,34 +44,44 @@ export default function AdSense({
   style,
   className,
 }: AdSenseProps) {
+  const initialized = useRef(false);
+
+  useEffect(() => {
+    // Sadece client-side'da ve her mount'ta bir kez tetikle
+    if (initialized.current) return;
+
+    try {
+      if (typeof window !== "undefined") {
+        const adsbygoogle = (window as any).adsbygoogle || [];
+        adsbygoogle.push({});
+        initialized.current = true;
+      }
+    } catch (e) {
+      console.error("AdSense push error:", e);
+    }
+  }, [slot]); // Slot değiştiğinde de gerekirse yeniden tetiklenebilmesi için
+
   // Anchor (mobile sticky alt) — full-width fixed bottom
   if (format === "anchor") {
     return (
-      <>
-        <ins
-          className={`adsbygoogle ${className ?? ""}`}
-          style={{
-            display: "block",
-            position: "fixed",
-            bottom: 0,
-            left: 0,
-            right: 0,
-            zIndex: 40,
-            background: "rgba(5, 8, 22, 0.95)",
-            borderTop: "1px solid rgba(255, 255, 255, 0.1)",
-            ...style,
-          }}
-          data-ad-client={client}
-          data-ad-slot={slot}
-          data-ad-format="anchor"
-          data-ad-anchor-type="bottom"
-        />
-        <script
-          dangerouslySetInnerHTML={{
-            __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
-          }}
-        />
-      </>
+      <ins
+        className={`adsbygoogle ${className ?? ""}`}
+        style={{
+          display: "block",
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          zIndex: 40,
+          background: "rgba(5, 8, 22, 0.95)",
+          borderTop: "1px solid rgba(255, 255, 255, 0.1)",
+          ...style,
+        }}
+        data-ad-client={client}
+        data-ad-slot={slot}
+        data-ad-format="anchor"
+        data-ad-anchor-type="bottom"
+      />
     );
   }
 
@@ -88,11 +101,6 @@ export default function AdSense({
         data-full-width-responsive={
           format === "in-feed" || format === "matched-content" ? "true" : "false"
         }
-      />
-      <script
-        dangerouslySetInnerHTML={{
-          __html: "(adsbygoogle = window.adsbygoogle || []).push({});",
-        }}
       />
     </div>
   );

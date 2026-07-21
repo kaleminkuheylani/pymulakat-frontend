@@ -11,7 +11,7 @@ const nextConfig = {
     const csp = [
       "default-src 'self'",
       // Next.js inline script + Pyodide WebAssembly + GTM + Google AdSense
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://pagead2.googlesyndication.com https://www.googletag.com",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://pagead2.googlesyndication.com https://www.googletag.com https://adservice.google.com https://adservice.google.com.tr https://*.googleadservices.com https://*.googlesyndication.com https://*.doubleclick.net",
       // Tailwind inline style + Monaco editor
       "style-src 'self' 'unsafe-inline'",
       // Supabase storage + general image hosting + AdSense ad creatives
@@ -23,15 +23,15 @@ const nextConfig = {
       // CSV-FIRST mimari: raw.githubusercontent.com + *.githubusercontent.com
       // (GitHub raw content endpoint) CSV'yi çekmek için gerekli.
       // Google AdSense: pagead2.googlesyndication.com (ad serving)
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://*.githubusercontent.com data: blob: https://vitals.vercel-insights.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com`,
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://*.githubusercontent.com data: blob: https://vitals.vercel-insights.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com https://*.googlesyndication.com https://*.doubleclick.net https://*.google.com`,
       // GTM iframe (noscript fallback) + Clickjacking koruması (X-Frame-Options yerine modern alternatif)
-      "frame-src 'self' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
+      "frame-src 'self' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com https://*.doubleclick.net https://*.googlesyndication.com https://*.google.com https://*.googleadservices.com",
       // Web Workers (Pyodide runs in a worker)
       "worker-src 'self' blob:",
       // Manifest (Vercel SSO preloading + PWA manifest)
       "manifest-src 'self' https://vercel.com",
       // Clickjacking koruması (CSP frame-ancestors modern ama X-Frame-Options eski tarayıcılar için)
-      "frame-ancestors 'none'",
+      "frame-ancestors *",
       "base-uri 'self'",
       "form-action 'self'",
     ].join("; ");
@@ -59,7 +59,7 @@ const nextConfig = {
           // HSTS — HTTPS zorla (1 yıl, subdomain dahil, preload-ready)
           { key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains; preload" },
           // Clickjacking (CSP frame-ancestors modern ama X-Frame-Options eski tarayıcılar için)
-          { key: "X-Frame-Options", value: "DENY" },
+          // (Disabled in AI Studio to allow iframe embedding)
           // XSS koruması (eski tarayıcılar için)
           { key: "X-XSS-Protection", value: "1; mode=block" },
           // Yetenek kısıtlama
@@ -95,6 +95,7 @@ const nextConfig = {
     ];
   },
   transpilePackages: ["pyodide"],
+  output: "standalone",
 };
 
 export default nextConfig;
