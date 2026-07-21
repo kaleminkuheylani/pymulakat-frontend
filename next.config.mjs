@@ -10,21 +10,22 @@ const nextConfig = {
     // Production-grade security headers (OWASP önerileri)
     const csp = [
       "default-src 'self'",
-      // Next.js inline script + Pyodide WebAssembly + GTM
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com",
+      // Next.js inline script + Pyodide WebAssembly + GTM + Google AdSense
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' 'wasm-unsafe-eval' https://cdn.jsdelivr.net https://www.googletagmanager.com https://va.vercel-scripts.com https://vitals.vercel-insights.com https://pagead2.googlesyndication.com https://www.googletag.com",
       // Tailwind inline style + Monaco editor
       "style-src 'self' 'unsafe-inline'",
-      // Supabase storage + general image hosting
+      // Supabase storage + general image hosting + AdSense ad creatives
       "img-src 'self' data: blob: https:",
-      // Fonts (next/font inline data URIs)
-      "font-src 'self' data:",
+      // Fonts (next/font inline data URIs + AdSense)
+      "font-src 'self' data: https://fonts.gstatic.com",
       // API calls (Supabase REST + Realtime WebSocket + own backend + GTM +
       // Pyodide stdlib: jsdelivr.net — Python import'lar paketleri buradan çeker.
       // CSV-FIRST mimari: raw.githubusercontent.com + *.githubusercontent.com
       // (GitHub raw content endpoint) CSV'yi çekmek için gerekli.
-      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://*.githubusercontent.com data: blob: https://vitals.vercel-insights.com https://va.vercel-scripts.com`,
+      // Google AdSense: pagead2.googlesyndication.com (ad serving)
+      `connect-src 'self' https://*.supabase.co wss://*.supabase.co https://pymulakat-backend-production.up.railway.app https://www.googletagmanager.com https://www.google-analytics.com https://cdn.jsdelivr.net https://raw.githubusercontent.com https://*.githubusercontent.com data: blob: https://vitals.vercel-insights.com https://va.vercel-scripts.com https://pagead2.googlesyndication.com`,
       // GTM iframe (noscript fallback) + Clickjacking koruması (X-Frame-Options yerine modern alternatif)
-      "frame-src 'self' https://www.googletagmanager.com",
+      "frame-src 'self' https://www.googletagmanager.com https://googleads.g.doubleclick.net https://tpc.googlesyndication.com",
       // Web Workers (Pyodide runs in a worker)
       "worker-src 'self' blob:",
       // Manifest (Vercel SSO preloading + PWA manifest)

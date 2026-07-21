@@ -242,6 +242,9 @@ export const metadata: Metadata = {
     "revisit-after": "3 days",
     "rating": "general",
     "distribution": "global",
+    // Google AdSense hesap dogrulamasi (publisher ID)
+    // 2026-07-21: AdSense script zaten /head'de, bu meta verification icin
+    "google-adsense-account": "ca-pub-6019538059362110",
   },
 };
 
