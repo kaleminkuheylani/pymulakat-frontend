@@ -440,6 +440,13 @@ export default function RootLayout({
           `}
         </Script>
 
+        {/* AdSense */}
+        <Script
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-6019538059362110"
+          strategy="afterInteractive"
+          crossOrigin="anonymous"
+        />
+
         {/* 📌 Pyodide artık self-hosted (Vercel CDN, aynı origin).
             Her sayfada preload/preconnect YAPMA — sadece workspace açılınca
             lazy yüklensin (~14MB tasarruf, LCP + Lighthouse mobile ↑).
