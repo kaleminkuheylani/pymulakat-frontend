@@ -274,11 +274,17 @@ export async function proxy(request: NextRequest) {
     }
 
     if (!hasSession) {
+      const returnPath = pathname + request.nextUrl.search;
       const url = request.nextUrl.clone();
       url.pathname = "/login";
-      url.searchParams.set("returnUrl", pathname);
+      url.searchParams.set("returnUrl", returnPath);
       return NextResponse.redirect(url, 302);
     }
+  }
+
+  // 1.6) /interviews/public — public önizleme sayfası; auth ve kategori 404 handling’den muaf
+  if (pathname === "/interviews/public" || pathname.startsWith("/interviews/public/")) {
+    return NextResponse.next();
   }
 
   // 2) /interviews/{db} (no sub-segment) → /{db} (308)
