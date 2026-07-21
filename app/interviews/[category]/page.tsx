@@ -29,6 +29,8 @@ import { CATEGORY_ICONS } from "@/lib/icons";
 import { CATEGORY_SLUGS, getCategoryUrl } from "@/lib/categorySlug";
 import { BASE_URL } from "@/lib/seo";
 import SolvedQuestionList from "@/components/SolvedQuestionList";
+import AdSense from "@/components/AdSense";
+import { ADSENSE_PUB_ID, ADSENSE_SLOTS } from "@/lib/adsenseSlots";
 
 // ISR — 1 saatte bir yenile
 export const revalidate = 3600;
@@ -140,6 +142,19 @@ export default async function CategoryPage({ params }: PageProps) {
           categorySlug={category}
           categoryLabel={cat.label ?? category}
         />
+        {/* In-Feed reklam (server-render, 4. pozisyon — soru listesinin sonunda).
+            Soru listesi <ul> oldugu icin reklam <li> olarak eklenir (server-render). */}
+        {questions.length >= 3 && (
+          <ul className="space-y-3 mt-3 list-none p-0">
+            <li className="list-none">
+              <AdSense
+                client={ADSENSE_PUB_ID}
+                slot={ADSENSE_SLOTS.IN_FEED}
+                format="in-feed"
+              />
+            </li>
+          </ul>
+        )}
 
         {/* ─── Diğer kategoriler ───────────────────────── */}
         <OtherCategoriesNav currentSlug={category} />
