@@ -116,7 +116,7 @@ export default function WorkspaceMobileClient({
   const [interview, setInterview] = useState<Question | null>(initialInterview);
   const [testCases, setTestCases] = useState<QuestionTests | null>(initialTestCases);
   const [running, setRunning] = useState(false);
-  const isPublic = interview?.question_type === "public";
+  const isPublic = (interview?.question_type ?? "public") === "public";
   const [results, setResults] = useState<any[]>([]);
   const [errorLines, setErrorLines] = useState<string[]>([]);
   // 2026-07-14: AI Feedback trigger — ilk Run sonrası enable olur

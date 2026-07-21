@@ -172,7 +172,7 @@ export default function WorkspaceClient({
   // 2026-07-14: Run en az 1 kez çağrıldı mı? (AI Feedback trigger)
   const [hasRunOnce, setHasRunOnce] = useState(false);
   const [seconds, setSeconds] = useState(0);
-  const isPublic = interview?.question_type === "public";
+  const isPublic = (interview?.question_type ?? "public") === "public";
   const [showShareModal, setShowShareModal] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
