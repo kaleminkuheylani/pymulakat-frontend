@@ -1,0 +1,107 @@
+# backend/routers/auth.py
+# 2026-07-19: SADECE OAuth (Google/GitHub). Email/sifre endpoint'leri kaldirildi.
+# OAuth akisi Supabase client tarafindan yurutulur; backend sadece JWT dogrulama
+# (/auth/me) ve cikis stub'u saglar.
+
+import logging
+from fastapi import APIRouter, HTTPException, Request
+from pydantic import BaseModel
+
+from dependencies import get_current_user
+from supabase_client import get_supabase_admin
+
+logger = logging.getLogger(__name__)
+
+router = APIRouter(prefix="/auth", tags=["auth"])
+
+
+class MessageResponse(BaseModel):
+    ok: bool
+    message: str
+
+
+# ═══════════════════════════════════════════════════════════════
+# ─── Logout ───────────────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════
+
+@router.post("/logout", response_model=MessageResponse)
+async def logout():
+    return MessageResponse(ok=True, message="Çıkış başarılı")
+
+
+# ═══════════════════════════════════════════════════════════════
+# ─── Current User ───────────────────────────────────────────
+# ═══════════════════════════════════════════════════════════════
+
+@router.get("/me")
+async def get_me(request: Request):
+    """Mevcut kullanıcı + stats."""
+    try:
+        user = await get_current_user(request)
+        if not user:
+            raise HTTPException(401, "Token gerekli")
+
+        sb_admin = get_supabase_admin()
+        user_id = user["id"]
+
+        profile = None
+        try:
+            result = sb_admin.table("profiles").select("*").eq("id", user_id).limit(1).execute()
+            rows = (result.data if result and getattr(result, "data", None) else []) or []
+            profile = rows[0] if rows else None
+        except Exception as e:
+            logger.warning("me.profile.fetch_failed user=%s err=%s", user_id, e)
+
+        total_attempts = success_count = fail_count = attempt_points = avg_time_ms = 0
+        try:
+            attempts = sb_admin.table("interview_attempts").select(
+                "passed_tests, total_tests, success, execution_time_ms"
+            ).eq("user_id", user_id).execute().data or []
+            total_attempts = len(attempts)
+            success_count = sum(1 for a in attempts if a.get("success"))
+            fail_count = total_attempts - success_count
+            attempt_points = sum(a.get("passed_tests", 0) * 10 for a in attempts if a.get("success"))
+            if total_attempts > 0:
+                avg_time_ms = sum(a.get("execution_time_ms", 0) for a in attempts) / total_attempts
+        except Exception as e:
+            logger.warning("me.attempts.fetch_failed user=%s err=%s", user_id, e)
+
+        achievement_points = 0
+        try:
+            achievement_points = sum(
+                r.get("points", 0) or 0
+                for r in (sb_admin.table("user_achievements").select("points").eq("user_id", user_id).execute().data or [])
+            )
+        except Exception as e:
+            logger.warning("me.achievements.fetch_failed user=%s err=%s", user_id, e)
+
+        email = user.get("email")
+        # GitHub OAuth: kullanıcı email gizliyse user_metadata'dan login/username fallback
+        fallback_name = email
+        if not fallback_name:
+            fallback_name = (
+                user.get("user_metadata", {}).get("preferred_username")
+                or user.get("user_metadata", {}).get("user_name")
+                or user.get("user_metadata", {}).get("login")
+                or "misafir"
+            )
+        username = (profile or {}).get("username", (fallback_name or "").split("@")[0])
+        return {
+            "id": user_id,
+            "email": email,
+            "username": username or "misafir",
+            "is_verified": (profile or {}).get("is_verified", False),
+            "points": attempt_points + achievement_points,
+            "attempt_points": attempt_points,
+            "achievement_points": achievement_points,
+            "total_attempts": total_attempts,
+            "success_count": success_count,
+            "fail_count": fail_count,
+            "success_rate": round((success_count / total_attempts * 100) if total_attempts else 0),
+            "solution_average_time": int(avg_time_ms / 1000),
+            "solution_average_time_ms": int(avg_time_ms),
+        }
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(500, str(e))

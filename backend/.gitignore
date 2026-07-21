@@ -38,31 +38,31 @@ cron.log
 
 # Bun
 bun.lockb
-
-# Local dev helper
-screenshot.mjs
-screenshot-guest.mjs
-screenshot-readonly.mjs
-screenshot-landing.mjs
-screenshot-alternatives.mjs
-
-# Frontend'de soru verisi artık YOK — backend DB source of truth
-
-**/*.bak
-**/API_MIGRATION_PLAN.md
-
 # Python venv
 .venv/
 venv/
 env/
 
+# IDE
+.vscode/
+.idea/
+
 # Testing
+.pytest_cache/
 htmlcov/
 .coverage
 
-# Backup files & scratch
+# Logs
+*.log
+
+# Backup files (legacy content)
 data/*.bak
+*.bak
+
+# Local scripts (goreceli scriptler)
 .scratch/
+
+
+# Local CSV backups (timestamped)
 data/*.csv.bak-*
 QUESTIONS-v3.csv.bak*
-

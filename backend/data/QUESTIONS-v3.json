@@ -1,0 +1,6787 @@
+[
+  {
+    "id": 1,
+    "title": "Palindrome Checker",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir kelimenin veya cümlenin palindrome olup olmadığını kontrol et.\nBüyük/küçük harf fark etmesin, boşluk ve noktalama işaretlerini yok say.\nÖrnek: 'A man a plan a canal Panama' → True",
+    "starter_code": "def is_palindrome(text: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": "radar",
+        "expected": true
+      },
+      {
+        "input": "Python",
+        "expected": false
+      },
+      {
+        "input": "A man a plan a canal Panama",
+        "expected": true
+      },
+      {
+        "input": "hello",
+        "expected": false
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Önce metnin yalnızca harf ve rakamlardan oluşan temiz halini oluştur. ''.join(...) ve str.isalnum() kullanabilirsin.",
+      "💡 İpucu 2: Büyük/küçük harf farkını ortadan kaldırmak için .lower() metodunu kullan.",
+      "💡 İpucu 3: Temizlenmiş string'i tersiyle karşılaştır: cleaned == cleaned[::-1]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 2,
+    "title": "Emoji FizzBuzz",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "1'den n'e kadar say.\n3'e bölünüyorsa 'Fizz🎉', 5'e bölünüyorsa 'Buzz🚀',\nher ikisine de bölünüyorsa 'FizzBuzz🎊' yaz.\nDiğer sayıları string olarak ekle.",
+    "starter_code": "def emoji_fizzbuzz(n: int) -> list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": 5,
+        "expected": [
+          "1",
+          "2",
+          "Fizz🎉",
+          "4",
+          "Buzz🚀"
+        ]
+      },
+      {
+        "input": 15,
+        "expected": [
+          "1",
+          "2",
+          "Fizz🎉",
+          "4",
+          "Buzz🚀",
+          "Fizz🎉",
+          "7",
+          "8",
+          "Fizz🎉",
+          "Buzz🚀",
+          "11",
+          "Fizz🎉",
+          "13",
+          "14",
+          "FizzBuzz🎊"
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Önce hem 3 hem 5'e bölünme durumunu kontrol et (FizzBuzz🎊). Sıra önemli!",
+      "💡 İpucu 2: Bölünebilirlik için % (modulo) operatörünü kullan: i % 3 == 0",
+      "💡 İpucu 3: Hiçbir koşula uymuyorsa sayıyı string'e çevir: str(i)"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 3,
+    "title": "Kelimelerin En Uzunu",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir cümledeki en uzun kelimeyi ve uzunluğunu döndür.\nBirden fazla aynı uzunlukta kelime varsa ilkini döndür.\nNot: Sonuç [kelime, uzunluk] şeklinde liste olmalı.",
+    "starter_code": "def longest_word(x: str) -> list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": "Python çok eğlenceli bir dil",
+        "expected": [
+          "eğlenceli",
+          9
+        ]
+      },
+      {
+        "input": "Merhaba dünya",
+        "expected": [
+          "Merhaba",
+          7
+        ]
+      },
+      {
+        "input": "a bb ccc",
+        "expected": [
+          "ccc",
+          3
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: sentence.split() ile cümleyi kelimelere ayır.",
+      "💡 İpucu 2: max(words, key=len) ile en uzun kelimeyi bul.",
+      "💡 İpucu 3: Sonucu liste olarak döndür: [word, len(word)]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 4,
+    "title": "Sihirli Kare Kontrolü",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Verilen 3x3 liste bir sihirli kare mi?\nSatır, sütun ve iki çapraz toplamların hepsi eşit olmalı.",
+    "starter_code": "def is_magic_square(arg0: list[int], arg1: list[int], arg2: list[int]) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            2,
+            7,
+            6
+          ],
+          [
+            9,
+            5,
+            1
+          ],
+          [
+            4,
+            3,
+            8
+          ]
+        ],
+        "expected": true
+      },
+      {
+        "input": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ],
+          [
+            7,
+            8,
+            9
+          ]
+        ],
+        "expected": false
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 5,
+    "title": "Sayı Tahmin Skoru",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Kullanıcının tahminleri ve gerçek sayı verildiğinde,\nkaç tahminin tam doğru, kaç tahminin ±5 içinde, kaç tahminin uzak olduğunu döndür.",
+    "starter_code": "def score_guesses(nums: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "guesses": [
+            10,
+            12,
+            50,
+            11
+          ],
+          "secret": 10
+        },
+        "expected": {
+          "exact": 1,
+          "close": 2,
+          "far": 1
+        }
+      },
+      {
+        "input": {
+          "guesses": [
+            1,
+            2,
+            3
+          ],
+          "secret": 100
+        },
+        "expected": {
+          "exact": 0,
+          "close": 0,
+          "far": 3
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: abs(guess - secret) ile farkın mutlak değerini al.",
+      "💡 İpucu 2: diff == 0 ise 'exact', diff <= 5 ise 'close', değilse 'far'.",
+      "💡 İpucu 3: Sonuçları sayacak bir dict oluştur ve döngüde güncelle."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 7,
+    "title": "Asal Sayı Kontrolü",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Verilen sayının asal olup olmadığını kontrol et.\n1 ve altındaki sayılar asal değildir.",
+    "starter_code": "def is_prime(n: int) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": 2,
+        "expected": true
+      },
+      {
+        "input": 17,
+        "expected": true
+      },
+      {
+        "input": 1,
+        "expected": false
+      },
+      {
+        "input": 9,
+        "expected": false
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: n <= 1 ise direkt False döndür.",
+      "💡 İpucu 2: 2'den √n'e kadar bölenleri kontrol et: range(2, int(n**0.5)+1)",
+      "💡 İpucu 3: Herhangi bir bölen bulursan False, döngü biterse True döndür."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 8,
+    "title": "Liste Düzleştirme",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "İç içe geçmiş listeyi tek seviyeli listeye dönüştür.\nYalnızca bir seviye derinlik garantilidir.",
+    "starter_code": "def flatten(arg0: list[int], arg1: list[int], arg2: list[int]) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "input": [
+          [
+            10
+          ],
+          [
+            20,
+            30
+          ],
+          [
+            40,
+            50,
+            60
+          ]
+        ],
+        "expected": [
+          10,
+          20,
+          30,
+          40,
+          50,
+          60
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Boş bir liste oluştur ve her alt listeyi üzerine extend() et.",
+      "💡 İpucu 2: List comprehension ile: [item for sublist in nested for item in sublist]",
+      "💡 İpucu 3: itertools.chain.from_iterable(nested) de çalışır."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 9,
+    "title": "Fibonacci Dizisi",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "İlk n Fibonacci sayısını liste olarak döndür.\nF(0",
+    "starter_code": "def fibonacci(n: int) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": 7,
+        "expected": [
+          0,
+          1,
+          1,
+          2,
+          3,
+          5,
+          8
+        ]
+      },
+      {
+        "input": 1,
+        "expected": [
+          0
+        ]
+      },
+      {
+        "input": 2,
+        "expected": [
+          0,
+          1
+        ]
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 10,
+    "title": "Anagram Kontrolü",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "İki kelimenin anagram olup olmadığını kontrol et.\nBüyük/küçük harf ve boşluk fark etmesin.",
+    "starter_code": "def is_anagram(s: dict) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "word1": "listen",
+          "word2": "silent"
+        },
+        "expected": true
+      },
+      {
+        "input": {
+          "word1": "hello",
+          "word2": "world"
+        },
+        "expected": false
+      },
+      {
+        "input": {
+          "word1": "Astronomer",
+          "word2": "Moon starer"
+        },
+        "expected": true
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Her iki string'i .lower() yap ve boşlukları kaldır.",
+      "💡 İpucu 2: sorted() ile harfleri sırala ve karşılaştır: sorted(a) == sorted(b)",
+      "💡 İpucu 3: Ya da Counter(a) == Counter(b) ile frekans karşılaştır."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 11,
+    "title": "Kelime Tersleyici",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Cümledeki kelimelerin sırasını tersine çevir,\nfakat kelimelerin kendisini tersine çevirme.",
+    "starter_code": "def reverse_words(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "Merhaba Dünya",
+        "expected": "Dünya Merhaba"
+      },
+      {
+        "input": "Python çok güzel",
+        "expected": "güzel çok Python"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: sentence.split() ile kelimelere ayır.",
+      "💡 İpucu 2: words[::-1] veya reversed(words) ile sırayı tersine çevir.",
+      "💡 İpucu 3: ' '.join(...) ile tekrar birleştir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 12,
+    "title": "İkinci En Büyük",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir listedeki ikinci en büyük eşsiz sayıyı döndür.\nEğer yoksa None döndür.",
+    "starter_code": "def second_largest(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int, arg7: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          3,
+          1,
+          4,
+          1,
+          5,
+          9,
+          2,
+          6
+        ],
+        "expected": 6
+      },
+      {
+        "input": [
+          5,
+          5,
+          5
+        ],
+        "expected": null
+      },
+      {
+        "input": [
+          10,
+          20
+        ],
+        "expected": 10
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Önce set() ile tekrarları kaldır.",
+      "💡 İpucu 2: sorted() veya max() kullanarak en büyükleri bul.",
+      "💡 İpucu 3: len(unique) < 2 ise None döndür, yoksa sorted(unique)[-2]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 13,
+    "title": "Sezar Şifresi",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Metni n karakter kaydırarak şifrele (yalnızca İngilizce harfler",
+    "starter_code": "def caesar_cipher(x: dict) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "text": "Hello",
+          "shift": 3
+        },
+        "expected": "Khoor"
+      },
+      {
+        "input": {
+          "text": "xyz",
+          "shift": 3
+        },
+        "expected": "abc"
+      },
+      {
+        "input": {
+          "text": "Hello, World!",
+          "shift": 13
+        },
+        "expected": "Uryyb, Jbeyq!"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: ord() ile karakterin ASCII kodunu al, chr() ile geri dönüştür.",
+      "💡 İpucu 2: Büyük harf için: chr((ord(c) - ord('A') + shift) % 26 + ord('A'))",
+      "💡 İpucu 3: Harf olmayanları (noktalama vb.) olduğu gibi bırak."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 14,
+    "title": "Matris Transpozu",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "",
+    "starter_code": "def transpose(arg0: list[int], arg1: list[int]) -> list[list[int]]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            2,
+            4,
+            6
+          ]
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: zip(*matrix) sihirli bir araçtır — satırları transpose eder.",
+      "💡 İpucu 2: [list(row) for row in zip(*matrix)] ile sonucu listele.",
+      "💡 İpucu 3: Manuel yol: result[j][i] = matrix[i][j] ile iç içe döngü."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 16,
+    "title": "Parantez Dengesi",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Verilen bir string'deki parantezlerin dengeli olup olmadığını kontrol et.\n(",
+    "starter_code": "def is_balanced(s: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": "([]{})",
+        "expected": true
+      },
+      {
+        "input": "([)]",
+        "expected": false
+      },
+      {
+        "input": "",
+        "expected": true
+      },
+      {
+        "input": "(((",
+        "expected": false
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 18,
+    "title": "Run-Length Encoding",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir string'i run-length encoding ile sıkıştır.\n'aaabbc' → '3a2b1c'",
+    "starter_code": "def rle_encode(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "aaabbc",
+        "expected": "3a2b1c"
+      },
+      {
+        "input": "aabbccdd",
+        "expected": "2a2b2c2d"
+      },
+      {
+        "input": "abc",
+        "expected": "1a1b1c"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Mevcut karakteri ve sayısını tut: current_char, count.",
+      "💡 İpucu 2: Karakter değişince sonucu ekle: result += str(count) + current_char",
+      "💡 İpucu 3: Döngü bittikten sonra son grubu da eklemeyi unutma."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 19,
+    "title": "Kelime Sıklığı",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir metindeki en sık geçen k kelimeyi döndür.\nBüyük/küçük harf duyarlı olmasın, noktalama işaretlerini yok say.",
+    "starter_code": "def top_k_words(x: dict) -> list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "text": "bir iki bir üç iki bir",
+          "k": 2
+        },
+        "expected": [
+          "bir",
+          "iki"
+        ]
+      },
+      {
+        "input": {
+          "text": "the cat sat on the mat the",
+          "k": 1
+        },
+        "expected": [
+          "the"
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: .lower() ve .split() ile kelimeleri ayır.",
+      "💡 İpucu 2: collections.Counter(words) ile frekans sözlüğü oluştur.",
+      "💡 İpucu 3: counter.most_common(k) ile en sık k kelimeyi al."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 20,
+    "title": "String Sıkıştırma",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir string'i sıkıştır: art arda tekrar eden karakterleri tek karaktere indir.\n'aabbcc' → 'abc', 'aabba' → 'aba'",
+    "starter_code": "def compress(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "aabbcc",
+        "expected": "abc"
+      },
+      {
+        "input": "aabba",
+        "expected": "aba"
+      },
+      {
+        "input": "abcdef",
+        "expected": "abcdef"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Boş string durumunu kontrol et.",
+      "💡 İpucu 2: result = s[0] ile başla, sonraki karakter öncekinden farklıysa ekle.",
+      "💡 İpucu 3: itertools.groupby(s) ile de çözebilirsin."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 21,
+    "title": "Roman Numerals",
+    "category": "python-basics",
+    "level": "intermediate",
+    "description": "1-3999 arasındaki bir tam sayıyı Roma rakamlarına çevir.",
+    "starter_code": "def to_roman(n: int) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": 3,
+        "expected": "III"
+      },
+      {
+        "input": 58,
+        "expected": "LVIII"
+      },
+      {
+        "input": 1994,
+        "expected": "MCMXCIV"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: values ve symbols listesi zaten verilmiş, sırayla karşılaştır.",
+      "💡 İpucu 2: num >= value iken: result += symbol, num -= value",
+      "💡 İpucu 3: CM=900, CD=400 gibi özel durumlar listeye dahil edilmiş, endişelenme."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 22,
+    "title": "Pangram Kontrolü",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir cümle pangram mı? (İngiliz alfabesinin tüm harflerini içeriyor mu?",
+    "starter_code": "def is_pangram(x: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": "The quick brown fox jumps over the lazy dog",
+        "expected": true
+      },
+      {
+        "input": "Hello World",
+        "expected": false
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: sentence.lower() ile küçük harfe çevir.",
+      "💡 İpucu 2: set() ile unique harfleri bul.",
+      "💡 İpucu 3: set('abcdefghijklmnopqrstuvwxyz').issubset(set(sentence.lower()))"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 25,
+    "title": "DNA Tamamlayıcısı",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir DNA zincirinin tamamlayıcısını bul.\nA↔T, C↔G  kuralını uygula ve sonucu tersine çevir.",
+    "starter_code": "def dna_complement(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "ATCG",
+        "expected": "CGAT"
+      },
+      {
+        "input": "TTAA",
+        "expected": "TTAA"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Bir eşleşme dict'i oluştur: {'A':'T','T':'A','C':'G','G':'C'}",
+      "💡 İpucu 2: Her karakteri eşleşme dict'inden bul: comp[c]",
+      "💡 İpucu 3: Tamamlayıcıyı oluşturduktan sonra [::-1] ile tersine çevir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 26,
+    "title": "İki Listeyi Birleştir",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "İki sıralı listeyi birleştirerek yeni bir sıralı liste oluştur.\nsort(",
+    "starter_code": "def merge_sorted(nums: dict) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "a": [
+            1,
+            3,
+            5
+          ],
+          "b": [
+            2,
+            4,
+            6
+          ]
+        },
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "input": {
+          "a": [
+            1,
+            2
+          ],
+          "b": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ]
+      },
+      {
+        "input": {
+          "a": [],
+          "b": [
+            1,
+            2,
+            3
+          ]
+        },
+        "expected": [
+          1,
+          2,
+          3
+        ]
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 27,
+    "title": "Sözlük Birleştirme",
+    "category": "list-dict",
+    "level": "beginner",
+    "description": "İki sözlüğü birleştir. Aynı anahtarlar varsa değerlerini topla.",
+    "starter_code": "def merge_dicts(x: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "d1": {
+            "a": 1,
+            "b": 2
+          },
+          "d2": {
+            "b": 3,
+            "c": 4
+          }
+        },
+        "expected": {
+          "a": 1,
+          "b": 5,
+          "c": 4
+        }
+      },
+      {
+        "input": {
+          "d1": {},
+          "d2": {
+            "x": 10
+          }
+        },
+        "expected": {
+          "x": 10
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: d1.copy() ile başla, d2'nin öğelerini üzerine ekle.",
+      "💡 İpucu 2: result.get(key, 0) + value ile birleştirme yap.",
+      "💡 İpucu 3: collections.Counter da bu iş için kullanılabilir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 28,
+    "title": "Gruplama",
+    "category": "list-dict",
+    "level": "beginner",
+    "description": "Bir sayı listesini 'tek' ve 'çift' olarak grupla.\nSonuç: {'tek': [...], 'çift': [...]}",
+    "starter_code": "def group_by_parity(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "expected": {
+          "tek": [
+            1,
+            3,
+            5
+          ],
+          "çift": [
+            2,
+            4,
+            6
+          ]
+        }
+      },
+      {
+        "input": [
+          10,
+          15,
+          20,
+          25
+        ],
+        "expected": {
+          "tek": [
+            15,
+            25
+          ],
+          "çift": [
+            10,
+            20
+          ]
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Boş bir dict oluştur: result = {'tek': [], 'çift': []}",
+      "💡 İpucu 2: Her öğe için: if n % 2 == 0 → 'çift', else → 'tek'",
+      "💡 İpucu 3: result['tek'].append(n) veya result['çift'].append(n)"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 29,
+    "title": "Fark Listesi",
+    "category": "list-dict",
+    "level": "beginner",
+    "description": "İki liste arasındaki farkları bul: yalnızca A'da, yalnızca B'de ve ikisinde birden olan elemanlar.",
+    "starter_code": "def list_diff(nums: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "a": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "b": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        "expected": {
+          "only_a": [
+            1,
+            2
+          ],
+          "only_b": [
+            5,
+            6
+          ],
+          "common": [
+            3,
+            4
+          ]
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: set() dönüşümü yap: sa=set(a), sb=set(b)",
+      "💡 İpucu 2: only_a = sorted(sa - sb), only_b = sorted(sb - sa)",
+      "💡 İpucu 3: common = sorted(sa & sb)  (kesişim)"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 30,
+    "title": "Matris Çarpımı",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "",
+    "starter_code": "def matrix_multiply(x: dict) -> list[list[int]]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "a": [
+            [
+              1,
+              2
+            ],
+            [
+              3,
+              4
+            ]
+          ],
+          "b": [
+            [
+              5,
+              6
+            ],
+            [
+              7,
+              8
+            ]
+          ]
+        },
+        "expected": [
+          [
+            19,
+            22
+          ],
+          [
+            43,
+            50
+          ]
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Boyutlar: a = m×n, b = n×p → sonuç m×p",
+      "💡 İpucu 2: Üç iç içe döngü: i (satır a), j (sütun b), k (ortak boyut)",
+      "💡 İpucu 3: C[i][j] += A[i][k] * B[k][j]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 31,
+    "title": "Stok Takibi",
+    "category": "list-dict",
+    "level": "beginner",
+    "description": "Bir mağazanın stok hareketlerini takip et.\nHer hareket '+ürün:miktar' veya '-ürün:miktar' şeklinde.",
+    "starter_code": "def track_inventory(arg0: str, arg1: str, arg2: str) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          "+elma:10",
+          "-elma:3",
+          "+armut:5"
+        ],
+        "expected": {
+          "elma": 7,
+          "armut": 5
+        }
+      },
+      {
+        "input": [
+          "+kalem:100",
+          "+kalem:50",
+          "-kalem:30"
+        ],
+        "expected": {
+          "kalem": 120
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Her harekette sign = m[0], geri kalanını ':' ile böl.",
+      "💡 İpucu 2: item, qty = m[1:].split(':'); qty = int(qty)",
+      "💡 İpucu 3: sign=='+' ise ekle, '-' ise çıkar."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 32,
+    "title": "Hareketli Ortalama",
+    "category": "list-dict",
+    "level": "beginner",
+    "description": "k elemanlı hareketli ortalama hesapla.\nYeterli eleman olmayan başlangıç pencerelerini atla.",
+    "starter_code": "def moving_average(x: dict) -> list[float]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "nums": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "k": 3
+        },
+        "expected": [
+          2.0,
+          3.0,
+          4.0
+        ]
+      },
+      {
+        "input": {
+          "nums": [
+            10,
+            20,
+            30,
+            40
+          ],
+          "k": 2
+        },
+        "expected": [
+          15.0,
+          25.0,
+          35.0
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: range(k-1, len(nums)) ile kayan pencere için döngü kur.",
+      "💡 İpucu 2: Her adımda dilim: nums[i-k+1:i+1]",
+      "💡 İpucu 3: sum(window)/k ile ortalmayı hesapla ve result'a ekle."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 33,
+    "title": "En Uzun Artan Alt Dizi",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "Bir dizideki en uzun sürekli artan alt dizinin uzunluğunu bul.",
+    "starter_code": "def longest_increasing_subsequence(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          3,
+          5,
+          4,
+          7
+        ],
+        "expected": 3
+      },
+      {
+        "input": [
+          2,
+          2,
+          2,
+          2,
+          2
+        ],
+        "expected": 1
+      },
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "expected": 5
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: current ve max_len sayaçları tut.",
+      "💡 İpucu 2: nums[i] > nums[i-1] ise current += 1, değilse current = 1",
+      "💡 İpucu 3: Her adımda max_len = max(max_len, current) güncelle."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 34,
+    "title": "Fiyat Analizi",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Ürün fiyatlarının bulunduğu bir sözlükten\nmin, max ve ortalama fiyatı döndür.",
+    "starter_code": "def price_analysis(x: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "elma": 5,
+          "armut": 8,
+          "muz": 3
+        },
+        "expected": {
+          "min": 3,
+          "max": 8,
+          "avg": 5.33
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: values = list(prices.values()) ile değerleri al.",
+      "💡 İpucu 2: min(), max() ve sum()/len() ile istatistikleri hesapla.",
+      "💡 İpucu 3: round(avg, 2) ile yuvarla."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 35,
+    "title": "Kümülatif Toplam",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Bir listenin kümülatif (birikimli",
+    "starter_code": "def cumulative_sum(a: int, b: int, arg2: int, arg3: int) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "expected": [
+          1,
+          3,
+          6,
+          10
+        ]
+      },
+      {
+        "input": [
+          5,
+          5,
+          5,
+          5,
+          5
+        ],
+        "expected": [
+          5,
+          10,
+          15,
+          20,
+          25
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Döngü başında running_total = 0 tut.",
+      "💡 İpucu 2: Her elemanda running_total += n, ardından result'a ekle.",
+      "💡 İpucu 3: itertools.accumulate(nums) de aynı sonucu verir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 36,
+    "title": "Favori Renk Anketi",
+    "category": "pandas",
+    "level": "beginner",
+    "description": "Bir anket sonucu sözlüğü veriliyor. En popüler rengi bul.\n(pandas kullanmadan, saf Python ile yap",
+    "starter_code": "def favorite_color(x: dict) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "A": "Mavi",
+          "B": "Kırmızı",
+          "C": "Mavi",
+          "D": "Yeşil",
+          "E": "Mavi"
+        },
+        "expected": "Mavi"
+      },
+      {
+        "input": {
+          "X": "Siyah",
+          "Y": "Siyah"
+        },
+        "expected": "Siyah"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Boş bir dict oluştur: counts = {}",
+      "💡 İpucu 2: Her değer için counts[color] = counts.get(color, 0) + 1",
+      "💡 İpucu 3: max(counts, key=counts.get) ile en yüksek frekanslıyı bul."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 37,
+    "title": "Eksik Değer Doldurma",
+    "category": "pandas",
+    "level": "beginner",
+    "description": "Bir sayı listesindeki None değerleri, listenin ortalamasıyla doldur.\n(pandas kullanmadan, saf Python ile",
+    "starter_code": "def fill_missing(arg0: int, arg1: None, arg2: int, arg3: None, arg4: int) -> list[int | float]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          null,
+          3,
+          null,
+          5
+        ],
+        "expected": [
+          1,
+          3.0,
+          3,
+          3.0,
+          5
+        ]
+      },
+      {
+        "input": [
+          10,
+          null,
+          20
+        ],
+        "expected": [
+          10,
+          15.0,
+          20
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Önce sadece sayısal değerlerin ortalamasını hesapla.",
+      "💡 İpucu 2: nums = [x for x in numbers if x is not None]",
+      "💡 İpucu 3: Ortalama = sum(nums) / len(nums); sonra None'ları bu değerle değiştir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 38,
+    "title": "Satış Raporu",
+    "category": "pandas",
+    "level": "beginner",
+    "description": "Satış verisini ürün bazında grupla, toplam satışı hesapla ve en çok satan ürünü döndür.",
+    "starter_code": "def top_selling_product(arg0: dict, arg1: dict, arg2: dict) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          {
+            "product": "A",
+            "amount": 100
+          },
+          {
+            "product": "B",
+            "amount": 200
+          },
+          {
+            "product": "A",
+            "amount": 150
+          }
+        ],
+        "expected": "A"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Bir dict ile ürün → toplam satış tut: totals = {}",
+      "💡 İpucu 2: Her kayıt için totals[product] = totals.get(product, 0) + amount",
+      "💡 İpucu 3: max(totals, key=totals.get) ile en yüksek satışlı ürünü bul."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 39,
+    "title": "Günlük Ortalama",
+    "category": "pandas",
+    "level": "intermediate",
+    "description": "Günlük veri sözlüğünden haftalık ortalama hesapla.\nHer hafta 7 günlük gruplara böl ve ortalamasını al.",
+    "starter_code": "def weekly_average(x: dict) -> list[float]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "d1": 10,
+          "d2": 20,
+          "d3": 30,
+          "d4": 40,
+          "d5": 50,
+          "d6": 60,
+          "d7": 70,
+          "d8": 80
+        },
+        "expected": [
+          40.0,
+          80.0
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Değerleri listeye al: values = list(daily_data.values())",
+      "💡 İpucu 2: 7'şerlik gruplara böl: [values[i:i+7] for i in range(0, len(values), 7)]",
+      "💡 İpucu 3: Her grubun ortalamasını al: sum(group)/len(group)"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 40,
+    "title": "Korelasyon Analizi",
+    "category": "pandas",
+    "level": "intermediate",
+    "description": "İki sayı listesi arasındaki Pearson korelasyonunu hesapla ve yorumla.\n0.7+ güçlü, 0.4-0.7 orta, <0.4 zayıf.",
+    "starter_code": "def correlation_analysis(x: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "x": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "y": [
+            2,
+            4,
+            6,
+            8,
+            10
+          ]
+        },
+        "expected": {
+          "correlation": 1.0,
+          "strength": "güçlü"
+        }
+      },
+      {
+        "input": {
+          "x": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "y": [
+            5,
+            4,
+            3,
+            2,
+            1
+          ]
+        },
+        "expected": {
+          "correlation": -1.0,
+          "strength": "güçlü"
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Pearson formülü: r = Σ((xi-x̄)(yi-ȳ)) / √(Σ(xi-x̄)² · Σ(yi-ȳ)²)",
+      "💡 İpucu 2: Önce x_bar = sum(x)/len(x), y_bar = sum(y)/len(y) hesapla.",
+      "💡 İpucu 3: abs(r) >= 0.7 → 'güçlü', >= 0.4 → 'orta', else → 'zayıf'"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 41,
+    "title": "Tekrar Eden Satırlar",
+    "category": "pandas",
+    "level": "beginner",
+    "description": "Bir listedeki tekrar eden öğeleri kaldır ve kaç tane kaldırıldığını döndür.\nSonuç: (temizlenmiş_liste, kaldırılan_sayısı",
+    "starter_code": "def remove_duplicates(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int) -> list[list[int]] | list[list[str]]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          2,
+          3,
+          3,
+          3,
+          4
+        ],
+        "expected": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          3
+        ]
+      },
+      {
+        "input": [
+          "a",
+          "b",
+          "a",
+          "c"
+        ],
+        "expected": [
+          [
+            "a",
+            "b",
+            "c"
+          ],
+          1
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: seen = set() ile görülen öğeleri takip et.",
+      "💡 İpucu 2: Her öğe için: if item not in seen → ekle, else → sayacı artır.",
+      "💡 İpucu 3: Sonuç: [clean_list, removed_count]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 42,
+    "title": "Yaş Grubu Segmentasyonu",
+    "category": "pandas",
+    "level": "beginner",
+    "description": "Yaş listesini gruplara ayır: 0-17 'Genç', 18-64 'Yetişkin', 65+ 'Yaşlı'.",
+    "starter_code": "def age_segment(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int) -> list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          15,
+          25,
+          70,
+          5,
+          45
+        ],
+        "expected": [
+          "Genç",
+          "Yetişkin",
+          "Yaşlı",
+          "Genç",
+          "Yetişkin"
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Her yaş için koşullu kontrol yap.",
+      "💡 İpucu 2: if age <= 17: 'Genç', elif age <= 64: 'Yetişkin', else: 'Yaşlı'",
+      "💡 İpucu 3: List comprehension kullan: [segment(a) for a in ages]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 43,
+    "title": "Grup Toplamı",
+    "category": "pandas",
+    "level": "intermediate",
+    "description": "Satış verisinden bölge bazında toplam satışı hesapla.\nSonuç: {bölge: toplam_satış} sözlüğü",
+    "starter_code": "def region_totals(a: dict, b: dict, arg2: dict, arg3: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          {
+            "region": "A",
+            "sales": 100
+          },
+          {
+            "region": "B",
+            "sales": 50
+          },
+          {
+            "region": "A",
+            "sales": 150
+          },
+          {
+            "region": "B",
+            "sales": 100
+          }
+        ],
+        "expected": {
+          "A": 250,
+          "B": 150
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Boş bir dict: totals = {}",
+      "💡 İpucu 2: Her kayıt için totals[region] = totals.get(region, 0) + sales",
+      "💡 İpucu 3: totals dict'ini döndür."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 44,
+    "title": "Aykırı Değer Tespiti",
+    "category": "pandas",
+    "level": "intermediate",
+    "description": "IQR yöntemiyle aykırı değerleri tespit et.\nQ1-1.5*IQR altındakiler veya Q3+1.5*IQR üstündekiler aykırıdır.\nSonuç: aykırı değerlerin indeks listesi.",
+    "starter_code": "def detect_outliers(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int) -> list | list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          2,
+          3,
+          3,
+          3,
+          100
+        ],
+        "expected": [
+          6
+        ]
+      },
+      {
+        "input": [
+          10,
+          11,
+          12,
+          13,
+          14,
+          15
+        ],
+        "expected": []
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Sıralı listeden Q1 (25. yüzdelik) ve Q3 (75. yüzdelik) hesapla.",
+      "💡 İpucu 2: IQR = Q3 - Q1; alt sınır = Q1 - 1.5*IQR, üst sınır = Q3 + 1.5*IQR",
+      "💡 İpucu 3: [i for i, x in enumerate(data) if x < lower or x > upper]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 45,
+    "title": "Rolling Ortalama",
+    "category": "pandas",
+    "level": "intermediate",
+    "description": "k pencereli rolling (kayan",
+    "starter_code": "def rolling_average(x: dict) -> list[None]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "data": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "k": 3
+        },
+        "expected": [
+          null,
+          null,
+          2.0,
+          3.0,
+          4.0
+        ]
+      },
+      {
+        "input": {
+          "data": [
+            10,
+            20,
+            30,
+            40
+          ],
+          "k": 2
+        },
+        "expected": [
+          null,
+          15.0,
+          25.0,
+          35.0
+        ]
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 46,
+    "title": "İkili Arama",
+    "category": "algorithms",
+    "level": "beginner",
+    "description": "Sıralı bir listede binary search ile hedef sayının indeksini döndür.\nBulunamazsa -1 döndür.",
+    "starter_code": "def binary_search(x: dict) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "arr": [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11
+          ],
+          "target": 7
+        },
+        "expected": 3
+      },
+      {
+        "input": {
+          "arr": [
+            1,
+            3,
+            5,
+            7,
+            9,
+            11
+          ],
+          "target": 6
+        },
+        "expected": -1
+      },
+      {
+        "input": {
+          "arr": [
+            1
+          ],
+          "target": 1
+        },
+        "expected": 0
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: left=0, right=len(arr)-1 ile başla.",
+      "💡 İpucu 2: mid = (left+right)//2; arr[mid]>target ise right=mid-1, küçükse left=mid+1",
+      "💡 İpucu 3: arr[mid]==target ise mid'i döndür. Döngü biterse -1."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 47,
+    "title": "Bubble Sort",
+    "category": "algorithms",
+    "level": "beginner",
+    "description": "Bubble sort algoritmasıyla bir listeyi küçükten büyüğe sırala.\nOrijinal listeyi değiştirme, kopyasını döndür.",
+    "starter_code": "def bubble_sort(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          64,
+          34,
+          25,
+          12,
+          22,
+          11,
+          90
+        ],
+        "expected": [
+          11,
+          12,
+          22,
+          25,
+          34,
+          64,
+          90
+        ]
+      },
+      {
+        "input": [
+          5,
+          1,
+          4,
+          2,
+          8
+        ],
+        "expected": [
+          1,
+          2,
+          4,
+          5,
+          8
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: arr = arr[:] ile kopya al.",
+      "💡 İpucu 2: İki iç içe döngü: dış n kez, iç komşuları karşılaştırır.",
+      "💡 İpucu 3: arr[j] > arr[j+1] ise swap yap: arr[j], arr[j+1] = arr[j+1], arr[j]"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 48,
+    "title": "Verilen miktarı en az sayıda bozuk para ile öde",
+    "category": "algorithms",
+    "level": "beginner",
+    "description": "Verilen miktarı en az sayıda bozuk para ile öde.\nKullanılabilir bozukluklar: [100,50,25,10,5,1] kuruş.",
+    "starter_code": "def make_change(n: int) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": 187,
+        "expected": {
+          "100": 1,
+          "50": 1,
+          "25": 1,
+          "10": 1,
+          "5": 0,
+          "1": 2
+        }
+      },
+      {
+        "input": 75,
+        "expected": {
+          "100": 0,
+          "50": 1,
+          "25": 1,
+          "10": 0,
+          "5": 0,
+          "1": 0
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Her bozukluk için: count = amount // coin",
+      "💡 İpucu 2: amount = amount % coin ile kalanı güncelle.",
+      "💡 İpucu 3: Sonuçları result[coin] = count olarak sakla."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 49,
+    "title": "Kaplama Problemi",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "n merdiven basamağı var. Her adımda 1 veya 2 basamak çıkabilirsin.\nKaç farklı yol var? (Dinamik programlama",
+    "starter_code": "def climb_stairs(n: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": 2,
+        "expected": 2
+      },
+      {
+        "input": 3,
+        "expected": 3
+      },
+      {
+        "input": 5,
+        "expected": 8
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Bu aslında Fibonacci dizisi! dp[1]=1, dp[2]=2",
+      "💡 İpucu 2: dp[i] = dp[i-1] + dp[i-2] (bir önceki veya iki önceki basamaktan gelir)",
+      "💡 İpucu 3: Hafıza optimizasyonu için yalnızca son iki değeri tut."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 50,
+    "title": "Bir 2D grid'de (0=geçit, 1=duvar",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir 2D grid'de (0=geçit, 1=duvar",
+    "starter_code": "def shortest_path(arg0: list[int], arg1: list[int], arg2: list[int]) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            0,
+            0,
+            0
+          ],
+          [
+            1,
+            1,
+            0
+          ],
+          [
+            0,
+            0,
+            0
+          ]
+        ],
+        "expected": 4
+      },
+      {
+        "input": [
+          [
+            0,
+            1
+          ],
+          [
+            1,
+            0
+          ]
+        ],
+        "expected": -1
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: BFS için queue kullan: [(0,0,0)]  # (satır, sütun, adım)",
+      "💡 İpucu 2: Ziyaret edilenleri takip et: visited = set(); visited.add((0,0))",
+      "💡 İpucu 3: 4 yön: [(-1,0),(1,0),(0,-1),(0,1)]; sınır ve duvar kontrolü yap."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 68,
+    "title": "İki Maaş Bordrosunu Birleştir",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "",
+    "starter_code": "def merge_salaries(x: Any) -> float:\n    pass",
+    "test_cases": [],
+    "hints": [
+      "💡 İpucu 1: İki pointer kullan — biri engineering, biri marketing için. İlk elemanları karşılaştır.",
+      "💡 İpucu 2: Engineering azalan (büyük → küçük), marketing artan (küçük → büyük). Yani engineering[0] en büyük, marketing[0] en küçük.",
+      "💡 İpucu 3: Hangisinin maaşı daha büyükse onu sonuca ekle, o pointer’ı ilerlet. Biri bitince diğerini olduğu gibi ekle."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 70,
+    "title": "En Yakın Rakam Toplamı",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir sayı dizisinde, toplamı hedef sayıya en yakın olan iki elemanı bul.\nBirden fazla çözüm varsa, herhangi birini döndürmek yeterli.\nSonuç: [eleman1, eleman2] şeklinde liste döndür.\nÖrnek: [1, 2, 3, 4, 5]",
+    "starter_code": "def find_closest_pair(x: dict) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "numbers": [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          "target": 8
+        },
+        "expected": [
+          3,
+          5
+        ]
+      },
+      {
+        "input": {
+          "numbers": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "target": 10
+        },
+        "expected": [
+          4,
+          4
+        ]
+      },
+      {
+        "input": {
+          "numbers": [
+            3,
+            3,
+            3
+          ],
+          "target": 6
+        },
+        "expected": [
+          3,
+          3
+        ]
+      },
+      {
+        "input": {
+          "numbers": [
+            -1,
+            -2,
+            -3,
+            -4
+          ],
+          "target": -5
+        },
+        "expected": [
+          -1,
+          -4
+        ]
+      },
+      {
+        "input": {
+          "numbers": [
+            1,
+            5,
+            9,
+            13
+          ],
+          "target": 11
+        },
+        "expected": [
+          -1,
+          -1
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Önce listeyi sırala (sıralanmış liste ile çalışmak daha kolay).",
+      "💡 İpucu 2: İki işaretçi tekniği kullan — biri başta, biri sonda.",
+      "💡 İpucu 3: current_sum = arr[left] + arr[right]; hedefe göre işaretçileri hareket ettir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 71,
+    "title": "Tekrarlanan Karakter Zinciri",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir string'de art arda tekrar eden karakterlerden oluşan\nen uzun zinciri bul.\nSonuç: (karakter, zincir uzunluğu",
+    "starter_code": "def longest_char_chain(nums: str) -> list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": "aabbbcccddaaa",
+        "expected": [
+          "b",
+          3
+        ]
+      },
+      {
+        "input": "abcdef",
+        "expected": [
+          "a",
+          1
+        ]
+      },
+      {
+        "input": "aaaaa",
+        "expected": [
+          "a",
+          5
+        ]
+      },
+      {
+        "input": "abbaa",
+        "expected": [
+          "a",
+          2
+        ]
+      },
+      {
+        "input": "",
+        "expected": [
+          "",
+          0
+        ]
+      },
+      {
+        "input": "abccdeeeffg",
+        "expected": [
+          "e",
+          3
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: İki değişken tut: mevcut karakter ve mevcut sayı.",
+      "💡 İpucu 2: Her yeni karakter için: aynıysa sayıyı artır, farklıysa sıfırla.",
+      "💡 İpucu 3: En uzun zinciri ve karakterini takip et."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 72,
+    "title": "Alt Dizi Toplam Kontrolü",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir sayı listesi ve bir hedef sayı veriliyor.\nListedeki herhangi bir alt dizinin (continuous subsequence",
+    "starter_code": "def has_subarray_with_sum(x: dict) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "nums": [
+            1,
+            4,
+            20,
+            3,
+            10,
+            5
+          ],
+          "target": 33
+        },
+        "expected": true
+      },
+      {
+        "input": {
+          "nums": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "target": 15
+        },
+        "expected": false
+      },
+      {
+        "input": {
+          "nums": [
+            1,
+            2,
+            3
+          ],
+          "target": 6
+        },
+        "expected": true
+      },
+      {
+        "input": {
+          "nums": [
+            0,
+            0
+          ],
+          "target": 0
+        },
+        "expected": true
+      },
+      {
+        "input": {
+          "nums": [
+            -2,
+            -1,
+            0,
+            1,
+            2
+          ],
+          "target": 0
+        },
+        "expected": true
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Sliding window tekniği düşün — başlangıç ve bitiş işaretçileri.",
+      "💡 İpucu 2: Mevcut toplam hedefi aştıysa, başlangıcı kaydır.",
+      "💡 İpucu 3: Negatif sayılar varsa sliding window çalışmaz — prefix sum + hashmap dene."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 73,
+    "title": "Benzersiz Alt Dizgi Sayısı",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir string'deki tüm benzersiz alt dizgilerin (substring",
+    "starter_code": "def count_unique_substrings(x: str) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": "abc",
+        "expected": 6
+      },
+      {
+        "input": "aaa",
+        "expected": 2
+      },
+      {
+        "input": "",
+        "expected": 0
+      },
+      {
+        "input": "abcd",
+        "expected": 10
+      },
+      {
+        "input": "aab",
+        "expected": 4
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Her karakterden başlayarak tüm alt dizgileri oluştur.",
+      "💡 İpucu 2: Bir set() kullanarak benzersiz olanları sakla.",
+      "💡 İpucu 3: İç içe döngü yerine, her i için j=i+1,...,len(s) alt dizgisini sete ekle."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 84,
+    "title": "Cift Sayilari Filtrele ve Karelerini Topla",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir sayi listesi var. Listedeki SADECE cift sayilarin karelerini al ve topla.\nTek sayilar yok sayilir (sadece ciftler",
+    "starter_code": "def sum_of_even_squares(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          2,
+          3,
+          4,
+          5,
+          6
+        ],
+        "expected": 56
+      },
+      {
+        "input": [
+          1,
+          3,
+          5,
+          7
+        ],
+        "expected": 0
+      },
+      {
+        "input": [
+          10
+        ],
+        "expected": 100
+      },
+      {
+        "input": [],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: x % 2 == 0 ile cift sayilari filtrele.",
+      "💡 Ipucu 2: sum() icinde generator expression kullan.",
+      "💡 Ipucu 3: sum(x*x for x in nums if x % 2 == 0) tek satirda coz."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 85,
+    "title": "Iki String Arasindaki Ortak Karakterler",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "",
+    "starter_code": "def common_chars(arg0: str, arg1: str) -> list | list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          "Merhaba",
+          "Araba"
+        ],
+        "expected": [
+          "a",
+          "r"
+        ]
+      },
+      {
+        "input": [
+          "Python",
+          "Java"
+        ],
+        "expected": [
+          "a"
+        ]
+      },
+      {
+        "input": [
+          "abc",
+          "def"
+        ],
+        "expected": []
+      },
+      {
+        "input": [
+          "AAA",
+          "aaa"
+        ],
+        "expected": [
+          "a"
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: set(a.lower()) & set(b.lower()) -> kesisim.",
+      "💡 Ipucu 2: sorted() ile alfabetik siraya koy.",
+      "💡 Ipucu 3: list(sorted(set(a.lower()) & set(b.lower()))) tek satir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 86,
+    "title": "Listedeki En Sik Tekrar Eden Eleman",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir liste var. En sik gecen elemani dondur.\nBirden fazla esit siklik varsa en kucuk sayiyi veya alfabetik ilk olani dondur.\nOrnek: [1, 3, 2, 3, 4, 1, 1] -> 1 (4 kez",
+    "starter_code": "def most_frequent(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int) -> int | str:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          3,
+          2,
+          3,
+          4,
+          1,
+          1
+        ],
+        "expected": 1
+      },
+      {
+        "input": [
+          "a",
+          "b",
+          "a",
+          "c"
+        ],
+        "expected": "a"
+      },
+      {
+        "input": [
+          5,
+          5,
+          3,
+          3,
+          1
+        ],
+        "expected": 3
+      },
+      {
+        "input": [
+          1
+        ],
+        "expected": 1
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: from collections import Counter -> Counter(items).most_common().",
+      "💡 Ipucu 2: max_count = max(c.values()) -> en yuksek frekans.",
+      "💡 Ipucu 3: candidates = [k for k,v in c.items() if v == max_count]; min(candidates) ile coz."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 87,
+    "title": "Donen Dizi Kontrolu",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir liste veriliyor. Liste dondurulmus (rotated",
+    "starter_code": "def is_rotated_sorted(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          3,
+          4,
+          5,
+          1,
+          2
+        ],
+        "expected": true
+      },
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "expected": true
+      },
+      {
+        "input": [
+          2,
+          1,
+          3
+        ],
+        "expected": false
+      },
+      {
+        "input": [
+          1
+        ],
+        "expected": true
+      },
+      {
+        "input": [],
+        "expected": true
+      },
+      {
+        "input": [
+          2,
+          2,
+          2,
+          2,
+          1,
+          2
+        ],
+        "expected": false
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 88,
+    "title": "Sayilari Toplami Hedefe Esit Olan Ciftler",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir liste ve bir hedef sayi var. Listedeki hangi iki sayinin toplami hedefe esit?\nTum benzersiz ciftleri (kucuk, buyuk",
+    "starter_code": "def two_sum_pairs(a: list[int], b: int) -> list | list[list[int]]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            2,
+            7,
+            11,
+            15
+          ],
+          9
+        ],
+        "expected": [
+          [
+            2,
+            7
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            5,
+            3,
+            7,
+            9
+          ],
+          12
+        ],
+        "expected": [
+          [
+            3,
+            9
+          ],
+          [
+            5,
+            7
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            2,
+            3
+          ],
+          10
+        ],
+        "expected": []
+      },
+      {
+        "input": [
+          [
+            3,
+            3
+          ],
+          6
+        ],
+        "expected": [
+          [
+            3,
+            3
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            -1,
+            -2,
+            -3,
+            4,
+            5
+          ],
+          2
+        ],
+        "expected": [
+          [
+            -3,
+            5
+          ],
+          [
+            -1,
+            3
+          ]
+        ]
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 89,
+    "title": "Rotasyon Adimini Bul",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir liste veriliyor. Bu liste sirali bir dizinin rotasyonu.\nRotasyon adimini bul (kac kez sola donduruldu",
+    "starter_code": "def rotation_count(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          3,
+          4,
+          5,
+          1,
+          2
+        ],
+        "expected": 3
+      },
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "expected": 0
+      },
+      {
+        "input": [
+          5,
+          1,
+          2,
+          3,
+          4
+        ],
+        "expected": 1
+      },
+      {
+        "input": [
+          2,
+          3,
+          4,
+          5,
+          1
+        ],
+        "expected": 4
+      },
+      {
+        "input": [
+          1
+        ],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Minimum elemanin indexini bul.",
+      "💡 Ipucu 2: min_idx = nums.index(min(nums)).",
+      "💡 Ipucu 3: return min_idx (0 = zaten sirali, min_idx = kac adim sola)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 90,
+    "title": "Bir cumle var",
+    "category": "python-basics",
+    "level": "intermediate",
+    "description": "Bir cumle var. Kelime sirasini tersine cevir, kelime icindeki harfler ayni kalsin.\nOrnek: 'Merhaba dunya nasilsin' -> 'nasilsin dunya Merhaba'\nFazla bosluklari tek bosluga indir.",
+    "starter_code": "def reverse_words(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "Merhaba dunya nasilsin",
+        "expected": "nasilsin dunya Merhaba"
+      },
+      {
+        "input": "Python   harika  bir dil",
+        "expected": "dil bir harika Python"
+      },
+      {
+        "input": "tek",
+        "expected": "tek"
+      },
+      {
+        "input": "",
+        "expected": ""
+      },
+      {
+        "input": "  bosluklu   cumle  ",
+        "expected": "cumle bosluklu"
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 91,
+    "title": "Bir liste var",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir liste var. Listedeki tekrarlari kaldir, ilk gorunme sirasini koru.\nOrnek: [1, 3, 2, 3, 4, 1, 5] -> [1, 3, 2, 4, 5] (3 ve 1 tekrari atlanir",
+    "starter_code": "def remove_duplicates(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int) -> list | list[int] | list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          3,
+          2,
+          3,
+          4,
+          1,
+          5
+        ],
+        "expected": [
+          1,
+          3,
+          2,
+          4,
+          5
+        ]
+      },
+      {
+        "input": [
+          "a",
+          "b",
+          "a",
+          "c",
+          "b"
+        ],
+        "expected": [
+          "a",
+          "b",
+          "c"
+        ]
+      },
+      {
+        "input": [
+          1,
+          2,
+          3
+        ],
+        "expected": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "input": [],
+        "expected": []
+      },
+      {
+        "input": [
+          1,
+          1,
+          1
+        ],
+        "expected": [
+          1
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: seen = set() ile takip et.",
+      "💡 Ipucu 2: if x not in seen: result.append(x); seen.add(x).",
+      "💡 Ipucu 3: dict.fromkeys(items) ile tek satirda coz (Python 3.7+ dict sira korur)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 92,
+    "title": "Bir 2D matris var",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir 2D matris var. Satirlari sutun, sutunlari satir yap.\nOrnek: [[1,2,3], [4,5,6]] -> [[1,4], [2,5], [3,6]]\nDikdortgen matrisler icin calissin (tum satirlar ayni uzunlukta",
+    "starter_code": "def transpose(arg0: list[int], arg1: list[int]) -> list[list[int]]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            4,
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            4
+          ],
+          [
+            2,
+            5
+          ],
+          [
+            3,
+            6
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            2,
+            4,
+            6
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            1
+          ]
+        ],
+        "expected": [
+          [
+            1
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ]
+        ]
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 93,
+    "title": "Ilk Tekrar Etmeyen Karakter",
+    "category": "python-basics",
+    "level": "intermediate",
+    "description": "Bir string veriliyor. Ilk kez tekrarlanMAYAN (unique",
+    "starter_code": "def first_unique_char(nums: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "swiss",
+        "expected": "w"
+      },
+      {
+        "input": "aabbcc",
+        "expected": ""
+      },
+      {
+        "input": "programming",
+        "expected": "p"
+      },
+      {
+        "input": "aabb",
+        "expected": ""
+      },
+      {
+        "input": "z",
+        "expected": "z"
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: from collections import Counter -> c = Counter(s).",
+      "💡 Ipucu 2: for ch in s: if c[ch] == 1: return ch.",
+      "💡 Ipucu 3: Bos string icin '' dondur (return ch if any(c[ch]==1 for ch in s) else '')."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 94,
+    "title": "Sirali Dizide Ilk ve Son Occurrence",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Sirali bir dizide target degerin ILK ve SON indeksini bul.\nYoksa [-1, -1] dondur.\nfind_first = lower bound",
+    "starter_code": "def search_range(arg0: list[int], arg1: int) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            5,
+            7,
+            7,
+            8,
+            8,
+            10
+          ],
+          8
+        ],
+        "expected": [
+          3,
+          4
+        ]
+      },
+      {
+        "input": [
+          [
+            5,
+            7,
+            7,
+            8,
+            8,
+            10
+          ],
+          6
+        ],
+        "expected": [
+          -1,
+          -1
+        ]
+      },
+      {
+        "input": [
+          [],
+          0
+        ],
+        "expected": [
+          -1,
+          -1
+        ]
+      },
+      {
+        "input": [
+          [
+            1
+          ],
+          1
+        ],
+        "expected": [
+          0,
+          0
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          3
+        ],
+        "expected": [
+          2,
+          2
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Iki binary search: biri lower bound, biri upper bound.",
+      "💡 Ipucu 2: nums[mid] < target -> sol = mid + 1; degilse sag = mid.",
+      "💡 Ipucu 3: Ilk occurrence icin >= target, son occurrence icin > target kullan."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 95,
+    "title": "Dondurulmus Sirali Dizide Arama",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Dondurulmus (rotated",
+    "starter_code": "def search_rotated(arg0: list[int], arg1: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            4,
+            5,
+            6,
+            7,
+            0,
+            1,
+            2
+          ],
+          0
+        ],
+        "expected": 4
+      },
+      {
+        "input": [
+          [
+            4,
+            5,
+            6,
+            7,
+            0,
+            1,
+            2
+          ],
+          3
+        ],
+        "expected": -1
+      },
+      {
+        "input": [
+          [
+            1
+          ],
+          0
+        ],
+        "expected": -1
+      },
+      {
+        "input": [
+          [
+            1,
+            3
+          ],
+          3
+        ],
+        "expected": 1
+      },
+      {
+        "input": [
+          [
+            5,
+            1,
+            3
+          ],
+          5
+        ],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Her adimda bir yari SORTED (sol veya sag).",
+      "💡 Ipucu 2: nums[low] <= nums[mid] ise sol yari sirali; kontrol et target sol aralikta mi.",
+      "💡 Ipucu 3: Aksi halde sag yari sirali; kontrol et target sag aralikta mi."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 96,
+    "title": "Bir dizide peak element: nums[i-1] < nums[i] > ...",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir dizide peak element: nums[i-1] < nums[i] > nums[i+1].\nSadece komusuna bakarak (O(log n",
+    "starter_code": "def find_peak(arg0: int, arg1: int, arg2: int, arg3: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          3,
+          1
+        ],
+        "expected": 2
+      },
+      {
+        "input": [
+          1,
+          2,
+          1,
+          3,
+          5,
+          6,
+          4
+        ],
+        "expected": 5
+      },
+      {
+        "input": [
+          1
+        ],
+        "expected": 0
+      },
+      {
+        "input": [
+          1,
+          2
+        ],
+        "expected": 1
+      },
+      {
+        "input": [
+          2,
+          1
+        ],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: nums[mid] < nums[mid+1] ise peak sag tarafta.",
+      "💡 Ipucu 2: nums[mid] > nums[mid+1] ise peak sol tarafta (veya mid kendisi).",
+      "💡 Ipucu 3: low < high dongusu kullan, return low."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 97,
+    "title": "Iki Isaretci ile Palindrom Kontrolu",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir string'in palindrom olup olmadigini iki isaretci ile kontrol et.\nAlfabetik olmayan karakterleri (bosluk, noktalama, buyuk/kucuk harf",
+    "starter_code": "def is_palindrome_two_pointer(x: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": "A man, a plan, a canal: Panama",
+        "expected": true
+      },
+      {
+        "input": "race a car",
+        "expected": false
+      },
+      {
+        "input": " ",
+        "expected": true
+      },
+      {
+        "input": "No lemon, no melon",
+        "expected": true
+      },
+      {
+        "input": "12321",
+        "expected": true
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: left=0, right=len(s)-1 ile basla, iki uca isaretci koy.",
+      "💡 Ipucu 2: Alfanumerik degilse skip et (s[left].isalnum()).",
+      "💡 Ipucu 3: s[left].lower() != s[right].lower() ise False dondur."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 98,
+    "title": "Sag ve Sol En Uzun Karaktersiz Alt Dizi",
+    "category": "python-basics",
+    "level": "intermediate",
+    "description": "Bir string var. En uzun benzersiz (tekrarsiz",
+    "starter_code": "def length_of_longest_substring(x: str) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": "abcabcbb",
+        "expected": 3
+      },
+      {
+        "input": "bbbbb",
+        "expected": 1
+      },
+      {
+        "input": "pwwkew",
+        "expected": 3
+      },
+      {
+        "input": "",
+        "expected": 0
+      },
+      {
+        "input": "abcdef",
+        "expected": 6
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Sliding window: left ve right isaretcileri, bir set ile tutulan karakterleri izle.",
+      "💡 Ipucu 2: s[right] sette varsa, left'ten baslayarak setten cikar, left++.",
+      "💡 Ipucu 3: Her adimda max(max_len, right - left + 1) guncelle."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 99,
+    "title": "Iki Isaretci Ile Ters Ciftleri Say",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir dizide, dizideki elemanlarin toplami daha buyuk olan (ters",
+    "starter_code": "def count_inversions(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          2,
+          4,
+          1,
+          3,
+          5
+        ],
+        "expected": 3
+      },
+      {
+        "input": [
+          5,
+          4,
+          3,
+          2,
+          1
+        ],
+        "expected": 10
+      },
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "expected": 0
+      },
+      {
+        "input": [
+          1
+        ],
+        "expected": 0
+      },
+      {
+        "input": [],
+        "expected": 0
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Merge sort yaklasimi - bol ve fethet.",
+      "💡 Ipucu 2: Sayaci merge sirasinda artir: sol[i] > sag[j] ise count += len(sol) - i.",
+      "💡 Ipucu 3: Daha basit O(n^2): her cifti kontrol et (ama yavas)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 100,
+    "title": "Bir dizide en sik gecen K elemani bul",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir dizide en sik gecen K elemani bul.\nSiralama onemli degil.\nOrnek: nums=[1,1,1,2,2,3]",
+    "starter_code": "def top_k_frequent(arg0: list[int], arg1: int) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            1,
+            1,
+            2,
+            2,
+            3
+          ],
+          2
+        ],
+        "expected": [
+          1,
+          2
+        ]
+      },
+      {
+        "input": [
+          [
+            1
+          ],
+          1
+        ],
+        "expected": [
+          1
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            2,
+            3,
+            4,
+            5
+          ],
+          5
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "input": [
+          [
+            4,
+            4,
+            4,
+            5,
+            5,
+            6
+          ],
+          1
+        ],
+        "expected": [
+          4
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Counter ile frekanslari say.",
+      "💡 Ipucu 2: most_common(k) -> tek satirda coz (heap altyapili).",
+      "💡 Ipucu 3: Manuel heap: heappush/pop ile O(n log k)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 101,
+    "title": "Iki dizinin kesisimini (ortak elemanlar",
+    "category": "algorithms",
+    "level": "beginner",
+    "description": "Iki dizinin kesisimini (ortak elemanlar",
+    "starter_code": "def intersection(x: Any) -> float:\n    pass",
+    "test_cases": [],
+    "hints": [
+      "💡 Ipucu 1: set(nums1) & set(nums2) -> Pythonic cozum.",
+      "💡 Ipucu 2: Kucuk diziyi sete cevir, buyuk diziyi iterate et.",
+      "💡 Ipucu 3: Tekrarlari onle: result.append(x); seen.add(x) ile takip et."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 102,
+    "title": "En Uzun Consecutive Sequence",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir dizideki en uzun ard arda gelen sayi dizisinin uzunlugunu bul.\nO(n",
+    "starter_code": "def longest_consecutive(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          100,
+          4,
+          200,
+          1,
+          3,
+          2
+        ],
+        "expected": 4
+      },
+      {
+        "input": [
+          0,
+          3,
+          7,
+          2,
+          5,
+          8,
+          4,
+          6,
+          0,
+          1
+        ],
+        "expected": 9
+      },
+      {
+        "input": [],
+        "expected": 0
+      },
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4
+        ],
+        "expected": 4
+      },
+      {
+        "input": [
+          10
+        ],
+        "expected": 1
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Tum sayilari sete koy: num_set = set(nums).",
+      "💡 Ipucu 2: Sadece dizi baslangici olan sayilari kontrol et: x-1 not in num_set.",
+      "💡 Ipucu 3: Oradan baslayarak while x+1 in set: x+=1. count tut."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 103,
+    "title": "Iki string'in anagram olup olmadigini kontrol e...",
+    "category": "algorithms",
+    "level": "beginner",
+    "description": "Iki string'in anagram olup olmadigini kontrol et (harfler ayni, siralama farkli",
+    "starter_code": "def is_anagram(arg0: str, arg1: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          "anagram",
+          "nagaram"
+        ],
+        "expected": true
+      },
+      {
+        "input": [
+          "listen",
+          "silent"
+        ],
+        "expected": true
+      },
+      {
+        "input": [
+          "hello",
+          "world"
+        ],
+        "expected": false
+      },
+      {
+        "input": [
+          "a",
+          "b"
+        ],
+        "expected": false
+      },
+      {
+        "input": [
+          "",
+          ""
+        ],
+        "expected": true
+      }
+    ],
+    "hints": [
+      "💡 Ipucu 1: Counter ile frekans say: Counter(s) == Counter(t).",
+      "💡 Ipucu 2: Manuel: 26 harflik dizi, s'de +1, t'de -1; hepsi 0 mi?",
+      "💡 Ipucu 3: sorted(s) == sorted(t) ile kisa cozum (yavas ama basit)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 110,
+    "title": "Tekrarlayan Elemanları Bul",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Bir koleksiyonda birden fazla geçen elemanları bulun.\nKoleksiyon tipini sen seç: hangi yapı en verimli?",
+    "starter_code": "def find_duplicates(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int) -> list | list[int] | list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          3,
+          4,
+          2,
+          3,
+          5
+        ],
+        "expected": [
+          2,
+          3
+        ]
+      },
+      {
+        "input": [
+          "a",
+          "b",
+          "a",
+          "c",
+          "b"
+        ],
+        "expected": [
+          "a",
+          "b"
+        ]
+      },
+      {
+        "input": [
+          1,
+          2,
+          3
+        ],
+        "expected": []
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Birden fazla geçen elemanları saymak için 'frekans' sayacı lazım.",
+      "💡 İpucu 2: Counter veya dict.items() kullanabilirsin — hangisi daha okunur?",
+      "💡 İpucu 3: count > 1 olanları filtreleyip liste yap."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 111,
+    "title": "İki Listenin Kesişimi",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "İki koleksiyondaki ortak elemanları bul.\nPerformans senin kararın: O(n²",
+    "starter_code": "def intersection(nums: dict) -> list | list[int] | list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "a": [
+            1,
+            2,
+            3,
+            4
+          ],
+          "b": [
+            3,
+            4,
+            5,
+            6
+          ]
+        },
+        "expected": [
+          3,
+          4
+        ]
+      },
+      {
+        "input": {
+          "a": [
+            "x",
+            "y"
+          ],
+          "b": [
+            "y",
+            "z"
+          ]
+        },
+        "expected": [
+          "y"
+        ]
+      },
+      {
+        "input": {
+          "a": [
+            1,
+            2
+          ],
+          "b": [
+            3,
+            4
+          ]
+        },
+        "expected": []
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: İki döngü O(n*m). Daha hızlı yol: birini okumaya hazır yap.",
+      "💡 İpucu 2: Hangi veri yapısı arama (lookup) için O(1)?",
+      "💡 İpucu 3: set yapısı O(1) arama yapar. set(a) & set(b)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 112,
+    "title": "En Sık Geçen Eleman",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Bir koleksiyonda en çok geçen elemanı bul.\nBirden fazla aynı frekansta varsa ilkini döndür.",
+    "starter_code": "def most_frequent(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int) -> int | str:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          3,
+          2,
+          4,
+          2,
+          5
+        ],
+        "expected": 2
+      },
+      {
+        "input": [
+          "a",
+          "b",
+          "a",
+          "c"
+        ],
+        "expected": "a"
+      },
+      {
+        "input": [
+          1,
+          2
+        ],
+        "expected": 1
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Her elemanın frekansını tut.",
+      "💡 İpucu 2: collections.Counter kullanabilirsin veya dict.",
+      "💡 İpucu 3: counter.most_common(1) ile en sık olanı al."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 113,
+    "title": "Stack ve Queue Simülasyonu",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "FIFO (queue",
+    "starter_code": "def container(x: Any) -> float:\n    pass",
+    "test_cases": [],
+    "hints": [
+      "💡 İpucu 1: Closure kullan — dıştaki 'storage' korunur.",
+      "💡 İpucu 2: mode='queue' ise append/pop(0) veya collections.deque.",
+      "💡 İpucu 3: mode='stack' ise append/pop()."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 114,
+    "title": "Otomatik Gruplama",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "Çiftlerden (key, value",
+    "starter_code": "def group_pairs(arg0: list[str], arg1: list[str], arg2: list[str]) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            "A",
+            "elma"
+          ],
+          [
+            "A",
+            "armut"
+          ],
+          [
+            "B",
+            "muz"
+          ]
+        ],
+        "expected": {
+          "A": [
+            "elma",
+            "armut"
+          ],
+          "B": [
+            "muz"
+          ]
+        }
+      },
+      {
+        "input": [
+          [
+            "x",
+            1
+          ]
+        ],
+        "expected": {
+          "x": [
+            1
+          ]
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Sıradan dict'te her key için önce kontrol gerekir (if x not in d).",
+      "💡 İpucu 2: defaultdict(list) ile ilk erişimde boş liste oluşur.",
+      "💡 İpucu 3: 'd[key].append(value)' ile direkt ekle."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 115,
+    "title": "İç içe 1 seviye listeyi düzleştir",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "İç içe 1 seviye listeyi düzleştir.\n[[1,2], [3,4], [5]] → [1, 2, 3, 4, 5]\nHangi yol daha okunur?",
+    "starter_code": "def flatten(arg0: list[int], arg1: list[int], arg2: list[int]) -> list[int] | list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ]
+      },
+      {
+        "input": [
+          [
+            "a",
+            "b"
+          ],
+          [
+            "c"
+          ]
+        ],
+        "expected": [
+          "a",
+          "b",
+          "c"
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: List comprehension ile iç içe döngü.",
+      "💡 İpucu 2: functools.reduce + operator.add.",
+      "💡 İpucu 3: itertools.chain.from_iterable(nested)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 116,
+    "title": "Lazy Üretici",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "Bellek tasarrufu için generator (yield",
+    "starter_code": "def range_gen(n: int) -> list | list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": 5,
+        "expected": [
+          0,
+          1,
+          2,
+          3,
+          4
+        ]
+      },
+      {
+        "input": 0,
+        "expected": []
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: 'def' içinde 'yield' yaz → otomatik generator olur.",
+      "💡 İpucu 2: list(range_gen(5)) → [0, 1, 2, 3, 4]",
+      "💡 İpucu 3: range() de generator döndürür, aynı mantık."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 117,
+    "title": "Sıralı Dizide Hızlı Arama",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "Sıralı bir koleksiyonda belirli bir değeri hızlıca bul.\nO(n",
+    "starter_code": "def in_sorted(x: dict) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "sorted_items": [
+            1,
+            3,
+            5,
+            7,
+            9
+          ],
+          "value": 5
+        },
+        "expected": true
+      },
+      {
+        "input": {
+          "sorted_items": [
+            1,
+            3,
+            5,
+            7,
+            9
+          ],
+          "value": 4
+        },
+        "expected": false
+      },
+      {
+        "input": {
+          "sorted_items": [],
+          "value": 1
+        },
+        "expected": false
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Doğrusal arama O(n), binary search O(log n).",
+      "💡 İpucu 2: İki işaretçi (sol, sağ), orta nokta bul.",
+      "💡 İpucu 3: bisect modülü hazır binary search sağlar."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 118,
+    "title": "Top-K En Küçük Eleman",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "Bir koleksiyondaki en küçük K elemanı döndür.\nListeyi tam sıralama (O(n log n",
+    "starter_code": "def top_k_smallest(nums: dict) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "items": [
+            5,
+            2,
+            8,
+            1,
+            9,
+            3
+          ],
+          "k": 3
+        },
+        "expected": [
+          1,
+          2,
+          3
+        ]
+      },
+      {
+        "input": {
+          "items": [
+            10,
+            20,
+            5,
+            15
+          ],
+          "k": 2
+        },
+        "expected": [
+          5,
+          10
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: sorted(items)[:k] basit ama O(n log n).",
+      "💡 İpucu 2: heapq modülü heap (min-heap) verir.",
+      "💡 İpucu 3: heapq.nsmallest(k, items) — O(n log k)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 119,
+    "title": "Kelime Frekansı",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Bir metindeki kelime frekanslarını dict olarak döndür.\nNoktalama ve büyük/küçük harf duyarlı olmasın.",
+    "starter_code": "def word_frequency(text: str) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": "Python çok güzel. Python mülakat için.",
+        "expected": {
+          "python": 2,
+          "çok": 1,
+          "güzel": 1,
+          "mülakat": 1,
+          "için": 1
+        }
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: .lower() ve regex ile kelimeleri ayır.",
+      "💡 İpucu 2: Counter kullan — en kısa yol.",
+      "💡 İpucu 3: dict.items() ile manual sayım da olur."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 120,
+    "title": "Zip ile Ters Çevirme",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Aynı uzunluktaki birden fazla listeyi tek bir liste oluştur.\nListe-içinde-liste yap.\n[(1, 'a', 'x'",
+    "starter_code": "def cols_to_rows(arg0: list[int], arg1: list[str]) -> list[list[int | float]] | list[list[int]]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            "a",
+            "b",
+            "c"
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            "a"
+          ],
+          [
+            2,
+            "b"
+          ],
+          [
+            3,
+            "c"
+          ]
+        ]
+      },
+      {
+        "input": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ],
+          [
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            3,
+            5
+          ],
+          [
+            2,
+            4,
+            6
+          ]
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: zip(*columns) sihirli bir araç — 'unpacking' yapısı.",
+      "💡 İpucu 2: list(zip(*columns)) her satır tuple verir.",
+      "💡 İpucu 3: list içinde [list(row) for row in zip(*columns)] ile düzleştir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 121,
+    "title": "Çoklu Anahtara Göre Sıralama",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "Bir sözlük listesini çoklu anahtara göre sırala.\nÖnce yaşa göre artan, sonra ada göre alfabetik.\nYapıyı sen seç.",
+    "starter_code": "def sort_people(arg0: dict, arg1: dict, arg2: dict, arg3: dict) -> list[dict]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          {
+            "name": "Ali",
+            "age": 30
+          },
+          {
+            "name": "Ayşe",
+            "age": 25
+          },
+          {
+            "name": "Mehmet",
+            "age": 30
+          },
+          {
+            "name": "Ayşe",
+            "age": 25
+          }
+        ],
+        "expected": [
+          {
+            "name": "Ayşe",
+            "age": 25
+          },
+          {
+            "name": "Ayşe",
+            "age": 25
+          },
+          {
+            "name": "Ali",
+            "age": 30
+          },
+          {
+            "name": "Mehmet",
+            "age": 30
+          }
+        ]
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 122,
+    "title": "İki Listenin Simetrik Farkı",
+    "category": "list-dict",
+    "level": "beginner",
+    "description": "İki listeyi parametre al. Yalnızca bir listede bulunan elemanları\n(simetrik fark",
+    "starter_code": "def symmetric_diff(arg0: list[int], arg1: list[int]) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2,
+            3
+          ],
+          [
+            3,
+            4,
+            5
+          ]
+        ],
+        "expected": [
+          1,
+          2,
+          4,
+          5
+        ],
+        "description": "klasik simetrik fark"
+      },
+      {
+        "input": [
+          [
+            1,
+            1,
+            2
+          ],
+          [
+            2,
+            3
+          ]
+        ],
+        "expected": [
+          1,
+          3
+        ],
+        "description": "tekrarlar kaldirilir"
+      },
+      {
+        "input": [
+          [],
+          [
+            1,
+            2
+          ]
+        ],
+        "expected": [
+          1,
+          2
+        ],
+        "description": "bos liste"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: set.symmetric_difference() kullanabilirsin.",
+      "💡 İpucu 2: (a ^ b) küme operatörü de çalışır.",
+      "💡 İpucu 3: list döndürmek istersen sorted() ile sırala."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 123,
+    "title": "Bir cümleyi kelimelere ayır ama noktalama işare...",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir cümleyi kelimelere ayır ama noktalama işaretlerini kelimeye\nyapıştırarak bırak. Örn: \"Merhaba, dünya!\" -> [\"Merhaba,\", \"dünya!\"]\nYapıyı sen seç.",
+    "starter_code": "def split_keep_punct(x: str) -> list[str]:\n    pass",
+    "test_cases": [
+      {
+        "input": "Merhaba, dünya!",
+        "expected": [
+          "Merhaba,",
+          "dünya!"
+        ],
+        "description": "temel noktalama"
+      },
+      {
+        "input": "Python mı?",
+        "expected": [
+          "Python",
+          "mı?"
+        ],
+        "description": "soru işareti"
+      },
+      {
+        "input": "a b c",
+        "expected": [
+          "a",
+          "b",
+          "c"
+        ],
+        "description": "düz metin"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: re.findall(r\"\\w+[\\w]*\\S*\", s) deneyebilirsin.",
+      "💡 İpucu 2: Karakter karakter gezip harf olmayanları sınır olarak kullan.",
+      "💡 İpucu 3: split() noktalamayı kaybeder, findall daha iyi."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 124,
+    "title": "Bir dizide n/2'den fazla geçen elemanı bul",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir dizide n/2'den fazla geçen elemanı bul. Her zaman böyle bir\neleman var. Veri yapısı kullanmadan, O(1",
+    "starter_code": "def majority_element(arg0: int, arg1: int, arg2: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          3,
+          2,
+          3
+        ],
+        "expected": 3,
+        "description": "tek majority"
+      },
+      {
+        "input": [
+          2,
+          2,
+          1,
+          1,
+          1,
+          2,
+          2
+        ],
+        "expected": 2,
+        "description": "uzun dizi"
+      },
+      {
+        "input": [
+          1
+        ],
+        "expected": 1,
+        "description": "tek eleman"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Boyer-Moore Voting Algorithm kullan.",
+      "💡 İpucu 2: candidate tut, count artır/azalt.",
+      "💡 İpucu 3: Son aday kesin çözüm (garanti varken)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 125,
+    "title": "Bir dict ver",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Bir dict ver. Anahtarlarını value'ya göre artan sırala.\nValue eşitse alfabetik olarak anahtara göre sırala.\nSonuç: [(key, value",
+    "starter_code": "def sort_by_value(x: dict) -> list | list[list[str]]:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "banana": 3,
+          "apple": 3,
+          "cherry": 1
+        },
+        "expected": [
+          [
+            "cherry",
+            1
+          ],
+          [
+            "apple",
+            3
+          ],
+          [
+            "banana",
+            3
+          ]
+        ],
+        "description": "tie-break"
+      },
+      {
+        "input": {
+          "a": 2,
+          "b": 1
+        },
+        "expected": [
+          [
+            "b",
+            1
+          ],
+          [
+            "a",
+            2
+          ]
+        ],
+        "description": "basit"
+      },
+      {
+        "input": {},
+        "expected": [],
+        "description": "bos dict"
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 126,
+    "title": "İki tam sayının ortalamasını hesapla",
+    "category": "python-basics",
+    "level": "intermediate",
+    "description": "İki tam sayının ortalamasını hesapla. (a + b",
+    "starter_code": "def average(arg0: int, arg1: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          10,
+          20
+        ],
+        "expected": 15,
+        "description": "pozitif"
+      },
+      {
+        "input": [
+          -5,
+          5
+        ],
+        "expected": 0,
+        "description": "negatif + pozitif"
+      },
+      {
+        "input": [
+          3,
+          7
+        ],
+        "expected": 5,
+        "description": "tek sayi"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: (a & b) + ((a ^ b) >> 1) bitsel çözüm.",
+      "💡 İpucu 2: Sıradan: (a + b) // 2.",
+      "💡 İpucu 3: (a // 2) + (b // 2) + ((a % 2 + b % 2) // 2)."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 127,
+    "title": "DataFrame\\",
+    "category": "pandas",
+    "level": "intermediate",
+    "description": "Bir DataFrame\\'in sayısal sütunlarını satır bazlı normalize et.\nYani her satır için: (x - min",
+    "starter_code": "def row_normalize(arg0: list[int], arg1: list[int]) -> list[list[float]] | list[list[int]]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2
+          ],
+          [
+            3,
+            4
+          ]
+        ],
+        "expected": [
+          [
+            0.0,
+            1.0
+          ],
+          [
+            0.0,
+            1.0
+          ]
+        ],
+        "description": "basit kare"
+      },
+      {
+        "input": [
+          [
+            10,
+            20,
+            30
+          ]
+        ],
+        "expected": [
+          [
+            0.0,
+            0.5,
+            1.0
+          ]
+        ],
+        "description": "tek satir"
+      },
+      {
+        "input": [
+          [
+            5,
+            5
+          ]
+        ],
+        "expected": [
+          [
+            0,
+            0
+          ]
+        ],
+        "description": "sabit satir"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: df.select_dtypes(include=\"number\").sub(df.min(axis=1), axis=0).div(df.max(axis=1) - df.min(axis=1), axis=0)",
+      "💡 İpucu 2: axis=1 satır bazlı demek.",
+      "💡 İpucu 3: max == min olan satırlarda 0/0 olur, NaN döner."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 128,
+    "title": "Bir dizideki en uzun kesin artan altdizinin uzu...",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir dizideki en uzun kesin artan altdizinin uzunluğunu bul.\nÖrn: [10, 9, 2, 5, 3, 7, 101, 18] -> 4 (2, 3, 7, 18 veya 2, 5, 7, 101",
+    "starter_code": "def length_of_lis(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int, arg6: int, arg7: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          10,
+          9,
+          2,
+          5,
+          3,
+          7,
+          101,
+          18
+        ],
+        "expected": 4,
+        "description": "klasik"
+      },
+      {
+        "input": [
+          0,
+          1,
+          0,
+          3,
+          2,
+          3
+        ],
+        "expected": 4,
+        "description": "tekrar"
+      },
+      {
+        "input": [
+          7,
+          7,
+          7,
+          7
+        ],
+        "expected": 1,
+        "description": "sabit dizi"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Patience sorting / binary search ile O(n log n).",
+      "💡 İpucu 2: bisect_left ile uygun pozisyonu bul.",
+      "💡 İpucu 3: O(n²) DP de çalışır ama yavaş."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 129,
+    "title": "Çakışan aralıkları birleştir",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Çakışan aralıkları birleştir. Sonuç: çakışmayan, sıralı aralıklar.\nGirdi: [[1,3],[2,6],[8,10],[15,18]] -> [[1,6],[8,10],[15,18]]\nYapıyı sen seç.",
+    "starter_code": "def merge_intervals(arg0: list[int], arg1: list[int], arg2: list[int], arg3: list[int]) -> list | list[list[int]]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            3
+          ],
+          [
+            2,
+            6
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            15,
+            18
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            6
+          ],
+          [
+            8,
+            10
+          ],
+          [
+            15,
+            18
+          ]
+        ],
+        "description": "klasik"
+      },
+      {
+        "input": [
+          [
+            1,
+            4
+          ],
+          [
+            4,
+            5
+          ]
+        ],
+        "expected": [
+          [
+            1,
+            5
+          ]
+        ],
+        "description": "temas birlesir"
+      },
+      {
+        "input": [],
+        "expected": [],
+        "description": "bos liste"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: önce start'a göre sırala.",
+      "💡 İpucu 2: sıralı liste gezip current.end >= next.start ise birleştir.",
+      "💡 İpucu 3: stack mantığı da kullanılabilir."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 130,
+    "title": "DataFrame\\",
+    "category": "pandas",
+    "level": "intermediate",
+    "description": "DataFrame\\'deki kategorik sütunlarda NaN değerleri en sık geçen\ndeğerle (mode",
+    "starter_code": "def fill_categorical_nan(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "df with NaN in 'city' column",
+        "expected": "df with NaN filled by mode",
+        "description": "temel"
+      },
+      {
+        "input": "df all numeric",
+        "expected": "df unchanged",
+        "description": "sayisal dokunulmaz"
+      },
+      {
+        "input": "df no NaN",
+        "expected": "df unchanged",
+        "description": "bos is yok"
+      }
+    ],
+    "hints": [],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 131,
+    "title": "Listedeki Yinelenenleri Say",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "Bir listedeki elemanların kaç kez geçtiğini dict olarak döndür.\nSıra önemsiz. Yapıyı sen seç.",
+    "starter_code": "def count_items(arg0: int, arg1: int, arg2: int, arg3: int, arg4: int, arg5: int) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          2,
+          3,
+          3,
+          3
+        ],
+        "expected": {
+          "1": 1,
+          "2": 2,
+          "3": 3
+        },
+        "description": "basit"
+      },
+      {
+        "input": [],
+        "expected": {},
+        "description": "bos liste"
+      },
+      {
+        "input": [
+          "a",
+          "a",
+          "b"
+        ],
+        "expected": {
+          "a": 2,
+          "b": 1
+        },
+        "description": "string"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: collections.Counter(items).",
+      "💡 İpucu 2: dict.get(k, 0) + 1 döngüsü.",
+      "💡 İpucu 3: defaultdict(int) kullanabilirsin."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 132,
+    "title": "Deque Kullanarak Kayan Pencere Maksimumu",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "Bir dizide k boyutunda kayan pencere ile her pencerenin maksimumunu bul.\nO(n",
+    "starter_code": "def max_sliding_window(arg0: list[int], arg1: int) -> list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            3,
+            -1,
+            -3,
+            5,
+            3,
+            6,
+            7
+          ],
+          3
+        ],
+        "expected": [
+          3,
+          3,
+          5,
+          5,
+          6,
+          7
+        ],
+        "description": "klasik"
+      },
+      {
+        "input": [
+          [
+            1
+          ],
+          1
+        ],
+        "expected": [
+          1
+        ],
+        "description": "tek eleman"
+      },
+      {
+        "input": [
+          [
+            9,
+            11
+          ],
+          2
+        ],
+        "expected": [
+          11
+        ],
+        "description": "k=2"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: deque tut, index'leri sakla.",
+      "💡 İpucu 2: eski ve küçük index'leri çıkar.",
+      "💡 İpucu 3: her adımda deque[0] = pencere max."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 133,
+    "title": "İki listenin ortak elemanlarını, ilk listenin s...",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "İki listenin ortak elemanlarını, ilk listenin sırası koruyarak döndür.\nYapıyı sen seç.",
+    "starter_code": "def common_in_order(arg0: list[int], arg1: list[int]) -> list | list[int]:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            2,
+            3,
+            4
+          ],
+          [
+            3,
+            4,
+            5,
+            6
+          ]
+        ],
+        "expected": [
+          3,
+          4
+        ],
+        "description": "temel"
+      },
+      {
+        "input": [
+          [
+            1,
+            1,
+            2
+          ],
+          [
+            1,
+            2,
+            2
+          ]
+        ],
+        "expected": [
+          1,
+          1,
+          2
+        ],
+        "description": "tekrarlar korunur"
+      },
+      {
+        "input": [
+          [],
+          [
+            1
+          ]
+        ],
+        "expected": [],
+        "description": "bos liste"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: set(b) oluştur, sonra a'da gez, varsa ekle.",
+      "💡 İpucu 2: list comprehension ile tek satır.",
+      "💡 İpucu 3: dict.fromkeys ile tekrarı at."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 134,
+    "title": "Sözlük Anahtarlarını Swap ile Değiştir",
+    "category": "list-dict",
+    "level": "beginner",
+    "description": "Bir dict\\'in anahtarları ile değerlerini yer değiştir.\nDeğerler benzersiz olmalı. Yapıyı sen seç.",
+    "starter_code": "def invert_dict(x: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "a": 1,
+          "b": 2,
+          "c": 3
+        },
+        "expected": {
+          "1": "a",
+          "2": "b",
+          "3": "c"
+        },
+        "description": "temel"
+      },
+      {
+        "input": {
+          "x": "y"
+        },
+        "expected": {
+          "y": "x"
+        },
+        "description": "tekil"
+      },
+      {
+        "input": {},
+        "expected": {},
+        "description": "bos dict"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: {v: k for k, v in d.items()}",
+      "💡 İpucu 2: dict comprehension en kısa.",
+      "💡 İpucu 3: zip ile de yapılabilir: dict(zip(d.values(), d.keys()))."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 135,
+    "title": "Bir string\\'deki parantezlerin (",
+    "category": "data-structures",
+    "level": "beginner",
+    "description": "Bir string\\'deki parantezlerin (",
+    "starter_code": "def is_balanced(s: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": "()[]{}",
+        "expected": true,
+        "description": "hep dogru"
+      },
+      {
+        "input": "(]",
+        "expected": false,
+        "description": "yanlis cins"
+      },
+      {
+        "input": "([)]",
+        "expected": false,
+        "description": "ici ice yanlis"
+      },
+      {
+        "input": "{[]}",
+        "expected": true,
+        "description": "ici ice dogru"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: dict ile kapanis->acilis eslemesi tut.",
+      "💡 İpucu 2: stack oluştur, acilanlari push, kapananla esle.",
+      "💡 İpucu 3: en sonunda stack bos olmali."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 136,
+    "title": "Bir linked list\\'te döngü var mı? Tortoise-Hare...",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Bir linked list\\'te döngü var mı? Tortoise-Hare (Floyd",
+    "starter_code": "def has_cycle(nums: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": "linked list with cycle",
+        "expected": true,
+        "description": "dongulu"
+      },
+      {
+        "input": "linear list",
+        "expected": false,
+        "description": "duz"
+      },
+      {
+        "input": "single node no cycle",
+        "expected": false,
+        "description": "tekil"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: slow, fast = head, head.",
+      "💡 İpucu 2: slow birer, fast ikişer ilerler.",
+      "💡 İpucu 3: slow == fast ise dongu var."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 137,
+    "title": "İki dict\\'i birleştir",
+    "category": "list-dict",
+    "level": "intermediate",
+    "description": "İki dict\\'i birleştir. Çakışan anahtarlarda ikincinin değeri kazansın.\nYapıyı sen seç.",
+    "starter_code": "def merge_dicts(arg0: dict, arg1: dict) -> dict:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          {
+            "x": 1,
+            "y": 2
+          },
+          {
+            "y": 3,
+            "z": 4
+          }
+        ],
+        "expected": {
+          "x": 1,
+          "y": 3,
+          "z": 4
+        },
+        "description": "catisma"
+      },
+      {
+        "input": [
+          {
+            "a": 1
+          },
+          {
+            "b": 2
+          }
+        ],
+        "expected": {
+          "a": 1,
+          "b": 2
+        },
+        "description": "ayrik"
+      },
+      {
+        "input": [
+          {},
+          {
+            "k": "v"
+          }
+        ],
+        "expected": {
+          "k": "v"
+        },
+        "description": "bos a"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: {**a, **b} Python 3.5+ syntax.",
+      "💡 İpucu 2: a | b Python 3.9+ operatörü.",
+      "💡 İpucu 3: dict(b.items() + a.items()) eski yöntem."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 138,
+    "title": "Pivotlanmış Binary Search",
+    "category": "algorithms",
+    "level": "intermediate",
+    "description": "Döndürülmüş sıralı dizide bir hedef değeri bul. Varsa index, yoksa -1.\n[4,5,6,7,0,1,2] target=0 -> 4. O(log n",
+    "starter_code": "def search_rotated(arg0: list[int], arg1: int) -> int:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            4,
+            5,
+            6,
+            7,
+            0,
+            1,
+            2
+          ],
+          0
+        ],
+        "expected": 4,
+        "description": "pivot ortada"
+      },
+      {
+        "input": [
+          [
+            4,
+            5,
+            6,
+            7,
+            0,
+            1,
+            2
+          ],
+          3
+        ],
+        "expected": -1,
+        "description": "yok"
+      },
+      {
+        "input": [
+          [
+            1
+          ],
+          0
+        ],
+        "expected": -1,
+        "description": "tekil yok"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: Her adımda hangi yarının sıralı olduğunu belirle.",
+      "💡 İpucu 2: mid ile target'i karşılaştır.",
+      "💡 İpucu 3: duplicate'lerde O(log n) zorlaşır — LeetCode 81."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 139,
+    "title": "DataFrame\\",
+    "category": "pandas",
+    "level": "beginner",
+    "description": "Her sütun için NaN sayısını hesapla ve dict olarak döndür.\n{column_name: nan_count}. Veri yapısı senin.",
+    "starter_code": "def nan_counts(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "df with NaN in 2 cols",
+        "expected": "{'a': 1, 'b': 2}",
+        "description": "NaN var"
+      },
+      {
+        "input": "df no NaN",
+        "expected": "{}",
+        "description": "temiz"
+      },
+      {
+        "input": "df all NaN",
+        "expected": "{'a': 5}",
+        "description": "hepsi NaN"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: df.isna().sum().to_dict() tek satırda çözer.",
+      "💡 İpucu 2: dict comprehension ile: {c: df[c].isna().sum() for c in df.columns}.",
+      "💡 İpucu 3: Series.sum() NaN'leri 0 sayar."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 140,
+    "title": "İki string birbirinin permütasyonu mu? (aynı ka...",
+    "category": "python-basics",
+    "level": "beginner",
+    "description": "İki string birbirinin permütasyonu mu? (aynı karakterler farklı sırada",
+    "starter_code": "def is_permutation(arg0: str, arg1: str) -> bool:\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          "abc",
+          "bca"
+        ],
+        "expected": true,
+        "description": "temel"
+      },
+      {
+        "input": [
+          "abc",
+          "abd"
+        ],
+        "expected": false,
+        "description": "farkli karakter"
+      },
+      {
+        "input": [
+          "",
+          ""
+        ],
+        "expected": true,
+        "description": "bos-bos"
+      },
+      {
+        "input": [
+          "a",
+          "aa"
+        ],
+        "expected": false,
+        "description": "uzunluk farkli"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: sorted(a) == sorted(b) en kısa.",
+      "💡 İpucu 2: Counter(a) == Counter(b) karakter sayıları.",
+      "💡 İpucu 3: Önce len kontrolü yap, erken çık."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 141,
+    "title": "LRU Cache Uygulaması",
+    "category": "data-structures",
+    "level": "intermediate",
+    "description": "En az kullanılan elemanı (LRU",
+    "starter_code": "def __init__(x: str) -> str:\n    pass",
+    "test_cases": [
+      {
+        "input": "[put(1,1),put(2,2),get(1),put(3,3),get(2)]",
+        "expected": "[1, -1]",
+        "description": "klasik"
+      },
+      {
+        "input": "[put(2,1),get(2)]",
+        "expected": "[1]",
+        "description": "basit"
+      }
+    ],
+    "hints": [
+      "💡 İpucu 1: collections.OrderedDict.move_to_end.",
+      "💡 İpucu 2: dict + doubly linked list (Node sınıfı).",
+      "💡 İpucu 3: get hit ettiğinde sırayı sona taşı."
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 142,
+    "title": "Climbing Stairs",
+    "category": "dynamic-programming",
+    "level": "beginner",
+    "description": "n basamaklı bir merdiven var. Her adımda 1 veya 2 basamak çıkabilirsin.\nKaç farklı yol var?\nTemel DP: dp[i] = dp[i-1] + dp[i-2] (Fibonacci).",
+    "starter_code": "def climb_stairs(n: int) -> int:\n    # dp[1]=1, dp[2]=2, dp[i]=dp[i-1]+dp[i-2]\n    pass",
+    "test_cases": [
+      {
+        "input": 2,
+        "expected": 2
+      },
+      {
+        "input": 3,
+        "expected": 3
+      },
+      {
+        "input": 5,
+        "expected": 8
+      }
+    ],
+    "hints": [
+      "💡 dp[1]=1, dp[2]=2 ile başla",
+      "💡 dp[i] = dp[i-1] + dp[i-2] (1 veya 2 basamak)",
+      "💡 Son iki değeri değişkende tut, O(1) hafıza"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 143,
+    "title": "Coin Change",
+    "category": "dynamic-programming",
+    "level": "intermediate",
+    "description": "Verilen coin listesi ile amount kadar para üret.\nEn az kaç coin gerekir? Olası değilse -1.\nUnbounded knapsack.",
+    "starter_code": "def coin_change(coins: list, amount: int) -> int:\n    # dp[i] = i amount icin minimum coin sayisi\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "coins": [
+            1,
+            5,
+            10,
+            25
+          ],
+          "amount": 41
+        },
+        "expected": 4
+      },
+      {
+        "input": {
+          "coins": [
+            2
+          ],
+          "amount": 3
+        },
+        "expected": -1
+      }
+    ],
+    "hints": [
+      "💡 dp[0]=0, dp[i]=min(dp[i-coin]+1 for coin in coins)",
+      "💡 Sonsuz ile başlat (float('inf'))",
+      "💡 Her coin için tüm amount'ları güncelle"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 144,
+    "title": "0/1 Knapsack",
+    "category": "dynamic-programming",
+    "level": "intermediate",
+    "description": "Her item'ın weight ve value'su var. Kapasite W.\nMaksimum value elde et (her item en fazla 1 kez).",
+    "starter_code": "def knapsack(weights: list, values: list, W: int) -> int:\n    # dp[i][w] = ilk i item ile kapasite w icin max value\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "weights": [
+            1,
+            3,
+            4,
+            5
+          ],
+          "values": [
+            1,
+            4,
+            5,
+            7
+          ],
+          "W": 7
+        },
+        "expected": 9
+      }
+    ],
+    "hints": [
+      "💡 2D DP tablosu: dp[i][w]",
+      "💡 ya item'i al ya alma: max(dp[i-1][w], dp[i-1][w-weight]+value)",
+      "💡 1D DP'ye indir (geriye doğru döngü)"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 145,
+    "title": "Longest Common Subsequence",
+    "category": "dynamic-programming",
+    "level": "advanced",
+    "description": "İki string'in en uzun ortak alt dizisinin uzunluğu.\nLCS — klasik 2D DP.",
+    "starter_code": "def lcs(text1: str, text2: str) -> int:\n    # dp[i][j] = text1[:i] ve text2[:j] LCS\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "text1": "abcde",
+          "text2": "ace"
+        },
+        "expected": 3
+      },
+      {
+        "input": {
+          "text1": "abc",
+          "text2": "abc"
+        },
+        "expected": 3
+      }
+    ],
+    "hints": [
+      "💡 Eşit karakter: dp[i][j] = dp[i-1][j-1] + 1",
+      "💡 Farklı: max(dp[i-1][j], dp[i][j-1])",
+      "💡 Boş string base case"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 146,
+    "title": "Longest Increasing Subsequence",
+    "category": "dynamic-programming",
+    "level": "advanced",
+    "description": "Bir dizide en uzun kesin artan altdizinin uzunluğu.\nLIS — O(n log n) patience sorting ile optimal.",
+    "starter_code": "def length_of_lis(nums: list) -> int:\n    # O(n log n): bisect_left ile tails dizisi\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          10,
+          9,
+          2,
+          5,
+          3,
+          7,
+          101,
+          18
+        ],
+        "expected": 4
+      },
+      {
+        "input": [
+          0,
+          1,
+          0,
+          3,
+          2,
+          3
+        ],
+        "expected": 4
+      }
+    ],
+    "hints": [
+      "💡 tails[i] = uzunluk i+1 olan LIS'in minimum son elemanı",
+      "💡 bisect_left(tails, num) ile yer bul",
+      "💡 len(tails) = cevap"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 147,
+    "title": "Maximum Subarray (Kadane)",
+    "category": "dynamic-programming",
+    "level": "beginner",
+    "description": "Bir dizide en büyük toplam alt diziyi bul.\nKadane's algorithm — O(n).",
+    "starter_code": "def max_subarray(nums: list) -> int:\n    # current = max(current + num, num), best = max(best, current)\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          -2,
+          1,
+          -3,
+          4,
+          -1,
+          2,
+          1,
+          -5,
+          4
+        ],
+        "expected": 6
+      },
+      {
+        "input": [
+          1
+        ],
+        "expected": 1
+      }
+    ],
+    "hints": [
+      "💡 current_max ya current + num ya num",
+      "💡 best'i her adımda güncelle",
+      "💡 Hepsi negatifse en büyük negatif döner"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 148,
+    "title": "Word Break",
+    "category": "dynamic-programming",
+    "level": "intermediate",
+    "description": "String s, wordDict'teki kelimelerle oluşturulabilir mi?\nHer kelime en az 1 kez, sırasıyla.",
+    "starter_code": "def word_break(s: str, word_dict: list) -> bool:\n    # dp[i] = s[:i] wordDict ile olusturulabilir mi\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "s": "leetcode",
+          "word_dict": [
+            "leet",
+            "code"
+          ]
+        },
+        "expected": true
+      },
+      {
+        "input": {
+          "s": "catsandog",
+          "word_dict": [
+            "cats",
+            "dog",
+            "sand",
+            "and",
+            "cat"
+          ]
+        },
+        "expected": false
+      }
+    ],
+    "hints": [
+      "💡 dp[0]=True, dp[i] = any(dp[j] and s[j:i] in wordDict for j<i)",
+      "💡 set'e çevir lookup için O(1)",
+      "💡 İç döngüyü j üzerinde tut"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 149,
+    "title": "Edit Distance",
+    "category": "dynamic-programming",
+    "level": "advanced",
+    "description": "word1'i word2'ye çevirmek için minimum işlem.\nİşlemler: insert, delete, replace (her biri 1).",
+    "starter_code": "def edit_distance(word1: str, word2: str) -> int:\n    # dp[i][j] = word1[:i] → word2[:j] mesafesi\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "word1": "horse",
+          "word2": "ros"
+        },
+        "expected": 3
+      },
+      {
+        "input": {
+          "word1": "intention",
+          "word2": "execution"
+        },
+        "expected": 5
+      }
+    ],
+    "hints": [
+      "💡 Eşit karakter: dp[i][j] = dp[i-1][j-1]",
+      "💡 Farklı: 1 + min(insert, delete, replace)",
+      "💡 dp[0][j]=j, dp[i][0]=i"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 150,
+    "title": "Unique Paths",
+    "category": "dynamic-programming",
+    "level": "beginner",
+    "description": "m×n grid'de (0,0)'dan (m-1,n-1)'e sadece sağ/aşağı.\nKaç farklı yol?",
+    "starter_code": "def unique_paths(m: int, n: int) -> int:\n    # dp[i][j] = (0,0)'dan (i,j)'ye yol sayisi\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "m": 3,
+          "n": 7
+        },
+        "expected": 28
+      },
+      {
+        "input": {
+          "m": 3,
+          "n": 2
+        },
+        "expected": 3
+      }
+    ],
+    "hints": [
+      "💡 dp[i][j] = dp[i-1][j] + dp[i][j-1]",
+      "💡 dp[0][j]=dp[i][0]=1",
+      "💡 1D versiyon: sadece son satırı tut"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 151,
+    "title": "House Robber",
+    "category": "dynamic-programming",
+    "level": "beginner",
+    "description": "Bir dizi ev var. Yan yana iki ev soyamazsın.\nMaksimum para.",
+    "starter_code": "def rob(nums: list) -> int:\n    # dp[i] = ilk i ev icin max, dp[i] = max(dp[i-1], dp[i-2]+nums[i-1])\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          2,
+          3,
+          1
+        ],
+        "expected": 4
+      },
+      {
+        "input": [
+          2,
+          7,
+          9,
+          3,
+          1
+        ],
+        "expected": 12
+      }
+    ],
+    "hints": [
+      "💡 ya i. evi soy ya soymа",
+      "💡 dp[i] = max(dp[i-1], dp[i-2] + nums[i-1])",
+      "💡 O(1) hafıza: prev1, prev2"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 152,
+    "title": "Decode Ways",
+    "category": "dynamic-programming",
+    "level": "intermediate",
+    "description": "Sayı string'ini decode et. 'A'=1, 'B'=2, ..., 'Z'=26.\nKaç farklı yol var?",
+    "starter_code": "def num_decodings(s: str) -> int:\n    # dp[i] = s[:i] decode yol sayisi\n    pass",
+    "test_cases": [
+      {
+        "input": "12",
+        "expected": 2
+      },
+      {
+        "input": "226",
+        "expected": 3
+      },
+      {
+        "input": "06",
+        "expected": 0
+      }
+    ],
+    "hints": [
+      "💡 '0' ile başlayan geçersiz",
+      "💡 Tek hane: dp[i] += dp[i-1] (eğer s[i-1] != '0')",
+      "💡 İki hane: dp[i] += dp[i-2] (eğer 10 <= int(s[i-2:i]) <= 26)"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 153,
+    "title": "Partition Equal Subset Sum",
+    "category": "dynamic-programming",
+    "level": "intermediate",
+    "description": "Dizi iki alt kümeye bölünebilir mi, eşit toplam?\nSubset sum problemi.",
+    "starter_code": "def can_partition(nums: list) -> bool:\n    # toplam tekse False, dp[target] kontrol et\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          1,
+          5,
+          11,
+          5
+        ],
+        "expected": true
+      },
+      {
+        "input": [
+          1,
+          2,
+          3,
+          5
+        ],
+        "expected": false
+      }
+    ],
+    "hints": [
+      "💡 Hedef = toplam // 2",
+      "💡 Toplam tekse hemen False",
+      "💡 dp[s] = s toplam elde edilebilir mi"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 154,
+    "title": "Kth Largest Element",
+    "category": "heap",
+    "level": "beginner",
+    "description": "Bir dizideki k. en büyük elemanı bul.\nO(n log k) heap ile.",
+    "starter_code": "def find_kth_largest(nums: list, k: int) -> int:\n    # heapq.nlargest(k, nums)[-1] veya min-heap k boyutunda\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "nums": [
+            3,
+            2,
+            1,
+            5,
+            6,
+            4
+          ],
+          "k": 2
+        },
+        "expected": 5
+      },
+      {
+        "input": {
+          "nums": [
+            3,
+            2,
+            3,
+            1,
+            2,
+            4,
+            5,
+            5,
+            6
+          ],
+          "k": 4
+        },
+        "expected": 4
+      }
+    ],
+    "hints": [
+      "💡 heapq.nlargest(k, nums)[-1] O(n log k)",
+      "💡 Veya min-heap tut, boyut k'yı geçince pop",
+      "💡 Quickselect O(n) ortalama ama unstable"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 155,
+    "title": "Top K Frequent Elements",
+    "category": "heap",
+    "level": "intermediate",
+    "description": "En sık geçen k elemanı bul (sıra önemli değil).",
+    "starter_code": "def top_k_frequent(nums: list, k: int) -> list:\n    # Counter + heapq.nlargest\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "nums": [
+            1,
+            1,
+            1,
+            2,
+            2,
+            3
+          ],
+          "k": 2
+        },
+        "expected": [
+          1,
+          2
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Counter ile frekansları say",
+      "💡 heapq.nlargest(k, freq.items(), key=lambda x: x[1])",
+      "💡 Bucket sort O(n) ile de yapılabilir"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 156,
+    "title": "Merge K Sorted Lists",
+    "category": "heap",
+    "level": "advanced",
+    "description": "K tane sıralı listeyi tek sıralı liste olarak birleştir.\nList[list[int]] input olarak gelir.",
+    "starter_code": "def merge_k_sorted(lists: list) -> list:\n    # heapq ile k heap, her seferinde min pop\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            1,
+            4,
+            5
+          ],
+          [
+            1,
+            3,
+            4
+          ],
+          [
+            2,
+            6
+          ]
+        ],
+        "expected": [
+          1,
+          1,
+          2,
+          3,
+          4,
+          4,
+          5,
+          6
+        ]
+      }
+    ],
+    "hints": [
+      "💡 heapq.merge(*lists) kullan",
+      "💡 Veya manuel: (val, idx, list_idx) tuple heap'le",
+      "💡 Her adımda en küçük elemanı al"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 157,
+    "title": "Find Median from Data Stream",
+    "category": "heap",
+    "level": "advanced",
+    "description": "Veri akışından medyanı bul.\nİki heap: max-heap (küçük yarı) + min-heap (büyük yarı).",
+    "starter_code": "class MedianFinder:\n    def __init__(self):\n        # self.small = [], self.large = []\n        pass\n    def add_num(self, num: int) -> None:\n        pass\n    def find_median(self) -> float:\n        pass",
+    "test_cases": [
+      {
+        "ops": [
+          "MedianFinder",
+          "addNum",
+          "addNum",
+          "findMedian",
+          "addNum",
+          "findMedian"
+        ],
+        "args": [
+          [],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [],
+          [
+            3
+          ],
+          []
+        ],
+        "expected": [
+          null,
+          null,
+          null,
+          1.5,
+          null,
+          2.0
+        ]
+      }
+    ],
+    "hints": [
+      "💡 small (max-heap) ≤ large (min-heap)",
+      "💡 len(small) >= len(large), fark max 1",
+      "💡 Medyan: small[0] veya (small[0]+large[0])/2"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 158,
+    "title": "Task Scheduler",
+    "category": "heap",
+    "level": "intermediate",
+    "description": "Aynı task arasında en az n boşluk olmalı.\nMinimum süre?",
+    "starter_code": "def least_interval(tasks: list, n: int) -> int:\n    # max frekanslı task etrafında plan yap\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "tasks": [
+            "A",
+            "A",
+            "A",
+            "B",
+            "B",
+            "B"
+          ],
+          "n": 2
+        },
+        "expected": 8
+      }
+    ],
+    "hints": [
+      "💡 En sık task sayısı f_max",
+      "💡 minimum = max(len(tasks), (f_max-1)*(n+1) + max_count)",
+      "💡 max_count = f_max olan task sayısı"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 159,
+    "title": "K Closest Points to Origin",
+    "category": "heap",
+    "level": "intermediate",
+    "description": "Orijine en yakın K noktayı bul.",
+    "starter_code": "def k_closest(points: list, k: int) -> list:\n    # (uzaklık, x, y) tuple'a göre heap\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "points": [
+            [
+              1,
+              3
+            ],
+            [
+              -2,
+              2
+            ]
+          ],
+          "k": 1
+        },
+        "expected": [
+          [
+            -2,
+            2
+          ]
+        ]
+      }
+    ],
+    "hints": [
+      "💡 heapq.nsmallest(k, points, key=lambda p: p[0]**2 + p[1]**2)",
+      "💡 Veya max-heap k boyutunda, O(n log k)",
+      "💡 Uzaklık hesabı: sqrt yerine karesi yeterli"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 160,
+    "title": "Last Stone Weight",
+    "category": "heap",
+    "level": "beginner",
+    "description": "İki en ağır taşı çarpıştır, küçük olan kaybolur.\nSon kalan taşın ağırlığı?",
+    "starter_code": "def last_stone_weight(stones: list) -> int:\n    # heapq'yu max-heap gibi kullan (negatif değer)\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          2,
+          7,
+          4,
+          1,
+          8,
+          1
+        ],
+        "expected": 1
+      }
+    ],
+    "hints": [
+      "💡 heapq min-heap, ama max-heap için negatifleri sakla",
+      "💡 heapq.heappush/heappop ile yönet",
+      "💡 Eşitse ikisi de silinir"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 161,
+    "title": "Smallest Number Range",
+    "category": "heap",
+    "level": "advanced",
+    "description": "K sıralı dizide hepsinden en az 1 eleman içeren\nen küçük aralık [a,b]?",
+    "starter_code": "def smallest_range(nums: list) -> list:\n    # heap ile (max, idx, list_idx) takip\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          [
+            4,
+            10,
+            15,
+            24,
+            26
+          ],
+          [
+            0,
+            9,
+            12,
+            20
+          ],
+          [
+            5,
+            18,
+            22,
+            30
+          ]
+        ],
+        "expected": [
+          20,
+          24
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Her diziden ilk elemanı al, heap'e koy",
+      "💡 Min'i pop, max'i tut, aralık güncelle",
+      "💡 Pop edilen listeden sonraki elemana bak"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 162,
+    "title": "Valid Parentheses",
+    "category": "stack",
+    "level": "beginner",
+    "description": "Bir string'de parantezler dengeli mi?\n() [] {}",
+    "starter_code": "def is_valid(s: str) -> bool:\n    # stack, açılışta push, kapanışta pop ve match kontrol\n    pass",
+    "test_cases": [
+      {
+        "input": "()",
+        "expected": true
+      },
+      {
+        "input": "()[]{}",
+        "expected": true
+      },
+      {
+        "input": "(]",
+        "expected": false
+      }
+    ],
+    "hints": [
+      "💡 Stack'te son açılan parantezi tut",
+      "💡 Kapanış gelince stack'ten pop, eşleşmeli",
+      "💡 String sonunda stack boş olmalı"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 163,
+    "title": "Min Stack",
+    "category": "stack",
+    "level": "intermediate",
+    "description": "Stack O(1)'de push, pop, top, getMin.\nHer değer için şu ana kadarki min'i sakla.",
+    "starter_code": "class MinStack:\n    def __init__(self): pass\n    def push(self, val: int) -> None: pass\n    def pop(self) -> None: pass\n    def top(self) -> int: pass\n    def get_min(self) -> int: pass",
+    "test_cases": [
+      {
+        "ops": [
+          "MinStack",
+          "push",
+          "push",
+          "push",
+          "getMin",
+          "pop",
+          "getMin"
+        ],
+        "args": [
+          [],
+          [
+            -2
+          ],
+          [
+            0
+          ],
+          [
+            -3
+          ],
+          [],
+          [],
+          []
+        ],
+        "expected": [
+          null,
+          null,
+          null,
+          null,
+          -3,
+          null,
+          -2
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Tuple stack: (val, current_min)",
+      "💡 Her push'ta min(val, son_min)",
+      "💡 Pop'ta tuple'ı sil, top eski tuple'dan"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 164,
+    "title": "Daily Temperatures",
+    "category": "stack",
+    "level": "intermediate",
+    "description": "Her gün için, sonraki daha sıcak günü kaç gün sonra?\nYoksa 0.",
+    "starter_code": "def daily_temperatures(temps: list) -> list:\n    # monotonik stack, index tut\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          73,
+          74,
+          75,
+          71,
+          69,
+          72,
+          76,
+          73
+        ],
+        "expected": [
+          1,
+          1,
+          4,
+          2,
+          1,
+          1,
+          0,
+          0
+        ]
+      }
+    ],
+    "hints": [
+      "💡 Stack'te index tut",
+      "💡 Mevcut sıcaklık > stack top ise: farkı yaz, pop",
+      "💡 Stack monoton decreasing kalır"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 165,
+    "title": "Evaluate Reverse Polish Notation",
+    "category": "stack",
+    "level": "intermediate",
+    "description": "RPN ifadesini hesapla. \"2 1 + 3 *\" = 9.",
+    "starter_code": "def eval_rpn(tokens: list) -> int:\n    # stack, sayı push, operatör gelince 2 pop ve hesapla\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          "2",
+          "1",
+          "+",
+          "3",
+          "*"
+        ],
+        "expected": 9
+      },
+      {
+        "input": [
+          "4",
+          "13",
+          "5",
+          "/",
+          "+"
+        ],
+        "expected": 6
+      }
+    ],
+    "hints": [
+      "💡 Operatör değilse stack'e push",
+      "💡 Operatörse 2 sayıyı pop ve uygula",
+      "💡 Bölme Python negatif-yuvarlama farkına dikkat"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 166,
+    "title": "Largest Rectangle in Histogram",
+    "category": "stack",
+    "level": "advanced",
+    "description": "Histogram'da en büyük dikdörtgen alanı bul.",
+    "starter_code": "def largest_rectangle(heights: list) -> int:\n    # stack'te index tut, artan heights\n    pass",
+    "test_cases": [
+      {
+        "input": [
+          2,
+          1,
+          5,
+          6,
+          2,
+          3
+        ],
+        "expected": 10
+      }
+    ],
+    "hints": [
+      "💡 Stack'te artan yüksekliklerin indexleri",
+      "💡 heights[i] < stack top: genişlik = i - stack[-2] - 1",
+      "💡 Sonda sentinel -1 ile stack boşalt"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 167,
+    "title": "Implement Queue with Stacks",
+    "category": "queue",
+    "level": "beginner",
+    "description": "Sadece stack kullanarak queue implement et.\nAmortized O(1).",
+    "starter_code": "class MyQueue:\n    def __init__(self): pass\n    def push(self, x: int) -> None: pass\n    def pop(self) -> int: pass\n    def peek(self) -> int: pass\n    def empty(self) -> bool: pass",
+    "test_cases": [
+      {
+        "ops": [
+          "MyQueue",
+          "push",
+          "push",
+          "peek",
+          "pop",
+          "empty"
+        ],
+        "args": [
+          [],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [],
+          [],
+          []
+        ],
+        "expected": [
+          null,
+          null,
+          null,
+          1,
+          1,
+          false
+        ]
+      }
+    ],
+    "hints": [
+      "💡 İki stack: input + output",
+      "💡 Pop/peek'te output boşsa input'tan aktar",
+      "💡 Amortized O(1): her eleman max 2 kez taşınır"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 168,
+    "title": "Sliding Window Maximum",
+    "category": "queue",
+    "level": "advanced",
+    "description": "Her k-boyutlu pencerede maksimum.\nDeque (monotonic queue) — O(n).",
+    "starter_code": "def max_sliding_window(nums: list, k: int) -> list:\n    # deque, (idx, val) tut, monoton decreasing\n    pass",
+    "test_cases": [
+      {
+        "input": {
+          "nums": [
+            1,
+            3,
+            -1,
+            -3,
+            5,
+            3,
+            6,
+            7
+          ],
+          "k": 3
+        },
+        "expected": [
+          3,
+          3,
+          5,
+          5,
+          6,
+          7
+        ]
+      }
+    ],
+    "hints": [
+      "💡 deque sol = en büyük, monoton decreasing",
+      "💡 Yeni eleman daha büyükse arkadan küçükleri at",
+      "💡 i >= k-1 olduğunda deque[0] cevap"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 169,
+    "title": "Design Circular Queue",
+    "category": "queue",
+    "level": "intermediate",
+    "description": "Sabit boyutlu circular queue tasarla.\nFIFO, front/rear wrap eder.",
+    "starter_code": "class CircularQueue:\n    def __init__(self, k: int): pass\n    def en_queue(self, value: int) -> bool: pass\n    def de_queue(self) -> bool: pass\n    def front(self) -> int: pass\n    def rear(self) -> int: pass\n    def is_empty(self) -> bool: pass\n    def is_full(self) -> bool: pass",
+    "test_cases": [
+      {
+        "ops": [
+          "CircularQueue",
+          "enQueue",
+          "enQueue",
+          "enQueue",
+          "enQueue",
+          "rear",
+          "isFull",
+          "deQueue",
+          "enQueue",
+          "front"
+        ],
+        "args": [
+          [
+            3
+          ],
+          [
+            1
+          ],
+          [
+            2
+          ],
+          [
+            3
+          ],
+          [
+            4
+          ],
+          [],
+          [],
+          [],
+          [
+            4
+          ],
+          []
+        ],
+        "expected": [
+          null,
+          true,
+          true,
+          true,
+          false,
+          3,
+          true,
+          true,
+          true,
+          4
+        ]
+      }
+    ],
+    "hints": [
+      "💡 head/tail index, modulo ile wrap",
+      "💡 count ile boş/dolu takibi",
+      "💡 Veya bir slot boş bırak (head==tail → boş)"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 170,
+    "title": "Number of Recent Calls",
+    "category": "queue",
+    "level": "beginner",
+    "description": "Son 3000 ms içindeki ping sayısı.\nHer ping() çağrısı için.",
+    "starter_code": "class RecentCounter:\n    def __init__(self): pass\n    def ping(self, t: int) -> int:\n        # deque, t-3000'den küçükleri at\n        pass",
+    "test_cases": [
+      {
+        "ops": [
+          "RecentCounter",
+          "ping",
+          "ping",
+          "ping",
+          "ping"
+        ],
+        "args": [
+          [],
+          [
+            1
+          ],
+          [
+            100
+          ],
+          [
+            3001
+          ],
+          [
+            3002
+          ]
+        ],
+        "expected": [
+          null,
+          1,
+          2,
+          3,
+          3
+        ]
+      }
+    ],
+    "hints": [
+      "💡 deque'ya t ekle",
+      "💡 deque[0] < t-3000 ise pop",
+      "💡 len(deque) = cevap"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  },
+  {
+    "id": 171,
+    "title": "Moving Average from Data Stream",
+    "category": "queue",
+    "level": "intermediate",
+    "description": "Son N değerin ortalaması (sliding window).",
+    "starter_code": "class MovingAverage:\n    def __init__(self, size: int): pass\n    def next(self, val: float) -> float:\n        # queue, sum, window dolunca eskiyi cikar\n        pass",
+    "test_cases": [
+      {
+        "ops": [
+          "MovingAverage",
+          "next",
+          "next",
+          "next",
+          "next"
+        ],
+        "args": [
+          [
+            3
+          ],
+          [
+            1
+          ],
+          [
+            10
+          ],
+          [
+            3
+          ],
+          [
+            5
+          ]
+        ],
+        "expected": [
+          null,
+          1.0,
+          5.5,
+          4.666666666666667,
+          6.0
+        ]
+      }
+    ],
+    "hints": [
+      "💡 deque maxlen=size",
+      "💡 sum tut",
+      "💡 Her next: push + sum güncelle"
+    ],
+    "explanation": null,
+    "complexity": null,
+    "tags": [],
+    "related_concepts": [],
+    "related_question_ids": [],
+    "tutorial_slug": null,
+    "slug": null
+  }
+]
