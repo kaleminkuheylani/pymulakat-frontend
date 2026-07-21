@@ -12,7 +12,7 @@ import { getCategoryLabel, getCategoryUrl, legacyDisplayToDb } from "@/lib/categ
 import { getCategoryMeta } from "@/lib/api/categoryAPI";
 
 import { headers } from "next/headers";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import type { Metadata } from "next";
 // <Pin className="w-3 h-3 inline" /> Code splitting (2026-07-11, kalıcı): Workspace artık mobile/desktop
@@ -86,6 +86,7 @@ interface SEOQuestion {
   hints?: string[];
   tags?: string[];
   starter_code?: string;
+  question_type?: string;
 }
 
 // <Pin className="w-3 h-3 inline" /> SSR test case formatı: input / expected / actual / description.
@@ -116,6 +117,7 @@ function csvToSEOQuestion(q: ApiQuestion, actualId: number, slug: string): SEOQu
     level: q.level,
     category: q.category,
     slug,
+    question_type: q.question_type,
     starter_code: q.starter_code ?? undefined,
     hints,
     // test_cases detay sayfada ayrı çekiliyor, ama yine de hazır
@@ -173,6 +175,12 @@ async function fetchHasStudy(_questionId: number): Promise<boolean> {
   // CSV-only mimari: guide (study) backend'de tutuluyordu, artık kullanılmıyor.
   // CSV'de guide alanı yoksa hasStudy=false kabul ediyoruz.
   return false;
+}
+
+async function isAuthenticatedServer(): Promise<boolean> {
+  const h = await headers();
+  const cookieHeader = h.get("cookie") || "";
+  return cookieHeader.split(/; */).some((c) => c.trim() === "pymulakat_auth=1");
 }
 
 // ─── Related questions fetch (batch) ─────────────────────
@@ -404,6 +412,15 @@ export default async function Page({ params, searchParams }: PageProps) {
     findError = e?.message ?? String(e);
     process.stderr.write(`[detay] findQuestion ERR: ${findError} stack: ${e?.stack?.slice(0, 500)}\n`);
   }
+
+  // Public sorular herkese açık; private sorular için auth zorunlu.
+  if (apiQ) {
+    const isPublicQuestion = (apiQ.question_type ?? "public") === "public";
+    if (!isPublicQuestion && !(await isAuthenticatedServer())) {
+      const returnUrl = encodeURIComponent(`/interviews/${resolvedParams.category}/${resolvedParams.slug}`);
+      redirect(`/login?returnUrl=${returnUrl}`);
+    }
+  }
   try {
     ssrTestsRaw = await getQuestionTests(internalCat, resolvedParams.slug);
   } catch (e: any) {
@@ -446,6 +463,7 @@ export default async function Page({ params, searchParams }: PageProps) {
     tags: seoQ.tags || [],
     hints: seoQ.hints || [],
     slug: seoQ.slug || csvSlugify(seoQ.title),
+    question_type: seoQ.question_type,
   } : null;
   // SSR'dan gelen test case verisi — her iki client da prop olarak alır (misafirler dahil).
   const initialTests: any = ssrTests;

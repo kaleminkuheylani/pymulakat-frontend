@@ -210,14 +210,18 @@ export async function proxy(request: NextRequest) {
   }
 
   // 1.5) Auth-gated sayfalar: misafirler → /login (returnUrl ile geri döner)
-  // Merkeziyet: /dashboard* ve /interviews* member-only; /interviews/public hariç.
+  // Merkeziyet: /dashboard* ve /interviews* member-only; /interviews/public ve
+  // /interviews/{cat}/{slug} hariç (soru detay question_type kontrolü page.tsx'de).
   // - /interviews/public → public (misafir önizleme)
+  // - /interviews/{cat}/{slug} → page.tsx question_type + auth check ile yönetilir
   // - /python-online, /python-egitimi, /python-kodlari → public (misafir görür, save/AI yapamaz)
   // - /dashboard → member-only (kişisel veri + submission/AI)
   const AUTH_GATED_PREFIXES = ["/dashboard", "/interviews"];
+  const isQuestionDetail = /^\/interviews\/[^/]+\/[^/]+$/.test(pathname);
   const isGated =
     AUTH_GATED_PREFIXES.some((p) => pathname === p || pathname.startsWith(`${p}/`)) &&
-    !(pathname === "/interviews/public" || pathname.startsWith("/interviews/public/"));
+    !(pathname === "/interviews/public" || pathname.startsWith("/interviews/public/")) &&
+    !isQuestionDetail;
 
   if (isGated) {
     // 📌 Çok kaynaklı oturum kontrolü:
