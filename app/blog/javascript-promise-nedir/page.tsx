@@ -34,24 +34,16 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // Ana long-tail (en yuksek hacim)
-      "javascript promise nedir",
-      "javascript then catch",
-      "javascript promise all",
-      "javascript promise chain",
-      // Spesifik
-      "javascript fetch promise",
-      "javascript async await promise farki",
-      "javascript callback promise",
-      "javascript promise resolve reject",
-      "javascript promise allsettled",
-      "javascript promise race",
-      "javascript promise finally",
-      "javascript microtask",
-      "javascript callback hell",
-      // Closure + hoisting + async iliskili
-      "javascript async promise",
-      "javascript promise mülakat",
+      // 2026-07-22 keyword stuffing temizligi: 17+ → 9 unique phrase.
+      "promise nedir",
+      "then catch",
+      "promise all",
+      "promise chain",
+      "async await promise farki",
+      "callback hell",
+      "promise allsettled",
+      "promise race",
+      "javascript mulakat",
       // Genel
       "javascript mülakat soruları",
       "frontend developer mülakat",
@@ -95,7 +87,7 @@ const articleSchema = {
   dateModified: "2026-07-22",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "javascript promise nedir, then catch, promise all, promise chain, asenkron, callback hell",
+  keywords: "promise nedir, then catch, promise all, promise chain, asenkron, callback hell",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

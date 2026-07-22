@@ -30,23 +30,15 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // Ana long-tail
-      "javascript closure nedir",
-      "javascript closure örnekleri",
+      // 2026-07-22 keyword stuffing temizligi: 15 → 8 unique phrase.
+      "closure nedir",
       "javascript kapsam",
-      "closure mülakat sorusu",
-      // Spesifik kavramlar
+      "closure mulakat sorusu",
       "javascript hoisting",
-      "javascript this keyword",
       "javascript prototype",
-      "javascript event loop",
-      "javascript es6",
-      "javascript promise",
-      // Genel
-      "javascript mülakat soruları",
-      "frontend developer mülakat",
+      "javascript mulakat",
+      "frontend mulakat",
       "javascript ileri seviye",
-      "yazılım mülakat hazırlık",
       ...post.tags,
     ],
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
@@ -85,7 +77,7 @@ const articleSchema = {
   dateModified: "2026-07-19",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "javascript closure nedir, javascript kapsam, closure mülakat sorusu, javascript hoisting",
+  keywords: "closure nedir, javascript kapsam, mulakat sorusu, hoisting, prototype",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

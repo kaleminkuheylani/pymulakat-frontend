@@ -31,21 +31,15 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // Ana long-tail
-      "javascript hoisting nedir",
-      "javascript hoisting örnekleri",
-      "javascript var let const farkı",
-      "javascript function hoisting",
-      // Spesifik
-      "temporal dead zone javascript",
-      "javascript değişken yükseltme",
-      "javascript var yükseltme",
-      "javascript const yükseltme",
-      "javascript function declaration vs expression",
-      "javascript tdz",
-      // Closure ile iliskili
-      "javascript closure hoisting",
-      "javascript kapsam hoisting",
+      // 2026-07-22 keyword stuffing temizligi: 13+ → 8 unique phrase.
+      "hoisting nedir",
+      "var let const farki",
+      "function hoisting",
+      "temporal dead zone",
+      "degisken yukseltme",
+      "tdz javascript",
+      "javascript kapsam",
+      "javascript mulakat",
       // Genel
       "javascript mülakat soruları",
       "javascript ileri seviye",
@@ -88,7 +82,7 @@ const articleSchema = {
   dateModified: "2026-07-19",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "javascript hoisting nedir, var let const farkı, temporal dead zone, function hoisting, javascript mülakat",
+  keywords: "hoisting nedir, var let const farki, temporal dead zone, function hoisting, mulakat",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

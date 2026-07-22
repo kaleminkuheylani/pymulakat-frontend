@@ -34,27 +34,18 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // Ana long-tail (en yuksek hacim)
-      "javascript this keyword",
-      "javascript this nedir",
-      "javascript this arrow function",
-      "javascript call apply bind",
-      // Spesifik
-      "javascript this context",
-      "javascript bind nedir",
-      "javascript this strict mode",
-      "javascript this farki",
-      "javascript this call",
-      "javascript this apply",
-      "javascript arrow function this",
-      "javascript this binding",
-      "javascript class this",
-      "javascript this constructor",
-      // Diger ilgili
-      "javascript mülakat soruları",
-      "frontend developer mülakat",
+      // 2026-07-22 keyword stuffing temizligi: 20 → 8 unique phrase.
+      // Google modern SEO'da meta keywords'a bakmaz ama negatif sinyal
+      //   olarak degerlendirebilir. Tekrarli "javascript this X" yerine
+      //   essiz, dogal arama niyetlerine odaklanildi.
+      "this keyword nedir",
+      "call apply bind farkı",
+      "arrow function this",
+      "javascript context",
+      "javascript mulakat sorulari",
+      "frontend mulakat",
       "javascript ileri seviye",
-      "yazılım mülakat hazırlık",
+      "yazilim mulakat hazirlik",
       ...post.tags,
     ],
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
@@ -87,13 +78,13 @@ const articleSchema = {
   "@id": `${BASE_URL}/blog/javascript-this-keyword#article`,
   headline: "JavaScript this Keyword Nedir? — Bağlam (Context), Call, Apply, Bind (Örneklerle)",
   description:
-    "JavaScript this kavramı temelden: dört bağlam kuralı (global/function/method/new), arrow function farkı, call/apply/bind ile bağlam değiştirme, sık yapılan hatalar ve mülakat tuzakları.",
+    "this kavramı temelden: dört bağlam kuralı, arrow function farkı, call/apply/bind ile bağlam değiştirme ve sık yapılan hatalar. Mülakat odaklı örneklerle.",
   image: `${BASE_URL}/og-default.png`,
   datePublished: "2026-07-22",
   dateModified: "2026-07-22",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "javascript this keyword, this nedir, this arrow function, call apply bind, this context, this binding",
+  keywords: "this keyword, call apply bind, arrow function this, javascript context, javascript mulakat",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",
@@ -167,7 +158,7 @@ const breadcrumbSchema = {
   itemListElement: [
     { "@type": "ListItem", position: 1, name: "Ana Sayfa", item: BASE_URL },
     { "@type": "ListItem", position: 2, name: "PYBlog", item: `${BASE_URL}/blog/sifirdan-zirveye` },
-    { "@type": "ListItem", position: 3, name: "JavaScript this", item: `${BASE_URL}/blog/javascript-this-keyword` },
+    { "@type": "ListItem", position: 3, name: "this Keyword", item: `${BASE_URL}/blog/javascript-this-keyword` },
   ],
 };
 

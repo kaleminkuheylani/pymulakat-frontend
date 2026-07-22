@@ -98,7 +98,7 @@ const POSTS: BlogPostMeta[] = [
     slug: "javascript-this-keyword",
     title: "JavaScript this Keyword Nedir? — Bağlam (Context), Call, Apply, Bind (Örneklerle)",
     excerpt:
-      "JavaScript this kavramı temelden: dört bağlam kuralı (global/function/method/new), arrow function farkı, call/apply/bind ile bağlam değiştirme, sık yapılan hatalar ve mülakat tuzakları.",
+      "this kavramı temelden: dört bağlam kuralı, arrow function farkı, call/apply/bind ile bağlam değiştirme ve sık yapılan hatalar. Mülakat odaklı örneklerle.",
     date: "2026-07-22",
     readingMinutes: 12,
     tags: ["javascript", "this", "context", "call", "apply", "bind", "mülakat"],

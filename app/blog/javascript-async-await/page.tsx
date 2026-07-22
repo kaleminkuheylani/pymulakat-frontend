@@ -32,29 +32,18 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // Ana long-tail (en yuksek hacim)
-      "javascript async await",
-      "javascript promise nedir",
-      "javascript asenkron programlama",
-      "javascript callback hell",
-      // Spesifik
-      "javascript fetch api",
-      "javascript try catch async",
-      "javascript paralel await",
-      "javascript async await ornekleri",
-      "javascript promise all",
+      // 2026-07-22 keyword stuffing temizligi: 20 → 9 unique phrase.
+      // Google modern SEO'da meta keywords'a bakmaz ama negatif sinyal
+      //   olarak degerlendirebilir.
+      "async await nedir",
+      "javascript promise",
+      "asenkron programlama",
+      "callback hell",
+      "promise all",
       "javascript event loop",
-      "javascript microtask",
-      "javascript setTimeout",
-      "javascript callback function",
-      // Closure + hoisting iliskili
-      "javascript async closure",
-      "javascript hoisting async",
-      // Genel
-      "javascript mülakat soruları",
-      "frontend developer mülakat",
+      "javascript mulakat",
+      "frontend mulakat",
       "javascript ileri seviye",
-      "yazılım mülakat hazırlık",
       ...post.tags,
     ],
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
@@ -93,7 +82,7 @@ const articleSchema = {
   dateModified: "2026-07-19",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "javascript async await, promise nedir, asenkron programlama, callback hell, javascript event loop",
+  keywords: "async await, promise nedir, asenkron programlama, callback hell, event loop",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",
