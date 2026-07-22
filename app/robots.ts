@@ -35,7 +35,7 @@ export default function robots(): MetadataRoute.Robots {
           "Mediapartners-Google", // AdSense crawler
           "AdsBot-Google",
         ],
-        allow: "/",
+        allow: ["/", "/ads.txt"],
         disallow: [
           // Sadece auth gerektiren sayfalar — bunlar Google icin zaten anlamsiz
           "/admin/",
@@ -50,7 +50,7 @@ export default function robots(): MetadataRoute.Robots {
       // 2) Genel crawler'lar (Bing, Yandex, vb.) — aynı kurallar
       {
         userAgent: "*",
-        allow: ["/", "/api/sitemap"],
+        allow: ["/", "/ads.txt", "/api/sitemap"],
         disallow: [
           "/admin/",
           "/dashboard/",
