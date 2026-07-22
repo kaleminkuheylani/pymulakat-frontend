@@ -1,1 +1,27 @@
+# ads.txt (Authorized Digital Sellers) — IAB standard
+# Bu dosya, pythonmulakat.com üzerinde reklam satmaya yetkili
+# reklam satıcılarını (ad sellers) belirten IAB standardı bir dosyadır.
+# Google AdSense, doğrulama için bu dosyanın /ads.txt
+# konumunda olmasını zorunlu tutar.
+#
+# Format: <domain>, <publisher_id>, <relationship>, <certification_id>
+#   - domain: Reklam satıcısının domain'i (google.com)
+#   - publisher_id: Yayıncı kimliği (AdSense Publisher ID)
+#   - relationship: DIRECT (doğrudan) veya RESELLER (dolaylı)
+#   - certification_id: IAB CertifID (sadece DIRECT için, opsiyonel)
+#
+# Bu dosya 2026-07-22'de güncellendi (AdSense panel "Bulunamadı" cache workaround):
+#   Publisher ID: pub-6019538059362110
+#   Customer ID:  7965188708
+#   Saat dilimi:  UTC+03:00 (İstanbul)
+#   Hesap durumu: Açık, Onay: "Hazırlanıyor"
+#
+# Subdomain desteği (www.pythonmulakat.com, app.pythonmulakat.com):
+#   Eğer subdomain'ler de AdSense gösteriyorsa alt satırlara ekle.
+#   Şu an sadece apex domain (pythonmulakat.com) reklam gösteriyor.
+
+# Ana domain (apex)
+google.com, pub-6019538059362110, DIRECT, f08c47fec0942fa0
+
+# Subdomain (www) — eğer aktifse
 google.com, pub-6019538059362110, DIRECT, f08c47fec0942fa0
