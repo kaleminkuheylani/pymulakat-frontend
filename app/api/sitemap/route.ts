@@ -123,6 +123,7 @@ export async function GET(req: NextRequest) {
     { slug: "javascript-async-await", date: "2026-07-19" },
     { slug: "algoritma-labirenti", date: "2026-07-18" },
     { slug: "teknik-terimler", date: "2026-07-18" },
+    { slug: "javascript-promise-nedir", date: "2026-07-22" },
   ];
   const blogEntries: SitemapEntry[] = BLOG_POSTS.map((p) =>
     toEntry(`${BASE_URL}/blog/${p.slug}`, p.date, "monthly", 0.7),

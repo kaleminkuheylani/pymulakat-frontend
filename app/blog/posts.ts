@@ -85,6 +85,15 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 14,
     tags: ["javascript", "async", "await", "promise", "asenkron", "mülakat"],
   },
+  {
+    slug: "javascript-promise-nedir",
+    title: "JavaScript Promise Nedir? — Söz Dilim, .then(), .catch() ve Promise.all (Örneklerle)",
+    excerpt:
+      "JavaScript Promise kavramı temelden: sözcük anlamı, üç durumu (pending/fulfilled/rejected), .then().catch() zinciri, Promise.all/Promise.race, callback hell'den kurtuluş. SSS, benzetmeler, mülakat tuzakları.",
+    date: "2026-07-22",
+    readingMinutes: 13,
+    tags: ["javascript", "promise", "asenkron", "then", "catch", "mülakat", "temelden"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
