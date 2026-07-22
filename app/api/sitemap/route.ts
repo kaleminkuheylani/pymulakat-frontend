@@ -58,6 +58,7 @@ export async function GET(req: NextRequest) {
     toEntry(`${BASE_URL}/login`, now, "monthly", 0.5),
     toEntry(`${BASE_URL}/register`, now, "monthly", 0.6),
     toEntry(`${BASE_URL}/terms`, now, "yearly", 0.3),
+    toEntry(`${BASE_URL}/privacy`, now, "yearly", 0.3),
     toEntry(`${BASE_URL}/ads.txt`, now, "yearly", 0.1),
     toEntry(`${BASE_URL}/robots.txt`, now, "yearly", 0.1),
   ];

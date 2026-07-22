@@ -142,6 +142,16 @@ export default function Footer() {
 
               <li>
 
+                <a href="/privacy" className="hover:text-white transition-colors">
+
+                  Gizlilik Politikası
+
+                </a>
+
+              </li>
+
+              <li>
+
                 <a href="/login" className="hover:text-white transition-colors">
 
                   Giriş Yap

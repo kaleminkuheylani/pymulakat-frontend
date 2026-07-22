@@ -222,10 +222,10 @@ export default function AiFeedbackView({
 {displayText}
               </pre>
               {/* 2026-07-14: Yapay zeka hukuki disclaimer — kısa. */}
-              {/* Detaylı: /terms BÖLÜM 4 (Yapay Zeka Kullanımı). */}
+              {/* Detaylı: /terms BÖLÜM 2 (Yapay Zeka Kullanımı). */}
               <p className="mt-2 pt-2 border-t border-amber-500/15 text-[9px] text-amber-300/50 font-mono leading-relaxed">
                 ⓘ Yapay zeka tarafından üretilmiştir, tavsiye niteliğindedir ve
-                bağlayıcı değildir. Detay: <a href="/terms#bolum-4" target="_blank" rel="noopener" className="underline hover:text-amber-300">Kullanıcı Sözleşmesi Bölüm 4</a>.
+                bağlayıcı değildir. Detay: <a href="/terms#bolum-2" target="_blank" rel="noopener" className="underline hover:text-amber-300">Kullanım Şartları · Yapay Zekâ</a>.
               </p>
             </div>
           );

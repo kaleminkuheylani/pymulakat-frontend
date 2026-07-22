@@ -1,54 +1,20 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
+import Link from "next/link";
+import {
+  LegalShell,
+  PartTitle,
+  SectionBlock,
+  PLATFORM_NAME,
+  type Section,
+} from "@/components/legal/LegalShared";
 
 export const metadata: Metadata = {
-  title: "Kullanıcı Sözleşmesi",
+  title: "Kullanım Şartları",
   description:
-    "Python Mulakat yapay zeka destekli mülakat soru platformu kullanıcı sözleşmesi, KVKK aydınlatma metni, açık rıza beyanı ve Google AdSense reklam politikası.",
+    "Python Mulakat kullanıcı sözleşmesi, yapay zeka kullanım koşulları ve platform kullanım şartları.",
 };
 
-const LAST_UPDATED = "22 Temmuz 2026";
-const PLATFORM_NAME = "Python Mulakat";
-const PLATFORM_URL = "https://www.pythonmulakat.com";
-
-interface Section {
-  num: string;
-  title: string;
-  content: React.ReactNode;
-}
-
-function SectionBlock({ num, title, content }: Section) {
-  return (
-    <div className="border-l-2 border-zinc-800 pl-5 hover:border-zinc-600 transition-colors duration-200">
-      <p className="font-mono text-[10px] tracking-widest text-zinc-600 mb-2 uppercase">
-        {num}
-      </p>
-
-      <h2 className="text-[15px] font-semibold text-zinc-200 mb-3">
-        {title}
-      </h2>
-
-      <div className="text-[14px] leading-relaxed text-zinc-400 space-y-3">
-        {content}
-      </div>
-    </div>
-  );
-}
-
-function PartTitle({ num, title, color = "cyan" }: { num: string; title: string; color?: string }) {
-  return (
-    <div className="pt-8 pb-2 border-zinc-900 first:pt-0 first:border-t-0">
-      <p className={`font-mono text-[11px] tracking-widest uppercase mb-1 ${
-        color === "amber" ? "text-amber-500" : "text-cyan-500"
-      }`}>
-        BÖLÜM {num}
-      </p>
-      <h2 className="text-2xl font-bold text-zinc-100">{title}</h2>
-    </div>
-  );
-}
-
 export default function TermsPage() {
-  // ─── BÖLÜM 1: KULLANICI SÖZLEŞMESİ ─────────────────────────
   const sozlesme: Section[] = [
     {
       num: "1.1",
@@ -56,15 +22,19 @@ export default function TermsPage() {
       content: (
         <>
           <p>
-            Bu Kullanıcı Sözleşmesi ("Sözleşme"),{" "}
+            Bu Kullanıcı Sözleşmesi (&quot;Sözleşme&quot;),{" "}
             <strong className="text-zinc-200">{PLATFORM_NAME}</strong>{" "}
-            platformunu ("Platform") kullanan tüm ziyaretçiler ve kayıtlı
-            kullanıcılar ("Kullanıcı") için bağlayıcıdır.
+            platformunu (&quot;Platform&quot;) kullanan tüm ziyaretçiler ve
+            kayıtlı kullanıcılar (&quot;Kullanıcı&quot;) için bağlayıcıdır.
           </p>
           <p>
             Platformu ziyaret ederek ve/veya kayıt olarak Kullanıcı, bu
             Sözleşmenin tüm hükümlerini okuduğunu, anladığını ve kabul ettiğini
-            beyan eder.
+            beyan eder. Kişisel verilerin işlenmesine ilişkin kurallar ayrı{" "}
+            <Link href="/privacy" className="text-cyan-400 hover:underline">
+              Gizlilik Politikası
+            </Link>{" "}
+            sayfasında yer alır.
           </p>
         </>
       ),
@@ -80,18 +50,16 @@ export default function TermsPage() {
           </li>
           <li>
             <strong className="text-zinc-200">Tarayıcı tabanlı kod editörü:</strong>{" "}
-            Pyodide altyapısı ile kurulum gerektirmeyen Python çalıştırma
-            ortamı.
+            Pyodide altyapısı ile kurulum gerektirmeyen Python çalıştırma ortamı.
           </li>
           <li>
             <strong className="text-zinc-200">Otomatik test değerlendirmesi:</strong>{" "}
-            Her soru için yazılmış test case'leri, anlık puanlama ve geri
+            Her soru için yazılmış test case&apos;leri, anlık puanlama ve geri
             bildirim.
           </li>
           <li>
-            <strong className="text-zinc-200">Uzman rehberler:</strong>{" "}
-            Uzun form içerikli, SEO uyumlu, Türkçe Python öğretici
-            makaleleri.
+            <strong className="text-zinc-200">Uzman rehberler:</strong> Uzun form
+            içerikli, SEO uyumlu, Türkçe Python öğretici makaleleri.
           </li>
           <li>
             <strong className="text-zinc-200">Kişisel ilerleme takibi:</strong>{" "}
@@ -107,8 +75,8 @@ export default function TermsPage() {
       content: (
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            Platform, hizmetleri "olduğu gibi" esasıyla sunar. Kesintisiz veya
-            hatasız çalışma garantisi vermez.
+            Platform, hizmetleri &quot;olduğu gibi&quot; esasıyla sunar.
+            Kesintisiz veya hatasız çalışma garantisi vermez.
           </li>
           <li>
             Platform; önceden bildirim yapmaksızın içerik, özellik ve arayüz
@@ -121,9 +89,8 @@ export default function TermsPage() {
           <li>
             Platform; üçüncü taraf altyapı servislerinin (Railway, Vercel,
             Supabase, Google Analytics) kesintilerinden doğrudan sorumlu
-            değildir. Python çalışma zamanı (Pyodide) platformun kendi CDN'i
-            üzerinden sunulur; üçüncü taraf bir kod dağıtım servisine
-            (jsDelivr, unpkg vb.) bağımlılık yoktur.
+            değildir. Python çalışma zamanı (Pyodide) platformun kendi CDN&apos;i
+            üzerinden sunulur.
           </li>
         </ul>
       ),
@@ -174,10 +141,10 @@ export default function TermsPage() {
       title: "Fikri Mülkiyet",
       content: (
         <p>
-          Platformdaki tüm arayüzler, soru metinleri, test case'leri, tasarımlar
-          ve marka unsurları ilgili mevzuat kapsamında korunmaktadır. Kullanıcı,
-          Platform içeriklerini yalnızca kişisel ve eğitim amaçlı kullanma
-          hakkına sahiptir. İçeriklerin izinsiz çoğaltılması, ticari
+          Platformdaki tüm arayüzler, soru metinleri, test case&apos;leri,
+          tasarımlar ve marka unsurları ilgili mevzuat kapsamında korunmaktadır.
+          Kullanıcı, Platform içeriklerini yalnızca kişisel ve eğitim amaçlı
+          kullanma hakkına sahiptir. İçeriklerin izinsiz çoğaltılması, ticari
           kullanımı veya yeniden dağıtımı yasaktır.
         </p>
       ),
@@ -189,8 +156,12 @@ export default function TermsPage() {
         <p>
           Kullanıcı, istediği zaman hesabını kapatma hakkına sahiptir. Platform;
           bu Sözleşmeye aykırılık durumunda hesabı askıya alma veya kalıcı
-          olarak sonlandırma hakkını saklı tutar. Hesap kapatıldığında, Kullanıcı
-          Sözleşmesi Bölüm 2 (Aydınlatma Metni) kapsamındaki veriler silinir.
+          olarak sonlandırma hakkını saklı tutar. Hesap kapatıldığında kişisel
+          veriler{" "}
+          <Link href="/privacy" className="text-cyan-400 hover:underline">
+            Gizlilik Politikası
+          </Link>{" "}
+          kapsamında silinir veya anonimleştirilir.
         </p>
       ),
     },
@@ -211,711 +182,177 @@ export default function TermsPage() {
       title: "Uygulanacak Hukuk ve Yetki",
       content: (
         <p>
-          Bu Sözleşme Türkiye Cumhuriyeti hukukuna tabidir. Sözleşmeden
-          doğacak uyuşmazlıklarda Türkiye Cumhuriyeti mahkemeleri ve icra
-          daireleri yetkilidir.
+          Bu Sözleşme Türkiye Cumhuriyeti hukukuna tabidir. Sözleşmeden doğacak
+          uyuşmazlıklarda Türkiye Cumhuriyeti mahkemeleri ve icra daireleri
+          yetkilidir.
         </p>
       ),
     },
   ];
 
-  // ─── BÖLÜM 2: AYDINLATMA METNİ ─────────────────────────────
-  const aydinlatma: Section[] = [
-    {
-      num: "2.1",
-      title: "Veri Sorumlusu",
-      content: (
-        <p>
-          6698 sayılı Kişisel Verilerin Korunması Kanunu ("KVKK") uyarınca,
-          Kullanıcıların kişisel verilerinin işlenmesinde{" "}
-          <strong className="text-zinc-200">{PLATFORM_NAME}</strong> veri
-          sorumlusu sıfatıyla hareket etmektedir.
-        </p>
-      ),
-    },
-    {
-      num: "2.2",
-      title: "İşlenen Kişisel Veriler",
-      content: (
-        <>
-          <p>Platform kapsamında aşağıdaki kişisel veriler işlenmektedir:</p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>
-              <strong className="text-zinc-200">Kimlik bilgileri:</strong>{" "}
-              E-posta adresi (hesap oluşturma ve kimlik doğrulama amacıyla).
-            </li>
-            <li>
-              <strong className="text-zinc-200">Hesap bilgileri:</strong>{" "}
-              Kullanıcı adı, şifre (şifreler bcrypt algoritması ile
-              şifrelenmiş olarak saklanır).
-            </li>
-            <li>
-              <strong className="text-zinc-200">İşlem güvenliği:</strong>{" "}
-              IP adresi, oturum bilgileri, cihaz ve tarayıcı bilgileri.
-            </li>
-            <li>
-              <strong className="text-zinc-200">Kullanım verileri:</strong>{" "}
-              Çözülen sorular, başarı durumu, deneme sayıları, ilerleme
-              istatistikleri, toplam kod çalıştırma (oynama) sayacı
-              (<code className="text-zinc-400">play_count</code>).
-            </li>
-            <li>
-              <strong className="text-zinc-200">Kullanıcı kodları:</strong>{" "}
-              Platform üzerinde yazılan Python kodları sunucuya gönderilmez ve
-              veritabanında saklanmaz. Kodlar yalnızca kullanıcının tarayıcısında
-              çalıştırılır; istatistik (test sonucu, süre, ipucu sayısı) kaydı
-              tutulur.
-            </li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      num: "2.3",
-      title: "Kişisel Verilerin İşlenme Amaçları",
-      content: (
-        <ul className="list-disc pl-5 space-y-2">
-          <li>Hesap oluşturma, kimlik doğrulama ve oturum yönetimi</li>
-          <li>Platform üzerinden sunulan hizmetlerin sağlanması ve iyileştirilmesi</li>
-          <li>
-            Kullanıcının ilerlemesinin ve performansının takibi, kişiselleştirilmiş
-            deneyim sunulması
-          </li>
-          <li>Teknik sorunların tespiti, hata giderme ve güvenlik sağlama</li>
-          <li>Yasal yükümlülüklerin yerine getirilmesi</li>
-          <li>İstatistik ve analiz (anonimleştirilmiş)</li>
-        </ul>
-      ),
-    },
-    {
-      num: "2.4",
-      title: "Verilerin Toplanma Yöntemi ve Hukuki Sebepleri",
-      content: (
-        <p>
-          Veriler; Platform üzerindeki kayıt formu, hesap ayarları, soru çözme
-          etkileşimleri ve çerezler (cookies) aracılığıyla otomatik veya
-          yarı-otomatik yöntemlerle toplanmaktadır. İşleme hukuki sebepleri:
-          sözleşmenin kurulması ve ifası (KVKK md. 5/2-c), veri sorumlusunun
-          meşru menfaatleri (KVKK md. 5/2-f) ve açık rıza (KVKK md. 5/1).
-        </p>
-      ),
-    },
-    {
-      num: "2.5",
-      title: "Veri Saklama Süreleri (Retention Policy)",
-      content: (
-        <>
-          <p>
-            KVKK md. 5/e ("İşlendikleri amaçla bağlantılı, sınırlı ve ölçülü
-            olma") ve md. 7 ("Silme, yok etme veya anonim hale getirme")
-            kapsamında veriler aşağıdaki sürelerle sınırlıdır:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>
-              <strong className="text-zinc-200">Kod çalıştırma sayacı (play_count):</strong>{" "}
-              Son etkileşimden itibaren <strong>1 yıl</strong> sonra otomatik
-              olarak sıfırlanır. Silme talebinde anında silinir.
-            </li>
-            <li>
-              <strong className="text-zinc-200">Soru çözme attempt'leri:</strong>{" "}
-              Son etkileşimden itibaren <strong>2 yıl</strong> sonra
-              anonimleştirilir. Silme talebinde anında silinir.
-            </li>
-            <li>
-              <strong className="text-zinc-200">IP adresi / log kayıtları:</strong>{" "}
-              Güvenlik amacıyla <strong>30 gün</strong> sonra otomatik silinir.
-            </li>
-            <li>
-              <strong className="text-zinc-200">Anonim kullanım istatistikleri
-              (Google Analytics):</strong> Google'ın kendi saklama politikasına
-              tabidir (IP anonymization aktif).
-            </li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      num: "2.5",
-      title: "Verilerin Aktarımı",
-      content: (
-        <>
-          <p>
-            Kişisel veriler, aşağıdaki alıcı gruplarına aktarılabilir:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>
-              <strong className="text-zinc-200">Altyapı sağlayıcıları:</strong>{" "}
-              Supabase (veritabanı ve kimlik doğrulama, ABD), Railway (uygulama
-              sunucusu), Vercel (ön yüz barındırma).
-            </li>
-            <li>
-              <strong className="text-zinc-200">Analiz servisleri:</strong>{" "}
-              Google Analytics (anonim trafik analizi).
-            </li>
-            <li>
-              <strong className="text-zinc-200">Yasal merciler:</strong>{" "}
-              Yetkili kamu kurum ve kuruluşları, talep halinde.
-            </li>
-          </ul>
-          <p className="mt-2">
-            Yurt dışı veri aktarımı KVKK md. 9 kapsamında, ilgili ülkedeki
-            yeterlilik kararı veya uygun güvenceler çerçevesinde
-            gerçekleştirilmektedir.
-          </p>
-        </>
-      ),
-    },
-    {
-      num: "2.6",
-      title: "Verilerin Saklama Süresi",
-      content: (
-        <p>
-          Kişisel veriler, işlenme amacının gerektirdiği süre boyunca ve ilgili
-          mevzuatın öngördüğü azami süreler dahilinde saklanır. Kullanıcı
-          hesabının kapatılması halinde veriler, yasal yükümlülükler saklı
-          kalmak kaydıyla, makul bir süre içinde silinir veya anonimleştirilir.
-        </p>
-      ),
-    },
-    {
-      num: "2.7",
-      title: "KVKK Madde 11 Uyarınca Kullanıcı Hakları",
-      content: (
-        <>
-          <p>
-            Kullanıcı, KVKK'nın 11. maddesi uyarınca aşağıdaki haklara
-            sahiptir:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>Kişisel verilerinin işlenip işlenmediğini öğrenme</li>
-            <li>İşlenmişse buna ilişkin bilgi talep etme</li>
-            <li>
-              İşlenme amacını ve amacına uygun kullanılıp kullanılmadığını
-              öğrenme
-            </li>
-            <li>Yurt içinde/dışında aktarıldığı üçüncü kişileri öğrenme</li>
-            <li>
-              Eksik/yanlış işlenen verilerin düzeltilmesini isteme ve
-              yapılan işlemlerin üçüncü kişilere bildirilmesini talep etme
-            </li>
-            <li>
-              Şartlar oluştuğunda verilerin silinmesini/yok edilmesini isteme
-            </li>
-            <li>
-              Otomatik sistemlerle analiz sonucu aleyhine sonuç doğan
-              durumlarda itiraz etme
-            </li>
-          </ul>
-          <p className="mt-2">
-            Bu haklarınızı kullanmak için Platform üzerindeki hesap ayarları
-            bölümünden veya aşağıdaki iletişim kanallarından biri ile
-            başvurabilirsiniz.
-          </p>
-        </>
-      ),
-    },
-  ];
-
-  // ─── BÖLÜM 3: AÇIK RIZA METNİ ──────────────────────────────
-  const acikRiza: Section[] = [
-    {
-      num: "3.1",
-      title: "Açık Rızanın Kapsamı",
-      content: (
-        <p>
-          Bu bölüm, Platforma kayıt olurken ve hizmetleri kullanırken verdiğiniz
-          açık rızanın kapsamını belirler. Açık rıza, KVKK md. 5/1 uyarınca
-          belirli bir konuya ilişkin, bilgilendirmeye dayanan ve özgür iradeyle
-          açıklanan rızadır.
-        </p>
-      ),
-    },
-    {
-      num: "3.2",
-      title: "Rıza Verilen İşlem Türleri",
-      content: (
-        <ul className="list-disc pl-5 space-y-2">
-          <li>
-            <strong className="text-zinc-200">Hesap oluşturma ve yönetimi:</strong>{" "}
-            E-posta adresi, kullanıcı adı ve şifre bilgilerinin Platform
-            tarafından saklanması.
-          </li>
-          <li>
-            <strong className="text-zinc-200">Hizmet sunumu:</strong>{" "}
-            Çözülen soruların, deneme sonuçlarının (başarılı/başarısız test
-            sayısı, süre, kullanılan ipucu sayısı) kaydedilmesi.{" "}
-            <em className="text-zinc-300">
-              Kullanıcının yazdığı Python kodları işlenmez ve saklanmaz. Kod
-              çalıştırma işlemi kullanıcının tarayıcısında, kendi cihazında
-              gerçekleşir; Python çalışma zamanı (Pyodide) platformun kendi
-              CDN'i üzerinden, üçüncü taraf bir kod dağıtım servisine
-              başvurulmadan sunulur. Yazılan kod hiçbir sunucuya iletilmez.
-            </em>
-          </li>
-          <li>
-            <strong className="text-zinc-200">Güvenlik ve loglama:</strong>{" "}
-            IP adresi, oturum ve cihaz bilgilerinin teknik güvenlik amaçlı
-            işlenmesi.
-          </li>
-          <li>
-            <strong className="text-zinc-200">Çerez kullanımı:</strong>{" "}
-            Oturum çerezleri, tercih çerezleri ve anonim analiz çerezleri
-            (Google Analytics) için rıza.
-          </li>
-          <li>
-            <strong className="text-zinc-200">Reklam çerezleri (Google AdSense):</strong>{" "}
-            Platform üzerinde Google AdSense reklamları gösterilmektedir.
-            Google AdSense, reklam kişiselleştirme ve performans ölçümü
-            amacıyla çerez (cookie) ve benzer teknolojiler kullanır. Bu
-            çerezler, kullanıcının ilgi alanlarına göre reklam göstermek ve
-            reklam performansını ölçmek için işlenir. Detaylı bilgi için
-            lütfen <a href="https://policies.google.com/technologies/ads?hl=tr" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Google'ın reklam çerezi politikasını</a> inceleyiniz. Kullanıcı, <a href="https://adssettings.google.com/authenticated?hl=tr" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Google Reklam Ayarları</a> üzerinden kişiselleştirilmiş reklamları devre dışı bırakabilir.
-          </li>
-          <li>
-            <strong className="text-zinc-200">Üçüncü taraf altyapı:</strong>{" "}
-            Supabase, Railway ve Vercel'e veri aktarımı için rıza.
-          </li>
-        </ul>
-      ),
-    },
-    {
-      num: "3.3",
-      title: "Rızanın Geri Çekilmesi",
-      content: (
-        <p>
-          Kullanıcı, verdiği açık rızayı geri çekme hakkına sahiptir. Rıza
-          geri çekildiğinde, geri çekme tarihinden önce yapılan işlemelerin
-          hukuka uygunluğu etkilenmez. Rıza geri çekme talebi için hesap
-          ayarlarından veya iletişim kanallarından başvurulabilir. Rıza
-          geri çekildiğinde hesap kapatılır ve kişisel veriler mevzuat
-          çerçevesinde silinir.
-        </p>
-      ),
-    },
-    {
-      num: "3.4",
-      title: "Açık Rıza Beyanı",
-      content: (
-        <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg p-4 mt-3">
-          <p className="text-zinc-300 italic">
-            "Yukarıda yer alan Kullanıcı Sözleşmesi'ni, Aydınlatma Metni'ni ve
-            bu Açık Rıza Metni'ni okuduğumu, anladığımı; Platform üzerinden
-            sunulan hizmetler kapsamında kişisel verilerimin yukarıda
-            belirtilen amaçlarla işlenmesine, saklanmasına ve belirtilen
-            üçüncü taraflara aktarılmasına özgür irademle açık rıza
-            gösterdiğimi beyan ederim."
-          </p>
-        </div>
-      ),
-    },
-  ];
-
-  // ─── BÖLÜM 4: YAPAY ZEKA KULLANIMI VE SORUMLULUK REDDİ ─────────────
-  // 2026-07-14: AI Feedback özelliği production'a alındı. Aşağıdaki maddeler
-  //   - AI feedback disclaimer (tavsiye niteliğinde, bağlayıcı değil)
-  //   - Soruların AI denetiminden geçtiği vurgusu
-  //   - Hukuki sorumluluk reddi (DeepSeek V3 + 3. parti LLM)
-  //   - Veri işleme (kod, prompt) — sunucu taraflı
   const yapayZeka: Section[] = [
     {
-      num: "4.1",
+      num: "2.1",
       title: "Yapay Zeka Destekli Mülakat Soru Platformu",
       content: (
         <p>
-          {PLATFORM_NAME}, Python mülakat hazırlığı için <strong className="text-zinc-200">yapay zeka destekli bir mülakat soru platformudur</strong>.
-          Platform üzerinde sunulan tüm mülakat soruları, açıklamaları ve örnek
-          çözümler, insan editörler tarafından <strong className="text-zinc-200">yapay zeka denetiminden geçirilmiştir</strong>.
-          Yapay zeka, soru kalitesi, doğruluk ve müfredat uyumluluğu açısından
+          {PLATFORM_NAME}, Python mülakat hazırlığı için{" "}
+          <strong className="text-zinc-200">
+            yapay zeka destekli bir mülakat soru platformudur
+          </strong>
+          . Platform üzerinde sunulan tüm mülakat soruları, açıklamaları ve
+          örnek çözümler, insan editörler tarafından{" "}
+          <strong className="text-zinc-200">
+            yapay zeka denetiminden geçirilmiştir
+          </strong>
+          . Yapay zeka, soru kalitesi, doğruluk ve müfredat uyumluluğu açısından
           denetim aracı olarak kullanılmış; içeriklerin nihai onayı insan
           editörler tarafından verilmiştir.
         </p>
       ),
     },
     {
-      num: "4.2",
+      num: "2.2",
       title: "AI Feedback (Yapay Zeka Geri Bildirim) Özelliği",
       content: (
         <>
           <p>
-            Platform, yazdığınız Python kodunu analiz eden bir <strong className="text-zinc-200">AI Feedback</strong> özelliği
+            Platform, yazdığınız Python kodunu analiz eden bir{" "}
+            <strong className="text-zinc-200">AI Feedback</strong> özelliği
             sunmaktadır. Bu özellik, üçüncü taraf bir büyük dil modeli (LLM)
-            olan <strong className="text-zinc-200">DeepSeek V3</strong> üzerinden çalışmaktadır. AI Feedback
-            tarafından üretilen tüm yanıtlar, kod analizleri ve öneriler
-            <strong className="text-amber-400"> bilgilendirme amaçlıdır ve bağlayıcı değildir</strong>.
+            olan <strong className="text-zinc-200">DeepSeek V3</strong> üzerinden
+            çalışmaktadır. AI Feedback tarafından üretilen tüm yanıtlar, kod
+            analizleri ve öneriler{" "}
+            <strong className="text-amber-400">
+              bilgilendirme amaçlıdır ve bağlayıcı değildir
+            </strong>
+            .
           </p>
           <p>
-            AI Feedback çıktıları; mülakat değerlendirmesi, işe alım kararı
-            veya akademik not yerine geçmez. Kullanıcı, AI Feedback
-            çıktılarını kendi takdirine göre değerlendireceğini kabul eder.
+            AI Feedback çıktıları; mülakat değerlendirmesi, işe alım kararı veya
+            akademik not yerine geçmez. Kullanıcı, AI Feedback çıktılarını kendi
+            takdirine göre değerlendireceğini kabul eder.
           </p>
         </>
       ),
     },
     {
-      num: "4.3",
+      num: "2.3",
       title: "Hukuki Sorumluluk Reddi",
       content: (
         <>
           <p>
             Yapay zeka modelleri, eğitim verilerinin doğası gereği hata
-            yapabilir, yanlış veya eksik bilgi üretebilir. {PLATFORM_NAME},
-            AI Feedback çıktılarının doğruluğu, güncelliği veya belirli bir
-            amaca uygunluğu konusunda <strong className="text-amber-400">hiçbir garanti vermez</strong>.
+            yapabilir, yanlış veya eksik bilgi üretebilir. {PLATFORM_NAME}, AI
+            Feedback çıktılarının doğruluğu, güncelliği veya belirli bir amaca
+            uygunluğu konusunda{" "}
+            <strong className="text-amber-400">hiçbir garanti vermez</strong>.
           </p>
-          <p>
-            Aşağıdaki hallerde {PLATFORM_NAME} sorumlu tutulamaz:
-          </p>
+          <p>Aşağıdaki hallerde {PLATFORM_NAME} sorumlu tutulamaz:</p>
           <ul className="list-disc list-inside space-y-1 ml-2 text-zinc-400">
             <li>AI Feedback çıktılarının hatalı, yanıltıcı veya eksik olması,</li>
-            <li>Üçüncü taraf LLM sağlayıcısının (DeepSeek) kesintisi veya hizmet değişiklikleri,</li>
-            <li>AI Feedback çıktılarına dayanılarak alınan kararlar (mülakat, iş, akademik),</li>
-            <li>Yapay zeka tarafından üretilen kodun üçüncü taraflara ait fikri mülkiyet haklarını ihlal etmesi.</li>
+            <li>
+              Üçüncü taraf LLM sağlayıcısının (DeepSeek) kesintisi veya hizmet
+              değişiklikleri,
+            </li>
+            <li>
+              AI Feedback çıktılarına dayanılarak alınan kararlar (mülakat, iş,
+              akademik),
+            </li>
+            <li>
+              Yapay zeka tarafından üretilen kodun üçüncü taraflara ait fikri
+              mülkiyet haklarını ihlal etmesi.
+            </li>
           </ul>
         </>
       ),
     },
     {
-      num: "4.4",
+      num: "2.4",
       title: "AI Feedback Veri İşleme",
       content: (
         <>
           <p>
             AI Feedback kullandığınızda, yazdığınız Python kodu ve soruya
-            ilişkin meta veriler (soru başlığı, test çıktıları) sunucu
-            tarafında DeepSeek API'sine gönderilir. Bu veriler yapay zeka
-            tarafından işlenir, yanıt oluşturulur ve size iletilir.
+            ilişkin meta veriler (soru başlığı, test çıktıları) sunucu tarafında
+            DeepSeek API&apos;sine gönderilir. Bu veriler yapay zeka tarafından
+            işlenir, yanıt oluşturulur ve size iletilir.
           </p>
           <p>
-            Yapay zeka sağlayıcısı (DeepSeek) bu verileri <em>model eğitimi
-            için kullanmaz</em> (API kullanım koşulları gereği). Ancak,
-            hizmet kesintisi, veri sızıntısı veya üçüncü taraf politikası
-            değişikliklerinde {PLATFORM_NAME}'in sorumluluğu sınırlıdır.
+            Yapay zeka sağlayıcısı (DeepSeek) bu verileri{" "}
+            <em>model eğitimi için kullanmaz</em> (API kullanım koşulları
+            gereği). Ancak hizmet kesintisi, veri sızıntısı veya üçüncü taraf
+            politikası değişikliklerinde {PLATFORM_NAME}&apos;in sorumluluğu
+            sınırlıdır. Veri işleme detayları için{" "}
+            <Link href="/privacy" className="text-cyan-400 hover:underline">
+              Gizlilik Politikası
+            </Link>
+            &apos;na bakınız.
           </p>
         </>
       ),
     },
     {
-      num: "4.5",
+      num: "2.5",
       title: "Kendi API Anahtarınız (BYOK)",
       content: (
         <p>
-          AI Feedback hizmetini kendi DeepSeek API anahtarınızla
-          (<em>BYOK — Bring Your Own Key</em>) kullanabilirsiniz. Bu durumda
-          istekler doğrudan sizin anahtarınızla yapılır; aylık ücretsiz
-          hak sınırı uygulanmaz. API anahtarınız yalnızca sizin tarayıcınızda
-          saklanır (<code className="font-mono text-[12px] text-cyan-300">localStorage</code>), sunucularımıza iletilmez
-          (yalnızca DeepSeek'e iletilir).
+          AI Feedback hizmetini kendi DeepSeek API anahtarınızla (
+          <em>BYOK — Bring Your Own Key</em>) kullanabilirsiniz. Bu durumda
+          istekler doğrudan sizin anahtarınızla yapılır; aylık ücretsiz hak
+          sınırı uygulanmaz. API anahtarınız yalnızca sizin tarayıcınızda
+          saklanır (
+          <code className="font-mono text-[12px] text-cyan-300">
+            localStorage
+          </code>
+          ), sunucularımıza iletilmez (yalnızca DeepSeek&apos;e iletilir).
         </p>
       ),
     },
     {
-      num: "4.6",
+      num: "2.6",
       title: "Kabul Beyanı",
       content: (
         <div className="bg-amber-500/5 border border-amber-500/20 rounded-lg p-4 mt-3">
           <p className="text-zinc-300 italic">
-            "Platform üzerindeki soruların yapay zeka denetiminden geçirilmiş
-            olduğunu; AI Feedback özelliğinin bilgilendirme amaçlı, bağlayıcı
-            olmayan bir yapay zeka aracı olduğunu; yapay zeka çıktılarının
-            doğruluğu konusunda garanti verilmediğini; bu çıktılara dayanarak
-            alınan kararlarda sorumluluğun bana ait olduğunu okudum, anladım
-            ve kabul ediyorum."
+            &quot;Platform üzerindeki soruların yapay zeka denetiminden
+            geçirilmiş olduğunu; AI Feedback özelliğinin bilgilendirme amaçlı,
+            bağlayıcı olmayan bir yapay zeka aracı olduğunu; yapay zeka
+            çıktılarının doğruluğu konusunda garanti verilmediğini; bu çıktılara
+            dayanarak alınan kararlarda sorumluluğun bana ait olduğunu okudum,
+            anladım ve kabul ediyorum.&quot;
           </p>
         </div>
-      ),
-    },
-  ];
-
-  // ─── BÖLÜM 5: REKLAM POLİTİKASI (Google AdSense) ───────────────
-  // 2026-07-22: AdSense reklamları kullanıma alındı. Aşağıdaki maddeler
-  //   - Google AdSense reklam birimlerinin (In-Article, In-Feed,
-  //     Matched Content, Anchor) gösterildiğini açıkça belirtir
-  //   - Çerez kullanımı, kişiselleştirme ve kapatma yolları
-  //   - Üçüncü taraf reklam politikası (IAB standards)
-  //   - Editoryal bağımsızlık (reklamveren etkisi yok)
-  //   - Reklam gelirinin platform sürdürülebilirliği için kullanıldığı
-  const reklamPolitikasi: Section[] = [
-    {
-      num: "5.1",
-      title: "Platformda Reklam Gösterimi",
-      content: (
-        <>
-          <p>
-            {PLATFORM_NAME}, sürdürülebilir hizmet sunabilmek amacıyla{" "}
-            <strong className="text-zinc-200">Google AdSense</strong>{" "}
-            platformu üzerinden reklam yayınlamaktadır. Platform üzerinde
-            aşağıdaki reklam formatları kullanılmaktadır:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>
-              <strong className="text-zinc-200">In-Article Reklam:</strong>{" "}
-              Soru detay sayfalarında, içerik akışı içinde yer alan doğal
-              formatlı reklam.
-            </li>
-            <li>
-              <strong className="text-zinc-200">In-Feed Reklam:</strong>{" "}
-              Kategori sayfalarında, soru listesi içine yerleştirilen native
-              reklam.
-            </li>
-            <li>
-              <strong className="text-zinc-200">Matched Content:</strong>{" "}
-              Sayfa altında (footer üstü), ilgili içerik önerisi formatında
-              reklam.
-            </li>
-            <li>
-              <strong className="text-zinc-200">Anchor Reklam (Mobil):</strong>{" "}
-              Mobil cihazlarda ekranın alt kısmında sabitlenen (sticky) küçük
-              reklam.
-            </li>
-          </ul>
-          <p className="mt-2">
-            Reklam yayıncısı: <strong className="text-zinc-200">Google LLC</strong> (AdSense Publisher ID:{" "}
-            <code className="font-mono text-[12px] text-cyan-300">pub-6019538059362110</code>). Yayıncı bilgileri{" "}
-            <a
-              href="https://www.pythonmulakat.com/ads.txt"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:underline"
-            >
-              ads.txt
-            </a>{" "}
-            dosyasında herkese açık olarak yayınlanmaktadır (IAB Authorized
-            Digital Sellers standardı).
-          </p>
-        </>
-      ),
-    },
-    {
-      num: "5.2",
-      title: "Çerezler ve Kişiselleştirme",
-      content: (
-        <>
-          <p>
-            Google AdSense, reklam göstermek ve performans ölçümü için çerez
-            (cookie) ve benzer yerel depolama teknolojileri kullanır. Bu
-            çerezler aşağıdaki amaçlarla kullanılır:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>Kullanıcının ilgi alanlarına göre reklam kişiselleştirme,</li>
-            <li>Aynı reklamın tekrar tekrar gösterilmesini önleme,</li>
-            <li>Reklam performansını ölçme (gösterim, tıklama, dönüşüm),</li>
-            <li>Sahte trafik ve reklam sahteciliğini tespit etme.</li>
-          </ul>
-          <p className="mt-2">
-            Google'ın reklam çerezlerini nasıl kullandığına ilişkin detaylı
-            bilgi için{" "}
-            <a
-              href="https://policies.google.com/technologies/ads?hl=tr"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-cyan-400 hover:underline"
-            >
-              Google'ın reklam politikasını
-            </a>{" "}
-            inceleyebilirsiniz.
-          </p>
-        </>
-      ),
-    },
-    {
-      num: "5.3",
-      title: "Kişiselleştirilmiş Reklamları Devre Dışı Bırakma",
-      content: (
-        <>
-          <p>
-            Kullanıcı, kişiselleştirilmiş reklamları aşağıdaki yöntemlerle
-            devre dışı bırakabilir:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>
-              <a
-                href="https://adssettings.google.com/authenticated?hl=tr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:underline"
-              >
-                Google Reklam Ayarları
-              </a>{" "}
-              sayfasından kişiselleştirilmiş reklam tercihini kapatma.
-            </li>
-            <li>
-              <a
-                href="https://optout.aboutads.info/?lang=EN"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:underline"
-              >
-                Digital Advertising Alliance (DAA)
-              </a>{" "}
-              veya{" "}
-              <a
-                href="https://www.youronlinechoices.com/tr/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-cyan-400 hover:underline"
-              >
-                EDAA (Avrupa)
-              </a>{" "}
-              üzerinden sektörel opt-out.
-            </li>
-            <li>
-              Tarayıcı ayarlarından çerezleri engelleme veya üçüncü taraf
-              çerezleri kapatma (reklam kişiselleştirmesi sona erer, ancak
-              reklam gösterimi devam edebilir).
-            </li>
-          </ul>
-          <p className="mt-2">
-            Not: Kişiselleştirme kapatıldığında, kullanıcıya ilgi alanıyla
-            ilgili olmayan genel reklamlar gösterilmeye devam eder.
-          </p>
-        </>
-      ),
-    },
-    {
-      num: "5.4",
-      title: "Editoryal Bağımsızlık",
-      content: (
-        <p>
-          {PLATFORM_NAME} üzerindeki tüm içerikler (soru metinleri, açıklamalar,
-          rehberler, blog yazıları) editör ekibimiz tarafından bağımsız olarak
-          üretilir. <strong className="text-zinc-200">Reklamverenler, içerikler üzerinde hiçbir editoryal kontrole sahip değildir.</strong>{" "}
-          Bir reklamverenin talebi, soru içeriğini, doğru cevabı veya
-          açıklamayı etkilemez. Reklam geliri yalnızca platform
-          sürdürülebilirliği (altyapı, içerik üretimi, moderasyon) için
-          kullanılır.
-        </p>
-      ),
-    },
-    {
-      num: "5.5",
-      title: "Reklam Yerleşimi Politikası",
-      content: (
-        <>
-          <p>
-            Kullanıcı deneyimini korumak için aşağıdaki ilkelere uyulur:
-          </p>
-          <ul className="list-disc pl-5 space-y-2 mt-2">
-            <li>
-              Reklamlar, içerik ile karışmayacak şekilde "Reklam" etiketiyle
-              veya standart formatlarla gösterilir.
-            </li>
-            <li>
-              Çalıştırılabilir kod (kod editörü) ve test sonuçları gibi
-              kritik UI alanlarında reklam gösterilmez.
-            </li>
-            <li>
-              Misafir kullanıcılar için reklamsız deneyim mevcut değildir;
-              kayıtlı kullanıcılar için ileride premium üyelik modeli
-              planlanmaktadır.
-            </li>
-            <li>
-              Çocuklara yönelik içerik (13 yaş altı) barındırmadığımızdan,
-              AdSense "çocuklara yönelik site" kategorisinde değerlendirilmez.
-            </li>
-          </ul>
-        </>
-      ),
-    },
-    {
-      num: "5.6",
-      title: "Şikâyet ve Geri Bildirim",
-      content: (
-        <p>
-          Platformda gösterilen bir reklamın uygunsuz, yanıltıcı veya politika
-          ihlali içerdiğini düşünüyorsanız, lütfen hesap ayarlarındaki
-          "Geri bildirim" bölümünden veya iletişim kanallarından bize
-          bildirin. Reklamla ilgili Google politikası ihlalini doğrudan{" "}
-          <a
-            href="https://support.google.com/adsense/answer/113978?hl=tr"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-cyan-400 hover:underline"
-          >
-            Google'a
-          </a>{" "}
-          da bildirebilirsiniz. Şikâyetler 5 iş günü içinde değerlendirilir
-          ve uygunsuz reklamlar kaldırılır.
-        </p>
       ),
     },
   ];
 
   return (
-    <main className="min-h-screen bg-zinc-950 text-zinc-100">
-      <div className="max-w-2xl mx-auto px-6 py-16">
+    <LegalShell
+      badge="Yasal Metin · Kullanım Şartları"
+      title="Kullanım Şartları"
+      otherHref="/privacy"
+      otherLabel="Gizlilik Politikası"
+    >
+      <PartTitle num="1" title="Kullanıcı Sözleşmesi" color="cyan" />
+      <div className="space-y-10 mt-6">
+        {sozlesme.map((s) => (
+          <SectionBlock key={s.num} {...s} />
+        ))}
+      </div>
 
-        {/* Badge */}
-        <div className="inline-flex items-center gap-2 bg-zinc-900 border border-zinc-800 rounded px-3 py-1.5 mb-10">
-          <span className="w-1.5 h-1.5 rounded-full bg-cyan-500 animate-pulse" />
-          <span className="font-mono text-[11px] text-zinc-500">
-            Yasal Metinler · Güncel
-          </span>
-        </div>
-
-        {/* Title */}
-        <h1 className="text-3xl font-semibold text-zinc-100 mb-2">
-          Kullanıcı Sözleşmesi, Aydınlatma ve Açık Rıza Metni
-        </h1>
-        <p className="font-mono text-[13px] text-zinc-600 mb-14">
-          Son güncelleme: {LAST_UPDATED}
-        </p>
-
-        {/* BÖLÜM 1 */}
-        <PartTitle num="1" title="Kullanıcı Sözleşmesi" color="cyan" />
+      <div id="bolum-2" className="mt-20">
+        <PartTitle
+          num="2"
+          title="Yapay Zeka Kullanımı ve Sorumluluk Reddi"
+          color="amber"
+        />
         <div className="space-y-10 mt-6">
-          {sozlesme.map((s) => (
+          {yapayZeka.map((s) => (
             <SectionBlock key={s.num} {...s} />
           ))}
         </div>
-
-        {/* BÖLÜM 2 */}
-        <div className="mt-20">
-          <PartTitle num="2" title="Aydınlatma Metni (KVKK md. 10)" color="amber" />
-          <div className="space-y-10 mt-6">
-            {aydinlatma.map((s) => (
-              <SectionBlock key={s.num} {...s} />
-            ))}
-          </div>
-        </div>
-
-        {/* BÖLÜM 3 */}
-        <div className="mt-20">
-          <PartTitle num="3" title="Açık Rıza Metni (KVKK md. 5/1)" color="cyan" />
-          <div className="space-y-10 mt-6">
-            {acikRiza.map((s) => (
-              <SectionBlock key={s.num} {...s} />
-            ))}
-          </div>
-        </div>
-
-        {/* BÖLÜM 4 — 2026-07-14: Yapay Zeka Kullanımı ve Sorumluluk Reddi */}
-        <div className="mt-20">
-          <PartTitle num="4" title="Yapay Zeka Kullanımı ve Sorumluluk Reddi" color="amber" />
-          <div className="space-y-10 mt-6">
-            {yapayZeka.map((s) => (
-              <SectionBlock key={s.num} {...s} />
-            ))}
-          </div>
-        </div>
-
-        {/* BÖLÜM 5 — 2026-07-22: Reklam Politikası (Google AdSense) */}
-        <div className="mt-20">
-          <PartTitle num="5" title="Reklam Politikası (Google AdSense)" color="amber" />
-          <div className="space-y-10 mt-6">
-            {reklamPolitikasi.map((s) => (
-              <SectionBlock key={s.num} {...s} />
-            ))}
-          </div>
-        </div>
-
-        {/* Footer */}
-        <hr className="border-zinc-900 my-12" />
-
-        <p className="font-mono text-[11px] text-zinc-700">
-          Bu metinler 6698 sayılı Kişisel Verilerin Korunması Kanunu ve ilgili
-          mevzuat kapsamında hazırlanmıştır. · Türkiye Cumhuriyeti
-        </p>
       </div>
-    </main>
+    </LegalShell>
   );
 }

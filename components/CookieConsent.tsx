@@ -75,10 +75,10 @@ export default function CookieConsent() {
             Yazdığınız kod tarayıcınızda çalışır, sunucuya gönderilmez.
             Detaylı bilgi için{" "}
             <a
-              href="/terms"
+              href="/privacy"
               className="text-indigo-300 hover:text-indigo-200 underline"
             >
-              Aydınlatma Metni
+              Gizlilik Politikası
             </a>
             'ni inceleyebilirsin.
           </p>
