@@ -1,4 +1,4 @@
-// app/blog/sifirdan-zirveye/page.tsx
+﻿// app/blog/sifirdan-zirveye/page.tsx
 //
 // 2026-07-18: Sıfırdan Zirveye — tek sayfa interaktif blog yazısı.
 // SEO v2: Title 60 char, Description 155 char, 3 JSON-LD schema
@@ -327,7 +327,7 @@ export default function SifirdanZirveyePage() {
             },
             {
               q: "Programlama temellerini öğrendikten sonra ne yapmalıyım?",
-              a: "8 görevi tamamladıktan sonra gerçek mülakat sorularıyla pratik yap. Programlama Temelleri (18 soru), Veri Yapıları (11 soru) ve diğer kategorilerde 70+ soru seni bekliyor.",
+              a: "8 görevi tamamladıktan sonra gerçek mülakat sorularıyla pratik yap. Programlama Temelleri (18 soru), Veri Yapıları (11 soru) ve diğer kategorilerde gerçek mülakat soruları seni bekliyor.",
             },
           ].map((item, i) => (
             <details
@@ -371,7 +371,7 @@ export default function SifirdanZirveyePage() {
               Tüm Mülakat Kategorileri
             </div>
             <div className="text-xs text-white/60">
-              7 kategori, 98 soru: Veri Yapıları, Algoritmalar, DP
+              mülakat soruları: Veri Yapıları, Algoritmalar, DP
             </div>
           </Link>
           <Link
@@ -423,3 +423,4 @@ export default function SifirdanZirveyePage() {
     </>
   );
 }
+

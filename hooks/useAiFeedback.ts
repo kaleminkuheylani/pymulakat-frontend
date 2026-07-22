@@ -5,7 +5,7 @@
 //   - useEffect: DB'den initial quota fetch (count, limit, remaining)
 //   - requestFeedback: limit doluysa blokla
 //   - success sonrası: POST /increment (DB artır)
-//   - BYOK user bu quota'dan muaf (sınırsız)
+//   - BYOK user bu quota'dan muaf (platform kotası uygulanmaz)
 //
 // 2026-07-14 v2: Streaming feedback (DeepSeek SSE passthrough).
 //
@@ -245,7 +245,7 @@ export function useAiFeedback(): AiFeedbackState {
       if (!byokKey) {
         const q = await fetchDbQuota();
         if (q && q.remaining <= 0) {
-          setError("Ücretsiz deneme hakkın bitti. Kendi API key'ini kullan veya yeni ayı bekle.");
+          setError("Günlük 10 kullanım hakkın bitti. Kendi API key'ini kullan veya yeni günü bekle.");
           return null;
         }
       }

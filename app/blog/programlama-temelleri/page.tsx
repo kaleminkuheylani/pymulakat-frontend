@@ -1,4 +1,4 @@
-// app/blog/programlama-temelleri/page.tsx
+﻿// app/blog/programlama-temelleri/page.tsx
 //
 // PYBlog yazisi #2: "Programlama Temelleri Nedir?"
 // 2026-07-18: Ubersuggest long-tail — 4 keyword, toplam ~5K volume
@@ -638,7 +638,7 @@ else:
             ))}
             <Link href="/interviews" className="group p-4 rounded-xl border border-white/10 hover:border-amber-500/30 transition-colors">
               <div className="text-sm font-semibold mb-1 group-hover:text-amber-300 transition-colors">Mülakat Sorularına Geç</div>
-              <div className="text-xs text-white/60">7 kategori, 98 soru — yazıları okudun, şimdi pratik yap.</div>
+              <div className="text-xs text-white/60">Yazıları okudun, şimdi pratik yap.</div>
             </Link>
           </div>
         </section>
@@ -789,3 +789,5 @@ function ExampleItem({
     </div>
   );
 }
+
+

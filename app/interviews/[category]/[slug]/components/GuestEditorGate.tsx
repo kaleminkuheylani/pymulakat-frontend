@@ -79,7 +79,7 @@ export default function GuestEditorGate({ category, id, starterCode }: Props) {
           <li>⚡ Pyodide ile tarayıcıda anında çalıştır</li>
           <li>🤖 Yapay zekâ destekli kod review</li>
           <li>📊 İlerleme + leaderboard takibi</li>
-          <li><Target className="w-4 h-4 inline mr-1.5 text-amber-300" /> 50+ kategori, 100+ mülakat sorusu</li>
+          <li><Target className="w-4 h-4 inline mr-1.5 text-amber-300" /> Kategorilere ayrılmış mülakat soruları</li>
         </ul>
       </div>
     </div>

@@ -18,8 +18,8 @@
 //
 // Limit:
 //   - Server-side limit YOK (kullanıcı kendi localStorage'ında tutuyor)
-//   - Üye user 5 deneme hakkına sahip (QuotaClient-side)
-//   - BYOK kullananlar server-side limitsiz (key kendilerinin)
+//   - Üye user günlük 10 kullanım hakkına sahip (DB quota)
+//   - BYOK kullananlar platform kotasından muaf (key kendilerinin)
 //
 // Response:
 //   200: { feedback: string, model: string, usage: { prompt_tokens, completion_tokens, total_tokens } }

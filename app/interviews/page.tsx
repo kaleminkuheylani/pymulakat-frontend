@@ -1,4 +1,4 @@
-// app/interviews/page.tsx
+﻿// app/interviews/page.tsx
 //
 // KATEGORİ GRİD — 8 pillar kategori, DB-driven, ISR 1h.
 //
@@ -34,7 +34,7 @@ export const revalidate = 60; // 2026-07-18: gecici cache bypass (slug migration
 export const metadata: Metadata = {
   title: "Python ve JavaScript Mülakat Soruları",
   description:
-    "Python ve JavaScript mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack. 7 kategori, 100+ soru.",
+    "Python ve JavaScript mülakat sorularını kategorilere göre keşfet: temeller, veri yapıları, algoritma, dinamik programlama, heap, stack.",
   keywords: [
     "python mülakat soruları",
     "python kategori",
@@ -46,7 +46,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Python ve JavaScript Mülakat Soruları",
     description:
-      "Python mülakat sorularını kategorilere göre keşfet. 8 farklı kategori, 85+ soru.",
+      "Python mülakat sorularını kategorilere göre keşfet. Kategorilere göre gerçek mülakat soruları.",
     url: `${BASE_URL}/interviews`,
     siteName: "Python Mülakat",
     locale: "tr_TR",
@@ -130,3 +130,5 @@ export default async function InterviewsGridPage() {
     </main>
   );
 }
+
+

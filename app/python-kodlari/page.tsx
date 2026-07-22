@@ -1,4 +1,4 @@
-// /python-kodlari — Python kod örnekleri kataloğu.
+﻿// /python-kodlari — Python kod örnekleri kataloğu.
 
 // Statik snippet'ler; her biri tarayıcıda çalıştırılabilir.
 
@@ -344,7 +344,7 @@ const faqJsonLd = {
 
         "@type": "Answer",
 
-        text: "Bu snippetler referans ve pratik başlangıcıdır. Kapsamlı mülakat hazırlığı için /interviews sayfasındaki 100+ gerçek dünya sorusunu çözmeni, her birinde test case'leri geçmeni öneriyoruz.",
+        text: "Bu snippetler referans ve pratik başlangıcıdır. Kapsamlı mülakat hazırlığı için /interviews sayfasındaki gerçek dünya sorularını çözmeni, her birinde test case'leri geçmeni öneriyoruz.",
 
       },
 

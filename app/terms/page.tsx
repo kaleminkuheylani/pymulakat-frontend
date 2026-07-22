@@ -46,7 +46,7 @@ export default function TermsPage() {
         <ul className="list-disc pl-5 space-y-2">
           <li>
             <strong className="text-zinc-200">İnteraktif Python soruları:</strong>{" "}
-            70+ farklı kategoride, Türkçe açıklamalı mülakat alıştırmaları.
+            Birden fazla kategoride, Türkçe açıklamalı mülakat alıştırmaları.
           </li>
           <li>
             <strong className="text-zinc-200">Tarayıcı tabanlı kod editörü:</strong>{" "}
@@ -299,9 +299,9 @@ export default function TermsPage() {
         <p>
           AI Feedback hizmetini kendi DeepSeek API anahtarınızla (
           <em>BYOK — Bring Your Own Key</em>) kullanabilirsiniz. Bu durumda
-          istekler doğrudan sizin anahtarınızla yapılır; aylık ücretsiz hak
-          sınırı uygulanmaz. API anahtarınız yalnızca sizin tarayıcınızda
-          saklanır (
+          istekler doğrudan sizin anahtarınızla yapılır; platformun günlük 10
+          kullanım hakkı kotası uygulanmaz. API anahtarınız yalnızca sizin
+          tarayıcınızda saklanır (
           <code className="font-mono text-[12px] text-cyan-300">
             localStorage
           </code>

@@ -1,4 +1,4 @@
-// app/blog/javascript-this-keyword/page.tsx
+﻿// app/blog/javascript-this-keyword/page.tsx
 //
 // PYBlog yazisi #10: "JavaScript this Keyword Nedir?"
 // 2026-07-22: Mulakatlarin en kafa karistirici konusu.
@@ -727,7 +727,7 @@ user.selam(); // ✅ "Merhaba Ali"`}</CodeBlock>
             ))}
             <Link href="/interviews" className="group p-4 rounded-xl border border-white/10 hover:border-amber-500/30 transition-colors">
               <div className="text-sm font-semibold mb-1 group-hover:text-amber-300 transition-colors">Mülakat Sorularına Geç</div>
-              <div className="text-xs text-white/60">7 kategori, 98 soru — this dahil tüm konuları pratik et.</div>
+              <div className="text-xs text-white/60">this dahil tüm konuları pratik et.</div>
             </Link>
           </div>
         </section>
@@ -783,3 +783,5 @@ function FaqItem({ q, a }: { q: string; a: string }) {
     </details>
   );
 }
+
+

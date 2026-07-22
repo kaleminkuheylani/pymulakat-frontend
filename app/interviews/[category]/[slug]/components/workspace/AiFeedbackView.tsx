@@ -142,7 +142,7 @@ export default function AiFeedbackView({
           onClick={() => {
             const current = typeof window !== "undefined" ? (localStorage.getItem("pymulakat_ai_feedback_byok_key") || "") : "";
             const next = window.prompt(
-              "Ücretsiz deneme hakkın bitti. Kendi DeepSeek API key'ini ekle (sk-...):",
+              "Günlük 10 kullanım hakkın bitti. Kendi DeepSeek API key'ini ekle (sk-...):",
               current
             );
             if (next !== null) setByokKey(next);

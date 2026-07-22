@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+﻿import type { Metadata } from "next";
 import { Geist, Geist_Mono, JetBrains_Mono } from "next/font/google";
 import { Toaster } from "sonner";
 import { Analytics } from "@vercel/analytics/next";
@@ -47,24 +47,23 @@ export const viewport = {
   colorScheme: "dark",
 } as const;
 
-export const metadata: Metadata = {
+export async function generateMetadata(): Promise<Metadata> {
+  const { getPlatformStats, formatSeoDescription } = await import(
+    "@/lib/platformStats"
+  );
+  const stats = await getPlatformStats();
+  const seoDescription = formatSeoDescription(stats);
+
+  return {
   metadataBase: new URL("https://pythonmulakat.com"),
 
   title: {
     default:
       "Python ve JavaScript Mülakat Soruları | Python Mülakat",
-    // 2026-07-14 v13: Template sade ("Python Mülakat" — her sayfada
-    //   tekrar "Yapay Zeka Destekli" ekleyerek keyword stuffing riski).
-    //   Default title + description + footer + JSON-LD yeterli (toplam
-    //   4-5 YZD per sayfa, dogal dagilim).
     template: "%s | Python Mülakat",
   },
 
-  description:
-    // 2026-07-18 v14: 155 char SEO limit + 've JavaScript' tutarlı.
-    // 2026-07-18 fix: 8 kategori → 7 kategori (pandas kaldırıldı), 100+ → 98 (gerçek sayı).
-    //   Yanlış sayı Google'ın snippet'inde tutarsızlık yaratıyor, CTR düşürüyor.
-    "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 7 kategori, 98 soru.",
+  description: seoDescription,
 
   keywords: [
     // Temel / Yeni başlayan
@@ -183,8 +182,7 @@ export const metadata: Metadata = {
     siteName: "Python Mülakat",
     // 2026-07-18: 've JavaScript' tutarlı — H1 ile aynı
     title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
-    description:
-      "Python ve JavaScript mülakat soruları, AI geri bildirim. Tarayıcıda kod yaz, anlık sonuç al. 7 kategori, 98 soru.",
+    description: seoDescription,
     images: [
       {
         url: "https://pythonmulakat.com/og-default.png",
@@ -198,10 +196,8 @@ export const metadata: Metadata = {
   // ── Twitter / X ─────────────────────────────────────────────
   twitter: {
     card: "summary_large_image",
-    // 2026-07-15: JS desteği
     title: "Python ve JavaScript Mülakat Soruları | Python Mülakat",
-    description:
-      "Türkçe interaktif Python ve JavaScript mülakat soruları. Veri yapıları, algoritma, dinamik programlama, sandbox ve anlık AI geri bildirimi.",
+    description: seoDescription,
     images: ["https://pythonmulakat.com/og-default.png"],
     creator: "@pythonmulakat",
   },
@@ -248,7 +244,8 @@ export const metadata: Metadata = {
     // 2026-07-21: AdSense script zaten /head'de, bu meta verification icin
     "google-adsense-account": "ca-pub-6019538059362110",
   },
-};
+  };
+}
 
 // ────────────────────────────────────────────────────────────
 // 🔗 JSON-LD STRUCTURED DATA
@@ -502,3 +499,4 @@ export default function RootLayout({
   );
 }
 // ─── Footer — ayrı dosyaya taşındı (components/Footer.tsx) ─────────
+

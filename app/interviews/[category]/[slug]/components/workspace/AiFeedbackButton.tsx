@@ -77,7 +77,7 @@ export default function AiFeedbackButton({
         type="button"
         onClick={handleClick}
         className="px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 bg-white/[0.03] border border-white/10 text-white/50 hover:bg-white/[0.06] hover:text-white/70 transition-colors"
-        title="AI Geri Bildirim — giriş yap, 5 ücretsiz deneme hakkı kazan"
+        title="AI Geri Bildirim — giriş yap, günlük 10 kullanım hakkı kazan"
       >
         <Lock className="w-3.5 h-3.5 text-white/40" />
         <span>AI Feedback</span>
@@ -112,7 +112,7 @@ export default function AiFeedbackButton({
       <button
         type="button"
         onClick={onOpenSettings}
-        title="Ücretsiz 5 deneme hakkın bitti. Kendi DeepSeek API key'ini ekleyerek sınırsız kullanabilirsin."
+        title="Günlük 10 kullanım hakkın bitti. Kendi DeepSeek API key'ini ekleyerek platform kotasından muaf devam edebilirsin."
         className="px-3 py-1.5 rounded-md text-xs font-medium flex items-center gap-1.5 bg-white/[0.03] border border-rose-500/20 text-rose-300/80 hover:bg-rose-500/[0.05] transition-colors"
       >
         <KeyRound className="w-3.5 h-3.5" />
