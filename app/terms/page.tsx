@@ -3,10 +3,10 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Kullanıcı Sözleşmesi",
   description:
-    "Python Mulakat yapay zeka destekli mülakat soru platformu kullanıcı sözleşmesi, KVKK aydınlatma metni ve açık rıza beyanı.",
+    "Python Mulakat yapay zeka destekli mülakat soru platformu kullanıcı sözleşmesi, KVKK aydınlatma metni, açık rıza beyanı ve Google AdSense reklam politikası.",
 };
 
-const LAST_UPDATED = "14 Temmuz 2026";
+const LAST_UPDATED = "22 Temmuz 2026";
 const PLATFORM_NAME = "Python Mulakat";
 const PLATFORM_URL = "https://www.pythonmulakat.com";
 
@@ -463,6 +463,15 @@ export default function TermsPage() {
             (Google Analytics) için rıza.
           </li>
           <li>
+            <strong className="text-zinc-200">Reklam çerezleri (Google AdSense):</strong>{" "}
+            Platform üzerinde Google AdSense reklamları gösterilmektedir.
+            Google AdSense, reklam kişiselleştirme ve performans ölçümü
+            amacıyla çerez (cookie) ve benzer teknolojiler kullanır. Bu
+            çerezler, kullanıcının ilgi alanlarına göre reklam göstermek ve
+            reklam performansını ölçmek için işlenir. Detaylı bilgi için
+            lütfen <a href="https://policies.google.com/technologies/ads?hl=tr" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Google'ın reklam çerezi politikasını</a> inceleyiniz. Kullanıcı, <a href="https://adssettings.google.com/authenticated?hl=tr" target="_blank" rel="noopener noreferrer" className="text-cyan-400 hover:underline">Google Reklam Ayarları</a> üzerinden kişiselleştirilmiş reklamları devre dışı bırakabilir.
+          </li>
+          <li>
             <strong className="text-zinc-200">Üçüncü taraf altyapı:</strong>{" "}
             Supabase, Railway ve Vercel'e veri aktarımı için rıza.
           </li>
@@ -617,6 +626,220 @@ export default function TermsPage() {
     },
   ];
 
+  // ─── BÖLÜM 5: REKLAM POLİTİKASI (Google AdSense) ───────────────
+  // 2026-07-22: AdSense reklamları kullanıma alındı. Aşağıdaki maddeler
+  //   - Google AdSense reklam birimlerinin (In-Article, In-Feed,
+  //     Matched Content, Anchor) gösterildiğini açıkça belirtir
+  //   - Çerez kullanımı, kişiselleştirme ve kapatma yolları
+  //   - Üçüncü taraf reklam politikası (IAB standards)
+  //   - Editoryal bağımsızlık (reklamveren etkisi yok)
+  //   - Reklam gelirinin platform sürdürülebilirliği için kullanıldığı
+  const reklamPolitikasi: Section[] = [
+    {
+      num: "5.1",
+      title: "Platformda Reklam Gösterimi",
+      content: (
+        <>
+          <p>
+            {PLATFORM_NAME}, sürdürülebilir hizmet sunabilmek amacıyla{" "}
+            <strong className="text-zinc-200">Google AdSense</strong>{" "}
+            platformu üzerinden reklam yayınlamaktadır. Platform üzerinde
+            aşağıdaki reklam formatları kullanılmaktadır:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>
+              <strong className="text-zinc-200">In-Article Reklam:</strong>{" "}
+              Soru detay sayfalarında, içerik akışı içinde yer alan doğal
+              formatlı reklam.
+            </li>
+            <li>
+              <strong className="text-zinc-200">In-Feed Reklam:</strong>{" "}
+              Kategori sayfalarında, soru listesi içine yerleştirilen native
+              reklam.
+            </li>
+            <li>
+              <strong className="text-zinc-200">Matched Content:</strong>{" "}
+              Sayfa altında (footer üstü), ilgili içerik önerisi formatında
+              reklam.
+            </li>
+            <li>
+              <strong className="text-zinc-200">Anchor Reklam (Mobil):</strong>{" "}
+              Mobil cihazlarda ekranın alt kısmında sabitlenen (sticky) küçük
+              reklam.
+            </li>
+          </ul>
+          <p className="mt-2">
+            Reklam yayıncısı: <strong className="text-zinc-200">Google LLC</strong> (AdSense Publisher ID:{" "}
+            <code className="font-mono text-[12px] text-cyan-300">pub-6019538059362110</code>). Yayıncı bilgileri{" "}
+            <a
+              href="https://www.pythonmulakat.com/ads.txt"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:underline"
+            >
+              ads.txt
+            </a>{" "}
+            dosyasında herkese açık olarak yayınlanmaktadır (IAB Authorized
+            Digital Sellers standardı).
+          </p>
+        </>
+      ),
+    },
+    {
+      num: "5.2",
+      title: "Çerezler ve Kişiselleştirme",
+      content: (
+        <>
+          <p>
+            Google AdSense, reklam göstermek ve performans ölçümü için çerez
+            (cookie) ve benzer yerel depolama teknolojileri kullanır. Bu
+            çerezler aşağıdaki amaçlarla kullanılır:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>Kullanıcının ilgi alanlarına göre reklam kişiselleştirme,</li>
+            <li>Aynı reklamın tekrar tekrar gösterilmesini önleme,</li>
+            <li>Reklam performansını ölçme (gösterim, tıklama, dönüşüm),</li>
+            <li>Sahte trafik ve reklam sahteciliğini tespit etme.</li>
+          </ul>
+          <p className="mt-2">
+            Google'ın reklam çerezlerini nasıl kullandığına ilişkin detaylı
+            bilgi için{" "}
+            <a
+              href="https://policies.google.com/technologies/ads?hl=tr"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-cyan-400 hover:underline"
+            >
+              Google'ın reklam politikasını
+            </a>{" "}
+            inceleyebilirsiniz.
+          </p>
+        </>
+      ),
+    },
+    {
+      num: "5.3",
+      title: "Kişiselleştirilmiş Reklamları Devre Dışı Bırakma",
+      content: (
+        <>
+          <p>
+            Kullanıcı, kişiselleştirilmiş reklamları aşağıdaki yöntemlerle
+            devre dışı bırakabilir:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>
+              <a
+                href="https://adssettings.google.com/authenticated?hl=tr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                Google Reklam Ayarları
+              </a>{" "}
+              sayfasından kişiselleştirilmiş reklam tercihini kapatma.
+            </li>
+            <li>
+              <a
+                href="https://optout.aboutads.info/?lang=EN"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                Digital Advertising Alliance (DAA)
+              </a>{" "}
+              veya{" "}
+              <a
+                href="https://www.youronlinechoices.com/tr/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-cyan-400 hover:underline"
+              >
+                EDAA (Avrupa)
+              </a>{" "}
+              üzerinden sektörel opt-out.
+            </li>
+            <li>
+              Tarayıcı ayarlarından çerezleri engelleme veya üçüncü taraf
+              çerezleri kapatma (reklam kişiselleştirmesi sona erer, ancak
+              reklam gösterimi devam edebilir).
+            </li>
+          </ul>
+          <p className="mt-2">
+            Not: Kişiselleştirme kapatıldığında, kullanıcıya ilgi alanıyla
+            ilgili olmayan genel reklamlar gösterilmeye devam eder.
+          </p>
+        </>
+      ),
+    },
+    {
+      num: "5.4",
+      title: "Editoryal Bağımsızlık",
+      content: (
+        <p>
+          {PLATFORM_NAME} üzerindeki tüm içerikler (soru metinleri, açıklamalar,
+          rehberler, blog yazıları) editör ekibimiz tarafından bağımsız olarak
+          üretilir. <strong className="text-zinc-200">Reklamverenler, içerikler üzerinde hiçbir editoryal kontrole sahip değildir.</strong>{" "}
+          Bir reklamverenin talebi, soru içeriğini, doğru cevabı veya
+          açıklamayı etkilemez. Reklam geliri yalnızca platform
+          sürdürülebilirliği (altyapı, içerik üretimi, moderasyon) için
+          kullanılır.
+        </p>
+      ),
+    },
+    {
+      num: "5.5",
+      title: "Reklam Yerleşimi Politikası",
+      content: (
+        <>
+          <p>
+            Kullanıcı deneyimini korumak için aşağıdaki ilkelere uyulur:
+          </p>
+          <ul className="list-disc pl-5 space-y-2 mt-2">
+            <li>
+              Reklamlar, içerik ile karışmayacak şekilde "Reklam" etiketiyle
+              veya standart formatlarla gösterilir.
+            </li>
+            <li>
+              Çalıştırılabilir kod (kod editörü) ve test sonuçları gibi
+              kritik UI alanlarında reklam gösterilmez.
+            </li>
+            <li>
+              Misafir kullanıcılar için reklamsız deneyim mevcut değildir;
+              kayıtlı kullanıcılar için ileride premium üyelik modeli
+              planlanmaktadır.
+            </li>
+            <li>
+              Çocuklara yönelik içerik (13 yaş altı) barındırmadığımızdan,
+              AdSense "çocuklara yönelik site" kategorisinde değerlendirilmez.
+            </li>
+          </ul>
+        </>
+      ),
+    },
+    {
+      num: "5.6",
+      title: "Şikâyet ve Geri Bildirim",
+      content: (
+        <p>
+          Platformda gösterilen bir reklamın uygunsuz, yanıltıcı veya politika
+          ihlali içerdiğini düşünüyorsanız, lütfen hesap ayarlarındaki
+          "Geri bildirim" bölümünden veya iletişim kanallarından bize
+          bildirin. Reklamla ilgili Google politikası ihlalini doğrudan{" "}
+          <a
+            href="https://support.google.com/adsense/answer/113978?hl=tr"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-cyan-400 hover:underline"
+          >
+            Google'a
+          </a>{" "}
+          da bildirebilirsiniz. Şikâyetler 5 iş günü içinde değerlendirilir
+          ve uygunsuz reklamlar kaldırılır.
+        </p>
+      ),
+    },
+  ];
+
   return (
     <main className="min-h-screen bg-zinc-950 text-zinc-100">
       <div className="max-w-2xl mx-auto px-6 py-16">
@@ -670,6 +893,16 @@ export default function TermsPage() {
           <PartTitle num="4" title="Yapay Zeka Kullanımı ve Sorumluluk Reddi" color="amber" />
           <div className="space-y-10 mt-6">
             {yapayZeka.map((s) => (
+              <SectionBlock key={s.num} {...s} />
+            ))}
+          </div>
+        </div>
+
+        {/* BÖLÜM 5 — 2026-07-22: Reklam Politikası (Google AdSense) */}
+        <div className="mt-20">
+          <PartTitle num="5" title="Reklam Politikası (Google AdSense)" color="amber" />
+          <div className="space-y-10 mt-6">
+            {reklamPolitikasi.map((s) => (
               <SectionBlock key={s.num} {...s} />
             ))}
           </div>
