@@ -66,6 +66,7 @@ export default function robots(): MetadataRoute.Robots {
       `${BASE_URL}/api/sitemap`,
       // Google icin ek sitemap URL (sosyal medya, Google News uyumlu)
     ],
-    host: BASE_URL,
+    // 2026-07-22: 'host' direktifi KALDIRILDI (Google 2019'dan beri desteklemiyor,
+    //   "Kural yok sayildi" uyarisi veriyor). Host bilgisi sitemap'te zaten var.
   };
 }
