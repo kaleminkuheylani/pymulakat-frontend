@@ -5,6 +5,12 @@ import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 import { signInWithOAuth } from "@/lib/auth-client";
 
+declare global {
+  interface Window {
+    gtag_report_conversion?: (url?: string) => boolean;
+  }
+}
+
 function GoogleIcon({ className }: { className?: string }) {
   return (
     <svg className={className} viewBox="0 0 24 24" aria-hidden="true">
@@ -50,6 +56,9 @@ export default function OAuthButtons({ returnUrl, mode = "login" }: OAuthButtons
 
   async function handleOAuth(provider: "google" | "github") {
     if (pending) return;
+    if (mode === "login" && typeof window !== "undefined" && window.gtag_report_conversion) {
+      window.gtag_report_conversion(undefined);
+    }
     setPending(provider);
     const result = await signInWithOAuth({ provider, returnUrl });
     if (!result.ok) {
