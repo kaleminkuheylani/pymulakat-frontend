@@ -94,6 +94,15 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 13,
     tags: ["javascript", "promise", "asenkron", "then", "catch", "mülakat", "temelden"],
   },
+  {
+    slug: "javascript-this-keyword",
+    title: "JavaScript this Keyword Nedir? — Bağlam (Context), Call, Apply, Bind (Örneklerle)",
+    excerpt:
+      "JavaScript this kavramı temelden: dört bağlam kuralı (global/function/method/new), arrow function farkı, call/apply/bind ile bağlam değiştirme, sık yapılan hatalar ve mülakat tuzakları.",
+    date: "2026-07-22",
+    readingMinutes: 12,
+    tags: ["javascript", "this", "context", "call", "apply", "bind", "mülakat"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {

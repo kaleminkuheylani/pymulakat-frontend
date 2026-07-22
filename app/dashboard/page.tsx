@@ -377,9 +377,17 @@ function BlogWidget({ posts }: { posts: Awaited<ReturnType<typeof getAllPosts>> 
           <BookOpen className="w-4 h-4" />
           PYBlog
         </h2>
-        <span className="text-[10px] text-white/40">
-          {posts.length} yazı
-        </span>
+        <div className="flex items-center gap-3">
+          <span className="text-[10px] text-white/40">
+            Son 4 yazı
+          </span>
+          <Link
+            href="/blog/sifirdan-zirveye"
+            className="text-[10px] text-amber-300/80 hover:text-amber-300 transition-colors"
+          >
+            Tümü
+          </Link>
+        </div>
       </div>
       <div className="grid sm:grid-cols-2 gap-3">
         {posts.slice(0, 4).map((p) => (
