@@ -58,13 +58,13 @@ export default function About() {
 
           <h2 className="text-2xl md:text-4xl font-bold mb-3 leading-tight">
 
-            Solo bir proje,
+            Sıfırdan Zirveye: Kodlama Öğren
 
             <br />
 
             <mark className="bg-gradient-to-r from-indigo-300 to-purple-400 bg-clip-text text-transparent">
 
-              yapay zekâ destekli geliştirme
+              yapay zekâ destekli pratik
 
             </mark>
 

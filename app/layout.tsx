@@ -59,7 +59,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   title: {
     default:
-      "Python ve JavaScript Mülakat Soruları | Python Mülakat",
+      "Python Mülakat Hazırlık — Sıfırdan Python Öğren | Ücretsiz Kodlama Pratiği",
     template: "%s | Python Mülakat",
   },
 

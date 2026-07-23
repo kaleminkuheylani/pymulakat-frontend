@@ -51,15 +51,11 @@ export default function HowItWorks() {
             Nasıl Çalışır
           </div>
           <h2 className="text-2xl md:text-4xl font-bold mb-3 leading-tight">
-            Tarayıcıda kodla,
-            <br />
-            <mark className="bg-gradient-to-r from-cyan-300 to-cyan-500 bg-clip-text text-transparent">
-              anında test et
-            </mark>
+            3 Adımda Python Mülakat Hazırlığı
           </h2>
           <p className="text-white/60 text-sm md:text-base max-w-2xl mx-auto">
             Python kurulumu yok, terminal komutu yok. Soruyu seç, kodu yaz,
-            anında gerçekçi test sonuçlarını gör.
+            anında gerçekçi test sonuçlarını gör. 30 dakikada kodlama temellerini pekiştir.
           </p>
         </div>
 
