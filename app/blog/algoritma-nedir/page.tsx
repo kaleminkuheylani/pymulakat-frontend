@@ -25,18 +25,17 @@ export async function generateMetadata(): Promise<Metadata> {
     description:
       "Algoritma nedir? Sandviç örneği, akış şeması, bubble sort ve 5 sebep ile öğren. Algoritma örnekleri, akış şeması nasıl çizilir, sıkça sorulan sorular — hepsi bu rehberde.",
     keywords: [
-      "algoritma nedir",
-      "algoritma ne demek",
-      "algoritma örnekleri",
-      "algoritma akış şeması",
-      "akış şeması nedir",
-      "algoritma şeması",
-      "algoritma şekilleri",
-      "algoritma soruları",
-      "veri yapıları ve algoritmalar",
-      "programlama algoritmaları",
-      "bilgisayar algoritması",
-      "algoritma tanımı",
+      // 2026-07-23: SEO restart — specific → commercial + generic.
+      // algoritma, akış şeması, veri yapıları gibi spesifik konular yerine
+      //   kullanici niyeti (kodlama ogren, mulakat hazirlik) hedefleniyor.
+      "python ogren",
+      "kodlama temelleri",
+      "mulakat hazirlik",
+      "yazilim mulakat",
+      "kodlama mantigi",
+      "programlama temelleri",
+      "python dersleri",
+      "yazilima giris",
       ...post.tags,
     ],
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],

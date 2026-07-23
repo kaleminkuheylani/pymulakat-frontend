@@ -34,18 +34,17 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // 2026-07-22 keyword stuffing temizligi: 20 → 8 unique phrase.
-      // Google modern SEO'da meta keywords'a bakmaz ama negatif sinyal
-      //   olarak degerlendirebilir. Tekrarli "javascript this X" yerine
-      //   essiz, dogal arama niyetlerine odaklanildi.
-      "this keyword nedir",
-      "call apply bind farkı",
-      "arrow function this",
-      "javascript context",
-      "javascript mulakat sorulari",
-      "frontend mulakat",
-      "javascript ileri seviye",
-      "yazilim mulakat hazirlik",
+      // 2026-07-23: SEO restart — specific (javascript this X) → commercial + generic.
+      // DA 1 site icin specific long-tail sifir trafik getirir. Commercial + generic
+      //   niyet (mulakat hazirlik, kodlama ogren) daha gercekci + donusum odakli.
+      "python mulakat",
+      "kodlama ogren",
+      "mulakat hazirlik",
+      "yazilim mulakat",
+      "kodlama becerileri",
+      "python dersleri",
+      "mulakat sorulari",
+      "yazilima giris",
       ...post.tags,
     ],
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
@@ -84,7 +83,7 @@ const articleSchema = {
   dateModified: "2026-07-22",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "this keyword, call apply bind, arrow function this, javascript context, javascript mulakat",
+  keywords: "python mulakat, kodlama ogren, mulakat hazirlik, yazilim mulakat, kodlama becerileri",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

@@ -34,16 +34,17 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // 2026-07-22 keyword stuffing temizligi: 17+ → 9 unique phrase.
-      "promise nedir",
-      "then catch",
-      "promise all",
-      "promise chain",
-      "async await promise farki",
-      "callback hell",
-      "promise allsettled",
-      "promise race",
-      "javascript mulakat",
+      // 2026-07-23: SEO restart — specific → commercial + generic.
+      // Promise/async/await spesifik konular yerine, kullanici niyeti (mulakat
+      //   hazirlik, kodlama ogren) hedefleniyor. DA 1 site icin daha gercekci.
+      "python ogren",
+      "kod yazma",
+      "yazilim mulakat",
+      "mulakat hazirlik",
+      "kodlama pratiği",
+      "mulakat sorulari",
+      "python dersleri",
+      "kodlama mantigi",
       // Genel
       "javascript mülakat soruları",
       "frontend developer mülakat",
@@ -87,7 +88,7 @@ const articleSchema = {
   dateModified: "2026-07-22",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "promise nedir, then catch, promise all, promise chain, asenkron, callback hell",
+  keywords: "python ogren, kod yazma, yazilim mulakat, mulakat hazirlik, kodlama pratiği",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

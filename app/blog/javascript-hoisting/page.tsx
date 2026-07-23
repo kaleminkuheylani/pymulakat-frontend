@@ -31,15 +31,17 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // 2026-07-22 keyword stuffing temizligi: 13+ → 8 unique phrase.
-      "hoisting nedir",
-      "var let const farki",
-      "function hoisting",
-      "temporal dead zone",
-      "degisken yukseltme",
-      "tdz javascript",
-      "javascript kapsam",
-      "javascript mulakat",
+      // 2026-07-23: SEO restart — specific → commercial + generic.
+      // hoisting, var/let/const, temporal dead zone gibi spesifik konular
+      //   yerine, kullanici niyeti (mulakat hazirlik, kodlama temelleri).
+      "mulakat hazirlik",
+      "kodlama temelleri",
+      "python mulakat sorulari",
+      "kodlama ogren",
+      "yazilim mulakat",
+      "mulakat sorulari",
+      "python dersleri",
+      "programlama mantigi",
       // Genel
       "javascript mülakat soruları",
       "javascript ileri seviye",
@@ -82,7 +84,7 @@ const articleSchema = {
   dateModified: "2026-07-19",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "hoisting nedir, var let const farki, temporal dead zone, function hoisting, mulakat",
+  keywords: "mulakat hazirlik, kodlama temelleri, python mulakat sorulari, kodlama ogren, yazilim mulakat",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

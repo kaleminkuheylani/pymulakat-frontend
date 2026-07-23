@@ -19,25 +19,20 @@ export const metadata: Metadata = {
   description:
     "6 seviyeli interaktif algoritma kasabası: filtrele, max bul, palindrom, iki sayı toplamı, anagram. Her seviyede 2 test case (kolay + edge), ikisi de geçmeli. 30 dakikada tamamla.",
   keywords: [
-    // Ana long-tail
-    "algoritma soruları",
-    "algoritma problemleri",
-    "algoritma çözme",
-    "interaktif algoritma dersi",
-    "algoritma egzersizleri",
-    // Spesifik konular
-    "filtreleme algoritması",
-    "max bulma algoritması",
-    "palindrom kontrolü",
-    "iki sayı toplamı",
-    "anagram kontrolü",
-    "string ters çevirme",
-    // Format
-    "tarayıcıda algoritma",
-    "30 dakikada algoritma",
-    "python algoritma pratiği",
+    // 2026-07-23: SEO restart — specific (filtreleme, palindrom, anagram) →
+    //   commercial + generic (mulakat pratiği, kodlama egzersizi, python ogren).
+    // DA 1 site icin spesifik teknik konular sifir trafik getirir. Kullanici
+    //   niyetine (mulakat hazirligi, kodlama pratiği) odaklanildi.
+    "mulakat pratiği",
     "kodlama egzersizi",
-    "programlama mülakat hazırlık",
+    "python ogren",
+    "mulakat hazirlik",
+    "kodlama pratiği",
+    "yazilim mulakat",
+    "python dersleri",
+    "programlama temelleri",
+    "kodlama mantigi",
+    "problem cozme",
   ],
   alternates: { canonical: PAGE_URL },
   robots: {
@@ -91,7 +86,7 @@ const articleSchema = {
   dateModified: "2026-07-18",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "algoritma soruları, interaktif algoritma dersi, python algoritma pratiği, 30 dakikada algoritma, kodlama egzersizi",
+  keywords: "mulakat pratiği, kodlama egzersizi, python ogren, mulakat hazirlik, kodlama pratiği",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

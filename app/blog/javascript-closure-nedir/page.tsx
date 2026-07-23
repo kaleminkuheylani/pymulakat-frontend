@@ -30,15 +30,17 @@ export async function generateMetadata(): Promise<Metadata> {
     title: `${post.title} | PYBlog`,
     description: post.excerpt,
     keywords: [
-      // 2026-07-22 keyword stuffing temizligi: 15 → 8 unique phrase.
-      "closure nedir",
-      "javascript kapsam",
-      "closure mulakat sorusu",
-      "javascript hoisting",
-      "javascript prototype",
-      "javascript mulakat",
-      "frontend mulakat",
-      "javascript ileri seviye",
+      // 2026-07-23: SEO restart — specific → commercial + generic.
+      // closure, kapsam, prototype gibi spesifik konular yerine, kullanici
+      //   niyeti (yazilim mulakat, kodlama becerileri) hedefleniyor.
+      "yazilim mulakat",
+      "kodlama becerileri",
+      "python dersleri",
+      "mulakat hazirlik",
+      "kodlama ogren",
+      "mulakat sorulari",
+      "yazilima giris",
+      "programlama temelleri",
       ...post.tags,
     ],
     authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],
@@ -77,7 +79,7 @@ const articleSchema = {
   dateModified: "2026-07-19",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "closure nedir, javascript kapsam, mulakat sorusu, hoisting, prototype",
+  keywords: "yazilim mulakat, kodlama becerileri, python dersleri, mulakat hazirlik, kodlama ogren",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",

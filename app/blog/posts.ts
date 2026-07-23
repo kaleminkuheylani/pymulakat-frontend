@@ -15,93 +15,93 @@ export interface BlogPostMeta {
 const POSTS: BlogPostMeta[] = [
   {
     slug: "programlama-temelleri",
-    title: "Programlama Temelleri Nedir? — if else ve Döngü Örnekleri (Python)",
+    title: "Programlama Temelleri Nedir? — Sıfırdan Python Öğren (Yeni Başlayanlar İçin)",
     excerpt:
-      "Bir programın temel yapı taşları: if/else koşul ifadeleri, for ve while döngüleri. 5 somut örnek, akış şeması, FAQ ve Python kodu ile yeni başlayanlar için temiz bir giriş.",
+      "Sıfırdan Python öğrenmek isteyenler için temel yapı taşları: koşul ifadeleri, döngüler, fonksiyonlar. 5 somut örnek, akış şeması, FAQ ve Python kodu ile temiz bir giriş.",
     date: "2026-07-18",
     readingMinutes: 7,
-    tags: ["temeller", "koşul ifadeleri", "döngüler", "python başlangıç"],
+    tags: ["python ogren", "programlama temelleri", "kodlama temelleri", "yazilima giris"],
   },
   {
     slug: "sifirdan-zirveye",
-    title: "Sıfırdan Zirveye: 30 Dakikada Programlama Öğren",
+    title: "Sıfırdan Python Öğren: 30 Dakikada İlk Programını Yaz",
     excerpt:
-      "Hiç kod yazmamış biri için 8 kısa görev. Tarayıcıda Python — kurulum yok. Yaz, çalıştır, test geçince sonraki açılır. Print, değişkenler, if/else, fonksiyonlar, for/while.",
+      "Hiç kod yazmamış biri için 8 kısa görev. Tarayıcıda Python — kurulum yok. Yaz, çalıştır, test geçince sonraki açılır. 30 dakikada kodlama temellerini öğren.",
     date: "2026-07-18",
     readingMinutes: 30,
-    tags: ["sıfırdan", "interaktif", "temeller", "yeni başlayan"],
+    tags: ["sifirdan python", "python ogren", "kodlama temelleri", "yeni baslayan"],
   },
   {
     slug: "algoritma-nedir",
-    title: "Algoritma Nedir? — Sandviçten Kodlamaya Bir Yolculuk",
+    title: "Algoritma Nedir? — Kodlama Mantığını Öğren (Yeni Başlayanlar İçin)",
     excerpt:
-      "Bir problemi çözmek için izlenen sonlu, sıralı, kesin adımlar bütünü. Sandviç tarifinden bubble sort'a, akış şemaları ve pseudo kodlarla.",
+      "Bir problemi çözmek için izlenen sonlu, sıralı, kesin adımlar bütünü. Yazılıma giriş için temel kavram: sandviç tarifinden bubble sort'a, akış şemaları ve pseudo kodlarla.",
     date: "2026-07-17",
     readingMinutes: 7,
-    tags: ["algoritma", "temel kavramlar", "akış şeması", "bubble sort"],
+    tags: ["kodlama mantigi", "yazilima giris", "programlama temelleri", "algoritma"],
   },
   {
     slug: "teknik-terimler",
-    title: "Programlamanın Temel Teknik Terimleri — Binary, Machine Code, Interpreter ve Daha Fazlası",
+    title: "Yazılıma Giriş: 20+ Temel Teknik Terim Sözlüğü (Mutfak, Restoran Benzetmeleriyle)",
     excerpt:
-      "Yazılımda sık duyulan ama kimsenin düzgün anlatmadığı 20+ teknik terim: binary, machine code, interpreter, derleyici, IDE, runtime. Mutfak, restoran, elektrik ve tercüman benzetmeleriyle.",
+      "Yazılıma yeni başlayanlar için 20+ temel teknik terim: binary, machine code, interpreter, derleyici, IDE, runtime. Mutfak, restoran, elektrik ve tercüman benzetmeleriyle.",
     date: "2026-07-18",
     readingMinutes: 12,
-    tags: ["temel kavramlar", "teknik terimler", "yazılıma giriş", "sözlük"],
+    tags: ["yazilima giris", "kodlama sozlugu", "programlama temelleri", "temel kavramlar"],
   },
   {
     slug: "algoritma-labirenti",
-    title: "Algoritma Labirenti — 30 Dakikada 6 Algoritma Problemini Çöz",
+    title: "Mülakat Hazırlık: 30 Dakikada 6 Kodlama Problemini Çöz",
     excerpt:
-      "İnteraktif algoritma kasabası: 6 seviye, 12 test case. Filtrele, max bul, palindrom, iki sayı toplamı, anagram. İki test case'i de geçmeden sonraki seviyeye geçemezsin. 30 dakikada kasabayı çöz.",
+      "Yazılım mülakatına hazırlananlar için interaktif kodlama kasabası: 6 seviye, 12 test case. Yazılım mülakatı pratiği: filtreleme, max bulma, palindrom, anagram. 30 dakikada tamamla.",
     date: "2026-07-18",
     readingMinutes: 30,
-    tags: ["algoritma", "interaktif", "labirent", "30 dakika", "problem çözme"],
+    tags: ["mulakat hazirlik", "kodlama pratiği", "yazilim mulakat", "problem cozme"],
   },
   {
     slug: "javascript-closure-nedir",
-    title: "JavaScript Closure Nedir? — Kapsam ve Fonksiyon Hafızası (Örneklerle)",
+    title: "Yazılım Mülakatı: Kapsam ve Fonksiyon Hafızası (JavaScript Örnekleriyle)",
     excerpt:
-      "JavaScript'in en çok sorulan mülakat konusu: closure nedir, nasıl çalışır, hangi problemi çözer. Gerçek dünya benzetmeleri, 5 kod örneği, mülakat SSS ve sık yapılan hatalar.",
+      "Yazılım mülakatının en çok sorulan konularından: kapsam ve fonksiyon hafızası nasıl çalışır, hangi problemi çözer. Gerçek dünya benzetmeleri, 5 kod örneği, mülakat SSS ve sık yapılan hatalar.",
     date: "2026-07-19",
     readingMinutes: 12,
-    tags: ["javascript", "closure", "kapsam", "mülakat", "ileri javascript"],
+    tags: ["yazilim mulakat", "kodlama becerileri", "mulakat hazirlik", "python dersleri"],
   },
   {
     slug: "javascript-hoisting",
-    title: "JavaScript Hoisting Nedir? — var, let, const ve Fonksiyon Yükseltme (Örneklerle)",
+    title: "Mülakat Hazırlık: Değişken Yükseltme ve var/let/const Farkı (Örneklerle)",
     excerpt:
-      "JavaScript hoisting kavramı net açıklamayla: değişkenler nasıl yukarı çekilir, var-let-const farkı, fonksiyon deklarasyonu vs ifadesi, temporal dead zone ve mulakat tuzakları.",
+      "Yazılım mülakatında sıkça sorulan: değişkenler nasıl yukarı çekilir, var-let-const farkı, fonksiyon deklarasyonu vs ifadesi, temporal dead zone ve mülakat tuzakları.",
     date: "2026-07-19",
     readingMinutes: 11,
-    tags: ["javascript", "hoisting", "var let const", "kapsam", "mülakat"],
+    tags: ["mulakat hazirlik", "kodlama temelleri", "yazilim mulakat", "python mulakat sorulari"],
   },
   {
     slug: "javascript-async-await",
-    title: "JavaScript async/await ve Promise Nedir? — Asenkron Programlama (Örneklerle)",
+    title: "Mülakat Hazırlık: Asenkron Programlama ve Promise/async/await (Örneklerle)",
     excerpt:
-      "JavaScript async/await, Promise ve event loop kavramı net açıklamayla: callback hell'den promise chain'e, .then().catch()'den async/await'e, paralel-await sıralı-await farkı, mulakat tuzakları.",
+      "Yazılım mülakatının en kritik konularından: asenkron programlama, callback'ten async/await'e evrim, paralel-await sıralı-await farkı, mülakat tuzakları ve sık yapılan hatalar.",
     date: "2026-07-19",
     readingMinutes: 14,
-    tags: ["javascript", "async", "await", "promise", "asenkron", "mülakat"],
+    tags: ["mulakat hazirlik", "yazilim mulakat", "kodlama pratiği", "python dersleri"],
   },
   {
     slug: "javascript-promise-nedir",
-    title: "JavaScript Promise Nedir? — Söz Dilim, .then(), .catch() ve Promise.all (Örneklerle)",
+    title: "Mülakat Hazırlık: Promise Kavramı ve .then().catch() (Örneklerle)",
     excerpt:
-      "JavaScript Promise kavramı temelden: sözcük anlamı, üç durumu (pending/fulfilled/rejected), .then().catch() zinciri, Promise.all/Promise.race, callback hell'den kurtuluş. SSS, benzetmeler, mülakat tuzakları.",
+      "Yazılım mülakatının temel konularından: söz dilim (promise), üç durum (pending/fulfilled/rejected), .then().catch() zinciri, callback'ten kurtuluş. SSS, benzetmeler, mülakat tuzakları.",
     date: "2026-07-22",
     readingMinutes: 13,
-    tags: ["javascript", "promise", "asenkron", "then", "catch", "mülakat", "temelden"],
+    tags: ["mulakat hazirlik", "yazilim mulakat", "kodlama pratiği", "python dersleri"],
   },
   {
     slug: "javascript-this-keyword",
-    title: "JavaScript this Keyword Nedir? — Bağlam (Context), Call, Apply, Bind (Örneklerle)",
+    title: "Mülakat Hazırlık: Bağlam (Context), this, call, apply, bind (Örneklerle)",
     excerpt:
-      "this kavramı temelden: dört bağlam kuralı, arrow function farkı, call/apply/bind ile bağlam değiştirme ve sık yapılan hatalar. Mülakat odaklı örneklerle.",
+      "Yazılım mülakatının zorlu konularından: bağlam (context) kavramı, dört bağlam kuralı, arrow function farkı, call/apply/bind ile bağlam değiştirme. Mülakat odaklı örneklerle.",
     date: "2026-07-22",
     readingMinutes: 12,
-    tags: ["javascript", "this", "context", "call", "apply", "bind", "mülakat"],
+    tags: ["mulakat hazirlik", "yazilim mulakat", "kodlama becerileri", "python dersleri"],
   },
 ];
 

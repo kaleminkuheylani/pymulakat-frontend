@@ -20,26 +20,20 @@ export const metadata: Metadata = {
   description:
     "Hiç kod yazmamış biri için 8 görevli Python dersi (30 dk). Print, değişken, if/else, for/while, fonksiyon. Tarayıcıda yaz, anında test et. Ücretsiz.",
   keywords: [
-    // Ana long-tail (yüksek hacim)
-    "programlama temelleri",
-    "sıfırdan programlama öğren",
-    "python başlangıç dersleri",
-    "kod yazmayı öğren",
-    "yazılıma nasıl başlanır",
-    // Sorgu niyeti
-    "python nasıl öğrenilir",
+    // 2026-07-23: SEO restart — specific (print, if-else, for, while) → commercial + generic.
+    // DA 1 site icin spesifik keyword'ler sifir trafik getirir. Kullanici
+    //   niyetine (sifirdan python, ilk programlama dili) odaklanildi.
+    "sifirdan python",
+    "python ogren",
     "kodlama temelleri",
     "ilk programlama dili",
-    // Spesifik kavramlar
-    "print fonksiyonu",
-    "if else örnekleri",
-    "for döngüsü örnekleri",
-    "while döngüsü",
-    "fonksiyon tanımlama python",
-    // Format
+    "yazilima nasil baslanir",
+    "python baslangic dersleri",
+    "kodlama ogren",
+    "programlama temelleri",
+    "python nasil ogrenilir",
     "interaktif python dersi",
-    "tarayıcıda python",
-    "30 dakikada python",
+    "tarayicida python",
   ],
   alternates: { canonical: PAGE_URL },
   robots: {
@@ -90,7 +84,7 @@ const articleSchema = {
   dateModified: "2026-07-18",
   inLanguage: "tr-TR",
   articleSection: "Eğitim",
-  keywords: "sıfırdan programlama öğren, python başlangıç, 30 dakikada python, interaktif python dersi, kodlama temelleri",
+  keywords: "sifirdan python, python ogren, kodlama temelleri, ilk programlama dili, yazilima giris",
   author: {
     "@type": "Organization",
     name: "Python Mülakat",
