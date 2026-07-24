@@ -66,94 +66,43 @@ export async function generateMetadata(): Promise<Metadata> {
   description: seoDescription,
 
   keywords: [
-    // Temel / Yeni başlayan
-    "python yeni başlayanlar",
-    "python temel konular",
-    "sıfırdan python",
-    "python pratik soruları",         // YENİ: 600-1.2K hacim
-    "python alıştırma soruları",      // YENİ: 600-1.2K hacim
-    "python temel sorular",            // YENİ: 400-800 hacim
-    "python dersleri türkçe",
-    "python eğitimi",                   // 📌 Ubersuggest: 1.3K vol, SEO 18, ₺61 CPC
-    "python kodları",                   // 📌 Ubersuggest: 1.3K vol, SEO 17, ₺28 CPC
+    // 2026-07-24 keyword stuffing temizligi: 60+ → 20 unique phrase.
+    // "python" prefixi minimize edildi. Tekrarli es anlamli phrase'ler
+    //   cikarildi (python yeni baslayanlar, python baslangic sorulari vb.
+    //   → sadece "sifirdan kodlama", "kodlama temelleri"). Google modern
+    //   SEO'da meta keywords'i negatif sinyal olarak degerlendirebilir.
+    //
+    // Ana niyetler (Sonnet 5 long-tail research):
+    //   1. python mulakat (commercial)
+    //   2. kodlama ogren (generic)
+    //   3. sifirdan kodlama (commercial)
+    //   4. mulakat hazirlik (commercial)
+    //   5. yazilim mulakat (commercial)
 
-    // Veri tipleri
-    "python veri tipleri sorular",
-    "python list dict tuple set soruları",
-    "python string manipülasyon örnekleri",
+    // Temel / Yeni baslayan
+    "python mulakat",
+    "mulakat hazirlik",
+    "sifirdan kodlama",
+    "kodlama temelleri",
+    "programlama temelleri",
+    "kodlama ogren",
+    "yazilim mulakat",
 
-// Uygulama / Mülakat
-    "python mülakat hazırlık",
-    "python başlangıç soruları",       // YENİ: 400-800 hacim
-    "python sınav soruları",            // YENİ: 1K-2K hacim ⭐
-    "python basit uygulama örnekleri",
-    "python beyin fırtınası soruları",
-    "python kodlama mülakatı",
-    "junior python developer mülakat soruları",
-    "python algoritma soruları",        // 📌 ACİL #4: title/H1 destekleyici keyword
-    "python dinamik programlama",       // 📌 ACİL #4: title/H1 destekleyici keyword
-    "python dynamic programming",
-    "python dp soruları",
-    "python knapsack problemi",
-    "python fibonacci memoization",
-    "python longest common subsequence",
-    "python online",                    // 📌 Ubersuggest: 9.9K vol, SEO 27, ₺53 CPC
+    // Uygulama / Sinav
+    "mulakat sorulari",
+    "kodlama pratiği",
+    "yazilima giris",
+    "ilk programlama dili",
 
-    // Veritabanı / Kütüphaneler
-    "python veri bilimi mülakat",
+    // Platform (transactional)
+    "online kodlama",
+    "tarayicida kod yazma",
+    "ucretsiz kodlama",
+    "kodlama ucretsiz deneme",
 
-    // Platform odaklı (marka)
-    "python online sandbox türkçe",
-    "python interaktif öğrenme",
-    "yapay zeka destekli python pratiği",  // DÜŞÜK DEĞER, ÇIKARILDI
-
-    // Transactional (mimari-uyumlu, geçici ücretsiz tier vurgusu)
-    "python mülakat soruları",
-    "yazılım mülakat soruları python",
-    "python online test çöz",
-    "python online sınav",
-    "python ücretsiz deneme",
-    "python online mülakat",
-    "python tarayıcıda kod yazma",
-    "python mülakat hesap aç",
-    "ücretsiz python hesabı",
-    "python çevrimiçi üye ol",
-    "python bootcamp",
-    "python mülakat bootcamp",
-    "junior python mülakat",
-    "python developer mülakat",
-
-    // 2026-07-15: JavaScript mulakat (Web Worker + native V8 runtime)
-    // Mulakat hazirlik — frontend developer
-    "javascript mülakat soruları",
-    "javascript temel konular",
-    "javascript sıfırdan",
-    "javascript pratik soruları",
-    "javascript alıştırma soruları",
-    "javascript dersleri türkçe",
-    "javascript eğitimi",
-    "javascript kodları",
-    "javascript mülakat hazırlık",
-    "javascript sınav soruları",
-    "javascript online test",
-    "javascript bootcamp",
-    "javascript mülakat bootcamp",
-    "junior javascript developer mülakat soruları",
-    "frontend developer mülakat soruları",
-    "javascript veri yapıları mülakat",
-    "javascript array method mülakat",
-    "javascript string manipulation soruları",
-    "javascript online mülakat",
-    "javascript tarayıcıda kod yazma",
-    "javascript çevrimiçi üye ol",
-    "javascript ücretsiz deneme",
-      "javascript mülakat soruları ve cevapları",
-      "frontend developer mülakat soruları",
-      "javascript mülakat soruları 2026",
-      "senior javascript mülakat soruları",
-      "react mülakat soruları",
-      "javascript algoritma soruları",
-      "yazılım mülakat soruları javascript",
+    // JavaScript (frontend developer — minimum tutuldu)
+    "frontend mulakat",
+    "javascript mulakat",
   ],
 
   authors: [{ name: "Python Mülakat", url: "https://pythonmulakat.com" }],

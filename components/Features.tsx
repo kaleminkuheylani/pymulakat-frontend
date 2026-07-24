@@ -48,7 +48,7 @@ const FEATURES = [
   {
     icon: Zap,
     title: "Kurulum Yok",
-    body: "Python tarayıcıda çalışır (Pyodide). Kurulum, indirme, Python sürümü derdi yok. Hesap aç, kodlamaya başla.",
+    body: "Python tarayıcıda çalışır (Pyodide). Kurulum, indirme, sürüm derdi yok. Hesap aç, kodlamaya başla.",
     color: "amber",
   },
   {

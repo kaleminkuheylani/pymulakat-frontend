@@ -59,9 +59,9 @@ export default function Hero({ total = 83, categoryCount = 7 }: HeroProps) {
             {/* Subtitle — Generic + commercial */}
             <p className="text-base md:text-lg text-white/70 leading-relaxed max-w-xl mb-7">
               Sıfırdan ileri seviyeye <strong className="text-white">{total}+ gerçek mülakat sorusu</strong>{" "}
-              ile Python öğren. Yapay zekâ destekli kod değerlendirme, anlık
+              ile kodlama öğren. Yapay zekâ destekli değerlendirme, anlık
               geri bildirim ve 7 farklı kategori. Kurulum yok — hesap aç,
-              hemen kodlamaya başla.
+              hemen pratik yap.
             </p>
 
             {/* CTA: Mulakat hazirlik (commercial) */}

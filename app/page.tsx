@@ -26,26 +26,24 @@ import Features from "../components/Features";
 import About from "../components/About";
 
 export const metadata: Metadata = {
-  title: "Python Mülakat Hazırlık — Tarayıcıda Sıfırdan Python Öğren",
+  // 2026-07-24 keyword stuffing temizligi: description 13→2 python, keywords
+  //   10→6 unique phrase (her biri tek seferlik, "python" prefixi minimize).
+  title: "Python Mülakat Hazırlık — Tarayıcıda Sıfırdan Kodlama Öğren",
   description:
-    "Python mülakat hazırlık için tarayıcıda kodlama pratiği. 7 kategori, 83+ gerçek mülakat sorusu, AI feedback. Sıfırdan Python öğren — kurulum yok, ücretsiz, üye olmadan dene.",
+    "Mülakat hazırlık için tarayıcıda kodlama pratiği. 7 kategori, 83+ gerçek soru, AI feedback. Kurulum yok, ücretsiz.",
   keywords: [
     "python mulakat",
-    "python ogren",
-    "sifirdan python",
     "mulakat hazirlik",
+    "sifirdan kodlama",
     "kodlama temelleri",
     "yazilim mulakat",
-    "python dersleri",
-    "kodlama pratiği",
-    "programlama temelleri",
-    "kodlama ogren",
+    "programlama ogren",
   ],
   alternates: { canonical: "https://pythonmulakat.com/" },
   openGraph: {
-    title: "Python Mülakat Hazırlık — Tarayıcıda Sıfırdan Python Öğren",
+    title: "Python Mülakat Hazırlık — Tarayıcıda Sıfırdan Kodlama Öğren",
     description:
-      "83+ gerçek Python mülakat sorusu, AI feedback, 7 kategori. Sıfırdan ileri seviyeye kodlama pratiği — ücretsiz, kurulum yok.",
+      "83+ gerçek mülakat sorusu, AI feedback, 7 kategori. Tarayıcıda kodlama pratiği — ücretsiz, kurulum yok.",
     type: "website",
     url: "https://pythonmulakat.com/",
   },
