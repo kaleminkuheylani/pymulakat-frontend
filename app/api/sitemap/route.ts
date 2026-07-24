@@ -126,6 +126,8 @@ export async function GET(req: NextRequest) {
     { slug: "teknik-terimler", date: "2026-07-18" },
     { slug: "javascript-promise-nedir", date: "2026-07-22" },
     { slug: "javascript-this-keyword", date: "2026-07-22" },
+    { slug: "en-iyi-python-kurslari", date: "2026-07-24" },
+    { slug: "en-iyi-programlama-kitaplari", date: "2026-07-24" },
   ];
   const blogEntries: SitemapEntry[] = BLOG_POSTS.map((p) =>
     toEntry(`${BASE_URL}/blog/${p.slug}`, p.date, "monthly", 0.7),

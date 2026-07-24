@@ -103,6 +103,24 @@ const POSTS: BlogPostMeta[] = [
     readingMinutes: 12,
     tags: ["mulakat hazirlik", "yazilim mulakat", "kodlama becerileri", "python dersleri"],
   },
+  {
+    slug: "en-iyi-python-kurslari",
+    title: "En İyi 7 Python Kursu (Udemy + Coursera) — 2026 Güncel Fiyat Karşılaştırma",
+    excerpt:
+      "Python öğrenmek için en iyi 7 online kurs (Udemy + Coursera + ücretsiz). Seviye, eğitmen, sertifika, güncel fiyat ve editör seçimi. Sıfırdan ileri seviyeye uygun kurslar.",
+    date: "2026-07-24",
+    readingMinutes: 14,
+    tags: ["python kursu", "udemy python", "coursera python", "kodlama egitimi", "online ogrenme"],
+  },
+  {
+    slug: "en-iyi-programlama-kitaplari",
+    title: "En İyi 10 Programlama Kitabı (2026) — Yabancı Dil + Türkçe Öneriler",
+    excerpt:
+      "Python ve yazılım geliştirme için en iyi 10 kitap (5 yabancı dil + 5 Türkçe). Yazar, seviye, fiyat, dil ve editör seçimi. Sıfırdan ileri seviyeye uygun kitaplar.",
+    date: "2026-07-24",
+    readingMinutes: 15,
+    tags: ["programlama kitabi", "python kitap", "temel kavramlar", "yazilima giris", "kodlama ogren"],
+  },
 ];
 
 export async function getAllPosts(): Promise<BlogPostMeta[]> {
